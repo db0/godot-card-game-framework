@@ -1,0 +1,132 @@
+[gd_scene load_steps=11 format=2]
+
+[ext_resource path="res://CardTemplate.gd" type="Script" id=1]
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+border_width_left = 3
+border_width_right = 3
+border_width_bottom = 2
+border_color = Color( 0, 0, 0, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id=2]
+border_width_top = 2
+border_color = Color( 0, 0, 0, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+
+[sub_resource type="DynamicFont" id=3]
+size = 15
+outline_color = Color( 0.509804, 0, 0.192157, 1 )
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=4]
+size = 10
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+use_mipmaps = true
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=5]
+size = 9
+outline_size = 1
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=6]
+size = 11
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=7]
+size = 12
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=8]
+size = 10
+outline_size = 1
+outline_color = Color( 0.658824, 0.541176, 0, 1 )
+font_data = ExtResource( 2 )
+
+[node name="Card" type="Panel"]
+margin_right = 125.0
+margin_bottom = 200.0
+rect_min_size = Vector2( 150, 240 )
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="CardText" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Name" type="Label" parent="CardText"]
+margin_right = 150.0
+margin_bottom = 21.0
+size_flags_vertical = 1
+custom_styles/normal = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
+text = "Card Name"
+align = 1
+autowrap = true
+
+[node name="Type" type="Label" parent="CardText"]
+margin_top = 25.0
+margin_right = 150.0
+margin_bottom = 38.0
+size_flags_vertical = 1
+custom_fonts/font = SubResource( 4 )
+text = "Type"
+align = 1
+autowrap = true
+uppercase = true
+
+[node name="Tags" type="Label" parent="CardText"]
+margin_top = 42.0
+margin_right = 150.0
+margin_bottom = 54.0
+size_flags_vertical = 1
+custom_fonts/font = SubResource( 5 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+text = "Tag1 - Tag2"
+align = 1
+autowrap = true
+uppercase = true
+
+[node name="Requirements" type="Label" parent="CardText"]
+margin_top = 58.0
+margin_right = 150.0
+margin_bottom = 72.0
+custom_fonts/font = SubResource( 6 )
+autowrap = true
+
+[node name="Abilities" type="Label" parent="CardText"]
+margin_top = 76.0
+margin_right = 150.0
+margin_bottom = 223.0
+size_flags_vertical = 3
+custom_fonts/font = SubResource( 7 )
+text = "This is the card ability text.
+
+There should be space for a bit of text here."
+align = 1
+valign = 1
+autowrap = true
+
+[node name="Cost" type="Label" parent="CardText"]
+margin_top = 227.0
+margin_right = 150.0
+margin_bottom = 240.0
+custom_fonts/font = SubResource( 8 )
+text = "Cost: 0"
+
+[node name="Tween" type="Tween" parent="."]
+[connection signal="gui_input" from="." to="." method="_on_Card_gui_input"]
