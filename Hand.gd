@@ -21,9 +21,11 @@ func draw_card(container = $'../'.deck) -> void:
 			var card = container.pop_front().instance()
 			add_child(card)
 			#print(target_pos_x)
-			card.moveToPosition(Vector2(0,0),card.recalculatePosition())
 			for c in get_children():
-				c.reorganizeSelf()
+				if c != card:
+					c.interruptTweening()
+					c.reorganizeSelf()
+			card.moveToPosition(Vector2(0,0),card.recalculatePosition())
 			#card.rect_position = get_viewport().size / 2
 			#card.rect_position.y = get_viewport().size.y - card.rect_size.y
 			#host_card(container.pop_front().instance())
