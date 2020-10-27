@@ -19,10 +19,13 @@ func _ready():
 func draw_card(container = $'../'.deck) -> void:
 		if  get_child_count() < hand_size:
 			var card = container.pop_front().instance()
-			card.moveToContainer(Vector2(0,0),get_viewport().size / 2)
+			add_child(card)
+			#print(target_pos_x)
+			card.moveToPosition(Vector2(0,0),card.recalculatePosition())
+			for c in get_children():
+				c.reorganizeSelf()
 			#card.rect_position = get_viewport().size / 2
 			#card.rect_position.y = get_viewport().size.y - card.rect_size.y
-			add_child(card)
 			#host_card(container.pop_front().instance())
 
 #func host_card(card) -> void:
