@@ -52,19 +52,17 @@ func moveToPosition(startpos: Vector2, targetpos: Vector2) -> void:
 
 func recalculatePosition() ->Vector2:
 	var container = get_parent()
-	var card_separation: float = 0
 	var card_position_x: float = 0
 	var card_position_y: float = 0
 	if container.name == 'Hand':
 		var hand_size: float = container.get_child_count()
-		#target_position = get_viewport().size / 2 * -get_index()
-		card_separation = hand_size * rect_size.x / 30
-		if card_separation >= rect_size.x/4: card_separation = rect_size.x/4
-		var offset = (hand_size - 1 - float(get_index())/2) * (rect_size.x/2 - card_separation) - (get_index() * rect_size.x * 0.75)
-		card_position_x = get_viewport().size.x / 2 - rect_size.x/2 + offset
+		var maxX = get_viewport().size.x - rect_size.x * 2
+		var card_gap_max: float = rect_size.x * 1.1
+		var card_gap_min: float = rect_size.x/2
+		var cards_gap: float = max(min((maxX - rect_size.x/2) / hand_size, card_gap_max), card_gap_min)
+		var hand_width: float = (cards_gap * (hand_size-1)) + rect_size.x
+		card_position_x = get_viewport().size.x/2 - hand_width/2 + cards_gap * get_index()
 		card_position_y = get_viewport().size.y / 2
-		#print(hand_size - (hand_size / 6))
-		print(card_separation)
 	return Vector2(card_position_x,card_position_y)
 #
 func reorganizeSelf() ->void:
