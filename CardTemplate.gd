@@ -3,18 +3,19 @@ class_name Card
 
 # warning-ignore:unused_class_variable
 export var scripts := [{'name':'','args':['',0]}]
-enum{ # Finiste state engine for all posible states a card might be in
+enum{ # Finite state engine for all posible states a card might be in
+	  # This simply is a way to refer to the values with a human-readable name.
 	InHand
 	InPlay
 	FocusedInHand
 	MovingToContainer
 	Reorganizing
 }
-var state := InHand
-var start_position: Vector2
-var target_position: Vector2
-var current_interpolation_time := 0
-var tweening_ongoing := false
+var state := InHand # Starting state for each card
+var start_position: Vector2 # Used for animating the card
+var target_position: Vector2 # Used for animating the card
+var tweening_ongoing := false # To allow our _process to know not to attempt another animation
+							  # while the previous one is ongoing
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
@@ -23,6 +24,7 @@ func card_action() -> void:
 	pass
 
 func _process(delta):
+	# A basic finite state engine
 	match state:
 		InHand:
 			pass
@@ -31,6 +33,7 @@ func _process(delta):
 		FocusedInHand:
 			pass
 		MovingToContainer:
+			# Used when moving card between places (i.e. deck to hand, hand to table etc)
 			if tweening_ongoing == false:
 				$Tween.interpolate_property($".",'rect_position',
 					start_position, target_position, 0.75,
@@ -38,6 +41,7 @@ func _process(delta):
 				$Tween.start()
 				tweening_ongoing = true
 		Reorganizing:
+			# Used when reorganizing the cards in the hand
 			if tweening_ongoing == false:
 				$Tween.interpolate_property($".",'rect_position',
 					start_position, target_position, 0.5,
@@ -46,6 +50,7 @@ func _process(delta):
 				tweening_ongoing = true
 
 func moveToPosition(startpos: Vector2, targetpos: Vector2) -> void:
+	# Called by external objects to instruct the card to move to another position on the table.
 	start_position = startpos
 	target_position = targetpos
 	state = MovingToContainer
@@ -79,28 +84,21 @@ func reorganizeSelf() ->void:
 	if state == InHand:
 		target_position = recalculatePosition()
 		state = Reorganizing
-	
-#func send_to_destination() -> void: # Sends this card to the container it's supposed to belong after it's successfully used
-#	if get_parent().name == "HandArray": # We only want to move cards like this when they're in hand.
-#		$Hand.discard(self) 
-#
-#func _on_Card_gui_input(event) -> void:
-#	if event.is_action_pressed("ui_select"):
-#		if self.get_parent().name == 'HandArray':
-#			# The global var has to go before the signal to allow cards which function instantly to be discarded
-#			# This signal is intercepted by the Map scene which actives then the card effects.
-#			card_action()
-#	elif event.is_action_pressed("ui_discard") and self.get_parent().name == 'HandArray':
-#		$Hand.discard(self)
-
 
 func interruptTweening() ->void:
+	# We use thi function to stop existing card animations 
+	# then make sure they're properly cleaned-up to allow future animations to play.
 	$Tween.stop_all()
 	state = InHand
+	# We set the start position to their current position
+	# this prevents the card object to teleport back to where it was before the interrupted animation
+	# when the next animation happens
 	start_position = rect_position
 	tweening_ongoing = false
 	
 func _on_Tween_tween_all_completed():
+	# Sync tweens are asynchronous, we cannot change the finite state during _process
+	# Instead we make sure the finite state goes to the next part when the animations are done.
 	match state:
 		InHand:
 			pass

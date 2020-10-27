@@ -17,30 +17,19 @@ func _ready():
 #		draw_card(deck)
 
 func draw_card(container = $'../'.deck) -> void:
-		if  get_child_count() < hand_size:
-			var card = container.pop_front().instance()
+		# A basic function to pull a card from out deck into our hand.
+		if  get_child_count() < hand_size: # prevent from drawing more cards than are in our deck and crashing godot.
+			var card = container.pop_front().instance() # pop() removes a card from its container as well.
 			add_child(card)
-			#print(target_pos_x)
+			card.moveToPosition(Vector2(0,0),card.recalculatePosition())
 			for c in get_children():
 				if c != card:
 					c.interruptTweening()
 					c.reorganizeSelf()
-			card.moveToPosition(Vector2(0,0),card.recalculatePosition())
-			#card.rect_position = get_viewport().size / 2
-			#card.rect_position.y = get_viewport().size.y - card.rect_size.y
-			#host_card(container.pop_front().instance())
 
 #func host_card(card) -> void:
 #	hand_contents.append(card)
 	#realign_cards()
-#
-#func realign_cards() -> void:
-#	if len(hand_contents) > 4:
-#		var too_many_cards_separation := separation_step * (len(hand_contents))
-#		if too_many_cards_separation < maximum_separation: too_many_cards_separation = maximum_separation
-#		$HBoxContainer/HandArray.set("custom_constants/separation", too_many_cards_separation)
-#	else:
-#		$HBoxContainer/HandArray.set("custom_constants/separation", 0)
 #
 #func discard(card) -> void:
 #	card.get_parent().remove_child(card)
