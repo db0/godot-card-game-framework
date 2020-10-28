@@ -149,6 +149,3 @@ __meta__ = {
 }
 [connection signal="mouse_entered" from="." to="." method="_on_Card_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_Card_mouse_exited"]
-[connection signal="tween_all_completed" from="Tween" to="." method="_on_Tween_tween_all_completed"]
-[connection signal="mouse_entered" from="Focus" to="." method="_on_Focus_mouse_entered"]
-[connection signal="mouse_exited" from="Focus" to="." method="_on_Focus_mouse_exited"]
