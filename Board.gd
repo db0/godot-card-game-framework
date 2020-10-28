@@ -1,6 +1,6 @@
 extends Node2D
 
-var deck := []
+var deck := [] # A pseudo-deck array to hold the card objects we want to pull
 const cardTemplate = preload("res://CardTemplate.tscn")
 # Declare member variables here. Examples:
 # var a = 2
@@ -9,7 +9,7 @@ const cardTemplate = preload("res://CardTemplate.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	for i in range(20):
+	for _i in range(20):
 		deck.append(cardTemplate)
 	pass # Replace with function body.
 

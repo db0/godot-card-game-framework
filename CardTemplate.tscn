@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://CardTemplate.gd" type="Script" id=1]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
@@ -49,6 +49,13 @@ size = 10
 outline_size = 1
 outline_color = Color( 0.658824, 0.541176, 0, 1 )
 font_data = ExtResource( 2 )
+
+[sub_resource type="StyleBoxFlat" id=9]
+bg_color = Color( 1, 1, 1, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
 
 [node name="Card" type="Panel"]
 margin_right = 125.0
@@ -129,5 +136,19 @@ custom_fonts/font = SubResource( 8 )
 text = "Cost: 0"
 
 [node name="Tween" type="Tween" parent="."]
-[connection signal="gui_input" from="." to="." method="_on_Card_gui_input"]
+
+[node name="Focus" type="Panel" parent="."]
+visible = false
+show_behind_parent = true
+margin_left = -2.0
+margin_top = -2.0
+rect_min_size = Vector2( 154, 244 )
+custom_styles/panel = SubResource( 9 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+[connection signal="mouse_entered" from="." to="." method="_on_Card_mouse_entered"]
+[connection signal="mouse_exited" from="." to="." method="_on_Card_mouse_exited"]
 [connection signal="tween_all_completed" from="Tween" to="." method="_on_Tween_tween_all_completed"]
+[connection signal="mouse_entered" from="Focus" to="." method="_on_Focus_mouse_entered"]
+[connection signal="mouse_exited" from="Focus" to="." method="_on_Focus_mouse_exited"]
