@@ -30,11 +30,16 @@ enum{ # Finite state engine for all posible states a card might be in
 	MovingToContainer
 	Reorganizing
 	PushedAside
+	Dragged
 }
 var state := InHand # Starting state for each card
 var start_position: Vector2 # Used for animating the card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
+var mouse_drag: bool = false
+var timer: float = 0
+
+var i: int = 0# debug
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
@@ -42,7 +47,7 @@ func _ready():
 func card_action() -> void:
 	pass
 
-func _process(_delta):
+func _process(delta):
 	# A basic finite state engine
 	match state:
 		InHand:
@@ -106,6 +111,27 @@ func _process(_delta):
 						Tween.TRANS_QUART, Tween.EASE_IN)
 				$Tween.start()
 				# We don't change state yet, only when the focus is removed from the neighbour
+		Dragged:
+			# The timer prevents the card from being moved immediately on mouse click.
+			# It instead waits a natural time to confirm this is long-mouse press before it starts shrinking the card.
+			timer += delta
+			if timer >= 0.15:
+				#The following prevents the dragged card from being dragged outside the viewport
+				var targetpos = get_viewport().get_mouse_position() + Vector2(10,10)
+				if targetpos.x + rect_size.x * 0.4 >= get_viewport().size.x:
+					targetpos.x = get_viewport().size.x - rect_size.x * rect_scale.x
+				if targetpos.x - rect_size.x * 0.4 < 0:
+					targetpos.x = 0
+				if targetpos.y + rect_size.y * 0.4 >= get_viewport().size.y:
+					targetpos.y = get_viewport().size.y - rect_size.y * rect_scale.y
+				if targetpos.y - rect_size.y * 0.4 < 0:
+					targetpos.y = 0
+				if not $Tween.is_active():
+					$Tween.interpolate_property($".",'rect_scale',
+						rect_scale, Vector2(0.4,0.4), 0.2,
+						Tween.TRANS_SINE, Tween.EASE_IN)
+					$Tween.start()
+				rect_position = targetpos
 
 func moveToPosition(startpos: Vector2, targetpos: Vector2) -> void:
 	# Instructs the card to move to another position on the table.
@@ -181,7 +207,19 @@ func _on_Card_mouse_exited():
 				c.interruptTweening()
 				c.reorganizeSelf()
 
-
-
 func _on_Card_gui_input(event):
-	pass # Replace with function body.
+	match state:
+		FocusedInHand, Dragged:
+			if event is InputEventMouseButton:
+				if event.is_pressed() and event.get_button_index() == 1:
+					state = Dragged
+					for c in get_parent().get_children():
+						if c != self:
+							c.interruptTweening()
+							c.reorganizeSelf()
+				elif not event.is_pressed() and event.get_button_index() == 1:
+					timer = 0
+					state = InHand
+					focus_completed = false
+					reorganizeSelf()
+
