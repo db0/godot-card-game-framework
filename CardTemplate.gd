@@ -14,8 +14,8 @@ const neighbour_push := 0.75
 # equal to one card's width
 onready var hand_width_margin := rect_size.x * 2
 # The margin from the bottom of the viewport on which to draw the cards.
-# Less than 1 card heigh and the card will appear hidden under the monitor.
-# More and it will float higher than the bottom of then viewport
+# Less than 1 card heigh and the card will appear hidden under the display area.
+# More and it will float higher than the bottom of the viewport
 onready var bottom_margin := rect_size.y/2
 ### END Behaviour Constants ###
 
@@ -50,33 +50,30 @@ func _process(_delta):
 		InPlay:
 			pass
 		FocusedInHand:
-			# Used when moving card between places (i.e. deck to hand, hand to table etc)
-			if not $Tween.is_active():
+			# Used when card is focused on by the mouse hovering over it.
+			if not $Tween.is_active() and not focus_completed:
 				var expected_position: Vector2 = recalculatePosition()
-				if not focus_completed:
-					for neighbour_index_diff in [-2,-1,1,2]:
-						var hand_size: int = get_parent().get_child_count()
-						var neighbour_index: int = get_index() + neighbour_index_diff
-						if neighbour_index >= 0 and neighbour_index <= hand_size - 1:
-							var neighbour_card: Card = get_parent().get_child(neighbour_index)
-							neighbour_card.interruptTweening()
-							neighbour_card.start_position = neighbour_card.rect_position
-							# Neighbouring cards are pushed to the side to allow the focused card to not be overlapped
-							# The amount they're pushed is relevant to how close neighbours they are.
-							# Closest neighbours (1 card away) are pushed more than further neighbours.
-							neighbour_card.pushAside(neighbour_card.recalculatePosition() + Vector2(neighbour_card.rect_size.x/neighbour_index_diff * neighbour_push,0))
-					# When zooming in, we also want to move the card higher, so that it's not under the screen's bottom edge.
-					target_position = expected_position - Vector2(rect_size.x * 0.25,rect_size.y * 0.5 + bottom_margin)
-					start_position = expected_position
-					$Tween.interpolate_property($".",'rect_position',
-						start_position, target_position, 0.3,
-						Tween.TRANS_CUBIC, Tween.EASE_OUT)
-					$Tween.interpolate_property($".",'rect_scale',
-						rect_scale, Vector2(1.5,1.5), 0.3,
-						Tween.TRANS_CUBIC, Tween.EASE_OUT)
-					$Tween.start()
-					focus_completed = true
-					# We don't change state yet, only when the focus is removed from this card
+				for neighbour_index_diff in [-2,-1,1,2]:
+					var hand_size: int = get_parent().get_child_count()
+					var neighbour_index: int = get_index() + neighbour_index_diff
+					if neighbour_index >= 0 and neighbour_index <= hand_size - 1:
+						var neighbour_card: Card = get_parent().get_child(neighbour_index)
+						# Neighbouring cards are pushed to the side to allow the focused card to not be overlapped
+						# The amount they're pushed is relevant to how close neighbours they are.
+						# Closest neighbours (1 card away) are pushed more than further neighbours.
+						neighbour_card.pushAside(neighbour_card.recalculatePosition() + Vector2(neighbour_card.rect_size.x/neighbour_index_diff * neighbour_push,0))
+				# When zooming in, we also want to move the card higher, so that it's not under the screen's bottom edge.
+				target_position = expected_position - Vector2(rect_size.x * 0.25,rect_size.y * 0.5 + bottom_margin)
+				start_position = expected_position
+				$Tween.interpolate_property($".",'rect_position',
+					start_position, target_position, 0.3,
+					Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				$Tween.interpolate_property($".",'rect_scale',
+					rect_scale, Vector2(1.5,1.5), 0.3,
+					Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				$Tween.start()
+				focus_completed = true
+				# We don't change state yet, only when the focus is removed from this card
 		MovingToContainer:
 			# Used when moving card between places (i.e. deck to hand, hand to table etc)
 			if not $Tween.is_active():
@@ -97,9 +94,8 @@ func _process(_delta):
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				$Tween.start()
 				state = InHand
-			#else: state = InHand
 		PushedAside:
-			# Used when card is being pushed aside due to focusing of a neighbour.
+			# Used when card is being pushed aside due to the focusing of a neighbour.
 			if not $Tween.is_active() and not rect_position.is_equal_approx(target_position):
 				$Tween.interpolate_property($".",'rect_position',
 					start_position, target_position, 0.3,
@@ -112,13 +108,15 @@ func _process(_delta):
 				# We don't change state yet, only when the focus is removed from the neighbour
 
 func moveToPosition(startpos: Vector2, targetpos: Vector2) -> void:
-	# Called by external objects to instruct the card to move to another position on the table.
+	# Instructs the card to move to another position on the table.
 	start_position = startpos
 	target_position = targetpos
 	state = MovingToContainer
 
 func pushAside(targetpos: Vector2) -> void:
-	# Called by external objects to instruct the card to move to another position on the table.
+	# Instructs the card to move aside for another card enterring focus
+	interruptTweening()
+	start_position = rect_position
 	target_position = targetpos
 	state = PushedAside
 
