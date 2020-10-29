@@ -2,6 +2,8 @@
 
 This library is meant to provide well-designed, statically-typed, and well-commented classes which you can plug into any potential card game to provide a polished way to handle typical behaviour expected from cards in a game.
 
+Pull requests are more than welcome ;)
+
 ## Installation
 
 Simply copy the CardTemplate.gd and Hand.gd in an appropriate location in your project.
