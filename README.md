@@ -34,4 +34,4 @@ For more specific customization, you'll need to modify manually
 
 ## Credits
 
-Many ideas were taken from this excellent [Godot Card Game Tutorial video](https://www.youtube.com/watch?v=WjT5sLMD7Kw). This library uses some of the concepts but also attempts to create better quality code in the process.
+Many ideas were taken from this excellent [Godot Card Game Tutorial video series](https://www.youtube.com/watch?v=WjT5sLMD7Kw). This library uses some of the concepts but also attempts to create better quality code in the process.
