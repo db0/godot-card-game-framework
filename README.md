@@ -14,12 +14,10 @@ Now simply extend your card node's script, from the Card class
 
     extends Card
 
-This will allow you to keep your custom code clean, while benefiting from the library functionality.
-
+This will allow you to keep your custom code clean, while benefiting from the library functionality. 
 It will also make it easy to upgrade your library by just copying more recent versions of CardTemplate.gd.
 
 Once done, connect your card node's `mouse_entered()` and `mouse_exited()` signals to your card template's script.
-
 
 Likewise, to use the provided Hand library, add a Node2D as a child node to where you want your hand to appear, then make sure that its script extends the Hand class.
 
