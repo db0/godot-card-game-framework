@@ -11,7 +11,9 @@ Simply copy the CardTemplate.gd and Hand.gd in an appropriate location in your p
 The CardTemplate.tcsn file is optional, but if you're looking for a design template for your cards, feel free to use it by instancing child scenes based on it.
 
 Now simply extend your card node's script, from the Card class
+
     extends Card
+
 This will allow you to keep your custom code clean, while benefiting from the library functionality
 It will also make it easy to upgrade your library by just copying more recent versions of CardTemplate.gd
 Once done, connect your card node's `mouse_entered()` and `mouse_exited()` signals to your card template's script.
