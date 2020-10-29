@@ -25,7 +25,7 @@ Once done, connect your card-draw signal to the Hand node and make it call the `
 
 Finally, make sure your project's window stretch mode is set to either 'disabled' or 'viewport'
 
-## Easy Customizing
+## Easy Customation
 
 The classes provide some easy customization options, such as the location of your cards on the table etc.
 Check the "Behaviour Constants" header at the start of the code.
