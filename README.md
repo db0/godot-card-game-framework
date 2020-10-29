@@ -1,8 +1,10 @@
-# Godot Card Gaming Library
+# Godot Card Gaming Framework
 
-This library is meant to provide well-designed, statically-typed, and well-commented classes which you can plug into any potential card game to provide a polished way to handle typical behaviour expected from cards in a game.
+This framework is meant to provide well-designed, statically-typed, and well-commented classes which you can plug into any potential card game to provide a polished way to handle typical behaviour expected from cards in a game.
 
 Pull requests are more than welcome ;)
+
+<img src="drawing.jpg" alt="drawing" width="200"/>
 
 ## Installation
 
@@ -14,8 +16,8 @@ Now simply extend your card node's script, from the Card class
 
     extends Card
 
-This will allow you to keep your custom code clean, while benefiting from the library functionality. 
-It will also make it easy to upgrade your library by just copying more recent versions of CardTemplate.gd.
+This will allow you to keep your custom code clean, while benefiting from the framework functionality. 
+It will also make it easy to upgrade your framework by just copying more recent versions of CardTemplate.gd.
 
 Once done, connect your card node's `mouse_entered()` and `mouse_exited()` signals to your card template's script.
 
@@ -40,4 +42,4 @@ For more specific customization, you'll need to modify manually
 
 ## Credits
 
-Many ideas were taken from this excellent [Godot Card Game Tutorial video series](https://www.youtube.com/watch?v=WjT5sLMD7Kw). This library uses some of the concepts but also attempts to create better quality code in the process.
+Many ideas were taken from this excellent [Godot Card Game Tutorial video series](https://www.youtube.com/watch?v=WjT5sLMD7Kw). This framework uses some of the concepts but also attempts to create better quality code in the process.

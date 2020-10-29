@@ -181,3 +181,7 @@ func _on_Card_mouse_exited():
 				c.interruptTweening()
 				c.reorganizeSelf()
 
+
+
+func _on_Card_gui_input(event):
+	pass # Replace with function body.
