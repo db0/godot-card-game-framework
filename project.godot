@@ -9,20 +9,32 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Panel",
+"base": "Control",
 "class": "Card",
 "language": "GDScript",
 "path": "res://CardTemplate.gd"
+}, {
+"base": "Node2D",
+"class": "Hand",
+"language": "GDScript",
+"path": "res://Hand.gd"
 } ]
 _global_script_class_icons={
-"Card": ""
+"Card": "",
+"Hand": ""
 }
 
 [application]
 
-config/name="Card Gaming"
+config/name="Card Gaming Library"
 run/main_scene="res://Board.tscn"
 config/icon="res://icon.png"
+
+[display]
+
+window/size/width=1280
+window/size/height=720
+window/stretch/mode="viewport"
 
 [rendering]
 
