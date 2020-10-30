@@ -4,8 +4,6 @@ This framework is meant to provide well-designed, statically-typed, and well-com
 
 Pull requests are more than welcome ;)
 
-<img src="drawing.jpg" alt="drawing" width="200"/>
-
 ## Installation
 
 Simply copy the CardTemplate.gd and Hand.gd in an appropriate location in your project.
@@ -39,6 +37,7 @@ For more specific customization, you'll need to modify manually
 * Tween animations that look good for card movements.
 * Automatic zoom-in on cards when moused over.
 * Automatic re-arranging of hand as cards are added or removed.
+* Drag & Drop to the table
 
 ## Credits
 

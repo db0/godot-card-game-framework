@@ -9,6 +9,8 @@ class_name Card
 # The amount of distance neighboring cards are pushed during card focus
 # It's based on the card width. Bigger percentage means larger push.
 const neighbour_push := 0.75
+# The scale of the card while on the play area
+const play_area_scale := Vector2(0.8,0.8)
 # The amount by which to reduce the max hand size width, comparative to the total viewport width
 # The default of 2*card width means that if the hand if full of cards, there will be empty space on both sides
 # equal to one card's width
@@ -31,6 +33,7 @@ enum{ # Finite state engine for all posible states a card might be in
 	Reorganizing
 	PushedAside
 	Dragged
+	OnPlayBoard
 }
 var state := InHand # Starting state for each card
 var start_position: Vector2 # Used for animating the card
@@ -116,7 +119,7 @@ func _process(delta):
 			timer += delta
 			if timer >= 0.15:
 				#The following if statements prevents the dragged card from being dragged outside the viewport boundaries
-				var targetpos = get_viewport().get_mouse_position() + Vector2(10,10)
+				var targetpos = get_global_mouse_position() + Vector2(10,10)
 				if targetpos.x + rect_size.x * 0.4 >= get_viewport().size.x:
 					targetpos.x = get_viewport().size.x - rect_size.x * rect_scale.x
 				if targetpos.x - rect_size.x * 0.4 < 0:
@@ -131,7 +134,20 @@ func _process(delta):
 						Tween.TRANS_SINE, Tween.EASE_IN)
 					$Tween.start()
 				rect_position = targetpos
-
+		OnPlayBoard:
+			# Used when dropping the cards to the table
+			# When dragging the card, the card is slightly behind the mouse cursor
+			# so we tween it to the right location
+			if not $Tween.is_active():
+				$Tween.interpolate_property($".",'rect_position',
+					rect_position, get_global_mouse_position(), 0.25,
+					Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				# We want cards on the board to be slightly smaller than in hand.
+				if not rect_scale.is_equal_approx(play_area_scale):
+					$Tween.interpolate_property($".",'rect_scale',
+						rect_scale, play_area_scale, 0.5,
+						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
+				$Tween.start()
 func moveToPosition(startpos: Vector2, targetpos: Vector2) -> void:
 	# Instructs the card to move to another position on the table.
 	start_position = startpos
@@ -223,16 +239,34 @@ func _on_Card_gui_input(event):
 				elif not event.is_pressed() and event.get_button_index() == 1:
 					timer = 0
 					focus_completed = false
+					# We check if the player dragged the card in the hand area. If so, we leave it in hand
+					if get_global_mouse_position().y + get_parent().hand_rect.y >= get_viewport().size.y:
 					# Here we try to avoid a card losing focus when the player clicks once on it
 					# However we cannot compare using is_equal_approx() because the rect_position.y will have changed
 					# due to the focusing of the card
 					# Instead we simply check if the position x has not changed from its focused position
 					# if the x position has changed, it indicated the player has dragged the card.
-					if not abs(rect_position.x - recalculatePosition().x + 37.5) < 0.01:
-						state = InHand
-						reorganizeSelf()
-					# If the player has not moved the card, clicking once should do nothing
-					# However this is not a perfect implementation. But it will do for now.
+						if not abs(rect_position.x - recalculatePosition().x + 37.5) < 0.01:
+							state = InHand
+							reorganizeSelf()
+						# If the player has not moved the card, clicking once should do nothing
+						# However this is not a perfect implementation. But it will do for now.
+						else:
+							state = FocusedInHand
+					# If the card is not left in the hand rect, it's on the table
+					# (More elif to follow for discard and deck.)
 					else:
-						state = FocusedInHand
+						# We need to store the parents, because we won't be able to grab them after removing the parent
+						var board = get_parent().get_parent() # we assume the playboard is the parent of the card
+						var hand = get_parent()
+						# The state for the card being on the board
+						state = OnPlayBoard
+						# We need to remove the current parent node before adding a different one
+						hand.remove_child(self)
+						board.add_child(self)
+						# We reorganize the left cards in hand.
+						for c in hand.get_children():
+								c.interruptTweening()
+								c.reorganizeSelf()
+
 

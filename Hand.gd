@@ -7,6 +7,7 @@ class_name Hand
 # The maximum amount of cards allowed to draw.
 var hand_size := 12
 ### END Behaviour Constants ###
+var hand_rect: Vector2
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -22,6 +23,9 @@ func draw_card(container = $'../'.deck) -> void:
 		# A basic function to pull a card from out deck into our hand.
 		if  get_child_count() < hand_size: # prevent from drawing more cards than are in our deck and crashing godot.
 			var card = container.pop_front().instance() # pop() removes a card from its container as well.
+			# If this node is not a defined control node with a specific dimentions, we need to define its location programmatically
+			# We do this by using the card dimentions. This allows us to calculate where the hand is and where the board is.
+			hand_rect = Vector2(get_viewport().size.x - card.rect_size.x * 2,card.rect_size.y/2 + 20)
 			add_child(card)
 			card.moveToPosition(Vector2(0,0),card.recalculatePosition())
 			for c in get_children():
