@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6
+
+* Can drag cards
+* Can drop cards back to the hand or table
+
 ## 0.5
 
 * First published version
