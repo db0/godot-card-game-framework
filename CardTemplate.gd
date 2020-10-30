@@ -36,7 +36,6 @@ var state := InHand # Starting state for each card
 var start_position: Vector2 # Used for animating the card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
-var mouse_drag: bool = false
 var timer: float = 0
 
 var i: int = 0# debug
@@ -116,7 +115,7 @@ func _process(delta):
 			# It instead waits a natural time to confirm this is long-mouse press before it starts shrinking the card.
 			timer += delta
 			if timer >= 0.15:
-				#The following prevents the dragged card from being dragged outside the viewport
+				#The following if statements prevents the dragged card from being dragged outside the viewport boundaries
 				var targetpos = get_viewport().get_mouse_position() + Vector2(10,10)
 				if targetpos.x + rect_size.x * 0.4 >= get_viewport().size.x:
 					targetpos.x = get_viewport().size.x - rect_size.x * rect_scale.x
@@ -208,18 +207,32 @@ func _on_Card_mouse_exited():
 				c.reorganizeSelf()
 
 func _on_Card_gui_input(event):
-	match state:
-		FocusedInHand, Dragged:
-			if event is InputEventMouseButton:
+	# A signal for whenever the player clicks on a card
+	if event is InputEventMouseButton:
+		match state:
+			FocusedInHand, Dragged:
+				# If the player presses the left click, it might be because they want to drag the card
 				if event.is_pressed() and event.get_button_index() == 1:
+					# While the mouse is kept pressed, we tell the engine that a card is being dragged
 					state = Dragged
+					# While we're dragging the card, we want the other cards to move to their expected position in hand
 					for c in get_parent().get_children():
 						if c != self:
 							c.interruptTweening()
 							c.reorganizeSelf()
 				elif not event.is_pressed() and event.get_button_index() == 1:
 					timer = 0
-					state = InHand
 					focus_completed = false
-					reorganizeSelf()
+					# Here we try to avoid a card losing focus when the player clicks once on it
+					# However we cannot compare using is_equal_approx() because the rect_position.y will have changed
+					# due to the focusing of the card
+					# Instead we simply check if the position x has not changed from its focused position
+					# if the x position has changed, it indicated the player has dragged the card.
+					if not abs(rect_position.x - recalculatePosition().x + 37.5) < 0.01:
+						state = InHand
+						reorganizeSelf()
+					# If the player has not moved the card, clicking once should do nothing
+					# However this is not a perfect implementation. But it will do for now.
+					else:
+						state = FocusedInHand
 
