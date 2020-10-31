@@ -19,6 +19,8 @@ onready var hand_width_margin := rect_size.x * 2
 # Less than 1 card heigh and the card will appear hidden under the display area.
 # More and it will float higher than the bottom of the viewport
 onready var bottom_margin := rect_size.y/2
+# Switch this off to disable fancy movement of cards during draw/discard
+var fancy_movement_setting := true
 ### END Behaviour Constants ###
 
 # warning-ignore:unused_class_variable
@@ -34,13 +36,15 @@ enum{ # Finite state engine for all posible states a card might be in
 	PushedAside
 	Dragged
 	OnPlayBoard
+	InDeck
 }
-var state := InHand # Starting state for each card
+var state := InDeck # Starting state for each card
 var start_position: Vector2 # Used for animating the card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var timer: float = 0
-
+var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
+var fancy_movement := fancy_movement_setting # Gets value from initial const, but allows from programmatic change
 var i: int = 0# debug
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -84,11 +88,33 @@ func _process(delta):
 		MovingToContainer:
 			# Used when moving card between places (i.e. deck to hand, hand to table etc)
 			if not $Tween.is_active():
-				$Tween.interpolate_property($".",'rect_position',
-					start_position, target_position, 0.75,
-					Tween.TRANS_CUBIC, Tween.EASE_IN_OUT)
-				$Tween.start()
-				state = InHand
+				var intermediate_position: Vector2
+				if fancy_movement:
+					# The below calculations figure out the intermediate position as a spot offset
+					# towards the viewport center by an amount proportional to distance from the viewport center.
+					# (My math is not the best so there's probably a more elegant formula)
+					var direction_x: int = 1
+					var direction_y: int = 1
+					if target_position.x < get_viewport().size.x/2: direction_x = -1
+					if target_position.y < get_viewport().size.y/2: direction_y = -1
+					var inter_x = target_position.x - direction_x * (abs(target_position.x - get_viewport().size.x/2)) / 100 * rect_size.x
+					var inter_y = target_position.y - direction_y * (abs(target_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
+					intermediate_position = Vector2(inter_x,inter_y)
+					$Tween.interpolate_property($".",'rect_global_position',
+						start_position, intermediate_position, 0.5,
+						Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+					$Tween.start()
+					yield($Tween, "tween_all_completed")
+					fancy_move_second_part = true
+				else:
+					intermediate_position = start_position
+				if state == MovingToContainer: # We need to check again, just in case it's been reorganized instead.
+					$Tween.interpolate_property($".",'rect_global_position',
+						intermediate_position, target_position, 0.35,
+						Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+					$Tween.start()
+					determine_idle_state()
+				fancy_move_second_part = false
 		Reorganizing:
 			# Used when reorganizing the cards in the hand
 			if not $Tween.is_active():
@@ -99,6 +125,7 @@ func _process(delta):
 					$Tween.interpolate_property($".",'rect_scale',
 						rect_scale, Vector2(1,1), 0.4,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				tween_interpolate_visibility(1,0.4)
 				$Tween.start()
 				state = InHand
 		PushedAside:
@@ -122,11 +149,11 @@ func _process(delta):
 				var targetpos = get_global_mouse_position() + Vector2(10,10)
 				if targetpos.x + rect_size.x * 0.4 >= get_viewport().size.x:
 					targetpos.x = get_viewport().size.x - rect_size.x * rect_scale.x
-				if targetpos.x - rect_size.x * 0.4 < 0:
+				if targetpos.x < 0:
 					targetpos.x = 0
 				if targetpos.y + rect_size.y * 0.4 >= get_viewport().size.y:
 					targetpos.y = get_viewport().size.y - rect_size.y * rect_scale.y
-				if targetpos.y - rect_size.y * 0.4 < 0:
+				if targetpos.y < 0:
 					targetpos.y = 0
 				if not $Tween.is_active():
 					$Tween.interpolate_property($".",'rect_scale',
@@ -148,6 +175,7 @@ func _process(delta):
 						rect_scale, play_area_scale, 0.5,
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
+
 func moveToPosition(startpos: Vector2, targetpos: Vector2) -> void:
 	# Instructs the card to move to another position on the table.
 	start_position = startpos
@@ -197,12 +225,25 @@ func reorganizeSelf() ->void:
 			start_position = rect_position
 			target_position = recalculatePosition()
 			state = Reorganizing
+	# This second match is  to prevent from changing the state when we're doing fancy movement
+	# and we're still in the first part (which is waiting on an animation yield).
+	# Instead, we just change the target position transparently, and when the second part of the animation begins
+	# it will automatically pick up the right location.
+	match state:
+		MovingToContainer:
+			start_position = rect_position
+			target_position = recalculatePosition()
 
 func interruptTweening() ->void:
 	# We use this function to stop existing card animations
 	# then make sure they're properly cleaned-up to allow future animations to play.
-	$Tween.remove_all()
-	state = InHand
+	# This if-logic is there to avoid interrupting animations during fancy_movement,
+	# as we want the first part to play always
+	# Effectively we're saying if fancy movement is turned on, and you're still doing the first part, don't interrupt
+	# If you've finished the first part and are not still in the move to another container movement, then you can interrupt.
+	if not fancy_movement or (fancy_movement and (fancy_move_second_part or state != MovingToContainer)):
+		$Tween.remove_all()
+		state = InHand
 
 func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
@@ -216,11 +257,12 @@ func _on_Card_mouse_exited():
 	match state:
 		FocusedInHand:
 			focus_completed = false
-			for c in get_parent().get_children():
-				# We need to make sure afterwards all card will return to their expected positions
-				# Therefore we simply stop all tweens and reorganize then whole hand
-				c.interruptTweening()
-				c.reorganizeSelf()
+			if get_parent().name == 'Hand':  # To avoid errors during fast player actions
+				for c in get_parent().get_children():
+					# We need to make sure afterwards all card will return to their expected positions
+					# Therefore we simply stop all tweens and reorganize then whole hand
+					c.interruptTweening()
+					c.reorganizeSelf()
 
 func _on_Card_gui_input(event):
 	# A signal for whenever the player clicks on a card
@@ -256,17 +298,56 @@ func _on_Card_gui_input(event):
 					# If the card is not left in the hand rect, it's on the table
 					# (More elif to follow for discard and deck.)
 					else:
-						# We need to store the parents, because we won't be able to grab them after removing the parent
-						var board = get_parent().get_parent() # we assume the playboard is the parent of the card
-						var hand = get_parent()
-						# The state for the card being on the board
-						state = OnPlayBoard
-						# We need to remove the current parent node before adding a different one
-						hand.remove_child(self)
-						board.add_child(self)
-						# We reorganize the left cards in hand.
-						for c in hand.get_children():
-								c.interruptTweening()
-								c.reorganizeSelf()
+						reHost(get_parent().get_parent())  # we assume the playboard is the parent of the card
 
+func determine_idle_state() -> void:
+	match get_parent().name:
+		'Board': state = OnPlayBoard
+		'Hand': state = InHand
+		'Cards': state = InDeck
 
+func tween_interpolate_visibility(visibility: float, time: float) -> void:
+	$Tween.interpolate_property(self,'modulate',
+	modulate, Color(1, 1, 1, visibility), time,
+	Tween.TRANS_SINE, Tween.EASE_IN)
+
+func reHost(targetHost):
+	# We need to store the parent, because we won't be able to grab them it
+	var parentHost = get_parent()
+	# We need to remove the current parent node before adding a different one
+	if targetHost != parentHost:
+		# When changing parent, it resets the position of the child it seems
+		var previous_pos = rect_global_position
+		parentHost.remove_child(self)
+		targetHost.add_child(self)
+		rect_global_position = previous_pos
+		match targetHost.name:
+			# The state for the card being on the board
+			'Board':
+				state = OnPlayBoard
+			'Hand':
+				visible = true
+				fancy_movement = fancy_movement_setting
+				tween_interpolate_visibility(1,0.5)
+				#state = InHand
+				# We reorganize the left cards in hand.
+				moveToPosition(previous_pos,recalculatePosition())
+				for c in targetHost.get_children():
+					if c != self:
+						c.interruptTweening()
+						c.reorganizeSelf()
+			'Cards':
+				state = InDeck
+				$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
+				tween_interpolate_visibility(0,0.3)
+				moveToPosition(previous_pos,targetHost.get_parent().rect_position)
+				yield($Tween, "tween_all_completed")
+				visible = false
+		match parentHost.name:
+			# We also want to rearrange the hand when we take cards out of it
+			'Hand':
+				for c in parentHost.get_children():
+					# But this time we don't want to rearrange ourselves, as we're in a different container by now
+					if c != self:
+						c.interruptTweening()
+						c.reorganizeSelf()

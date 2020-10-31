@@ -1,6 +1,6 @@
 extends Node2D
 class_name Hand
-# This is meant to be a simple container for card objects. 
+# This is meant to be a simple container for card objects.
 # Just add a Node2D with this script as a child node anywhere you want your hand to be.
 
 ### BEGIN Behaviour Constants ###
@@ -19,19 +19,16 @@ func _ready():
 #func _process(delta):
 #    pass
 
-func draw_card(container = $'../'.deck) -> void:
+func draw_card(container = $'../Deck/Cards') -> void:
 		# A basic function to pull a card from out deck into our hand.
-		if  get_child_count() < hand_size: # prevent from drawing more cards than are in our deck and crashing godot.
-			var card = container.pop_front().instance() # pop() removes a card from its container as well.
+		if container.get_child_count() and get_child_count() < hand_size: # prevent from drawing more cards than are in our deck and crashing godot.
+			# We need to remove the current parent node before adding a different one
+			var card = container.get_child(0)
+			card.reHost(self)
 			# If this node is not a defined control node with a specific dimentions, we need to define its location programmatically
 			# We do this by using the card dimentions. This allows us to calculate where the hand is and where the board is.
 			hand_rect = Vector2(get_viewport().size.x - card.rect_size.x * 2,card.rect_size.y/2 + 20)
-			add_child(card)
-			card.moveToPosition(Vector2(0,0),card.recalculatePosition())
-			for c in get_children():
-				if c != card:
-					c.interruptTweening()
-					c.reorganizeSelf()
 
-func _on_Button_pressed():
-	draw_card() # Replace with function body.
+func _on_Deck_gui_input(event):
+	if event.is_pressed() and event.get_button_index() == 1:
+		draw_card() # Replace with function body.
