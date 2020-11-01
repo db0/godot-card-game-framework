@@ -4,7 +4,7 @@
 [ext_resource path="res://Board.gd" type="Script" id=2]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=3]
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.952941, 0.933333, 0.933333, 1 )
 corner_radius_top_left = 25
 corner_radius_top_right = 25
@@ -14,7 +14,7 @@ corner_radius_bottom_left = 25
 [sub_resource type="DynamicFont" id=2]
 font_data = ExtResource( 3 )
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxFlat" id=3]
 bg_color = Color( 0.0352941, 0.0313726, 0.0313726, 1 )
 corner_radius_top_left = 25
 corner_radius_top_right = 25
@@ -32,7 +32,7 @@ margin_left = 2.82843
 margin_top = 520.431
 margin_right = 152.828
 margin_bottom = 720.431
-custom_styles/panel = SubResource( 3 )
+custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -63,7 +63,7 @@ margin_left = 1125.71
 margin_top = 520.431
 margin_right = 1275.71
 margin_bottom = 720.431
-custom_styles/panel = SubResource( 1 )
+custom_styles/panel = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -29,7 +29,6 @@ export var scripts := [{'name':'','args':['',0]}]
 enum{ # Finite state engine for all posible states a card might be in
 	  # This simply is a way to refer to the values with a human-readable name.
 	InHand
-	InPlay
 	FocusedInHand
 	MovingToContainer
 	Reorganizing
@@ -45,7 +44,8 @@ var focus_completed: bool = false # Used to avoid the focus animation repeating 
 var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
 var fancy_movement := fancy_movement_setting # Gets value from initial const, but allows from programmatic change
-var i: int = 0# debug
+var Board # A simple pointer to the board node for easy reference
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
@@ -57,8 +57,6 @@ func _process(delta):
 	# A basic finite state engine
 	match state:
 		InHand:
-			pass
-		InPlay:
 			pass
 		FocusedInHand:
 			# Used when card is focused on by the mouse hovering over it.
@@ -145,29 +143,19 @@ func _process(delta):
 			# It instead waits a natural time to confirm this is long-mouse press before it starts shrinking the card.
 			timer += delta
 			if timer >= 0.15:
-				#The following if statements prevents the dragged card from being dragged outside the viewport boundaries
-				var targetpos = get_global_mouse_position() + Vector2(10,10)
-				if targetpos.x + rect_size.x * 0.4 >= get_viewport().size.x:
-					targetpos.x = get_viewport().size.x - rect_size.x * rect_scale.x
-				if targetpos.x < 0:
-					targetpos.x = 0
-				if targetpos.y + rect_size.y * 0.4 >= get_viewport().size.y:
-					targetpos.y = get_viewport().size.y - rect_size.y * rect_scale.y
-				if targetpos.y < 0:
-					targetpos.y = 0
 				if not $Tween.is_active():
 					$Tween.interpolate_property($".",'rect_scale',
 						rect_scale, Vector2(0.4,0.4), 0.2,
 						Tween.TRANS_SINE, Tween.EASE_IN)
 					$Tween.start()
-				rect_position = targetpos
+				rect_position = determine_board_position_from_mouse()
 		OnPlayBoard:
 			# Used when dropping the cards to the table
 			# When dragging the card, the card is slightly behind the mouse cursor
 			# so we tween it to the right location
 			if not $Tween.is_active():
 				$Tween.interpolate_property($".",'rect_position',
-					rect_position, get_global_mouse_position(), 0.25,
+					rect_position, determine_board_position_from_mouse(), 0.25,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not rect_scale.is_equal_approx(play_area_scale):
@@ -176,6 +164,26 @@ func _process(delta):
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 
+func determine_global_mouse_pos() -> Vector2:
+	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
+	var mouse_position
+	if Board.UT: mouse_position = Board.UT_mouse_position
+	else: mouse_position = get_global_mouse_position()
+	return mouse_position
+
+func determine_board_position_from_mouse() -> Vector2:
+	#The following if statements prevents the dragged card from being dragged outside the viewport boundaries
+	var targetpos: Vector2 = determine_global_mouse_pos() + Vector2(10,10)
+	if targetpos.x + rect_size.x * 0.4 >= get_viewport().size.x:
+		targetpos.x = get_viewport().size.x - rect_size.x * rect_scale.x
+	if targetpos.x < 0:
+		targetpos.x = 0
+	if targetpos.y + rect_size.y * 0.4 >= get_viewport().size.y:
+		targetpos.y = get_viewport().size.y - rect_size.y * rect_scale.y
+	if targetpos.y < 0:
+		targetpos.y = 0
+	return targetpos
+	
 func moveToPosition(startpos: Vector2, targetpos: Vector2) -> void:
 	# Instructs the card to move to another position on the table.
 	start_position = startpos
@@ -278,11 +286,16 @@ func _on_Card_gui_input(event):
 						if c != self:
 							c.interruptTweening()
 							c.reorganizeSelf()
-				elif not event.is_pressed() and event.get_button_index() == 1:
+
+func _input(event):
+	if event is InputEventMouseButton:
+		match state:
+			FocusedInHand, Dragged:
+				if not event.is_pressed() and event.get_button_index() == 1:
 					timer = 0
 					focus_completed = false
-					# We check if the player dragged the card in the hand area. If so, we leave it in hand
-					if get_global_mouse_position().y + get_parent().hand_rect.y >= get_viewport().size.y:
+					# We check if the player released the card in the "virtual" hand area. If so, we leave it in hand
+					if determine_global_mouse_pos().y + get_parent().hand_rect.y >= get_viewport().size.y:
 					# Here we try to avoid a card losing focus when the player clicks once on it
 					# However we cannot compare using is_equal_approx() because the rect_position.y will have changed
 					# due to the focusing of the card
@@ -299,25 +312,29 @@ func _on_Card_gui_input(event):
 					# (More elif to follow for discard and deck.)
 					else:
 						reHost(get_parent().get_parent())  # we assume the playboard is the parent of the card
-
+	
 func determine_idle_state() -> void:
+	# Some logic is generic and doesn't always know the state the card should be afterwards
+	# We use this function to determine the state it should have, based on the card's container node.
 	match get_parent().name:
 		'Board': state = OnPlayBoard
 		'Hand': state = InHand
 		'Cards': state = InDeck
 
 func tween_interpolate_visibility(visibility: float, time: float) -> void:
+	# Takes care to make a card change visibility nicely
 	$Tween.interpolate_property(self,'modulate',
 	modulate, Color(1, 1, 1, visibility), time,
 	Tween.TRANS_SINE, Tween.EASE_IN)
 
 func reHost(targetHost):
-	# We need to store the parent, because we won't be able to grab them it
+	# We need to store the parent, because we won't be able to know it later
 	var parentHost = get_parent()
-	# We need to remove the current parent node before adding a different one
 	if targetHost != parentHost:
 		# When changing parent, it resets the position of the child it seems
+		# So we store it to know where the card used to be, before moving it
 		var previous_pos = rect_global_position
+		# We need to remove the current parent node before adding a different one
 		parentHost.remove_child(self)
 		targetHost.add_child(self)
 		rect_global_position = previous_pos
@@ -336,6 +353,7 @@ func reHost(targetHost):
 					if c != self:
 						c.interruptTweening()
 						c.reorganizeSelf()
+			# 'Cards' here is the dummy child node inside the Deck where we store the card objects
 			'Cards':
 				state = InDeck
 				$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
