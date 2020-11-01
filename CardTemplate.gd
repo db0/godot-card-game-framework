@@ -44,7 +44,7 @@ var focus_completed: bool = false # Used to avoid the focus animation repeating 
 var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
 var fancy_movement := fancy_movement_setting # Gets value from initial const, but allows from programmatic change
-var Board # A simple pointer to the board node for easy reference
+var Board = null # A simple pointer to the game board node for easy reference.
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -167,7 +167,7 @@ func _process(delta):
 func determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
 	var mouse_position
-	if Board.UT: mouse_position = Board.UT_mouse_position
+	if Board and Board.UT: mouse_position = Board.UT_mouse_position
 	else: mouse_position = get_global_mouse_position()
 	return mouse_position
 

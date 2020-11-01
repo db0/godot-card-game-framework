@@ -30,7 +30,7 @@ func test_card_table_drop_location():
 	Board.UT_interpolate_mouse_move(Vector2(800,200))
 	yield(yield_for(0.6), YIELD)
 	fake_click(false,Board.UT_mouse_position)
-	yield(yield_for(1), YIELD)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_almost_eq(Vector2(810, 210),cards[0].rect_global_position,Vector2(2,2), "Check card dragged in correct global position")
 
 func test_card_hand_drop_recovery():
@@ -42,7 +42,7 @@ func test_card_hand_drop_recovery():
 	Board.UT_interpolate_mouse_move(Vector2(200,620))
 	yield(yield_for(0.4), YIELD)
 	fake_click(false,Board.UT_mouse_position)
-	yield(yield_for(0.8), YIELD)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq($Board/Hand.get_child_count(),5, "Check card dragged back in hand remains in hand")
 
 func test_card_drag_block_by_board_borders():
@@ -63,3 +63,19 @@ func test_card_drag_block_by_board_borders():
 	assert_almost_eq(Vector2(510, 624),cards[4].rect_global_position,Vector2(2,2), "Check dragged outside bottom viewport borders stays inside viewport")
 
 
+func test_fast_card_table_drop():
+	# This catches a bug where the card keeps following the mouse after being dropped
+	yield(yield_for(1), YIELD)
+	cards[0]._on_Card_mouse_entered()
+	#gut.p(cards[0].rect_global_position)
+	fake_click(true,cards[0].rect_global_position)
+	Board.UT_interpolate_mouse_move(Vector2(1000,300),cards[0].rect_global_position,3)
+	yield(yield_for(0.6), YIELD)
+	fake_click(false,Board.UT_mouse_position)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
+	assert_almost_eq(Vector2(310, 310),cards[0].rect_global_position,Vector2(2,2), "Check card dragged in correct global position")
+	Board.UT_interpolate_mouse_move(Vector2(400,200),cards[0].rect_global_position,3)
+	yield(yield_for(0.6), YIELD)
+	Board.UT_interpolate_mouse_move(Vector2(1000,500),cards[0].rect_global_position,3)
+	yield(yield_for(0.6), YIELD)
+	assert_almost_eq(Vector2(303.5, 340),cards[0].rect_global_position,Vector2(2,2), "Check card dragged in correct global position")
