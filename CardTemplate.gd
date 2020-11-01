@@ -28,14 +28,14 @@ var fancy_movement_setting := true
 export var scripts := [{'name':'','args':['',0]}]
 enum{ # Finite state engine for all posible states a card might be in
 	  # This simply is a way to refer to the values with a human-readable name.
-	InHand
-	FocusedInHand
-	MovingToContainer
-	Reorganizing
-	PushedAside
-	Dragged
-	OnPlayBoard
-	InDeck
+	InHand				#0
+	FocusedInHand		#1
+	MovingToContainer	#2
+	Reorganizing		#3
+	PushedAside			#4
+	Dragged				#5
+	OnPlayBoard			#6
+	InDeck				#7
 }
 var state := InDeck # Starting state for each card
 var start_position: Vector2 # Used for animating the card
@@ -84,7 +84,7 @@ func _process(delta):
 				focus_completed = true
 				# We don't change state yet, only when the focus is removed from this card
 		MovingToContainer:
-			# Used when moving card between places (i.e. deck to hand, hand to table etc)
+			# Used when moving card between places (i.e. deck to hand, hand to discard etc)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if fancy_movement:
@@ -98,7 +98,7 @@ func _process(delta):
 					var inter_x = target_position.x - direction_x * (abs(target_position.x - get_viewport().size.x/2)) / 100 * rect_size.x
 					var inter_y = target_position.y - direction_y * (abs(target_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
 					intermediate_position = Vector2(inter_x,inter_y)
-					$Tween.interpolate_property($".",'rect_global_position',
+					$Tween.interpolate_property(self,'rect_global_position',
 						start_position, intermediate_position, 0.5,
 						Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 					$Tween.start()
@@ -107,7 +107,7 @@ func _process(delta):
 				else:
 					intermediate_position = start_position
 				if state == MovingToContainer: # We need to check again, just in case it's been reorganized instead.
-					$Tween.interpolate_property($".",'rect_global_position',
+					$Tween.interpolate_property(self,'rect_global_position',
 						intermediate_position, target_position, 0.35,
 						Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					$Tween.start()
@@ -116,11 +116,11 @@ func _process(delta):
 		Reorganizing:
 			# Used when reorganizing the cards in the hand
 			if not $Tween.is_active():
-				$Tween.interpolate_property($".",'rect_position',
+				$Tween.interpolate_property(self,'rect_position',
 					start_position, target_position, 0.4,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				if not rect_scale.is_equal_approx(Vector2(1,1)):
-					$Tween.interpolate_property($".",'rect_scale',
+					$Tween.interpolate_property(self,'rect_scale',
 						rect_scale, Vector2(1,1), 0.4,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				tween_interpolate_visibility(1,0.4)
@@ -129,11 +129,11 @@ func _process(delta):
 		PushedAside:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
 			if not $Tween.is_active() and not rect_position.is_equal_approx(target_position):
-				$Tween.interpolate_property($".",'rect_position',
+				$Tween.interpolate_property(self,'rect_position',
 					start_position, target_position, 0.3,
 					Tween.TRANS_QUART, Tween.EASE_IN)
 				if not rect_scale.is_equal_approx(Vector2(1,1)):
-					$Tween.interpolate_property($".",'rect_scale',
+					$Tween.interpolate_property(self,'rect_scale',
 						rect_scale, Vector2(1,1), 0.3,
 						Tween.TRANS_QUART, Tween.EASE_IN)
 				$Tween.start()
@@ -144,7 +144,7 @@ func _process(delta):
 			timer += delta
 			if timer >= 0.15:
 				if not $Tween.is_active():
-					$Tween.interpolate_property($".",'rect_scale',
+					$Tween.interpolate_property(self,'rect_scale',
 						rect_scale, Vector2(0.4,0.4), 0.2,
 						Tween.TRANS_SINE, Tween.EASE_IN)
 					$Tween.start()
@@ -154,12 +154,12 @@ func _process(delta):
 			# When dragging the card, the card is slightly behind the mouse cursor
 			# so we tween it to the right location
 			if not $Tween.is_active():
-				$Tween.interpolate_property($".",'rect_position',
+				$Tween.interpolate_property(self,'rect_position',
 					rect_position, determine_board_position_from_mouse(), 0.25,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not rect_scale.is_equal_approx(play_area_scale):
-					$Tween.interpolate_property($".",'rect_scale',
+					$Tween.interpolate_property(self,'rect_scale',
 						rect_scale, play_area_scale, 0.5,
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
@@ -292,7 +292,6 @@ func _input(event):
 		match state:
 			FocusedInHand, Dragged:
 				if not event.is_pressed() and event.get_button_index() == 1:
-					timer = 0
 					focus_completed = false
 					# We check if the player released the card in the "virtual" hand area. If so, we leave it in hand
 					if determine_global_mouse_pos().y + get_parent().hand_rect.y >= get_viewport().size.y:
@@ -312,6 +311,7 @@ func _input(event):
 					# (More elif to follow for discard and deck.)
 					else:
 						reHost(get_parent().get_parent())  # we assume the playboard is the parent of the card
+					timer = 0
 	
 func determine_idle_state() -> void:
 	# Some logic is generic and doesn't always know the state the card should be afterwards
@@ -337,7 +337,7 @@ func reHost(targetHost):
 		# We need to remove the current parent node before adding a different one
 		parentHost.remove_child(self)
 		targetHost.add_child(self)
-		rect_global_position = previous_pos
+		rect_global_position = previous_pos # Ensure card stays where it was before it changed parents
 		match targetHost.name:
 			# The state for the card being on the board
 			'Board':
