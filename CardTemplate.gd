@@ -35,7 +35,8 @@ enum{ # Finite state engine for all posible states a card might be in
 	PushedAside			#4
 	Dragged				#5
 	OnPlayBoard			#6
-	InDeck				#7
+	DroppingToBoard		#7
+	InDeck				#8
 }
 var state := InDeck # Starting state for each card
 var start_position: Vector2 # Used for animating the card
@@ -150,6 +151,8 @@ func _process(delta):
 					$Tween.start()
 				rect_position = determine_board_position_from_mouse()
 		OnPlayBoard:
+			pass
+		DroppingToBoard:
 			# Used when dropping the cards to the table
 			# When dragging the card, the card is slightly behind the mouse cursor
 			# so we tween it to the right location
@@ -163,6 +166,7 @@ func _process(delta):
 						rect_scale, play_area_scale, 0.5,
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
+				state = OnPlayBoard
 
 func determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
@@ -183,7 +187,7 @@ func determine_board_position_from_mouse() -> Vector2:
 	if targetpos.y < 0:
 		targetpos.y = 0
 	return targetpos
-	
+
 func moveToPosition(startpos: Vector2, targetpos: Vector2) -> void:
 	# Instructs the card to move to another position on the table.
 	start_position = startpos
@@ -312,7 +316,7 @@ func _input(event):
 					else:
 						reHost(get_parent().get_parent())  # we assume the playboard is the parent of the card
 					timer = 0
-	
+
 func determine_idle_state() -> void:
 	# Some logic is generic and doesn't always know the state the card should be afterwards
 	# We use this function to determine the state it should have, based on the card's container node.
@@ -341,7 +345,7 @@ func reHost(targetHost):
 		match targetHost.name:
 			# The state for the card being on the board
 			'Board':
-				state = OnPlayBoard
+				state = DroppingToBoard
 			'Hand':
 				visible = true
 				fancy_movement = fancy_movement_setting
