@@ -1,15 +1,17 @@
 extends "res://addons/gut/test.gd"
 
-var Board
+var board
+var hand
 var cards := []
 
 func before_each():
-	Board = autoqfree(load("res://Board.tscn").instance())
-	self.add_child(Board)
-	Board.UT = true
+	board = autoqfree(load("res://board.tscn").instance())
+	self.add_child(board)
+	board.UT = true
 	cards = []
+	hand = board.get_node('Hand')
 	for _iter in range(5):
-		cards.append($Board/Hand.draw_card())
+		cards.append(hand.draw_card())
 
 func test_single_card_focus():
 	yield(yield_for(1), YIELD)

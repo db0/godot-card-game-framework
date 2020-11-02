@@ -21,6 +21,14 @@ onready var hand_width_margin := rect_size.x * 2
 onready var bottom_margin := rect_size.y/2
 # Switch this off to disable fancy movement of cards during draw/discard
 var fancy_movement_setting := true
+# The below vars predefine the position in your node structure to reach the nodes relevant to the cards
+# Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
+var nodes_map := {
+	'board': "Board",
+	'hand': "Board/Hand",
+	'deck': "Board/Deck/HostedCards",
+	'discard': "Board/DiscardPile/HostedCards"
+	}
 ### END Behaviour Constants ###
 
 # warning-ignore:unused_class_variable
@@ -28,28 +36,32 @@ var fancy_movement_setting := true
 export var scripts := [{'name':'','args':['',0]}]
 enum{ # Finite state engine for all posible states a card might be in
 	  # This simply is a way to refer to the values with a human-readable name.
-	InHand				#0
-	FocusedInHand		#1
-	MovingToContainer	#2
-	Reorganizing		#3
-	PushedAside			#4
-	Dragged				#5
-	OnPlayBoard			#6
-	DroppingToBoard		#7
-	InDeck				#8
+	InHand					#0
+	FocusedInHand			#1
+	MovingToContainer		#2
+	Reorganizing			#3
+	PushedAside				#4
+	Dragged					#5
+	DroppingToBoard			#6
+	OnPlayBoard				#7
+	DroppingIntoContainer 	#8
+	InContainer				#9
 }
-var state := InDeck # Starting state for each card
+var state := InContainer # Starting state for each card
 var start_position: Vector2 # Used for animating the card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
 var fancy_movement := fancy_movement_setting # Gets value from initial const, but allows from programmatic change
-var Board = null # A simple pointer to the game board node for easy reference.
+var CP := {} # CP stands for CardParent. I'm using a short form here as we'll be retyping this a lot
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass
+	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents) 
+	# using an human-readable name
+	for node in nodes_map.keys():
+		CP[node]  = get_node('/root/' + nodes_map[node])
 
 func card_action() -> void:
 	pass
@@ -167,11 +179,38 @@ func _process(delta):
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = OnPlayBoard
+		DroppingIntoContainer:
+			# Used when dropping the cards into a container (Deck, Discard etc)
+			if not $Tween.is_active():
+				var intermediate_position: Vector2
+				if fancy_movement:
+					intermediate_position = get_parent().rect_position - Vector2(0,rect_size.y*1.1)
+					$Tween.interpolate_property(self,'rect_position',
+						rect_position, intermediate_position, 0.25,
+						Tween.TRANS_CUBIC, Tween.EASE_OUT)
+					yield($Tween, "tween_all_completed")
+					if not rect_scale.is_equal_approx(play_area_scale):
+						$Tween.interpolate_property(self,'rect_scale',
+							rect_scale, Vector2(1,1), 0.5,
+							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
+					$Tween.start()
+					fancy_move_second_part = true
+				else:
+					intermediate_position = get_parent().rect_position
+				$Tween.interpolate_property(self,'rect_global_position',
+					intermediate_position, get_parent().rect_position, 0.35,
+					Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+				$Tween.start()
+				determine_idle_state()
+				fancy_move_second_part = false
+				state = InContainer
+		InContainer:
+			pass
 
 func determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
 	var mouse_position
-	if Board and Board.UT: mouse_position = Board.UT_mouse_position
+	if CP.board.UT: mouse_position = CP.board.UT_mouse_position
 	else: mouse_position = get_global_mouse_position()
 	return mouse_position
 
@@ -204,27 +243,25 @@ func pushAside(targetpos: Vector2) -> void:
 func recalculatePosition() ->Vector2:
 	# This function recalculates the position of the current card object
 	# based on how many cards we have already in hand and its index among them
-	var container = get_parent()
 	var card_position_x: float = 0
 	var card_position_y: float = 0
-	if container.name == 'Hand':
-		# The number of cards currently in hand
-		var hand_size: int = container.get_child_count()
-		# The maximum of horizontal pixels we want the cards to take
-		# We base it on the available space in the Godot window to allow it to work with any resolution or resize.
-		var max_hand_size_width: float = get_viewport().size.x - hand_width_margin
-		# The maximum distance between cards
-		# We base it on the card width to allow it to work with any card-size.
-		var card_gap_max: float = rect_size.x * 1.1
-		# The minimum distance between cards (less than card width means they start overlapping)
-		var card_gap_min: float = rect_size.x/2
-		# The current distance between cards. It is inversely proportional to the amount of cards in hand
-		var cards_gap: float = max(min((max_hand_size_width - rect_size.x/2) / hand_size, card_gap_max), card_gap_min)
-		# The current width of all cards in hand together
-		var hand_width: float = (cards_gap * (hand_size-1)) + rect_size.x
-		# The following just create the vector position to place this specific card in the playspace.
-		card_position_x = get_viewport().size.x/2 - hand_width/2 + cards_gap * get_index()
-		card_position_y = get_viewport().size.y - bottom_margin
+	# The number of cards currently in hand
+	var hand_size: int = get_parent().get_child_count()
+	# The maximum of horizontal pixels we want the cards to take
+	# We base it on the available space in the Godot window to allow it to work with any resolution or resize.
+	var max_hand_size_width: float = get_viewport().size.x - hand_width_margin
+	# The maximum distance between cards
+	# We base it on the card width to allow it to work with any card-size.
+	var card_gap_max: float = rect_size.x * 1.1
+	# The minimum distance between cards (less than card width means they start overlapping)
+	var card_gap_min: float = rect_size.x/2
+	# The current distance between cards. It is inversely proportional to the amount of cards in hand
+	var cards_gap: float = max(min((max_hand_size_width - rect_size.x/2) / hand_size, card_gap_max), card_gap_min)
+	# The current width of all cards in hand together
+	var hand_width: float = (cards_gap * (hand_size-1)) + rect_size.x
+	# The following just create the vector position to place this specific card in the playspace.
+	card_position_x = get_viewport().size.x/2 - hand_width/2 + cards_gap * get_index()
+	card_position_y = get_viewport().size.y - bottom_margin
 	return Vector2(card_position_x,card_position_y)
 #
 func reorganizeSelf() ->void:
@@ -323,7 +360,7 @@ func determine_idle_state() -> void:
 	match get_parent().name:
 		'Board': state = OnPlayBoard
 		'Hand': state = InHand
-		'Cards': state = InDeck
+		'HostedCards': state = InContainer
 
 func tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# Takes care to make a card change visibility nicely
@@ -350,16 +387,15 @@ func reHost(targetHost):
 				visible = true
 				fancy_movement = fancy_movement_setting
 				tween_interpolate_visibility(1,0.5)
-				#state = InHand
 				# We reorganize the left cards in hand.
 				moveToPosition(previous_pos,recalculatePosition())
 				for c in targetHost.get_children():
 					if c != self:
 						c.interruptTweening()
 						c.reorganizeSelf()
-			# 'Cards' here is the dummy child node inside the Deck where we store the card objects
-			'Cards':
-				state = InDeck
+			# 'HostedCards' here is the dummy child node inside Containers where we store the card objects
+			'HostedCards':
+				state = InContainer
 				$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
 				tween_interpolate_visibility(0,0.3)
 				moveToPosition(previous_pos,targetHost.get_parent().rect_position)

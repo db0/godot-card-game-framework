@@ -12,6 +12,7 @@ var t = 0 # Used for interpolating
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	#print(get_parent().name)
 	# We're assigning our positions programmatically, instead of defining them on the scene.
 	# This way any they will work with any size of viewport in a game.
 	# Discard pile goes bottom right
@@ -22,13 +23,12 @@ func _ready():
 	# Fill up the deck for demo purposes
 	for _i in range(20):
 		var card: Card = cardTemplate.instance()
-		$Deck/Cards.add_child(card)
+		$Deck/HostedCards.add_child(card)
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		card.rect_global_position = $Deck.rect_position
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck
 		card.modulate.a = 0 # We use this for a nice transition effect
 		# This is primarily used so that unit testing calls on the card can find this node to execute simulated mousem movements
-		card.Board = self
 
 func UT_interpolate_mouse_move(newpos: Vector2, startpos := Vector2(-1,-1), mouseSpeed := 3) -> void:
 	# This function is called by our unit testing to simulate mouse movement on the board
@@ -52,9 +52,8 @@ func _on_FancyMovementToggle_toggled(_button_pressed):
 	for c in allCards:
 		c.fancy_movement_setting = $FancyMovementToggle.pressed
 
-
 func _on_ReshuffleAll_pressed():
 	for c in allCards:
 		if c.fancy_movement:
 			c.fancy_movement = false # I can't get the fancy movement to look good on returning to the deck :'(
-		c.reHost($Deck/Cards)
+		c.reHost($Deck/HostedCards)
