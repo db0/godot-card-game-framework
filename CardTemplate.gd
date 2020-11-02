@@ -54,14 +54,14 @@ var focus_completed: bool = false # Used to avoid the focus animation repeating 
 var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
 var fancy_movement := fancy_movement_setting # Gets value from initial const, but allows from programmatic change
-var CP := {} # CP stands for CardParent. I'm using a short form here as we'll be retyping this a lot
+var NMAP := {} # NMAP stands for CardParent. I'm using a short form here as we'll be retyping this a lot
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents) 
 	# using an human-readable name
 	for node in nodes_map.keys():
-		CP[node]  = get_node('/root/' + nodes_map[node])
+		NMAP[node]  = get_node('/root/' + nodes_map[node])
 
 func card_action() -> void:
 	pass
@@ -210,7 +210,7 @@ func _process(delta):
 func determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
 	var mouse_position
-	if CP.board.UT: mouse_position = CP.board.UT_mouse_position
+	if NMAP.board.UT: mouse_position = NMAP.board.UT_mouse_position
 	else: mouse_position = get_global_mouse_position()
 	return mouse_position
 
