@@ -49,11 +49,8 @@ func _physics_process(delta):
 func _on_FancyMovementToggle_toggled(_button_pressed):
 	# This function is to avoid relating the logic in the card objects to a node which might not be there in another game
 	# You can remove this function and the FancyMovementToggle button without issues
-	for c in allCards:
-		c.fancy_movement_setting = $FancyMovementToggle.pressed
+	cfc_config.fancy_movement = $FancyMovementToggle.pressed
 
 func _on_ReshuffleAll_pressed():
 	for c in allCards:
-		if c.fancy_movement:
-			c.fancy_movement = false # I can't get the fancy movement to look good on returning to the deck :'(
 		c.reHost($Deck/HostedCards)

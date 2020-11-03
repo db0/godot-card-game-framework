@@ -21,8 +21,8 @@ func _on_dropped_card(card) -> void:
 
 func _on_mouse_entered() -> void:
 	waiting_for_hosting = true
-	print(waiting_for_hosting)
+	#print(waiting_for_hosting)
 	
 func _on_mouse_exited() -> void:
 	waiting_for_hosting = false
-	print(waiting_for_hosting)
+	#print(waiting_for_hosting)

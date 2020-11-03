@@ -6,8 +6,8 @@ class_name Card
 
 ## Load Config
 
-var config = preload("res://config.gd").new()
-onready var bottom_margin: float = rect_size.y * config.bottom_margin_multiplier
+
+onready var bottom_margin: float = rect_size.y * cfc_config.bottom_margin_multiplier
 # warning-ignore:unused_class_variable
 # We export this variable to the editor to allow us to add scripts to each card object directly instead of only via code.
 export var scripts := [{'name':'','args':['',0]}]
@@ -30,7 +30,6 @@ var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
-var fancy_movement: bool = config.fancy_movement_setting # Gets value from initial const, but allows from programmatic change
 var NMAP := {} # NMAP stands for CardParent. I'm using a short form here as we'll be retyping this a lot
 signal card_dropped(card) # No support for static typing in signals yet (godotengine/godot#26045)
 
@@ -38,8 +37,8 @@ signal card_dropped(card) # No support for static typing in signals yet (godoten
 func _ready() -> void:
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
-	for node in config.nodes_map.keys():
-		NMAP[node]  = get_node('/root/' + config.nodes_map[node])
+	for node in cfc_config.nodes_map.keys():
+		NMAP[node]  = get_node('/root/' + cfc_config.nodes_map[node])
 	# warning-ignore:return_value_discarded
 	connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
@@ -47,7 +46,7 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	connect("gui_input", self, "_on_Card_gui_input")
 	# warning-ignore:return_value_discarded
-	connect("card_dropped", NMAP.discard as CardContainer, "_on_dropped_card")
+	connect("card_dropped", NMAP.discard, "_on_dropped_card")
 
 func card_action() -> void:
 	pass
@@ -69,7 +68,7 @@ func _process(delta) -> void:
 						# Neighbouring cards are pushed to the side to allow the focused card to not be overlapped
 						# The amount they're pushed is relevant to how close neighbours they are.
 						# Closest neighbours (1 card away) are pushed more than further neighbours.
-						neighbour_card.pushAside(neighbour_card.recalculatePosition() + Vector2(neighbour_card.rect_size.x/neighbour_index_diff * config.neighbour_push,0))
+						neighbour_card.pushAside(neighbour_card.recalculatePosition() + Vector2(neighbour_card.rect_size.x/neighbour_index_diff * cfc_config.neighbour_push,0))
 				# When zooming in, we also want to move the card higher, so that it's not under the screen's bottom edge.
 				target_position = expected_position - Vector2(rect_size.x * 0.25,rect_size.y * 0.5 + bottom_margin)
 				start_position = expected_position
@@ -86,23 +85,26 @@ func _process(delta) -> void:
 			# Used when moving card between places (i.e. deck to hand, hand to discard etc)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
-				var parent_center_position: Vector2
-				if fancy_movement:
-					# The below calculations figure out the intermediate position as a spot offset
-					# towards the viewport center by an amount proportional to distance from the viewport center.
+				if cfc_config.fancy_movement:
+					# The below calculations figure out the intermediate position as a spot, 
+					# offset towards the viewport center by an amount proportional to distance from the viewport center.
 					# (My math is not the best so there's probably a more elegant formula)
 					var direction_x: int = 1
 					var direction_y: int = 1
-					parent_center_position = Vector2(get_parent().get_parent().rect_global_position + get_parent().get_parent().rect_size/2)
-					if parent_center_position.x < get_viewport().size.x/2: direction_x = -1
-					if parent_center_position.y < get_viewport().size.y/2: direction_y = -1
-					var inter_x = parent_center_position.x - direction_x * (abs(parent_center_position.x - get_viewport().size.x/2)) / 100 * rect_size.x
-					var inter_y = parent_center_position.y - direction_y * (abs(parent_center_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
-#					if rect_global_position.x < get_parent().rect_size.x/2: direction_x = -1
-#					if rect_global_position.y < get_parent().rect_size.y/2: direction_y = -1
-#					var inter_x = target_position.x - direction_x * (abs(target_position.x - get_parent().rect_size.x/2)) / 100 * rect_size.x
-#					var inter_y = target_position.y - direction_y * (abs(target_position.y - get_parent().rect_size.y/2)) / 100 * rect_size.y
-					intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))
+					# controlContainer is the control node which determines our position on the board
+					# We determine its center position on the  viewport
+					if get_parent() != NMAP.board:
+						var controlContainer = get_parent().get_parent()
+						var controlContainer_center_position := Vector2(controlContainer.rect_global_position + controlContainer.rect_size/2)
+						# We then offset this position towards the viewport center
+						if controlContainer_center_position.x < get_viewport().size.x/2: direction_x = -1
+						if controlContainer_center_position.y < get_viewport().size.y/2: direction_y = -1
+						var inter_x = controlContainer_center_position.x - direction_x * (abs(controlContainer_center_position.x - get_viewport().size.x/2)) / 100 * rect_size.x
+						var inter_y = controlContainer_center_position.y - direction_y * (abs(controlContainer_center_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
+						#print(Vector2(inter_x,inter_y)) # Debug
+						intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))
+					else: #  The board doesn't have a node2d host container. Instead we use directly the viewport coords.
+						intermediate_position = get_viewport().size/2
 					$Tween.interpolate_property(self,'rect_position',
 						start_position, intermediate_position, 0.5,
 						Tween.TRANS_BACK, Tween.EASE_IN_OUT)
@@ -165,9 +167,9 @@ func _process(delta) -> void:
 					rect_position, determine_board_position_from_mouse(), 0.25,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				# We want cards on the board to be slightly smaller than in hand.
-				if not rect_scale.is_equal_approx(config.play_area_scale):
+				if not rect_scale.is_equal_approx(cfc_config.play_area_scale):
 					$Tween.interpolate_property(self,'rect_scale',
-						rect_scale, config.play_area_scale, 0.5,
+						rect_scale, cfc_config.play_area_scale, 0.5,
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = OnPlayBoard
@@ -175,13 +177,13 @@ func _process(delta) -> void:
 			# Used when dropping the cards into a container (Deck, Discard etc)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
-				if fancy_movement:
+				if cfc_config.fancy_movement:
 					intermediate_position = get_parent().rect_position - Vector2(0,rect_size.y*1.1)
 					$Tween.interpolate_property(self,'rect_position',
 						rect_position, intermediate_position, 0.25,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
 					yield($Tween, "tween_all_completed")
-					if not rect_scale.is_equal_approx(config.play_area_scale):
+					if not rect_scale.is_equal_approx(cfc_config.play_area_scale):
 						$Tween.interpolate_property(self,'rect_scale',
 							rect_scale, Vector2(1,1), 0.5,
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
@@ -283,12 +285,11 @@ func interruptTweening() ->void:
 	# as we want the first part to play always
 	# Effectively we're saying if fancy movement is turned on, and you're still doing the first part, don't interrupt
 	# If you've finished the first part and are not still in the move to another container movement, then you can interrupt.
-	if not fancy_movement or (fancy_movement and (fancy_move_second_part or state != MovingToContainer)):
+	if not cfc_config.fancy_movement or (cfc_config.fancy_movement and (fancy_move_second_part or state != MovingToContainer)):
 		$Tween.remove_all()
 		state = InHand
 
 func _on_Card_mouse_entered():
-	print(rect_global_position,rect_position)
 	# This triggers the focus-in effect on the card
 	match state:
 		InHand, Reorganizing:
@@ -383,9 +384,9 @@ func reHost(targetHost):
 				state = DroppingToBoard
 			'Hand':
 				visible = true
-				fancy_movement = config.fancy_movement_setting
 				tween_interpolate_visibility(1,0.5)
 				# We reorganize the left cards in hand.
+				previous_pos = parentHost.to_local(rect_global_position)
 				moveToPosition(previous_pos,recalculatePosition())
 				for c in targetHost.get_children():
 					if c != self:
@@ -395,8 +396,13 @@ func reHost(targetHost):
 			'HostedCards':
 				state = InContainer
 				$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
+				#print(parentHost.name)
+				#print(rect_global_position,parentHost.to_local(rect_global_position))
+				previous_pos = targetHost.to_local(rect_global_position)
+				moveToPosition(previous_pos,Vector2(0,0))
+				if cfc_config.fancy_movement:
+					yield($Tween, "tween_all_completed")
 				tween_interpolate_visibility(0,0.3)
-				moveToPosition(previous_pos,targetHost.get_parent().rect_position)
 				yield($Tween, "tween_all_completed")
 				visible = false
 		match parentHost.name:
