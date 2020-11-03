@@ -29,7 +29,7 @@ The below instructions will set up your game to use the `Card` class as a framew
 
 5. Edit the `var nodes_map` in cfc_config.gd in the "Behaviour Constants" section, to point to your board and various container scenes (Deck, discard etc)
 
-6. Add config.gd as an autoloaded singleton with name 'cfc_config'
+6. Add cfc_config.gd as an autoloaded singleton with name 'cfc_config'
 
 ### Hand Class
 
