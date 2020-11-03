@@ -53,4 +53,5 @@ func _on_FancyMovementToggle_toggled(_button_pressed):
 
 func _on_ReshuffleAll_pressed():
 	for c in allCards:
+		yield(get_tree().create_timer(0.1), "timeout")
 		c.reHost($Deck/HostedCards)

@@ -99,7 +99,7 @@ func _process(delta) -> void:
 						# We then offset this position towards the viewport center
 						if controlContainer_center_position.x < get_viewport().size.x/2: direction_x = -1
 						if controlContainer_center_position.y < get_viewport().size.y/2: direction_y = -1
-						var inter_x = controlContainer_center_position.x - direction_x * (abs(controlContainer_center_position.x - get_viewport().size.x/2)) / 100 * rect_size.x
+						var inter_x = controlContainer_center_position.x - direction_x * (abs(controlContainer_center_position.x - get_viewport().size.x/2)) / 250 * rect_size.x
 						var inter_y = controlContainer_center_position.y - direction_y * (abs(controlContainer_center_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
 						#print(Vector2(inter_x,inter_y)) # Debug
 						intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))
