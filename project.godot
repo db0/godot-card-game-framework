@@ -42,6 +42,10 @@ config/name="Card Gaming Framework"
 run/main_scene="res://Board.tscn"
 config/icon="res://icon.png"
 
+[autoload]
+
+cfc_config="*res://cfc_config.gd"
+
 [display]
 
 window/size/width=1280

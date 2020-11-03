@@ -7,7 +7,7 @@ var tv = TestVars.new()
 func before_each():
 	board = autoqfree(tv.boardScene.instance())
 	get_tree().get_root().add_child(board)
-	hand = board.get_node('Hand')
+	hand = board.find_node('Hand')
 
 func test_single_card_draw():
 	var card0: Card = hand.draw_card()
@@ -16,6 +16,7 @@ func test_single_card_draw():
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_almost_eq(Vector2(565,600),card0.rect_global_position,Vector2(2,2), "Check card placed in correct global position")
+	assert_almost_eq(Vector2(415,120),card0.rect_position,Vector2(2,2), "Check card placed in correct position")
 
 func test_draw_multiple_cards_slow():
 	var card0: Card = hand.draw_card()

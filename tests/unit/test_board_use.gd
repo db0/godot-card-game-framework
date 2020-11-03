@@ -11,7 +11,6 @@ func fake_click(pressed,position, flags=0):
 	ev.pressed = pressed
 	ev.position = position
 	ev.meta = flags
-	#gut.p(ev.as_text())
 	get_tree().input_event(ev)
 
 func before_each():
@@ -19,7 +18,7 @@ func before_each():
 	board = autoqfree(tv.boardScene.instance())
 	get_tree().get_root().add_child(board)
 	board.UT = true
-	hand = board.get_node('Hand')
+	hand = board.find_node('Hand')
 	cards = []
 	for _iter in range(5):
 		cards.append(hand.draw_card())

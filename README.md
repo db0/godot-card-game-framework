@@ -25,8 +25,6 @@ The below instructions will set up your game to use the `Card` class as a framew
   
    It will also make it easy to upgrade your framework by just copying more recent versions of CardTemplate.gd.
 
-3. Connect your card node's `mouse_entered()`, `mouse_exited()` and `gui_input()` signals to your card template's script.
-
 4. If you're not using the provided CardTemplate.tcsn, add a tween node called "Tween" to the root of your card scene.
 
 5. Edit the `var nodes_map` dictionary in the "Behaviour Constants" section, to point to your board and various container scenes (Deck, discard etc)

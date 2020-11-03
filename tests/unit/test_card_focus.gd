@@ -10,7 +10,7 @@ func before_each():
 	get_tree().get_root().add_child(board)
 	board.UT = true
 	cards = []
-	hand = board.get_node('Hand')
+	hand = board.find_node('Hand')
 	for _iter in range(5):
 		cards.append(hand.draw_card())
 
