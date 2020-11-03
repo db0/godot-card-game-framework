@@ -16,7 +16,7 @@ func fake_click(pressed,position, flags=0):
 
 func before_each():
 	print(tv.boardScene)
-	board = autoqfree(TestVars.boardScene.instance())
+	board = autoqfree(tv.boardScene.instance())
 	get_tree().get_root().add_child(board)
 	board.UT = true
 	hand = board.get_node('Hand')

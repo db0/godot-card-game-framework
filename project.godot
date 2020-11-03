@@ -24,7 +24,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://Hand.gd"
 }, {
-"base": "Node",
+"base": "Reference",
 "class": "TestVars",
 "language": "GDScript",
 "path": "res://tests/unit/TestVars.gd"
@@ -47,6 +47,7 @@ config/icon="res://icon.png"
 window/size/width=1280
 window/size/height=720
 window/stretch/mode="viewport"
+window/stretch/aspect="keep"
 
 [editor_plugins]
 

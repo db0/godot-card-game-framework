@@ -7,7 +7,7 @@ var tv = TestVars.new()
 
 func before_each():
 	board = autoqfree(tv.boardScene.instance())
-	self.add_child(board)
+	get_tree().get_root().add_child(board)
 	board.UT = true
 	cards = []
 	hand = board.get_node('Hand')

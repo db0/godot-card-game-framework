@@ -53,4 +53,3 @@ func test_draw_multiple_cards_fast():
 	assert_almost_eq(Vector2(640, 600),card3.rect_global_position,Vector2(2,2), "Check card at index 3 placed in correct global position")
 	assert_almost_eq(Vector2(790, 600),card4.rect_global_position,Vector2(2,2), "Check card at index 4 placed in correct global position")
 	assert_almost_eq(Vector2(942, 600),card5.rect_global_position,Vector2(2,2), "Check card at index 5 placed in correct global position")
-
