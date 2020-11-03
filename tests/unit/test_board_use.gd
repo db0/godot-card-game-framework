@@ -18,7 +18,7 @@ func before_each():
 	board = autoqfree(tv.boardScene.instance())
 	get_tree().get_root().add_child(board)
 	board.UT = true
-	hand = board.get_node('Hand')
+	hand = board.find_node('Hand')
 	cards = []
 	for _iter in range(5):
 		cards.append(hand.draw_card())

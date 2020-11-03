@@ -19,7 +19,7 @@ func _ready():
 #func _process(delta):
 #    pass
 
-func draw_card(container = $'../Deck/HostedCards') -> Card:
+func draw_card(container = $'../../Deck/HostedCards') -> Card:
 	var card: Card = null
 	# A basic function to pull a card from out deck into our hand.
 	if container.get_child_count() and get_child_count() < hand_size: # prevent from drawing more cards than are in our deck and crashing godot.

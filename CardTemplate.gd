@@ -25,7 +25,7 @@ var fancy_movement_setting := true
 # Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
 var nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader
 	'board': "Board",
-	'hand': "Board/Hand",
+	'hand': "Board/HandContainer/Hand",
 	'deck': "Board/Deck/HostedCards",
 	'discard': "Board/DiscardPile/HostedCards"
 	}
@@ -55,7 +55,7 @@ var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
 var fancy_movement := fancy_movement_setting # Gets value from initial const, but allows from programmatic change
 var NMAP := {} # NMAP stands for CardParent. I'm using a short form here as we'll be retyping this a lot
-signal dropping_card(card)
+signal card_dropped(card) # No support for static typing in signals yet (godotengine/godot#26045)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -63,9 +63,14 @@ func _ready() -> void:
 	# using an human-readable name
 	for node in nodes_map.keys():
 		NMAP[node]  = get_node('/root/' + nodes_map[node])
+	# warning-ignore:return_value_discarded
 	connect("mouse_entered", self, "_on_Card_mouse_entered")
+	# warning-ignore:return_value_discarded
 	connect("mouse_exited", self, "_on_Card_mouse_exited")
+	# warning-ignore:return_value_discarded
 	connect("gui_input", self, "_on_Card_gui_input")
+	# warning-ignore:return_value_discarded
+	connect("card_dropped", NMAP.discard as CardContainer, "_on_dropped_card")
 
 func card_action() -> void:
 	pass
@@ -104,18 +109,24 @@ func _process(delta) -> void:
 			# Used when moving card between places (i.e. deck to hand, hand to discard etc)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
+				var parent_center_position: Vector2
 				if fancy_movement:
 					# The below calculations figure out the intermediate position as a spot offset
 					# towards the viewport center by an amount proportional to distance from the viewport center.
 					# (My math is not the best so there's probably a more elegant formula)
 					var direction_x: int = 1
 					var direction_y: int = 1
-					if target_position.x < get_viewport().size.x/2: direction_x = -1
-					if target_position.y < get_viewport().size.y/2: direction_y = -1
-					var inter_x = target_position.x - direction_x * (abs(target_position.x - get_viewport().size.x/2)) / 100 * rect_size.x
-					var inter_y = target_position.y - direction_y * (abs(target_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
-					intermediate_position = Vector2(inter_x,inter_y)
-					$Tween.interpolate_property(self,'rect_global_position',
+					parent_center_position = Vector2(get_parent().get_parent().rect_global_position + get_parent().get_parent().rect_size/2)
+					if parent_center_position.x < get_viewport().size.x/2: direction_x = -1
+					if parent_center_position.y < get_viewport().size.y/2: direction_y = -1
+					var inter_x = parent_center_position.x - direction_x * (abs(parent_center_position.x - get_viewport().size.x/2)) / 100 * rect_size.x
+					var inter_y = parent_center_position.y - direction_y * (abs(parent_center_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
+#					if rect_global_position.x < get_parent().rect_size.x/2: direction_x = -1
+#					if rect_global_position.y < get_parent().rect_size.y/2: direction_y = -1
+#					var inter_x = target_position.x - direction_x * (abs(target_position.x - get_parent().rect_size.x/2)) / 100 * rect_size.x
+#					var inter_y = target_position.y - direction_y * (abs(target_position.y - get_parent().rect_size.y/2)) / 100 * rect_size.y
+					intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))
+					$Tween.interpolate_property(self,'rect_position',
 						start_position, intermediate_position, 0.5,
 						Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 					$Tween.start()
@@ -124,7 +135,7 @@ func _process(delta) -> void:
 				else:
 					intermediate_position = start_position
 				if state == MovingToContainer: # We need to check again, just in case it's been reorganized instead.
-					$Tween.interpolate_property(self,'rect_global_position',
+					$Tween.interpolate_property(self,'rect_position',
 						intermediate_position, target_position, 0.35,
 						Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					$Tween.start()
@@ -165,7 +176,7 @@ func _process(delta) -> void:
 						rect_scale, Vector2(0.4,0.4), 0.2,
 						Tween.TRANS_SINE, Tween.EASE_IN)
 					$Tween.start()
-				rect_position = determine_board_position_from_mouse()
+				rect_global_position = determine_board_position_from_mouse()
 		OnPlayBoard:
 			pass
 		DroppingToBoard:
@@ -253,7 +264,8 @@ func recalculatePosition() ->Vector2:
 	var hand_size: int = get_parent().get_child_count()
 	# The maximum of horizontal pixels we want the cards to take
 	# We base it on the available space in the Godot window to allow it to work with any resolution or resize.
-	var max_hand_size_width: float = get_viewport().size.x - hand_width_margin
+	#var max_hand_size_width: float = get_viewport().size.x - hand_width_margin ## With Hand as Node2D
+	var max_hand_size_width: float = get_parent().get_parent().rect_size.x
 	# The maximum distance between cards
 	# We base it on the card width to allow it to work with any card-size.
 	var card_gap_max: float = rect_size.x * 1.1
@@ -264,8 +276,8 @@ func recalculatePosition() ->Vector2:
 	# The current width of all cards in hand together
 	var hand_width: float = (cards_gap * (hand_size-1)) + rect_size.x
 	# The following just create the vector position to place this specific card in the playspace.
-	card_position_x = get_viewport().size.x/2 - hand_width/2 + cards_gap * get_index()
-	card_position_y = get_viewport().size.y - bottom_margin
+	card_position_x = get_parent().get_parent().rect_size.x/2 - hand_width/2 + cards_gap * get_index()
+	card_position_y = 0 + bottom_margin
 	return Vector2(card_position_x,card_position_y)
 #
 func reorganizeSelf() ->void:
@@ -299,6 +311,7 @@ func interruptTweening() ->void:
 		state = InHand
 
 func _on_Card_mouse_entered():
+	print(rect_global_position,rect_position)
 	# This triggers the focus-in effect on the card
 	match state:
 		InHand, Reorganizing:
@@ -310,7 +323,7 @@ func _on_Card_mouse_exited():
 	match state:
 		FocusedInHand:
 			focus_completed = false
-			if get_parent().name == 'Hand':  # To avoid errors during fast player actions
+			if get_parent() == NMAP.hand:  # To avoid errors during fast player actions
 				for c in get_parent().get_children():
 					# We need to make sure afterwards all card will return to their expected positions
 					# Therefore we simply stop all tweens and reorganize then whole hand
@@ -355,7 +368,8 @@ func _input(event):
 					# If the card is not left in the hand rect, it's on the table
 					# (More elif to follow for discard and deck.)
 					else:
-						reHost(get_parent().get_parent())  # we assume the playboard is the parent of the card
+						#emit_signal("card_dropped",self,event)
+						reHost(NMAP.board)  # we assume the playboard is the parent of the card
 					timer = 0
 
 func determine_idle_state() -> void:
