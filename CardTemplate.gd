@@ -4,33 +4,10 @@ class_name Card
 # Simply make your card scripts extend this class and you'll have all the provided scripts available
 # If your card node type is not control, make sure you change the extends type above
 
-### BEGIN Behaviour Constants ###
-### Change the below to change how all cards behave to match your game.
-# The amount of distance neighboring cards are pushed during card focus
-# It's based on the card width. Bigger percentage means larger push.
-const neighbour_push := 0.75
-# The scale of the card while on the play area
-const play_area_scale := Vector2(0.8,0.8)
-# The amount by which to reduce the max hand size width, comparative to the total viewport width
-# The default of 2*card width means that if the hand if full of cards, there will be empty space on both sides
-# equal to one card's width
-onready var hand_width_margin := rect_size.x * 2
-# The margin from the bottom of the viewport on which to draw the cards.
-# Less than 1 card heigh and the card will appear hidden under the display area.
-# More and it will float higher than the bottom of the viewport
-onready var bottom_margin := rect_size.y/2
-# Switch this off to disable fancy movement of cards during draw/discard
-var fancy_movement_setting := true
-# The below vars predefine the position in your node structure to reach the nodes relevant to the cards
-# Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
-var nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader
-	'board': "Board",
-	'hand': "Board/HandContainer/Hand",
-	'deck': "Board/Deck/HostedCards",
-	'discard': "Board/DiscardPile/HostedCards"
-	}
-### END Behaviour Constants ###
+## Load Config
 
+var config = preload("res://config.gd").new()
+onready var bottom_margin: float = rect_size.y * config.bottom_margin_multiplier
 # warning-ignore:unused_class_variable
 # We export this variable to the editor to allow us to add scripts to each card object directly instead of only via code.
 export var scripts := [{'name':'','args':['',0]}]
@@ -53,7 +30,7 @@ var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
-var fancy_movement := fancy_movement_setting # Gets value from initial const, but allows from programmatic change
+var fancy_movement: bool = config.fancy_movement_setting # Gets value from initial const, but allows from programmatic change
 var NMAP := {} # NMAP stands for CardParent. I'm using a short form here as we'll be retyping this a lot
 signal card_dropped(card) # No support for static typing in signals yet (godotengine/godot#26045)
 
@@ -61,8 +38,8 @@ signal card_dropped(card) # No support for static typing in signals yet (godoten
 func _ready() -> void:
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
-	for node in nodes_map.keys():
-		NMAP[node]  = get_node('/root/' + nodes_map[node])
+	for node in config.nodes_map.keys():
+		NMAP[node]  = get_node('/root/' + config.nodes_map[node])
 	# warning-ignore:return_value_discarded
 	connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
@@ -92,7 +69,7 @@ func _process(delta) -> void:
 						# Neighbouring cards are pushed to the side to allow the focused card to not be overlapped
 						# The amount they're pushed is relevant to how close neighbours they are.
 						# Closest neighbours (1 card away) are pushed more than further neighbours.
-						neighbour_card.pushAside(neighbour_card.recalculatePosition() + Vector2(neighbour_card.rect_size.x/neighbour_index_diff * neighbour_push,0))
+						neighbour_card.pushAside(neighbour_card.recalculatePosition() + Vector2(neighbour_card.rect_size.x/neighbour_index_diff * config.neighbour_push,0))
 				# When zooming in, we also want to move the card higher, so that it's not under the screen's bottom edge.
 				target_position = expected_position - Vector2(rect_size.x * 0.25,rect_size.y * 0.5 + bottom_margin)
 				start_position = expected_position
@@ -188,9 +165,9 @@ func _process(delta) -> void:
 					rect_position, determine_board_position_from_mouse(), 0.25,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				# We want cards on the board to be slightly smaller than in hand.
-				if not rect_scale.is_equal_approx(play_area_scale):
+				if not rect_scale.is_equal_approx(config.play_area_scale):
 					$Tween.interpolate_property(self,'rect_scale',
-						rect_scale, play_area_scale, 0.5,
+						rect_scale, config.play_area_scale, 0.5,
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = OnPlayBoard
@@ -204,7 +181,7 @@ func _process(delta) -> void:
 						rect_position, intermediate_position, 0.25,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
 					yield($Tween, "tween_all_completed")
-					if not rect_scale.is_equal_approx(play_area_scale):
+					if not rect_scale.is_equal_approx(config.play_area_scale):
 						$Tween.interpolate_property(self,'rect_scale',
 							rect_scale, Vector2(1,1), 0.5,
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
@@ -406,7 +383,7 @@ func reHost(targetHost):
 				state = DroppingToBoard
 			'Hand':
 				visible = true
-				fancy_movement = fancy_movement_setting
+				fancy_movement = config.fancy_movement_setting
 				tween_interpolate_visibility(1,0.5)
 				# We reorganize the left cards in hand.
 				moveToPosition(previous_pos,recalculatePosition())
