@@ -3,9 +3,10 @@ extends "res://addons/gut/test.gd"
 var board
 var hand
 var cards := []
+var tv = TestVars.new()
 
 func before_each():
-	board = autoqfree(load("res://board.tscn").instance())
+	board = autoqfree(tv.boardScene.instance())
 	self.add_child(board)
 	board.UT = true
 	cards = []

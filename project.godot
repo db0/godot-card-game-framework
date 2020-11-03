@@ -23,11 +23,17 @@ _global_script_classes=[ {
 "class": "Hand",
 "language": "GDScript",
 "path": "res://Hand.gd"
+}, {
+"base": "Node",
+"class": "TestVars",
+"language": "GDScript",
+"path": "res://tests/unit/TestVars.gd"
 } ]
 _global_script_class_icons={
 "Card": "",
 "CardContainer": "",
-"Hand": ""
+"Hand": "",
+"TestVars": ""
 }
 
 [application]

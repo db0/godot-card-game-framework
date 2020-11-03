@@ -3,6 +3,7 @@ extends "res://addons/gut/test.gd"
 var board
 var hand
 var cards := []
+var tv = TestVars.new()
 
 func fake_click(pressed,position, flags=0):
 	var ev := InputEventMouseButton.new()
@@ -14,7 +15,8 @@ func fake_click(pressed,position, flags=0):
 	get_tree().input_event(ev)
 
 func before_each():
-	board = autoqfree(load("res://board.tscn").instance())
+	print(tv.boardScene)
+	board = autoqfree(TestVars.boardScene.instance())
 	get_tree().get_root().add_child(board)
 	board.UT = true
 	hand = board.get_node('Hand')
@@ -75,9 +77,8 @@ func test_fast_card_table_drop():
 	yield(yield_for(0.6), YIELD)
 	fake_click(false,board.UT_mouse_position)
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	assert_almost_eq(Vector2(1010, 310),cards[0].rect_global_position,Vector2(2,2), "Check card dragged in correct global position")
 	board.UT_interpolate_mouse_move(Vector2(400,200),cards[0].rect_global_position,3)
 	yield(yield_for(0.6), YIELD)
 	board.UT_interpolate_mouse_move(Vector2(1000,500),cards[0].rect_global_position,3)
 	yield(yield_for(0.6), YIELD)
-	assert_almost_eq(Vector2(1010, 310),cards[0].rect_global_position,Vector2(2,2), "Check card dragged in correct global position")
+	assert_almost_eq(Vector2(1010, 310),cards[0].rect_global_position,Vector2(2,2), "Check card not dragged with mouse after dropping on table")

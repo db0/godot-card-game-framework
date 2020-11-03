@@ -2,9 +2,10 @@ extends "res://addons/gut/test.gd"
 
 var board
 var hand
+var tv = TestVars.new()
 
 func before_each():
-	board = autoqfree(load("res://board.tscn").instance())
+	board = autoqfree(tv.boardScene.instance())
 	get_tree().get_root().add_child(board)
 	hand = board.get_node('Hand')
 
