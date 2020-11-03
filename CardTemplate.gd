@@ -385,9 +385,11 @@ func reHost(targetHost):
 			'Hand':
 				visible = true
 				tween_interpolate_visibility(1,0.5)
-				# We reorganize the left cards in hand.
-				previous_pos = parentHost.to_local(rect_global_position)
+				# We need to adjust he end position based on the local rect inside the hand control node
+				# So we transform global coordinates to hand rect coordinates.
+				previous_pos = targetHost.to_local(rect_global_position)
 				moveToPosition(previous_pos,recalculatePosition())
+				# We reorganize the left cards in hand.
 				for c in targetHost.get_children():
 					if c != self:
 						c.interruptTweening()
@@ -396,10 +398,11 @@ func reHost(targetHost):
 			'HostedCards':
 				state = InContainer
 				$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
-				#print(parentHost.name)
-				#print(rect_global_position,parentHost.to_local(rect_global_position))
+				# We need to adjust he end position based on the local rect inside the container control node
+				# So we transform global coordinates to container rect coordinates.
 				previous_pos = targetHost.to_local(rect_global_position)
 				moveToPosition(previous_pos,Vector2(0,0))
+				# If we have fancy movement, we need to wait for 2 tweens to finish before we vanish the card.
 				if cfc_config.fancy_movement:
 					yield($Tween, "tween_all_completed")
 				tween_interpolate_visibility(0,0.3)
