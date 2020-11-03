@@ -52,8 +52,8 @@ Do the following if you want to use/import the provided unit tests
 
 ## Easy Customation
 
-The classes provide some easy customization options, such as the location of your cards on the table etc.
-Check the "Behaviour Constants" header at the start of the code.
+The classes provide some easy customization options, such as how the card move, where they appear etc
+Check the "Behaviour Constants" header at the start of the cfc_config node.
 For more specific customization, you'll need to modify manually
 
 
