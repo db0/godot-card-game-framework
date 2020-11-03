@@ -11,7 +11,6 @@ func fake_click(pressed,position, flags=0):
 	ev.pressed = pressed
 	ev.position = position
 	ev.meta = flags
-	#gut.p(ev.as_text())
 	get_tree().input_event(ev)
 
 func before_each():

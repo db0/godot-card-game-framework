@@ -23,7 +23,7 @@ onready var bottom_margin := rect_size.y/2
 var fancy_movement_setting := true
 # The below vars predefine the position in your node structure to reach the nodes relevant to the cards
 # Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
-var nodes_map := {
+var nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader
 	'board': "Board",
 	'hand': "Board/Hand",
 	'deck': "Board/Deck/HostedCards",
