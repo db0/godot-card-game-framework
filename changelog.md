@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7
+
+* Added GUT and initial tests
+* Added button to reshuffle cards to the deck
+* Added fancy movement
+* Made hand into a control container
+* Removed config from Card object into an singleton
+
 ## 0.6
 
 * Can drag cards
