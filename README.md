@@ -6,24 +6,48 @@ Pull requests are more than welcome ;)
 
 ## Installation
 
-Simply copy the CardTemplate.gd and Hand.gd in an appropriate location in your project.
+First of all, make sure your project's window stretch mode is set to either 'disabled' or 'viewport'
 
-The CardTemplate.tcsn file is optional, but if you're looking for a design template for your cards, feel free to use it by instancing child scenes based on it.
+### Card class
 
-Now simply extend your card node's script, from the Card class
+The below instructions will set up your game to use the `Card` class as a framework for card handling.
 
-    extends Card
+1. Copy the CardTemplate.gd and Hand.gd in an appropriate location in your project.
 
-This will allow you to keep your custom code clean, while benefiting from the framework functionality. 
-It will also make it easy to upgrade your framework by just copying more recent versions of CardTemplate.gd.
+   The CardTemplate.tcsn file is optional, but if you're looking for a design template for your cards, 
+   feel free to use it by instancing child scenes based on it.
 
-Once done, connect your card node's `mouse_entered()` and `mouse_exited()` signals to your card template's script.
+2. Extend your card node's script, from the Card class
 
-Likewise, to use the provided Hand library, add a Node2D as a child node to where you want your hand to appear, then make sure that its script extends the Hand class.
+    `extends Card`
 
-Once done, connect your card-draw signal to the Hand node and make it call the `draw_card()` function.
+   This will allow you to keep your custom code clean, while benefiting from the framework functionality. 
+  
+   It will also make it easy to upgrade your framework by just copying more recent versions of CardTemplate.gd.
 
-Finally, make sure your project's window stretch mode is set to either 'disabled' or 'viewport'
+3. Connect your card node's `mouse_entered()` and `mouse_exited()` signals to your card template's script.
+
+4. If you're not using the provided CardTemplate.tcsn, add a tween node called "Tween" to the root of your card scene.
+
+5. Edit the `var nodes_map` dictionary in the "Behaviour Constants" section, to point to your board and various container scenes (Deck, discard etc)
+
+### Hand Class
+
+The below instructions will set up your game to use the `Hand` class as a framework for hand handling.
+
+1. Add a Node2D as a child node to where you want your hand to appear, then make sure that its script extends the Hand class.
+
+    `extends Hand`
+
+2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the Deck.tcsn node for a sample of such a signal)
+
+### Unit Testing
+
+Do the following if you want to use/import the provided unit tests
+
+1. [install Gut](https://github.com/bitwes/Gut/wiki/Install) and do the relevant setup, if you don't have it already.
+2. If you followed the standard Gut instructions, you should have already have created the tests folder, copy the test_*.gd from /tests/unit inside your own `res://tests/unit`.
+3. Edit TestVars.gd and modify the boardScene const to point to the root board (i.e. where the cards are played) of your game.
 
 ## Easy Customation
 
