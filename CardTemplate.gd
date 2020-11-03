@@ -55,18 +55,22 @@ var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
 var fancy_movement := fancy_movement_setting # Gets value from initial const, but allows from programmatic change
 var NMAP := {} # NMAP stands for CardParent. I'm using a short form here as we'll be retyping this a lot
+signal dropping_card(card)
 
 # Called when the node enters the scene tree for the first time.
-func _ready():
-	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents) 
+func _ready() -> void:
+	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
 	for node in nodes_map.keys():
 		NMAP[node]  = get_node('/root/' + nodes_map[node])
+	connect("mouse_entered", self, "_on_Card_mouse_entered")
+	connect("mouse_exited", self, "_on_Card_mouse_exited")
+	connect("gui_input", self, "_on_Card_gui_input")
 
 func card_action() -> void:
 	pass
 
-func _process(delta):
+func _process(delta) -> void:
 	# A basic finite state engine
 	match state:
 		InHand:
@@ -243,8 +247,8 @@ func pushAside(targetpos: Vector2) -> void:
 func recalculatePosition() ->Vector2:
 	# This function recalculates the position of the current card object
 	# based on how many cards we have already in hand and its index among them
-	var card_position_x: float = 0
-	var card_position_y: float = 0
+	var card_position_x: float = 0.0
+	var card_position_y: float = 0.0
 	# The number of cards currently in hand
 	var hand_size: int = get_parent().get_child_count()
 	# The maximum of horizontal pixels we want the cards to take
@@ -358,9 +362,12 @@ func determine_idle_state() -> void:
 	# Some logic is generic and doesn't always know the state the card should be afterwards
 	# We use this function to determine the state it should have, based on the card's container node.
 	match get_parent().name:
-		'Board': state = OnPlayBoard
-		'Hand': state = InHand
-		'HostedCards': state = InContainer
+		'Board':
+			state = OnPlayBoard
+		'Hand':
+			state = InHand
+		'HostedCards':
+			state = InContainer
 
 func tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# Takes care to make a card change visibility nicely
