@@ -19,7 +19,6 @@ func _ready():
 	$DiscardPile.rect_position = Vector2(get_viewport().size.x - $DiscardPile.rect_size.x,get_viewport().size.y - $DiscardPile.rect_size.y)
 	# Deck goes bottom left
 	$Deck.rect_position = Vector2(0,get_viewport().size.y - $Deck.rect_size.y)
-	#$Deck.rect_position = Vector2(0,0) # Debug
 	# Fill up the deck for demo purposes
 	for _i in range(20):
 		var card: Card = cardTemplate.instance()
@@ -28,8 +27,7 @@ func _ready():
 		card.rect_global_position = $Deck.rect_position
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck
 		card.modulate.a = 0 # We use this for a nice transition effect
-		# This is primarily used so that unit testing calls on the card can find this node to execute simulated mousem movements
-	#print(cfc_config.NMAP)
+
 func UT_interpolate_mouse_move(newpos: Vector2, startpos := Vector2(-1,-1), mouseSpeed := 3) -> void:
 	# This function is called by our unit testing to simulate mouse movement on the board
 	if startpos == Vector2(-1,-1):
