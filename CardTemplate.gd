@@ -89,19 +89,27 @@ func _process(delta) -> void:
 					# The below calculations figure out the intermediate position as a spot, 
 					# offset towards the viewport center by an amount proportional to distance from the viewport center.
 					# (My math is not the best so there's probably a more elegant formula)
-					var direction_x: int = 1
-					var direction_y: int = 1
-					# controlContainer is the control node which determines our position on the board
-					# We determine its center position on the  viewport
+					var direction_x: int = -1
+					var direction_y: int = -1
 					if get_parent() != NMAP.board:
+						# controlContainer is the control node which determines our position on the board
 						var controlContainer = get_parent().get_parent()
+						# We determine its center position on the viewport
 						var controlContainer_center_position := Vector2(controlContainer.rect_global_position + controlContainer.rect_size/2)
-						# We then offset this position towards the viewport center
-						if controlContainer_center_position.x < get_viewport().size.x/2: direction_x = -1
-						if controlContainer_center_position.y < get_viewport().size.y/2: direction_y = -1
-						var inter_x = controlContainer_center_position.x - direction_x * (abs(controlContainer_center_position.x - get_viewport().size.x/2)) / 250 * rect_size.x
-						var inter_y = controlContainer_center_position.y - direction_y * (abs(controlContainer_center_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
-						#print(Vector2(inter_x,inter_y)) # Debug
+						# We then direct this position towards the viewport center
+						# If we are to the left/top of viewport center, we offset towards the right/bottom (+offset)
+						# If we are to the right/bottom of viewport center, we offset towards the left/top (-offset)
+						if controlContainer_center_position.x < get_viewport().size.x/2: direction_x = 1
+						if controlContainer_center_position.y < get_viewport().size.y/2: direction_y = 1
+						# The offset amount if calculated by creating a multiplier based on the distance of our target container from the viewport center
+						# The further away they are, the more the intermediate point moves towards the screen center
+						# We always offset by percentages of the card size to be consistent in case the card size changes
+						var offset_x = (abs(controlContainer_center_position.x - get_viewport().size.x/2)) / 250 * rect_size.x
+						var offset_y = (abs(controlContainer_center_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
+						var inter_x = controlContainer_center_position.x + direction_x * offset_x
+						var inter_y = controlContainer_center_position.y + direction_y * offset_y
+						# We calculate the position we want the card to move on the viewport
+						# then we translate that position to the local coordinates within the parent control node
 						intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))
 					else: #  The board doesn't have a node2d host container. Instead we use directly the viewport coords.
 						intermediate_position = get_viewport().size/2
@@ -111,7 +119,7 @@ func _process(delta) -> void:
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
 					fancy_move_second_part = true
-				else:
+				else: # If we're not using fancy_movement, then we just do 1 tween, starting from the start_position
 					intermediate_position = start_position
 				if state == MovingToContainer: # We need to check again, just in case it's been reorganized instead.
 					$Tween.interpolate_property(self,'rect_position',
@@ -242,8 +250,7 @@ func recalculatePosition() ->Vector2:
 	# The number of cards currently in hand
 	var hand_size: int = get_parent().get_child_count()
 	# The maximum of horizontal pixels we want the cards to take
-	# We base it on the available space in the Godot window to allow it to work with any resolution or resize.
-	#var max_hand_size_width: float = get_viewport().size.x - hand_width_margin ## With Hand as Node2D
+	# We simply use the size of the parent control container we've defined in the node settings
 	var max_hand_size_width: float = get_parent().get_parent().rect_size.x
 	# The maximum distance between cards
 	# We base it on the card width to allow it to work with any card-size.
@@ -256,6 +263,8 @@ func recalculatePosition() ->Vector2:
 	var hand_width: float = (cards_gap * (hand_size-1)) + rect_size.x
 	# The following just create the vector position to place this specific card in the playspace.
 	card_position_x = get_parent().get_parent().rect_size.x/2 - hand_width/2 + cards_gap * get_index()
+	# Since our control container has the same size as the cards, we start from 0, 
+	# and just offset the card if we want it higher or lower.
 	card_position_y = 0 + bottom_margin
 	return Vector2(card_position_x,card_position_y)
 #
