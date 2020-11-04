@@ -31,3 +31,11 @@ const nodes_map := { # Optimally this should be moved to its own reference class
 
 
 ### END Behaviour Constants ###
+
+var NMAP := {}
+
+func _ready() -> void:
+	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
+	# using an human-readable name
+	for node in cfc_config.nodes_map.keys():
+		NMAP[node]  = get_node('/root/' + nodes_map[node])

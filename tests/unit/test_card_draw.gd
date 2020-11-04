@@ -7,6 +7,7 @@ var tv = TestVars.new()
 func before_each():
 	board = autoqfree(tv.boardScene.instance())
 	get_tree().get_root().add_child(board)
+	cfc_config._ready()
 	hand = board.find_node('Hand')
 
 func test_single_card_draw():

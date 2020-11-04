@@ -30,15 +30,10 @@ var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
-var NMAP := {} # NMAP stands for CardParent. I'm using a short form here as we'll be retyping this a lot
 signal card_dropped(card) # No support for static typing in signals yet (godotengine/godot#26045)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
-	# using an human-readable name
-	for node in cfc_config.nodes_map.keys():
-		NMAP[node]  = get_node('/root/' + cfc_config.nodes_map[node])
 	# warning-ignore:return_value_discarded
 	connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
@@ -46,7 +41,7 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	connect("gui_input", self, "_on_Card_gui_input")
 	# warning-ignore:return_value_discarded
-	connect("card_dropped", NMAP.discard, "_on_dropped_card")
+	connect("card_dropped", cfc_config.NMAP.discard, "_on_dropped_card")
 
 func card_action() -> void:
 	pass
@@ -91,7 +86,7 @@ func _process(delta) -> void:
 					# (My math is not the best so there's probably a more elegant formula)
 					var direction_x: int = -1
 					var direction_y: int = -1
-					if get_parent() != NMAP.board:
+					if get_parent() != cfc_config.NMAP.board:
 						# controlContainer is the control node which determines our position on the board
 						var controlContainer = get_parent().get_parent()
 						# We determine its center position on the viewport
@@ -212,7 +207,7 @@ func _process(delta) -> void:
 func determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
 	var mouse_position
-	if NMAP.board.UT: mouse_position = NMAP.board.UT_mouse_position
+	if cfc_config.NMAP.board.UT: mouse_position = cfc_config.NMAP.board.UT_mouse_position
 	else: mouse_position = get_global_mouse_position()
 	return mouse_position
 
@@ -310,7 +305,7 @@ func _on_Card_mouse_exited():
 	match state:
 		FocusedInHand:
 			focus_completed = false
-			if get_parent() == NMAP.hand:  # To avoid errors during fast player actions
+			if get_parent() == cfc_config.NMAP.hand:  # To avoid errors during fast player actions
 				for c in get_parent().get_children():
 					# We need to make sure afterwards all card will return to their expected positions
 					# Therefore we simply stop all tweens and reorganize then whole hand
@@ -356,7 +351,7 @@ func _input(event):
 					# (More elif to follow for discard and deck.)
 					else:
 						#emit_signal("card_dropped",self,event)
-						reHost(NMAP.board)  # we assume the playboard is the parent of the card
+						reHost(cfc_config.NMAP.board)  # we assume the playboard is the parent of the card
 					timer = 0
 
 func determine_idle_state() -> void:

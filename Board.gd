@@ -29,7 +29,7 @@ func _ready():
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck
 		card.modulate.a = 0 # We use this for a nice transition effect
 		# This is primarily used so that unit testing calls on the card can find this node to execute simulated mousem movements
-
+	#print(cfc_config.NMAP)
 func UT_interpolate_mouse_move(newpos: Vector2, startpos := Vector2(-1,-1), mouseSpeed := 3) -> void:
 	# This function is called by our unit testing to simulate mouse movement on the board
 	if startpos == Vector2(-1,-1):
@@ -53,5 +53,6 @@ func _on_FancyMovementToggle_toggled(_button_pressed):
 
 func _on_ReshuffleAll_pressed():
 	for c in allCards:
-		yield(get_tree().create_timer(0.1), "timeout")
-		c.reHost($Deck/HostedCards)
+		if c.get_parent() != cfc_config.NMAP.deck:
+			c.reHost(cfc_config.NMAP.deck)
+			yield(get_tree().create_timer(0.1), "timeout")

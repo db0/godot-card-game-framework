@@ -14,9 +14,9 @@ func fake_click(pressed,position, flags=0):
 	get_tree().input_event(ev)
 
 func before_each():
-	print(tv.boardScene)
 	board = autoqfree(tv.boardScene.instance())
 	get_tree().get_root().add_child(board)
+	cfc_config._ready() # This is needed every time because the objects change
 	board.UT = true
 	hand = board.find_node('Hand')
 	cards = []
