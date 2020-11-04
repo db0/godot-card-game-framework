@@ -2,6 +2,12 @@
 
 This framework is meant to provide well-designed, statically-typed, and well-commented classes which you can plug into any potential card game to provide a polished way to handle typical behaviour expected from cards in a game.
 
+**Important: This is still a pre-release and is subject to heavy changes as I figure things out.** 
+
+You can still use it as is, but be aware that newer release might substantially rework how things work, thus requiring a new integration if you want to use them.
+
+Once we hit v1.0 things should become more stable.
+
 Pull requests are more than welcome ;)
 
 ## Installation
