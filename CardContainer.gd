@@ -54,3 +54,6 @@ func get_card_count() -> int:
 
 func get_card(idx: int) -> Card:
 	return get_all_cards()[idx]
+
+func get_card_index(card: Card) -> int:
+	return get_all_cards().find(card)

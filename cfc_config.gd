@@ -20,24 +20,22 @@ const bottom_margin_multiplier := 0.5
 # Switch this off to disable fancy movement of cards during draw/discard
 var fancy_movement := true
 
-# The max amount of cards allowed in-hand
-const hand_size := 12
 # The below vars predefine the position in your node structure to reach the nodes relevant to the cards
 # Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
 const nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader
 	'board': "Board",
-	'hand': "Board/HandContainer/Hand",
+	'hand': "Board/Hand",
 	'deck': "Board/Deck",
 	'discard': "Board/DiscardPile"
 	}
 
-const container_names = ['deck','discard']
+const pile_names = ['deck','discard']
 const hand_names = ['hand']
 
 ### END Behaviour Constants ###
 
 var NMAP := {}
-var containers := []
+var piles := []
 var hands := []
 
 func _ready() -> void:
@@ -46,7 +44,7 @@ func _ready() -> void:
 	for node in cfc_config.nodes_map.keys():
 		NMAP[node]  = get_node('/root/' + nodes_map[node])
 	# The below loops, populate two arrays which allows us to specify any number of card containers and hands
-	for name in container_names:
-		containers.append(NMAP[name])
+	for name in pile_names:
+		piles.append(NMAP[name])
 	for name in hand_names:
 		hands.append(NMAP[name])

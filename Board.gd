@@ -19,6 +19,8 @@ func _ready():
 	$DiscardPile.position = Vector2(get_viewport().size.x - $DiscardPile/Control.rect_size.x,get_viewport().size.y - $DiscardPile/Control.rect_size.y)
 	# Deck goes bottom left
 	$Deck.position = Vector2(0,get_viewport().size.y - $Deck/Control.rect_size.y)
+	# Hand goes in the middle of the two
+	$Hand.position = Vector2(150,get_viewport().size.y - $Hand/Control.rect_size.y)
 	# Fill up the deck for demo purposes
 	for _i in range(20):
 		var card: Card = cardTemplate.instance()

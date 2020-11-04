@@ -21,10 +21,10 @@ enum{ # Finite state engine for all posible states a card might be in
 	Dragged					#5
 	DroppingToBoard			#6
 	OnPlayBoard				#7
-	DroppingIntoContainer 	#8
-	InContainer				#9
+	DroppingIntoPile 	#8
+	InPile				#9
 }
-var state := InContainer # Starting state for each card
+var state := InPile # Starting state for each card
 var start_position: Vector2 # Used for animating the card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
@@ -45,7 +45,7 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	connect("card_dropped", cfc_config.NMAP.deck, "_on_dropped_card")
 	# warning-ignore:return_value_discarded
-	connect("card_dropped", cfc_config.NMAP.hand.get_parent(), "_on_dropped_card")
+	connect("card_dropped", cfc_config.NMAP.hand, "_on_dropped_card")
 
 func card_action() -> void:
 	pass
@@ -60,10 +60,10 @@ func _process(delta) -> void:
 			if not $Tween.is_active() and not focus_completed:
 				var expected_position: Vector2 = recalculatePosition()
 				for neighbour_index_diff in [-2,-1,1,2]:
-					var hand_size: int = get_parent().get_child_count()
-					var neighbour_index: int = get_index() + neighbour_index_diff
+					var hand_size: int = get_parent().get_card_count()
+					var neighbour_index: int = get_my_card_index() + neighbour_index_diff
 					if neighbour_index >= 0 and neighbour_index <= hand_size - 1:
-						var neighbour_card: Card = get_parent().get_child(neighbour_index)
+						var neighbour_card: Card = get_parent().get_card(neighbour_index)
 						# Neighbouring cards are pushed to the side to allow the focused card to not be overlapped
 						# The amount they're pushed is relevant to how close neighbours they are.
 						# Closest neighbours (1 card away) are pushed more than further neighbours.
@@ -91,29 +91,26 @@ func _process(delta) -> void:
 					var direction_x: int = -1
 					var direction_y: int = -1
 					if get_parent() != cfc_config.NMAP.board:
-						# controlContainer is the control node which determines our position on the board
-						var controlContainer
-						if get_parent() in cfc_config.hands:
-							controlContainer = get_parent().get_parent()
-						else:
-							controlContainer = get_parent().get_node('Control')
+						# controlNode is the control node which determines our position on the board
+						var controlNode = get_parent().get_node('Control')
 						# We determine its center position on the viewport
-						var controlContainer_center_position := Vector2(controlContainer.rect_global_position + controlContainer.rect_size/2)
+						var controlNode_center_position := Vector2(controlNode.rect_global_position + controlNode.rect_size/2)
 						# We then direct this position towards the viewport center
 						# If we are to the left/top of viewport center, we offset towards the right/bottom (+offset)
 						# If we are to the right/bottom of viewport center, we offset towards the left/top (-offset)
-						if controlContainer_center_position.x < get_viewport().size.x/2: direction_x = 1
-						if controlContainer_center_position.y < get_viewport().size.y/2: direction_y = 1
+						if controlNode_center_position.x < get_viewport().size.x/2: direction_x = 1
+						if controlNode_center_position.y < get_viewport().size.y/2: direction_y = 1
 						# The offset amount if calculated by creating a multiplier based on the distance of our target container from the viewport center
 						# The further away they are, the more the intermediate point moves towards the screen center
 						# We always offset by percentages of the card size to be consistent in case the card size changes
-						var offset_x = (abs(controlContainer_center_position.x - get_viewport().size.x/2)) / 250 * rect_size.x
-						var offset_y = (abs(controlContainer_center_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
-						var inter_x = controlContainer_center_position.x + direction_x * offset_x
-						var inter_y = controlContainer_center_position.y + direction_y * offset_y
+						var offset_x = (abs(controlNode_center_position.x - get_viewport().size.x/2)) / 250 * rect_size.x
+						var offset_y = (abs(controlNode_center_position.y - get_viewport().size.y/2)) / 250 * rect_size.y
+						var inter_x = controlNode_center_position.x + direction_x * offset_x
+						var inter_y = controlNode_center_position.y + direction_y * offset_y
 						# We calculate the position we want the card to move on the viewport
 						# then we translate that position to the local coordinates within the parent control node
-						intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))
+						#intermediate_position = Vector2(inter_x,inter_y)
+						intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))						
 					else: #  The board doesn't have a node2d host container. Instead we use directly the viewport coords.
 						intermediate_position = get_viewport().size/2
 					if not rect_scale.is_equal_approx(Vector2(1,1)):
@@ -184,7 +181,7 @@ func _process(delta) -> void:
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = OnPlayBoard
-		DroppingIntoContainer:
+		DroppingIntoPile:
 			# Used when dropping the cards into a container (Deck, Discard etc)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
@@ -208,8 +205,8 @@ func _process(delta) -> void:
 				$Tween.start()
 				determine_idle_state()
 				fancy_move_second_part = false
-				state = InContainer
-		InContainer:
+				state = InPile
+		InPile:
 			pass
 
 func determine_global_mouse_pos() -> Vector2:
@@ -251,10 +248,10 @@ func recalculatePosition() ->Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	# The number of cards currently in hand
-	var hand_size: int = get_parent().get_child_count()
+	var hand_size: int = get_parent().get_card_count()
 	# The maximum of horizontal pixels we want the cards to take
 	# We simply use the size of the parent control container we've defined in the node settings
-	var max_hand_size_width: float = get_parent().get_parent().rect_size.x
+	var max_hand_size_width: float = get_parent().get_node('Control').rect_size.x
 	# The maximum distance between cards
 	# We base it on the card width to allow it to work with any card-size.
 	var card_gap_max: float = rect_size.x * 1.1
@@ -265,7 +262,7 @@ func recalculatePosition() ->Vector2:
 	# The current width of all cards in hand together
 	var hand_width: float = (cards_gap * (hand_size-1)) + rect_size.x
 	# The following just create the vector position to place this specific card in the playspace.
-	card_position_x = max_hand_size_width/2 - hand_width/2 + cards_gap * get_index()
+	card_position_x = max_hand_size_width/2 - hand_width/2 + cards_gap * get_my_card_index()
 	# Since our control container has the same size as the cards, we start from 0, 
 	# and just offset the card if we want it higher or lower.
 	card_position_y = 0 + bottom_margin
@@ -314,7 +311,7 @@ func _on_Card_mouse_exited():
 		FocusedInHand:
 			focus_completed = false
 			if get_parent() in cfc_config.hands:  # To avoid errors during fast player actions
-				for c in get_parent().get_children():
+				for c in get_parent().get_all_cards():
 					# We need to make sure afterwards all card will return to their expected positions
 					# Therefore we simply stop all tweens and reorganize then whole hand
 					c.interruptTweening()
@@ -337,7 +334,7 @@ func _on_Card_gui_input(event):
 						# While the mouse is kept pressed, we tell the engine that a card is being dragged
 						state = Dragged
 						# While we're dragging the card, we want the other cards to move to their expected position in hand
-						for c in get_parent().get_children():
+						for c in get_parent().get_all_cards():
 							if c != self:
 								c.interruptTweening()
 								c.reorganizeSelf()
@@ -350,11 +347,11 @@ func _on_Card_gui_input(event):
 
 func determine_idle_state() -> void:
 	# Some logic is generic and doesn't always know the state the card should be afterwards
-	# We use this function to determine the state it should have, based on the card's container node.
+	# We use this function to determine the state it should have, based on the card's container grouping.
 	if get_parent() in cfc_config.hands:
 		state = InHand
-	elif get_parent() in cfc_config.containers:
-		state = InContainer
+	elif get_parent() in cfc_config.piles:
+		state = InPile
 	else:
 		state = OnPlayBoard
 
@@ -383,13 +380,13 @@ func reHost(targetHost):
 			previous_pos = targetHost.to_local(rect_global_position)
 			moveToPosition(previous_pos,recalculatePosition())
 			# We reorganize the left cards in hand.
-			for c in targetHost.get_children():
+			for c in targetHost.get_all_cards():
 				if c != self:
 					c.interruptTweening()
 					c.reorganizeSelf()
 		# 'HostedCards' here is the dummy child node inside Containers where we store the card objects
-		elif targetHost in cfc_config.containers:
-			state = InContainer
+		elif targetHost in cfc_config.piles:
+			state = InPile
 			$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
 			# We need to adjust he end position based on the local rect inside the container control node
 			# So we transform global coordinates to container rect coordinates.
@@ -406,7 +403,7 @@ func reHost(targetHost):
 			state = DroppingToBoard
 		if parentHost in cfc_config.hands:
 			# We also want to rearrange the hand when we take cards out of it
-			for c in parentHost.get_children():
+			for c in parentHost.get_all_cards():
 				# But this time we don't want to rearrange ourselves, as we're in a different container by now
 				if c != self:
 					c.interruptTweening()
@@ -416,3 +413,6 @@ func reHost(targetHost):
 		if parentHost == cfc_config.NMAP.hand:
 			state = InHand
 			reorganizeSelf()
+
+func get_my_card_index() -> int:
+	return get_parent().get_card_index(self)
