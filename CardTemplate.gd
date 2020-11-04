@@ -28,8 +28,8 @@ var state := InContainer # Starting state for each card
 var start_position: Vector2 # Used for animating the card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
-var timer: float = 0
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
+var dragging_attempted := true
 signal card_dropped(card) # No support for static typing in signals yet (godotengine/godot#26045)
 
 # Called when the node enters the scene tree for the first time.
@@ -41,7 +41,11 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	connect("gui_input", self, "_on_Card_gui_input")
 	# warning-ignore:return_value_discarded
-	connect("card_dropped", cfc_config.NMAP.discard, "_on_dropped_card")
+	connect("card_dropped", cfc_config.NMAP.discard.get_parent(), "_on_dropped_card")
+	# warning-ignore:return_value_discarded
+	connect("card_dropped", cfc_config.NMAP.deck.get_parent(), "_on_dropped_card")
+	# warning-ignore:return_value_discarded
+	connect("card_dropped", cfc_config.NMAP.hand.get_parent(), "_on_dropped_card")
 
 func card_action() -> void:
 	pass
@@ -149,16 +153,12 @@ func _process(delta) -> void:
 				$Tween.start()
 				# We don't change state yet, only when the focus is removed from the neighbour
 		Dragged:
-			# The timer prevents the card from being moved immediately on mouse click.
-			# It instead waits a natural time to confirm this is long-mouse press before it starts shrinking the card.
-			timer += delta
-			if timer >= 0.15:
-				if not $Tween.is_active():
-					$Tween.interpolate_property(self,'rect_scale',
-						rect_scale, Vector2(0.4,0.4), 0.2,
-						Tween.TRANS_SINE, Tween.EASE_IN)
-					$Tween.start()
-				rect_global_position = determine_board_position_from_mouse()
+			if not $Tween.is_active():
+				$Tween.interpolate_property(self,'rect_scale',
+					rect_scale, Vector2(0.4,0.4), 0.2,
+					Tween.TRANS_SINE, Tween.EASE_IN)
+				$Tween.start()
+			rect_global_position = determine_board_position_from_mouse()
 		OnPlayBoard:
 			pass
 		DroppingToBoard:
@@ -316,43 +316,29 @@ func _on_Card_gui_input(event):
 	# A signal for whenever the player clicks on a card
 	if event is InputEventMouseButton:
 		match state:
-			FocusedInHand, Dragged:
+			FocusedInHand:
 				# If the player presses the left click, it might be because they want to drag the card
 				if event.is_pressed() and event.get_button_index() == 1:
-					# While the mouse is kept pressed, we tell the engine that a card is being dragged
-					state = Dragged
-					# While we're dragging the card, we want the other cards to move to their expected position in hand
-					for c in get_parent().get_children():
-						if c != self:
-							c.interruptTweening()
-							c.reorganizeSelf()
-
-func _input(event):
-	if event is InputEventMouseButton:
-		match state:
-			FocusedInHand, Dragged:
+					# But first we check if the player does a long-press. 
+					# We don't want to start dragging the card immediately.
+					dragging_attempted = true
+					yield(get_tree().create_timer(0.1), "timeout")
+					# If this variable is still set to true, it means the mouse-button is still pressed
+					if dragging_attempted:
+						dragging_attempted = false
+						# While the mouse is kept pressed, we tell the engine that a card is being dragged
+						state = Dragged
+						# While we're dragging the card, we want the other cards to move to their expected position in hand
+						for c in get_parent().get_children():
+							if c != self:
+								c.interruptTweening()
+								c.reorganizeSelf()
+				elif not event.is_pressed() and event.get_button_index() == 1:
+					dragging_attempted = false
+			Dragged:
 				if not event.is_pressed() and event.get_button_index() == 1:
 					focus_completed = false
-					# We check if the player released the card in the "virtual" hand area. If so, we leave it in hand
-					if determine_global_mouse_pos().y + get_parent().hand_rect.y >= get_viewport().size.y:
-					# Here we try to avoid a card losing focus when the player clicks once on it
-					# However we cannot compare using is_equal_approx() because the rect_position.y will have changed
-					# due to the focusing of the card
-					# Instead we simply check if the position x has not changed from its focused position
-					# if the x position has changed, it indicated the player has dragged the card.
-						if not abs(rect_position.x - recalculatePosition().x + 37.5) < 0.01:
-							state = InHand
-							reorganizeSelf()
-						# If the player has not moved the card, clicking once should do nothing
-						# However this is not a perfect implementation. But it will do for now.
-						else:
-							state = FocusedInHand
-					# If the card is not left in the hand rect, it's on the table
-					# (More elif to follow for discard and deck.)
-					else:
-						#emit_signal("card_dropped",self,event)
-						reHost(cfc_config.NMAP.board)  # we assume the playboard is the parent of the card
-					timer = 0
+					emit_signal("card_dropped",self)
 
 func determine_idle_state() -> void:
 	# Some logic is generic and doesn't always know the state the card should be afterwards
@@ -420,3 +406,8 @@ func reHost(targetHost):
 					if c != self:
 						c.interruptTweening()
 						c.reorganizeSelf()
+	else:
+		# Here we check what to do if the player just moved the card back to the same container
+		if parentHost == cfc_config.NMAP.hand:
+			state = InHand
+			reorganizeSelf()
