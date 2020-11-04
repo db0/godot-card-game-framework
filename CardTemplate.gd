@@ -6,7 +6,7 @@ class_name Card
 
 ## Load Config
 
-
+var a = false
 onready var bottom_margin: float = rect_size.y * cfc_config.bottom_margin_multiplier
 # warning-ignore:unused_class_variable
 # We export this variable to the editor to allow us to add scripts to each card object directly instead of only via code.

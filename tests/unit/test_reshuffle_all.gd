@@ -11,6 +11,7 @@ func fake_click(pressed,position, flags=0):
 	ev.pressed = pressed
 	ev.position = position
 	ev.meta = flags
+	board.UT_mouse_position = position
 	get_tree().input_event(ev)
 
 func before_each():
@@ -27,12 +28,14 @@ func test_fancy_reshuffle_all():
 	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	fake_click(true,cards[0].rect_global_position)
+	yield(yield_for(0.12), YIELD) # Wait to allow dragging to start
 	board.UT_interpolate_mouse_move(Vector2(300,300),cards[0].rect_global_position)
 	yield(yield_for(0.6), YIELD)
 	fake_click(false,board.UT_mouse_position)
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	cards[4]._on_Card_mouse_entered()
 	fake_click(true,cards[0].rect_global_position)
+	yield(yield_for(0.12), YIELD) # Wait to allow dragging to start
 	board.UT_interpolate_mouse_move(Vector2(1000,10),cards[0].rect_global_position)
 	yield(yield_for(0.6), YIELD)
 	fake_click(false,board.UT_mouse_position)
@@ -48,12 +51,14 @@ func test_basic_reshuffle_all():
 	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	fake_click(true,cards[0].rect_global_position)
+	yield(yield_for(0.12), YIELD) # Wait to allow dragging to start
 	board.UT_interpolate_mouse_move(Vector2(300,300),cards[0].rect_global_position)
 	yield(yield_for(0.6), YIELD)
 	fake_click(false,board.UT_mouse_position)
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	cards[4]._on_Card_mouse_entered()
 	fake_click(true,cards[0].rect_global_position)
+	yield(yield_for(0.12), YIELD) # Wait to allow dragging to start
 	board.UT_interpolate_mouse_move(Vector2(1000,10),cards[0].rect_global_position)
 	yield(yield_for(0.6), YIELD)
 	fake_click(false,board.UT_mouse_position)

@@ -12,7 +12,7 @@ func before_each():
 
 func test_single_card_draw():
 	var card0: Card = hand.draw_card()
-	assert_eq(len(hand.get_children()), 1, "Check correct amount of cards drawn")
+	assert_eq(len(hand.get_children()), 2, "Check correct amount of cards drawn")
 	assert_true(card0.visible, "Check that cards drawn is visible")
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)
@@ -63,3 +63,17 @@ func test_draw_multiple_cards_fast():
 	assert_almost_eq(card3.recalculatePosition(),card3.rect_position,Vector2(2,2), "Check card at index 3 placed in correct position")
 	assert_almost_eq(card4.recalculatePosition(),card4.rect_position,Vector2(2,2), "Check card at index 4 placed in correct position")
 	assert_almost_eq(card5.recalculatePosition(),card5.rect_position,Vector2(2,2), "Check card at index 5 placed in correct position")
+
+func test_container_custom_card_functions():
+	var card0: Card = hand.draw_card()
+	var card1: Card = hand.draw_card()
+	var card2: Card = hand.draw_card()
+	var card3: Card = hand.draw_card()
+	var card4: Card = hand.draw_card()
+	var card5: Card = hand.draw_card()
+	yield(yield_to(card5.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	assert_eq(len(hand.get_all_cards()), 6, "Check that get_all_cards() returns right amount of cards")
+	assert_eq(hand.get_card_count(), 6, "Check that get_card_count() returns right amount of cards")
+	assert_eq(hand.get_card(4), card4, "Check that get_card() returns the card at the correct index")
+	assert_eq(hand.get_card_index(card4), 4, "Check that get_card_index() returns the correct index")
+	

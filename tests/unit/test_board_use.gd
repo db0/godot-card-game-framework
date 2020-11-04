@@ -11,6 +11,7 @@ func fake_click(pressed,position, flags=0):
 	ev.pressed = pressed
 	ev.position = position
 	ev.meta = flags
+	board.UT_mouse_position = position
 	get_tree().input_event(ev)
 
 func before_each():
@@ -18,7 +19,7 @@ func before_each():
 	get_tree().get_root().add_child(board)
 	cfc_config._ready() # This is needed every time because the objects change
 	board.UT = true
-	hand = board.find_node('Hand')
+	hand = board.get_node('Hand')
 	cards = []
 	for _iter in range(5):
 		cards.append(hand.draw_card())
@@ -28,6 +29,7 @@ func test_card_table_drop_location():
 	cards[0]._on_Card_mouse_entered()
 	#gut.p(cards[0].rect_global_position)
 	fake_click(true,cards[0].rect_global_position)
+	yield(yield_for(0.12), YIELD) # Wait to allow dragging to start
 	board.UT_interpolate_mouse_move(Vector2(300,300),cards[0].rect_global_position)
 	yield(yield_for(0.6), YIELD)
 	board.UT_interpolate_mouse_move(Vector2(800,200))
@@ -40,18 +42,20 @@ func test_card_hand_drop_recovery():
 	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	fake_click(true,cards[0].rect_global_position)
+	yield(yield_for(0.12), YIELD) # Wait to allow dragging to start
 	board.UT_interpolate_mouse_move(Vector2(100,100),cards[0].rect_global_position)
 	yield(yield_for(0.4), YIELD)
 	board.UT_interpolate_mouse_move(Vector2(200,620))
 	yield(yield_for(0.4), YIELD)
 	fake_click(false,board.UT_mouse_position)
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	assert_eq(hand.get_child_count(),5, "Check card dragged back in hand remains in hand")
+	assert_eq(hand.get_child_count(),6, "Check card dragged back in hand remains in hand")
 
 func test_card_drag_block_by_board_borders():
 	yield(yield_for(1), YIELD)
 	cards[4]._on_Card_mouse_entered()
 	fake_click(true,cards[4].rect_global_position)
+	yield(yield_for(0.12), YIELD) # Wait to allow dragging to start
 	board.UT_interpolate_mouse_move(Vector2(-100,100),cards[0].rect_global_position)
 	yield(yield_for(0.4), YIELD)
 	assert_almost_eq(Vector2(0, 110),cards[4].rect_global_position,Vector2(2,2), "Check dragged outside left viewport borders stays inside viewport")
@@ -70,8 +74,8 @@ func test_fast_card_table_drop():
 	# This catches a bug where the card keeps following the mouse after being dropped
 	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
-	#gut.p(cards[0].rect_global_position)
 	fake_click(true,cards[0].rect_global_position)
+	yield(yield_for(0.2), YIELD) # Wait to allow dragging to start
 	board.UT_interpolate_mouse_move(Vector2(1000, 300),cards[0].rect_global_position,3)
 	yield(yield_for(0.6), YIELD)
 	fake_click(false,board.UT_mouse_position)
