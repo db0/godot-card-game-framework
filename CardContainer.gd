@@ -1,4 +1,4 @@
-extends Panel
+extends Node2D
 class_name CardContainer
 
 
@@ -9,9 +9,9 @@ var catching_card: bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# warning-ignore:return_value_discarded
-	connect("mouse_entered", self, "_on_mouse_entered")
+	$Panel.connect("mouse_entered", self, "_on_mouse_entered")
 	# warning-ignore:return_value_discarded
-	connect("mouse_exited", self, "_on_mouse_exited")
+	$Panel.connect("mouse_exited", self, "_on_mouse_exited")
 	#print('a',self.get_node('HostedCards'), self.name)
 
 func _on_dropped_card(card: Card) -> void:

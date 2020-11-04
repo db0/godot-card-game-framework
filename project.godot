@@ -14,12 +14,12 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://CardTemplate.gd"
 }, {
-"base": "Panel",
+"base": "Node2D",
 "class": "CardContainer",
 "language": "GDScript",
 "path": "res://CardContainer.gd"
 }, {
-"base": "Node2D",
+"base": "Control",
 "class": "Hand",
 "language": "GDScript",
 "path": "res://Hand.gd"

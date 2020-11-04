@@ -8,8 +8,8 @@ extends  CardContainer
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	pass # Replace with function body.
-
+	# warning-ignore:return_value_discarded
+	$Panel.connect("gui_input", cfc_config.NMAP.hand.get_parent(), "_on_Deck_gui_input")
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):

@@ -92,7 +92,11 @@ func _process(delta) -> void:
 					var direction_y: int = -1
 					if get_parent() != cfc_config.NMAP.board:
 						# controlContainer is the control node which determines our position on the board
-						var controlContainer = get_parent().get_parent()
+						var controlContainer
+						if get_parent().name == 'Hand':
+							controlContainer = get_parent().get_parent()
+						else:
+							controlContainer = get_parent().get_parent().get_node('Panel')
 						# We determine its center position on the viewport
 						var controlContainer_center_position := Vector2(controlContainer.rect_global_position + controlContainer.rect_size/2)
 						# We then direct this position towards the viewport center
@@ -112,6 +116,10 @@ func _process(delta) -> void:
 						intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))
 					else: #  The board doesn't have a node2d host container. Instead we use directly the viewport coords.
 						intermediate_position = get_viewport().size/2
+					if not rect_scale.is_equal_approx(Vector2(1,1)):
+						$Tween.interpolate_property(self,'rect_scale',
+							rect_scale, Vector2(1,1), 0.4,
+							Tween.TRANS_CUBIC, Tween.EASE_OUT)
 					$Tween.interpolate_property(self,'rect_position',
 						start_position, intermediate_position, 0.5,
 						Tween.TRANS_BACK, Tween.EASE_IN_OUT)
@@ -257,7 +265,7 @@ func recalculatePosition() ->Vector2:
 	# The current width of all cards in hand together
 	var hand_width: float = (cards_gap * (hand_size-1)) + rect_size.x
 	# The following just create the vector position to place this specific card in the playspace.
-	card_position_x = get_parent().get_parent().rect_size.x/2 - hand_width/2 + cards_gap * get_index()
+	card_position_x = max_hand_size_width/2 - hand_width/2 + cards_gap * get_index()
 	# Since our control container has the same size as the cards, we start from 0, 
 	# and just offset the card if we want it higher or lower.
 	card_position_y = 0 + bottom_margin

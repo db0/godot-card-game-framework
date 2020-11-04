@@ -30,7 +30,7 @@ func _ready():
 func draw_card(container = cfc_config.NMAP.deck) -> Card:
 	var card: Card = null
 	# A basic function to pull a card from out deck into our hand.
-	if container.get_child_count() and get_child_count() < cfc_config.hand_size: # prevent from drawing more cards than are in our deck and crashing godot.
+	if container.get_child_count() and $Hand.get_child_count() < cfc_config.hand_size: # prevent from drawing more cards than are in our deck and crashing godot.
 		# We need to remove the current parent node before adding a different one
 		# We simply pick the first one.
 		card = container.get_child(0)
