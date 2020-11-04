@@ -41,9 +41,9 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	connect("gui_input", self, "_on_Card_gui_input")
 	# warning-ignore:return_value_discarded
-	connect("card_dropped", cfc_config.NMAP.discard.get_parent(), "_on_dropped_card")
+	connect("card_dropped", cfc_config.NMAP.discard, "_on_dropped_card")
 	# warning-ignore:return_value_discarded
-	connect("card_dropped", cfc_config.NMAP.deck.get_parent(), "_on_dropped_card")
+	connect("card_dropped", cfc_config.NMAP.deck, "_on_dropped_card")
 	# warning-ignore:return_value_discarded
 	connect("card_dropped", cfc_config.NMAP.hand.get_parent(), "_on_dropped_card")
 
@@ -93,10 +93,10 @@ func _process(delta) -> void:
 					if get_parent() != cfc_config.NMAP.board:
 						# controlContainer is the control node which determines our position on the board
 						var controlContainer
-						if get_parent().name == 'Hand':
+						if get_parent() in cfc_config.hands:
 							controlContainer = get_parent().get_parent()
 						else:
-							controlContainer = get_parent().get_parent().get_node('Panel')
+							controlContainer = get_parent().get_node('Control')
 						# We determine its center position on the viewport
 						var controlContainer_center_position := Vector2(controlContainer.rect_global_position + controlContainer.rect_size/2)
 						# We then direct this position towards the viewport center
@@ -189,7 +189,7 @@ func _process(delta) -> void:
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if cfc_config.fancy_movement:
-					intermediate_position = get_parent().rect_position - Vector2(0,rect_size.y*1.1)
+					intermediate_position = get_parent().position - Vector2(0,rect_size.y*1.1)
 					$Tween.interpolate_property(self,'rect_position',
 						rect_position, intermediate_position, 0.25,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
@@ -201,9 +201,9 @@ func _process(delta) -> void:
 					$Tween.start()
 					fancy_move_second_part = true
 				else:
-					intermediate_position = get_parent().rect_position
+					intermediate_position = get_parent().position
 				$Tween.interpolate_property(self,'rect_global_position',
-					intermediate_position, get_parent().rect_position, 0.35,
+					intermediate_position, get_parent().position, 0.35,
 					Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 				$Tween.start()
 				determine_idle_state()
@@ -313,7 +313,7 @@ func _on_Card_mouse_exited():
 	match state:
 		FocusedInHand:
 			focus_completed = false
-			if get_parent() == cfc_config.NMAP.hand:  # To avoid errors during fast player actions
+			if get_parent() in cfc_config.hands:  # To avoid errors during fast player actions
 				for c in get_parent().get_children():
 					# We need to make sure afterwards all card will return to their expected positions
 					# Therefore we simply stop all tweens and reorganize then whole hand
@@ -351,13 +351,12 @@ func _on_Card_gui_input(event):
 func determine_idle_state() -> void:
 	# Some logic is generic and doesn't always know the state the card should be afterwards
 	# We use this function to determine the state it should have, based on the card's container node.
-	match get_parent().name:
-		'Board':
-			state = OnPlayBoard
-		'Hand':
-			state = InHand
-		'HostedCards':
-			state = InContainer
+	if get_parent() in cfc_config.hands:
+		state = InHand
+	elif get_parent() in cfc_config.containers:
+		state = InContainer
+	else:
+		state = OnPlayBoard
 
 func tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# Takes care to make a card change visibility nicely
@@ -376,44 +375,42 @@ func reHost(targetHost):
 		parentHost.remove_child(self)
 		targetHost.add_child(self)
 		rect_global_position = previous_pos # Ensure card stays where it was before it changed parents
-		match targetHost.name:
-			# The state for the card being on the board
-			'Board':
-				state = DroppingToBoard
-			'Hand':
-				visible = true
-				tween_interpolate_visibility(1,0.5)
-				# We need to adjust he end position based on the local rect inside the hand control node
-				# So we transform global coordinates to hand rect coordinates.
-				previous_pos = targetHost.to_local(rect_global_position)
-				moveToPosition(previous_pos,recalculatePosition())
-				# We reorganize the left cards in hand.
-				for c in targetHost.get_children():
-					if c != self:
-						c.interruptTweening()
-						c.reorganizeSelf()
-			# 'HostedCards' here is the dummy child node inside Containers where we store the card objects
-			'HostedCards':
-				state = InContainer
-				$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
-				# We need to adjust he end position based on the local rect inside the container control node
-				# So we transform global coordinates to container rect coordinates.
-				previous_pos = targetHost.to_local(rect_global_position)
-				moveToPosition(previous_pos,Vector2(0,0))
-				# If we have fancy movement, we need to wait for 2 tweens to finish before we vanish the card.
-				if cfc_config.fancy_movement:
-					yield($Tween, "tween_all_completed")
-				tween_interpolate_visibility(0,0.3)
+		if targetHost in cfc_config.hands:
+			visible = true
+			tween_interpolate_visibility(1,0.5)
+			# We need to adjust he end position based on the local rect inside the hand control node
+			# So we transform global coordinates to hand rect coordinates.
+			previous_pos = targetHost.to_local(rect_global_position)
+			moveToPosition(previous_pos,recalculatePosition())
+			# We reorganize the left cards in hand.
+			for c in targetHost.get_children():
+				if c != self:
+					c.interruptTweening()
+					c.reorganizeSelf()
+		# 'HostedCards' here is the dummy child node inside Containers where we store the card objects
+		elif targetHost in cfc_config.containers:
+			state = InContainer
+			$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
+			# We need to adjust he end position based on the local rect inside the container control node
+			# So we transform global coordinates to container rect coordinates.
+			previous_pos = targetHost.to_local(rect_global_position)
+			moveToPosition(previous_pos,Vector2(0,0))
+			# If we have fancy movement, we need to wait for 2 tweens to finish before we vanish the card.
+			if cfc_config.fancy_movement:
 				yield($Tween, "tween_all_completed")
-				visible = false
-		match parentHost.name:
+			tween_interpolate_visibility(0,0.3)
+			yield($Tween, "tween_all_completed")
+			visible = false
+		# The state for the card being on the board
+		else:
+			state = DroppingToBoard
+		if parentHost in cfc_config.hands:
 			# We also want to rearrange the hand when we take cards out of it
-			'Hand':
-				for c in parentHost.get_children():
-					# But this time we don't want to rearrange ourselves, as we're in a different container by now
-					if c != self:
-						c.interruptTweening()
-						c.reorganizeSelf()
+			for c in parentHost.get_children():
+				# But this time we don't want to rearrange ourselves, as we're in a different container by now
+				if c != self:
+					c.interruptTweening()
+					c.reorganizeSelf()
 	else:
 		# Here we check what to do if the player just moved the card back to the same container
 		if parentHost == cfc_config.NMAP.hand:

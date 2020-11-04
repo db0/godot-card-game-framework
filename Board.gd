@@ -16,13 +16,13 @@ func _ready():
 	# We're assigning our positions programmatically, instead of defining them on the scene.
 	# This way any they will work with any size of viewport in a game.
 	# Discard pile goes bottom right
-	$DiscardPile.position = Vector2(get_viewport().size.x - $DiscardPile/Panel.rect_size.x,get_viewport().size.y - $DiscardPile/Panel.rect_size.y)
+	$DiscardPile.position = Vector2(get_viewport().size.x - $DiscardPile/Control.rect_size.x,get_viewport().size.y - $DiscardPile/Control.rect_size.y)
 	# Deck goes bottom left
-	$Deck.position = Vector2(0,get_viewport().size.y - $Deck/Panel.rect_size.y)
+	$Deck.position = Vector2(0,get_viewport().size.y - $Deck/Control.rect_size.y)
 	# Fill up the deck for demo purposes
 	for _i in range(20):
 		var card: Card = cardTemplate.instance()
-		$Deck/HostedCards.add_child(card)
+		$Deck.add_child(card)
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		card.rect_global_position = $Deck.position
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck

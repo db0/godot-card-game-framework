@@ -12,9 +12,9 @@ corner_radius_bottom_left = 25
 [sub_resource type="DynamicFont" id=2]
 font_data = ExtResource( 1 )
 
-[node name="Z-Index" type="Node2D"]
+[node name="Cards" type="Node2D"]
 
-[node name="Panel" type="Panel" parent="."]
+[node name="Control" type="Panel" parent="."]
 margin_right = 150.0
 margin_bottom = 200.0
 custom_styles/panel = SubResource( 1 )
@@ -22,14 +22,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CenterContainer" type="CenterContainer" parent="Panel"]
+[node name="CenterContainer" type="CenterContainer" parent="Control"]
 margin_right = 150.0
 margin_bottom = 40.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="Panel/CenterContainer"]
+[node name="Label" type="Label" parent="Control/CenterContainer"]
 margin_left = 54.0
 margin_top = 10.0
 margin_right = 96.0
@@ -40,5 +40,3 @@ text = "Deck"
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="HostedCards" type="Node2D" parent="."]

@@ -27,17 +27,26 @@ const hand_size := 12
 const nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader
 	'board': "Board",
 	'hand': "Board/HandContainer/Hand",
-	'deck': "Board/Deck/HostedCards",
-	'discard': "Board/DiscardPile/HostedCards"
+	'deck': "Board/Deck",
+	'discard': "Board/DiscardPile"
 	}
 
+const container_names = ['deck','discard']
+const hand_names = ['hand']
 
 ### END Behaviour Constants ###
 
 var NMAP := {}
+var containers := []
+var hands := []
 
 func _ready() -> void:
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
 	for node in cfc_config.nodes_map.keys():
 		NMAP[node]  = get_node('/root/' + nodes_map[node])
+	# The below loops, populate two arrays which allows us to specify any number of card containers and hands
+	for name in container_names:
+		containers.append(NMAP[name])
+	for name in hand_names:
+		hands.append(NMAP[name])

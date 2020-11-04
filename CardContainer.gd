@@ -9,9 +9,9 @@ var catching_card: bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# warning-ignore:return_value_discarded
-	$Panel.connect("mouse_entered", self, "_on_mouse_entered")
+	$Control.connect("mouse_entered", self, "_on_mouse_entered")
 	# warning-ignore:return_value_discarded
-	$Panel.connect("mouse_exited", self, "_on_mouse_exited")
+	$Control.connect("mouse_exited", self, "_on_mouse_exited")
 	#print('a',self.get_node('HostedCards'), self.name)
 
 func _on_dropped_card(card: Card) -> void:
@@ -26,7 +26,7 @@ func _on_dropped_card(card: Card) -> void:
 func _process(_delta):
 	# Here we check if both switches have been set, which would signify this is the container which catches the dropped card
 	if dropping_card and catching_card: 
-		dropping_card.reHost($HostedCards)
+		dropping_card.reHost(self)
 	else:
 		# If the dropping card is not in a state 'Dragged' anymore, it means another container has picked it up already
 		# So we clear our hook.
@@ -43,3 +43,14 @@ func _on_mouse_entered() -> void:
 func _on_mouse_exited() -> void:
 	catching_card = false
 
+func get_all_cards() -> Array:
+	var cardsArray := []
+	for obj in get_children():
+		if obj as Card: cardsArray.append(obj)
+	return cardsArray
+
+func get_card_count() -> int:
+	return len(get_all_cards())
+
+func get_card(idx: int) -> Card:
+	return get_all_cards()[idx]
