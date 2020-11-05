@@ -51,12 +51,12 @@ func card_action() -> void:
 
 func _process(delta) -> void:
 	# A basic finite state engine
-	if $Tween.is_active():
-		if tween_stuck_time > 0.5 and int(fmod(tween_stuck_time,3)) ==0 : 
-			print("Tween Stuck for ",tween_stuck_time,"seconds. Reports leftover runtime: ",$Tween.get_runtime ( ))
-			#print(fmod(tween_stuck_time,3))
-		#$Tween.remove(self,'rect_scale')
+	if $Tween.is_active(): # Debug code for catch Tween deadlocks
 		tween_stuck_time += delta
+		if tween_stuck_time > 2 and int(fmod(tween_stuck_time,3)) == 2 : 
+			print("Tween Stuck for ",tween_stuck_time,"seconds. Reports leftover runtime: ",$Tween.get_runtime ( ))
+			$Tween.remove_all()
+			tween_stuck_time = 0
 	else:
 		tween_stuck_time = 0
 	match state:
@@ -78,9 +78,11 @@ func _process(delta) -> void:
 				# When zooming in, we also want to move the card higher, so that it's not under the screen's bottom edge.
 				target_position = expected_position - Vector2(rect_size.x * 0.25,rect_size.y * 0.5 + bottom_margin)
 				start_position = expected_position
+				$Tween.remove(self,'rect_position') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property($".",'rect_position',
 					start_position, target_position, 0.3,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property($".",'rect_scale',
 					rect_scale, Vector2(1.5,1.5), 0.3,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
@@ -121,10 +123,11 @@ func _process(delta) -> void:
 					else: #  The board doesn't have a node2d host container. Instead we use directly the viewport coords.
 						intermediate_position = get_viewport().size/2
 					if not rect_scale.is_equal_approx(Vector2(1,1)):
-						$Tween.remove(self,'rect_scale') # We make sure to remove other scaling tweens setup to avoid a deadlock
+						$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 						$Tween.interpolate_property(self,'rect_scale',
 							rect_scale, Vector2(1,1), 0.4,
 							Tween.TRANS_CUBIC, Tween.EASE_OUT)
+					$Tween.remove(self,'rect_position') # We make sure to remove other tweens of the same type to avoid a deadlock
 					$Tween.interpolate_property(self,'rect_position',
 						start_position, intermediate_position, 0.5,
 						Tween.TRANS_BACK, Tween.EASE_IN_OUT)
@@ -135,6 +138,7 @@ func _process(delta) -> void:
 				else: # If we're not using fancy_movement, then we just do 1 tween, starting from the start_position
 					intermediate_position = start_position
 				if state == MovingToContainer: # We need to check again, just in case it's been reorganized instead.
+					$Tween.remove(self,'rect_position') # We make sure to remove other tweens of the same type to avoid a deadlock
 					$Tween.interpolate_property(self,'rect_position',
 						intermediate_position, target_position, 0.35,
 						Tween.TRANS_SINE, Tween.EASE_IN_OUT)
@@ -144,10 +148,12 @@ func _process(delta) -> void:
 		Reorganizing:
 			# Used when reorganizing the cards in the hand
 			if not $Tween.is_active():
+				$Tween.remove(self,'rect_position') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'rect_position',
 					start_position, target_position, 0.4,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				if not rect_scale.is_equal_approx(Vector2(1,1)):
+					$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 					$Tween.interpolate_property(self,'rect_scale',
 						rect_scale, Vector2(1,1), 0.4,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
@@ -157,10 +163,12 @@ func _process(delta) -> void:
 		PushedAside:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
 			if not $Tween.is_active() and not rect_position.is_equal_approx(target_position):
+				$Tween.remove(self,'rect_position') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'rect_position',
 					start_position, target_position, 0.3,
 					Tween.TRANS_QUART, Tween.EASE_IN)
 				if not rect_scale.is_equal_approx(Vector2(1,1)):
+					$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 					$Tween.interpolate_property(self,'rect_scale',
 						rect_scale, Vector2(1,1), 0.3,
 						Tween.TRANS_QUART, Tween.EASE_IN)
@@ -168,11 +176,11 @@ func _process(delta) -> void:
 				# We don't change state yet, only when the focus is removed from the neighbour
 		Dragged:
 			if not $Tween.is_active() and not rect_scale.is_equal_approx(Vector2(0.4,0.4)):
+				$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'rect_scale',
 					rect_scale, Vector2(0.4,0.4), 0.2,
 					Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
-			#rect_scale = Vector2(0.4,0.4)
 			rect_global_position = determine_board_position_from_mouse()
 		OnPlayBoard:
 			pass
@@ -183,11 +191,13 @@ func _process(delta) -> void:
 			# When dragging the card, the card is slightly behind the mouse cursor
 			# so we tween it to the right location
 			if not $Tween.is_active():
+				$Tween.remove(self,'rect_position') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'rect_position',
 					rect_position, determine_board_position_from_mouse(), 0.25,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not rect_scale.is_equal_approx(cfc_config.play_area_scale):
+					$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 					$Tween.interpolate_property(self,'rect_scale',
 						rect_scale, cfc_config.play_area_scale, 0.5,
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
@@ -199,11 +209,13 @@ func _process(delta) -> void:
 				var intermediate_position: Vector2
 				if cfc_config.fancy_movement:
 					intermediate_position = get_parent().position - Vector2(0,rect_size.y*1.1)
+					$Tween.remove(self,'rect_position') # We make sure to remove other tweens of the same type to avoid a deadlock
 					$Tween.interpolate_property(self,'rect_position',
 						rect_position, intermediate_position, 0.25,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
 					yield($Tween, "tween_all_completed")
 					if not rect_scale.is_equal_approx(cfc_config.play_area_scale):
+						$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 						$Tween.interpolate_property(self,'rect_scale',
 							rect_scale, Vector2(1,1), 0.5,
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
@@ -211,6 +223,7 @@ func _process(delta) -> void:
 					fancy_move_second_part = true
 				else:
 					intermediate_position = get_parent().position
+				$Tween.remove(self,'rect_global_position') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'rect_global_position',
 					intermediate_position, get_parent().position, 0.35,
 					Tween.TRANS_SINE, Tween.EASE_IN_OUT)
