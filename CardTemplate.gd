@@ -6,7 +6,6 @@ class_name Card
 
 ## Load Config
 
-var a = false
 onready var bottom_margin: float = rect_size.y * cfc_config.bottom_margin_multiplier
 # warning-ignore:unused_class_variable
 # We export this variable to the editor to allow us to add scripts to each card object directly instead of only via code.
@@ -21,8 +20,8 @@ enum{ # Finite state engine for all posible states a card might be in
 	Dragged					#5
 	DroppingToBoard			#6
 	OnPlayBoard				#7
-	DroppingIntoPile 	#8
-	InPile				#9
+	DroppingIntoPile 		#8
+	InPile					#9
 }
 var state := InPile # Starting state for each card
 var start_position: Vector2 # Used for animating the card
@@ -41,10 +40,7 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	$Area2D.connect("input_event", self, "_on_Card_gui_input")
 	# warning-ignore:return_value_discarded
-	for node in cfc_config.piles:
-		# warning-ignore:return_value_discarded
-		connect("card_dropped", node, "_on_dropped_card")
-	for node in cfc_config.hands:
+	for node in cfc_config.piles + cfc_config.hands:
 		# warning-ignore:return_value_discarded
 		connect("card_dropped", node, "_on_dropped_card")
 	connect("card_dropped", cfc_config.NMAP.board, "_on_dropped_card")
