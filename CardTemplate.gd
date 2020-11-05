@@ -304,8 +304,9 @@ func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
 	match state:
 		InHand, Reorganizing:
-			interruptTweening()
-			state = FocusedInHand
+			if not cfc_config.card_drag_ongoing:
+				interruptTweening()
+				state = FocusedInHand
 
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
@@ -335,6 +336,7 @@ func _on_Card_gui_input(_viewport,event,_idx):
 						dragging_attempted = false
 						# While the mouse is kept pressed, we tell the engine that a card is being dragged
 						state = Dragged
+						cfc_config.card_drag_ongoing = true
 						# While we're dragging the card, we want the other cards to move to their expected position in hand
 						for c in get_parent().get_all_cards():
 							if c != self:
@@ -346,9 +348,10 @@ func _on_Card_gui_input(_viewport,event,_idx):
 func _input(event):
 	# A signal for whenever the player clicks on a card
 	if event is InputEventMouseButton:
-		match state:
-			Dragged:
-				if not event.is_pressed() and event.get_button_index() == 1:
+		if not event.is_pressed() and event.get_button_index() == 1:
+			cfc_config.card_drag_ongoing = false
+			match state:
+				Dragged:
 					focus_completed = false
 					emit_signal("card_dropped",self)
 

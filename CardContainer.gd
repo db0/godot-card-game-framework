@@ -14,17 +14,17 @@ func _ready():
 	connect("mouse_exited", self, "_on_mouse_exited")
 
 func _on_dropped_card(card: Card) -> void:
+#	print(self.name,waiting_for_card_drop)
 	if waiting_for_card_drop:
 		card.reHost(self)
-	waiting_for_card_drop = false
 
 func _on_mouse_entered():
 	waiting_for_card_drop = true
-	print('Enter: ', self.name)
+#	print('Enter: ', self.name)
 
 func _on_mouse_exited():
 	waiting_for_card_drop = false
-	print('Exit: ', self.name)
+#	print('Exit: ', self.name)
 
 func get_all_cards() -> Array:
 	var cardsArray := []

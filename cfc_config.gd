@@ -38,6 +38,8 @@ var NMAP := {}
 var piles := []
 var hands := []
 
+var card_drag_ongoing := false
+
 func _ready() -> void:
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
