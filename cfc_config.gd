@@ -38,14 +38,14 @@ var NMAP: Dictionary
 var piles: Array
 var hands: Array
 
-var card_drag_ongoing := false
+var card_drag_ongoing: Card = null
 
 func _ready() -> void:
 	# We reset their contents every time as they repopulated during unit testing many times.
 	NMAP = {}
 	piles = []
 	hands = []
-	card_drag_ongoing = false
+	card_drag_ongoing = null
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
 	for node in cfc_config.nodes_map.keys():

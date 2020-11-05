@@ -183,9 +183,22 @@ func _process(delta) -> void:
 				$Tween.start()
 			rect_global_position = determine_board_position_from_mouse()
 		OnPlayBoard:
-			pass
+			if not $Tween.is_active() and not rect_scale.is_equal_approx(cfc_config.play_area_scale):
+				$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
+				$Tween.interpolate_property(self,'rect_scale',
+					rect_scale, cfc_config.play_area_scale, 0.3,
+					Tween.TRANS_SINE, Tween.EASE_OUT)
+			$Tween.start()
 		FocusedOnBoard:
-			pass
+			# We check if the drag is ongoing here so that we can focus on a card even after the drag finished
+			if not cfc_config.card_drag_ongoing and not $Tween.is_active():
+				pass 
+##				if not rect_scale.is_equal_approx(Vector2(1.2,1.2)):
+##					$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
+##					$Tween.interpolate_property(self,'rect_scale',
+##						rect_scale, Vector2(1.2,1.2), 0.3,
+##						Tween.TRANS_SINE, Tween.EASE_OUT)
+##				$Tween.start()
 		DroppingToBoard:
 			# Used when dropping the cards to the table
 			# When dragging the card, the card is slightly behind the mouse cursor
@@ -326,14 +339,14 @@ func interruptTweening() ->void:
 func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
 	match state:
-		InHand, Reorganizing:
+		InHand, Reorganizing, PushedAside:
+			print('enter ', get_my_card_index())
 			if not cfc_config.card_drag_ongoing:
 				interruptTweening()
 				state = FocusedInHand
 		OnPlayBoard:
-			if not cfc_config.card_drag_ongoing:
-				interruptTweening()
-				state = FocusedOnBoard
+			#interruptTweening()
+			state = FocusedOnBoard
 
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
@@ -362,11 +375,11 @@ func _on_Card_gui_input(_viewport,event,_idx):
 					dragging_attempted = true
 					yield(get_tree().create_timer(0.1), "timeout")
 					# If this variable is still set to true, it means the mouse-button is still pressed
-					if dragging_attempted:
+					if dragging_attempted and not cfc_config.card_drag_ongoing:
 						dragging_attempted = false
 						# While the mouse is kept pressed, we tell the engine that a card is being dragged
 						state = Dragged
-						cfc_config.card_drag_ongoing = true
+						cfc_config.card_drag_ongoing = self
 						if get_parent() in cfc_config.hands:
 							# While we're dragging the card from hand, we want the other cards to move to their expected position in hand
 							for c in get_parent().get_all_cards():
@@ -380,7 +393,7 @@ func _input(event):
 	# A signal for whenever the player clicks on a card
 	if event is InputEventMouseButton:
 		if not event.is_pressed() and event.get_button_index() == 1:
-			cfc_config.card_drag_ongoing = false
+			cfc_config.card_drag_ongoing = null
 			match state:
 				Dragged:
 					focus_completed = false

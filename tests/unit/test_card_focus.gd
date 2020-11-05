@@ -35,7 +35,7 @@ func test_card_focus_neighbour_push():
 #
 func test_card_change_focus_to_neighbour():
 	var YIELD_TIME := 0.07
-	var YIELD_TIME2 := 0.2
+	var YIELD_TIME2 := 0.5
 	yield(yield_for(1), YIELD)
 	cards[2]._on_Card_mouse_entered()
 	yield(yield_for(YIELD_TIME), YIELD)
