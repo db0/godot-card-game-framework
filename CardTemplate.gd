@@ -121,6 +121,7 @@ func _process(delta) -> void:
 					else: #  The board doesn't have a node2d host container. Instead we use directly the viewport coords.
 						intermediate_position = get_viewport().size/2
 					if not rect_scale.is_equal_approx(Vector2(1,1)):
+						$Tween.remove(self,'rect_scale') # We make sure to remove other scaling tweens setup to avoid a deadlock
 						$Tween.interpolate_property(self,'rect_scale',
 							rect_scale, Vector2(1,1), 0.4,
 							Tween.TRANS_CUBIC, Tween.EASE_OUT)
@@ -166,7 +167,7 @@ func _process(delta) -> void:
 				$Tween.start()
 				# We don't change state yet, only when the focus is removed from the neighbour
 		Dragged:
-			if not $Tween.is_active():
+			if not $Tween.is_active() and not rect_scale.is_equal_approx(Vector2(0.4,0.4)):
 				$Tween.interpolate_property(self,'rect_scale',
 					rect_scale, Vector2(0.4,0.4), 0.2,
 					Tween.TRANS_SINE, Tween.EASE_IN)
