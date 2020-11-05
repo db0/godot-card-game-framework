@@ -5,7 +5,7 @@ class_name Card
 # If your card node type is not control, make sure you change the extends type above
 
 ## Load Config
-
+var tween_stuck_time = 0
 onready var bottom_margin: float = rect_size.y * cfc_config.bottom_margin_multiplier
 # warning-ignore:unused_class_variable
 # We export this variable to the editor to allow us to add scripts to each card object directly instead of only via code.
@@ -20,8 +20,9 @@ enum{ # Finite state engine for all posible states a card might be in
 	Dragged					#5
 	DroppingToBoard			#6
 	OnPlayBoard				#7
-	DroppingIntoPile 		#8
-	InPile					#9
+	FocusedOnBoard			#8
+	DroppingIntoPile 		#9
+	InPile					#10
 }
 var state := InPile # Starting state for each card
 var start_position: Vector2 # Used for animating the card
@@ -48,8 +49,16 @@ func _ready() -> void:
 func card_action() -> void:
 	pass
 
-func _process(_delta) -> void:
+func _process(delta) -> void:
 	# A basic finite state engine
+	if $Tween.is_active():
+		if tween_stuck_time > 0.5 and int(fmod(tween_stuck_time,3)) ==0 : 
+			print("Tween Stuck for ",tween_stuck_time,"seconds. Reports leftover runtime: ",$Tween.get_runtime ( ))
+			#print(fmod(tween_stuck_time,3))
+		#$Tween.remove(self,'rect_scale')
+		tween_stuck_time += delta
+	else:
+		tween_stuck_time = 0
 	match state:
 		InHand:
 			pass
@@ -120,6 +129,7 @@ func _process(_delta) -> void:
 						Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
+					tween_stuck_time = 0
 					fancy_move_second_part = true
 				else: # If we're not using fancy_movement, then we just do 1 tween, starting from the start_position
 					intermediate_position = start_position
@@ -161,8 +171,11 @@ func _process(_delta) -> void:
 					rect_scale, Vector2(0.4,0.4), 0.2,
 					Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
+			#rect_scale = Vector2(0.4,0.4)
 			rect_global_position = determine_board_position_from_mouse()
 		OnPlayBoard:
+			pass
+		FocusedOnBoard:
 			pass
 		DroppingToBoard:
 			# Used when dropping the cards to the table
@@ -303,6 +316,10 @@ func _on_Card_mouse_entered():
 			if not cfc_config.card_drag_ongoing:
 				interruptTweening()
 				state = FocusedInHand
+		OnPlayBoard:
+			if not cfc_config.card_drag_ongoing:
+				interruptTweening()
+				state = FocusedOnBoard
 
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
@@ -315,12 +332,15 @@ func _on_Card_mouse_exited():
 					# Therefore we simply stop all tweens and reorganize then whole hand
 					c.interruptTweening()
 					c.reorganizeSelf()
+		FocusedOnBoard:
+			focus_completed = false
+			state = OnPlayBoard
 
 func _on_Card_gui_input(_viewport,event,_idx):
 	# A signal for whenever the player clicks on a card
 	if event is InputEventMouseButton:
 		match state:
-			FocusedInHand:
+			FocusedInHand, FocusedOnBoard:
 				# If the player presses the left click, it might be because they want to drag the card
 				if event.is_pressed() and event.get_button_index() == 1:
 					# But first we check if the player does a long-press. 
@@ -333,11 +353,12 @@ func _on_Card_gui_input(_viewport,event,_idx):
 						# While the mouse is kept pressed, we tell the engine that a card is being dragged
 						state = Dragged
 						cfc_config.card_drag_ongoing = true
-						# While we're dragging the card, we want the other cards to move to their expected position in hand
-						for c in get_parent().get_all_cards():
-							if c != self:
-								c.interruptTweening()
-								c.reorganizeSelf()
+						if get_parent() in cfc_config.hands:
+							# While we're dragging the card from hand, we want the other cards to move to their expected position in hand
+							for c in get_parent().get_all_cards():
+								if c != self:
+									c.interruptTweening()
+									c.reorganizeSelf()
 				elif not event.is_pressed() and event.get_button_index() == 1:
 					dragging_attempted = false
 
@@ -363,9 +384,10 @@ func determine_idle_state() -> void:
 
 func tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# Takes care to make a card change visibility nicely
-	$Tween.interpolate_property(self,'modulate',
-	modulate, Color(1, 1, 1, visibility), time,
-	Tween.TRANS_SINE, Tween.EASE_IN)
+	if modulate[3] != visibility:
+		$Tween.interpolate_property(self,'modulate',
+		modulate, Color(1, 1, 1, visibility), time,
+		Tween.TRANS_SINE, Tween.EASE_IN)
 
 func reHost(targetHost):
 	# We need to store the parent, because we won't be able to know it later
@@ -419,6 +441,8 @@ func reHost(targetHost):
 		if parentHost == cfc_config.NMAP.hand:
 			state = InHand
 			reorganizeSelf()
+		if parentHost == cfc_config.NMAP.board:
+			state = DroppingToBoard
 
 func get_my_card_index() -> int:
 	return get_parent().get_card_index(self)

@@ -22,7 +22,8 @@ func _ready():
 	# Hand goes in the middle of the two
 	$Hand.position = Vector2(150,get_viewport().size.y - $Hand/Control.rect_size.y)
 	# Fill up the deck for demo purposes
-	#load_test_cards()
+	if not get_tree().get_root().has_node('Gut'):
+		load_test_cards()
 
 func load_test_cards():
 	for _i in range(20):

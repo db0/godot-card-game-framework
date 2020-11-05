@@ -61,3 +61,6 @@ func test_move_to_multiple_container():
 	assert_eq(17,cfc_config.NMAP.deck.get_card_count(), "Confirm the correct amount of cards are hosted in deck")
 	assert_eq(1,cfc_config.NMAP.hand.get_card_count(), "Confirm the correct amount of cards are hosted in hand")
 	
+func test_board_container_interaction():
+	pending("Check that card from board moves correctly to new position on board")
+	pending("Check that card from board moves correctly back to hand")
