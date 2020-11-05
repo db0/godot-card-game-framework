@@ -48,7 +48,7 @@ func _ready() -> void:
 func card_action() -> void:
 	pass
 
-func _process(delta) -> void:
+func _process(_delta) -> void:
 	# A basic finite state engine
 	match state:
 		InHand:

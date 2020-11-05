@@ -34,13 +34,18 @@ const hand_names = ['hand']
 
 ### END Behaviour Constants ###
 
-var NMAP := {}
-var piles := []
-var hands := []
+var NMAP: Dictionary
+var piles: Array
+var hands: Array
 
 var card_drag_ongoing := false
 
 func _ready() -> void:
+	# We reset their contents every time as they repopulated during unit testing many times.
+	NMAP = {}
+	piles = []
+	hands = []
+	card_drag_ongoing = false
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
 	for node in cfc_config.nodes_map.keys():

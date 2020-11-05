@@ -2,17 +2,17 @@ extends "res://addons/gut/test.gd"
 
 var board
 var hand
-var tv = TestVars.new()
+var common = UTCommon.new()
 
 func before_each():
-	board = autoqfree(tv.boardScene.instance())
+	board = autoqfree(TestVars.new().boardScene.instance())
 	get_tree().get_root().add_child(board)
-	cfc_config._ready()
-	hand = board.find_node('Hand')
+	common.setup_board(board)
+	hand = cfc_config.NMAP.hand
 
 func test_single_card_draw():
 	var card0: Card = hand.draw_card()
-	assert_eq(len(hand.get_children()), 2, "Check correct amount of cards drawn")
+	assert_eq(len(hand.get_children()), 3, "Check correct amount of cards drawn")
 	assert_true(card0.visible, "Check that cards drawn is visible")
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)

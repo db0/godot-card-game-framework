@@ -32,6 +32,7 @@ func draw_card(pile = cfc_config.NMAP.deck) -> Card:
 
 func _on_Deck_gui_input(_viewport, event, _idx):
 	if event.is_pressed() and event.get_button_index() == 1:
+		# warning-ignore:return_value_discarded
 		draw_card() # Replace with function body.
 
 

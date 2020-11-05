@@ -28,12 +28,18 @@ _global_script_classes=[ {
 "class": "TestVars",
 "language": "GDScript",
 "path": "res://tests/unit/TestVars.gd"
+}, {
+"base": "Reference",
+"class": "UTCommon",
+"language": "GDScript",
+"path": "res://tests/unit/UTcommon.gd"
 } ]
 _global_script_class_icons={
 "Card": "",
 "CardContainer": "",
 "Hand": "",
-"TestVars": ""
+"TestVars": "",
+"UTCommon": ""
 }
 
 [application]

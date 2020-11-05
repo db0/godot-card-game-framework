@@ -22,13 +22,16 @@ func _ready():
 	# Hand goes in the middle of the two
 	$Hand.position = Vector2(150,get_viewport().size.y - $Hand/Control.rect_size.y)
 	# Fill up the deck for demo purposes
+	#load_test_cards()
+
+func load_test_cards():
 	for _i in range(20):
 		var card: Card = cardTemplate.instance()
 		$Deck.add_child(card)
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		card.rect_global_position = $Deck.position
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck
-		card.modulate.a = 0 # We use this for a nice transition effect
+		card.modulate.a = 0 # We use this for a nice transition effect	
 
 func UT_interpolate_mouse_move(newpos: Vector2, startpos := Vector2(-1,-1), mouseSpeed := 3) -> void:
 	# This function is called by our unit testing to simulate mouse movement on the board

@@ -3,17 +3,14 @@ extends "res://addons/gut/test.gd"
 var board
 var hand
 var cards := []
-var tv = TestVars.new()
+var common = UTCommon.new()
 
 func before_each():
-	board = autoqfree(tv.boardScene.instance())
+	board = autoqfree(TestVars.new().boardScene.instance())
 	get_tree().get_root().add_child(board)
-	cfc_config._ready()
-	board.UT = true
-	cards = []
-	hand = board.find_node('Hand')
-	for _iter in range(5):
-		cards.append(hand.draw_card())
+	common.setup_board(board)
+	cards = common.draw_test_cards(5)
+	hand = cfc_config.NMAP.hand
 
 func test_single_card_focus():
 	yield(yield_for(1), YIELD)
