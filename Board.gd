@@ -59,3 +59,11 @@ func _on_ReshuffleAll_pressed():
 		if c.get_parent() != cfc_config.NMAP.deck:
 			c.reHost(cfc_config.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
+
+func _on_dropped_card(card: Card) -> void:
+	var card_for_board := true
+	for node in cfc_config.hands + cfc_config.piles:
+		if node.waiting_for_card_drop:
+			card_for_board = false
+	if card_for_board:
+		card.reHost(self)

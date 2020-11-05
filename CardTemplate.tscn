@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://CardTemplate.gd" type="Script" id=1]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
@@ -57,10 +57,14 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="RectangleShape2D" id=10]
+extents = Vector2( 75, 120 )
+
 [node name="Card" type="Panel"]
 margin_right = 125.0
 margin_bottom = 200.0
 rect_min_size = Vector2( 150, 240 )
+mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 1 )
 __meta__ = {
@@ -71,6 +75,7 @@ __meta__ = {
 [node name="CardText" type="VBoxContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -135,15 +140,22 @@ margin_bottom = 240.0
 custom_fonts/font = SubResource( 8 )
 text = "Cost: 0"
 
-[node name="Tween" type="Tween" parent="."]
-
 [node name="Focus" type="Panel" parent="."]
 visible = false
 show_behind_parent = true
 margin_left = -2.0
 margin_top = -2.0
 rect_min_size = Vector2( 154, 244 )
+mouse_filter = 2
 custom_styles/panel = SubResource( 9 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Tween" type="Tween" parent="."]
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 75, 120 )
+shape = SubResource( 10 )

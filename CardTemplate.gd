@@ -35,17 +35,19 @@ signal card_dropped(card) # No support for static typing in signals yet (godoten
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
-	connect("mouse_entered", self, "_on_Card_mouse_entered")
+	$Area2D.connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
-	connect("mouse_exited", self, "_on_Card_mouse_exited")
+	$Area2D.connect("mouse_exited", self, "_on_Card_mouse_exited")
 	# warning-ignore:return_value_discarded
-	connect("gui_input", self, "_on_Card_gui_input")
+	$Area2D.connect("input_event", self, "_on_Card_gui_input")
 	# warning-ignore:return_value_discarded
-	connect("card_dropped", cfc_config.NMAP.discard, "_on_dropped_card")
-	# warning-ignore:return_value_discarded
-	connect("card_dropped", cfc_config.NMAP.deck, "_on_dropped_card")
-	# warning-ignore:return_value_discarded
-	connect("card_dropped", cfc_config.NMAP.hand, "_on_dropped_card")
+	for node in cfc_config.piles:
+		# warning-ignore:return_value_discarded
+		connect("card_dropped", node, "_on_dropped_card")
+	for node in cfc_config.hands:
+		# warning-ignore:return_value_discarded
+		connect("card_dropped", node, "_on_dropped_card")
+	connect("card_dropped", cfc_config.NMAP.board, "_on_dropped_card")
 
 func card_action() -> void:
 	pass
@@ -317,7 +319,7 @@ func _on_Card_mouse_exited():
 					c.interruptTweening()
 					c.reorganizeSelf()
 
-func _on_Card_gui_input(event):
+func _on_Card_gui_input(_viewport,event,_idx):
 	# A signal for whenever the player clicks on a card
 	if event is InputEventMouseButton:
 		match state:
@@ -340,6 +342,11 @@ func _on_Card_gui_input(event):
 								c.reorganizeSelf()
 				elif not event.is_pressed() and event.get_button_index() == 1:
 					dragging_attempted = false
+
+func _input(event):
+	# A signal for whenever the player clicks on a card
+	if event is InputEventMouseButton:
+		match state:
 			Dragged:
 				if not event.is_pressed() and event.get_button_index() == 1:
 					focus_completed = false
@@ -416,3 +423,4 @@ func reHost(targetHost):
 
 func get_my_card_index() -> int:
 	return get_parent().get_card_index(self)
+
