@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.8 (in progress
+
+* Added capability for any number of hands and/or piles
+* Can drop cards intoto piles
+* Can pick up cards from table
+* Hand is a type of container (like piles) and behaves similarly to keep things consistent.
+
+
 ## 0.7
 
 * Added GUT and initial tests

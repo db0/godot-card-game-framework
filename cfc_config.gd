@@ -1,8 +1,10 @@
 ### Card Gaming Framework Global Config
 extends Node
 
-### BEGIN Behaviour Constants ###
-### Change the below to change how all cards behave to match your game.
+#-----------------------------------------------------------------------------
+# BEGIN Behaviour Constants #
+# Change the below to change how all cards behave to match your game.
+#-----------------------------------------------------------------------------
 
 
 # The amount of distance neighboring cards are pushed during card focus
@@ -32,7 +34,9 @@ const nodes_map := { # Optimally this should be moved to its own reference class
 const pile_names = ['deck','discard']
 const hand_names = ['hand']
 
-### END Behaviour Constants ###
+#-----------------------------------------------------------------------------
+# END Behaviour Constants #
+#-----------------------------------------------------------------------------
 
 var NMAP: Dictionary # A dictionary of all our container nodes for easy access
 var piles: Array # All our piles
