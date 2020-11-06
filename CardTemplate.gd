@@ -144,7 +144,7 @@ func _process(delta) -> void:
 						position, target_position, 0.35,
 						Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					$Tween.start()
-					determine_idle_state()
+					_determine_idle_state()
 				fancy_move_second_part = false
 		Reorganizing:
 			# Used when reorganizing the cards in the hand
@@ -158,7 +158,7 @@ func _process(delta) -> void:
 					$Tween.interpolate_property(self,'scale',
 						scale, Vector2(1,1), 0.4,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
-				tween_interpolate_visibility(1,0.4)
+				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
 				state = InHand
 		PushedAside:
@@ -248,7 +248,7 @@ func _process(delta) -> void:
 					intermediate_position, get_parent().position, 0.35,
 					Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 				$Tween.start()
-				determine_idle_state()
+				_determine_idle_state()
 				fancy_move_second_part = false
 				state = InPile
 		InPile:
@@ -416,7 +416,7 @@ func _input(event):
 					focus_completed = false
 					emit_signal("card_dropped",self)
 
-func determine_idle_state() -> void:
+func _determine_idle_state() -> void:
 	# Some logic is generic and doesn't always know the state the card should be afterwards
 	# We use this function to determine the state it should have, based on the card's container grouping.
 	if get_parent() in cfc_config.hands:
@@ -426,7 +426,7 @@ func determine_idle_state() -> void:
 	else:
 		state = OnPlayBoard
 
-func tween_interpolate_visibility(visibility: float, time: float) -> void:
+func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# Takes care to make a card change visibility nicely
 	if modulate[3] != visibility: # We only want to do something if we're actually doing something
 		$Tween.interpolate_property(self,'modulate',
@@ -447,7 +447,7 @@ func reHost(targetHost):
 		global_position = previous_pos # Ensure card stays where it was before it changed parents
 		if targetHost in cfc_config.hands:
 			visible = true
-			tween_interpolate_visibility(1,0.5)
+			_tween_interpolate_visibility(1,0.5)
 			# We need to adjust the start position based on the global position coordinates as they would be inside the hand control node
 			# So we transform global coordinates to hand rect coordinates.
 			previous_pos = targetHost.to_local(global_pos)
@@ -472,7 +472,7 @@ func reHost(targetHost):
 			# If we have fancy movement, we need to wait for 2 tweens to finish before we vanish the card.
 			if cfc_config.fancy_movement:
 				yield($Tween, "tween_all_completed")
-			tween_interpolate_visibility(0,0.3)
+			_tween_interpolate_visibility(0,0.3)
 			yield($Tween, "tween_all_completed")
 			visible = false
 		# The state for the card being on the board
