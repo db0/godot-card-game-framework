@@ -34,7 +34,7 @@ The below instructions will set up your game to use the `Card` class as a framew
    The CardTemplate.tcsn file is optional, but if you're looking for a design template for your cards,
    feel free to use it by instancing child scenes based on it. If not, see below for which nodes are necessary in your own templates
 
-2. Extend your card node's script, from the Card class
+2. Extend your card root node's script, from the Card class. If your card scene's root node is not a panel, modify the CardTemplate to extend the correct node type
 
     `extends Card`
 
@@ -42,7 +42,7 @@ The below instructions will set up your game to use the `Card` class as a framew
 
    It will also make it easy to upgrade your framework by just copying more recent versions of CardTemplate.gd.
 
-4. If you're not using the provided CardTemplate.tcsn, then you need to add the following nodes. The indentation of the below points specified parents, starting with root.
+4. If you're not using the provided CardTemplate.tcsn, then you need to add the following nodes. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root. These are merely what the existing code expects when trying to detect things like drag&drop, if you want a different setup, you will need to modify the relevant code yourself
 	* A control node (name irrelevant) to serve as the root node of your card scene. It has to be a control node as we rely on rect_size and rect_scale for card manipulation.
 		* A Tween node called "Tween"
 		* An Area2D node called "Area2D"
@@ -52,9 +52,29 @@ The below instructions will set up your game to use the `Card` class as a framew
 
 The below instructions will set up your game to use the `Hand` class as a framework for hand handling.
 
-1. Add a Node2D as a child node to where you want your hand to appear, then make sure that its script extends the Hand class.
+1. If you're not using the provided Hand.tcsn, then you need to add the following nodes. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root. These are merely what the existing code expects when trying to detect things like drag&drop, if you want a different setup, you will need to modify the relevant code yourself
+	* An Area2D (name irrelevant) to serve as the root node of your hand scene
+		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the hand area (to allow mouse detection)
+	* A control node (called "Control") to provide rect_size
 
-    `extends Hand`
+ 2. Extend your hand script (attached to your Area2D root node) from the Hand class
+
+   `extends Hand`
+
+2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the Deck.tcsn node for a sample of such a signal)
+
+### Container Class
+
+The below instructions will set up your game to use the `CardContainer` class as a framework for pile handling.
+
+1. If you're not using the provided Container.tcsn to instance new piles, then you need to add the following nodes. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root.
+	* An Area2D (name irrelevant) to serve as the root node of your hand scene
+		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the hand area (to allow mouse detection)
+	* A control node (called "Control") to provide rect_size
+
+ 2. Extend your hand script (attached to your Area2D root node) from the Hand class
+
+   `extends Hand`
 
 2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the Deck.tcsn node for a sample of such a signal)
 
@@ -84,4 +104,4 @@ For more fine customization, you'll need to modify manually
 
 ## Credits
 
-Many ideas were taken from this excellent [Godot Card Game Tutorial video series](https://www.youtube.com/watch?v=WjT5sLMD7Kw). This framework uses some of the concepts but also attempts to create better quality code in the process.
+Some initial ideas were taken from this excellent [Godot Card Game Tutorial video series](https://www.youtube.com/watch?v=WjT5sLMD7Kw). This framework uses some of the concepts but also attempts to create better quality code in the process.
