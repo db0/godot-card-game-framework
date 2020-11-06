@@ -53,7 +53,7 @@ func _process(delta) -> void:
 	# A basic finite state engine
 	if $Tween.is_active(): # Debug code for catch potential Tween deadlocks
 		tween_stuck_time += delta
-		if tween_stuck_time > 2 and int(fmod(tween_stuck_time,3)) == 2 : 
+		if tween_stuck_time > 2 and int(fmod(tween_stuck_time,3)) == 2 :
 			print("Tween Stuck for ",tween_stuck_time,"seconds. Reports leftover runtime: ",$Tween.get_runtime ( ))
 			$Tween.remove_all()
 			tween_stuck_time = 0
@@ -67,6 +67,7 @@ func _process(delta) -> void:
 			if not $Tween.is_active() and not focus_completed:
 				var expected_position: Vector2 = recalculatePosition()
 				# We figure out our neighbours by their index
+				var neighbours := []
 				for neighbour_index_diff in [-2,-1,1,2]:
 					var hand_size: int = get_parent().get_card_count()
 					var neighbour_index: int = get_my_card_index() + neighbour_index_diff
@@ -76,6 +77,11 @@ func _process(delta) -> void:
 						# The amount they're pushed is relevant to how close neighbours they are.
 						# Closest neighbours (1 card away) are pushed more than further neighbours.
 						neighbour_card.pushAside(neighbour_card.recalculatePosition() + Vector2(neighbour_card.rect_size.x/neighbour_index_diff * cfc_config.neighbour_push,0))
+						neighbours.append(neighbour_card)
+				for c in get_parent().get_all_cards():
+					if not c in neighbours and c != self:
+						c.interruptTweening()
+						c.reorganizeSelf()
 				# When zooming in, we also want to move the card higher, so that it's not under the screen's bottom edge.
 				target_position = expected_position - Vector2(rect_size.x * 0.25,rect_size.y * 0.5 + bottom_margin)
 				start_position = expected_position
@@ -95,7 +101,7 @@ func _process(delta) -> void:
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if cfc_config.fancy_movement:
-					# The below calculations figure out the intermediate position as a spot, 
+					# The below calculations figure out the intermediate position as a spot,
 					# offset towards the viewport center by an amount proportional to distance from the viewport center.
 					# (My math is not the best so there's probably a more elegant formula)
 					var direction_x: int = -1
@@ -120,7 +126,7 @@ func _process(delta) -> void:
 						# We calculate the position we want the card to move on the viewport
 						# then we translate that position to the local coordinates within the parent control node
 						#intermediate_position = Vector2(inter_x,inter_y)
-						intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))						
+						intermediate_position = get_parent().to_local(Vector2(inter_x,inter_y))
 					else: #  The board doesn't have a node2d host container. Instead we use directly the viewport coords.
 						intermediate_position = get_viewport().size/2
 					if not rect_scale.is_equal_approx(Vector2(1,1)):
@@ -195,7 +201,7 @@ func _process(delta) -> void:
 		FocusedOnBoard:
 			# We check if the drag is ongoing here so that we can focus on a card even after the drag finished
 			if not cfc_config.card_drag_ongoing and not $Tween.is_active():
-				pass 
+				pass
 ##				if not rect_scale.is_equal_approx(Vector2(1.2,1.2)):
 ##					$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 ##					$Tween.interpolate_property(self,'rect_scale',
@@ -304,13 +310,14 @@ func recalculatePosition() ->Vector2:
 	var hand_width: float = (cards_gap * (hand_size-1)) + rect_size.x
 	# The following just create the vector position to place this specific card in the playspace.
 	card_position_x = max_hand_size_width/2 - hand_width/2 + cards_gap * get_my_card_index()
-	# Since our control container has the same size as the cards, we start from 0, 
+	# Since our control container has the same size as the cards, we start from 0,
 	# and just offset the card if we want it higher or lower.
 	card_position_y = 0 + bottom_margin
 	return Vector2(card_position_x,card_position_y)
 #
 func reorganizeSelf() ->void:
 	# We make the card find its expected position in the hand
+	focus_completed = false # We clear the card as being in focus if it's reorganized
 	match state:
 		InHand, FocusedInHand, PushedAside:
 			# We set the start position to their current position
@@ -341,10 +348,11 @@ func interruptTweening() ->void:
 
 func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
+	#print(state,":enter:",get_my_card_index()) # Debug
 	match state:
-		InHand, Reorganizing, PushedAside:
-			print('enter ', get_my_card_index())
+		InHand, Reorganizing,PushedAside:
 			if not cfc_config.card_drag_ongoing:
+				#print("focusing:",get_my_card_index()) # debug
 				interruptTweening()
 				state = FocusedInHand
 		OnPlayBoard:
@@ -353,15 +361,26 @@ func _on_Card_mouse_entered():
 
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
+	#print(state,"exit:",get_my_card_index()) # debug
 	match state:
 		FocusedInHand:
 			focus_completed = false
 			if get_parent() in cfc_config.hands:  # To avoid errors during fast player actions
+				# Using Node2D instead of Control introduces an issue in that sometimes during very fast mouse movement
+				# The detection of mouse enterring a new card comes earlier than the detection of the mouse exiting the previous one
+				# This causes complications.
+				# The code below will reset card organization only another card hasn't gotten focus in the meantime
+				var another_focus := false
 				for c in get_parent().get_all_cards():
-					# We need to make sure afterwards all card will return to their expected positions
-					# Therefore we simply stop all tweens and reorganize then whole hand
-					c.interruptTweening()
-					c.reorganizeSelf()
+					# Check if any other card has focus by now.
+					if c != self and c.state == 1: another_focus = true
+				if not another_focus:
+					#print("resetting via:",get_my_card_index()) # debug
+					for c in get_parent().get_all_cards():
+						# We need to make sure afterwards all card will return to their expected positions
+						# Therefore we simply stop all tweens and reorganize then whole hand
+						c.interruptTweening()
+						c.reorganizeSelf()
 		FocusedOnBoard:
 			focus_completed = false
 			state = OnPlayBoard
@@ -373,14 +392,14 @@ func _on_Card_gui_input(_viewport,event,_idx):
 			FocusedInHand, FocusedOnBoard:
 				# If the player presses the left click, it might be because they want to drag the card
 				if event.is_pressed() and event.get_button_index() == 1:
-					# But first we check if the player does a long-press. 
+					# But first we check if the player does a long-press.
 					# We don't want to start dragging the card immediately.
 					dragging_attempted = true
 					yield(get_tree().create_timer(0.1), "timeout")
 					# If this variable is still set to true, it means the mouse-button is still pressed
-					# We also check if another card is already selected for dragging, 
+					# We also check if another card is already selected for dragging,
 					# to prevent from picking 2 cards at the same time.
-					if dragging_attempted and not cfc_config.card_drag_ongoing: 
+					if dragging_attempted and not cfc_config.card_drag_ongoing:
 						dragging_attempted = false
 						# While the mouse is kept pressed, we tell the engine that a card is being dragged
 						state = Dragged
