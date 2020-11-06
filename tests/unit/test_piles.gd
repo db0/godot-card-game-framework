@@ -20,7 +20,7 @@ func test_move_to_container():
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[2],board.UT_mouse_position)
 	yield(yield_for(1), YIELD)
-	assert_almost_eq(cards[2].rect_global_position,cfc_config.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
+	assert_almost_eq(cards[2].global_position,cfc_config.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
 	assert_eq(1,cfc_config.NMAP.discard.get_card_count(), "Confirm the correct amount of cards are hosted")
 	
 func test_move_to_multiple_container():
@@ -53,10 +53,10 @@ func test_move_to_multiple_container():
 	common.drop_card(cards[3],board.UT_mouse_position)
 	yield(yield_for(1), YIELD)
 	cfc_config.NMAP.deck._on_mouse_exited()
-	assert_almost_eq(cards[2].rect_global_position,cfc_config.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
-	assert_almost_eq(cards[1].rect_global_position,cfc_config.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
-	assert_almost_eq(cards[4].rect_global_position,cfc_config.NMAP.deck.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
-	assert_almost_eq(cards[3].rect_global_position,cfc_config.NMAP.deck.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
+	assert_almost_eq(cards[2].global_position,cfc_config.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
+	assert_almost_eq(cards[1].global_position,cfc_config.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
+	assert_almost_eq(cards[4].global_position,cfc_config.NMAP.deck.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
+	assert_almost_eq(cards[3].global_position,cfc_config.NMAP.deck.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
 	assert_eq(2,cfc_config.NMAP.discard.get_card_count(), "Confirm the correct amount of cards are hosted in discard")
 	assert_eq(17,cfc_config.NMAP.deck.get_card_count(), "Confirm the correct amount of cards are hosted in deck")
 	assert_eq(1,cfc_config.NMAP.hand.get_card_count(), "Confirm the correct amount of cards are hosted in hand")

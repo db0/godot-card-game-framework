@@ -52,19 +52,19 @@ func test_card_drag_block_by_board_borders():
 	cards[4]._on_Card_mouse_entered()
 	common.click_card(cards[4])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board.UT_interpolate_mouse_move(Vector2(-100,100),cards[0].position)
+	board.UT_interpolate_mouse_move(Vector2(-100,100),cards[0].global_position)
 	cfc_config.NMAP.hand._on_mouse_exited()
 	yield(yield_for(0.4), YIELD)
-	assert_almost_eq(Vector2(0, 110),cards[4].position,Vector2(2,2), "Check dragged outside left viewport borders stays inside viewport")
+	assert_almost_eq(Vector2(0, 110),cards[4].global_position,Vector2(2,2), "Check dragged outside left viewport borders stays inside viewport")
 	board.UT_interpolate_mouse_move(Vector2(1300,300))
 	yield(yield_for(0.4), YIELD)
-	assert_almost_eq(Vector2(1220, 310),cards[4].position,Vector2(2,2), "Check dragged outside right viewport borders stays inside viewport")
+	assert_almost_eq(Vector2(1220, 310),cards[4].global_position,Vector2(2,2), "Check dragged outside right viewport borders stays inside viewport")
 	board.UT_interpolate_mouse_move(Vector2(800,-100))
 	yield(yield_for(0.4), YIELD)
-	assert_almost_eq(Vector2(810, 0),cards[4].position,Vector2(2,2), "Check dragged outside top viewport borders stays inside viewport")
+	assert_almost_eq(Vector2(810, 0),cards[4].global_position,Vector2(2,2), "Check dragged outside top viewport borders stays inside viewport")
 	board.UT_interpolate_mouse_move(Vector2(500,800))
 	yield(yield_for(0.4), YIELD)
-	assert_almost_eq(Vector2(510, 624),cards[4].position,Vector2(2,2), "Check dragged outside bottom viewport borders stays inside viewport")
+	assert_almost_eq(Vector2(510, 624),cards[4].global_position,Vector2(2,2), "Check dragged outside bottom viewport borders stays inside viewport")
 
 
 func test_fast_card_table_drop():
