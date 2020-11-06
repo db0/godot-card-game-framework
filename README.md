@@ -55,7 +55,7 @@ The below instructions will set up your game to use the `Hand` class as a framew
 1. If you're not using the provided Hand.tcsn, then you need to add the following nodes. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root. These are merely what the existing code expects when trying to detect things like drag&drop, if you want a different setup, you will need to modify the relevant code yourself
 	* An Area2D (name irrelevant) to serve as the root node of your hand scene
 		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the hand area (to allow mouse detection)
-	* A control node (called "Control") to provide rect_size
+		* A control node (called "Control") to provide rect_size
 
  2. Extend your hand script (attached to your Area2D root node) from the Hand class
 
@@ -70,7 +70,7 @@ The below instructions will set up your game to use the `CardContainer` class as
 1. If you're not using the provided Container.tcsn to instance new piles, then you need to add the following nodes. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root.
 	* An Area2D (name irrelevant) to serve as the root node of your hand scene
 		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the hand area (to allow mouse detection)
-	* A control node (called "Control") to provide rect_size
+		* A control node (called "Control") to provide rect_size
 
  2. Extend your hand script (attached to your Area2D root node) from the Hand class
 
