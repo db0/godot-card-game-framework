@@ -9,7 +9,7 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Control",
+"base": "Node2D",
 "class": "Card",
 "language": "GDScript",
 "path": "res://CardTemplate.gd"

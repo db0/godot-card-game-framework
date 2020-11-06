@@ -30,7 +30,7 @@ func load_test_cards():
 		var card: Card = cardTemplate.instance()
 		$Deck.add_child(card)
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
-		card.rect_global_position = $Deck.position
+		card.position = Vector2(0,0)
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck
 		card.modulate.a = 0 # We use this for a nice transition effect	
 
