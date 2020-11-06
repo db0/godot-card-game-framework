@@ -183,8 +183,7 @@ func _process(delta) -> void:
 					scale, Vector2(0.4,0.4), 0.2,
 					Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
-				#z_as_relative = false
-				#z_index = 99
+			z_index = 99
 			# The position of the card object is relevant to the parent only.
 			# To make the card start moving from the right spot, we need to adjust the global mouse pos
 			# To where it would be in respect to the card's parent
@@ -340,7 +339,6 @@ func interruptTweening() ->void:
 func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_my_card_index()) # Debug
-	print('enter')
 	match state:
 		InHand, Reorganizing,PushedAside:
 			if not cfc_config.card_drag_ongoing:
@@ -354,11 +352,9 @@ func _on_Card_mouse_entered():
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
 	#print(state,"exit:",get_my_card_index()) # debug
-	z_index = 0
-	z_as_relative = true
+#	print("exit:",z_index)
 	match state:
 		FocusedInHand:
-			print('exit')
 			#focus_completed = false
 			if get_parent() in cfc_config.hands:  # To avoid errors during fast player actions
 				# Using Node2D instead of Control introduces an issue in that sometimes during very fast mouse movement
@@ -416,6 +412,7 @@ func _input(event):
 			cfc_config.card_drag_ongoing = null
 			match state:
 				Dragged:
+					z_index = 0
 					focus_completed = false
 					emit_signal("card_dropped",self)
 
