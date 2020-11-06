@@ -51,7 +51,7 @@ func card_action() -> void:
 
 func _process(delta) -> void:
 	# A basic finite state engine
-	if $Tween.is_active(): # Debug code for catch Tween deadlocks
+	if $Tween.is_active(): # Debug code for catch potential Tween deadlocks
 		tween_stuck_time += delta
 		if tween_stuck_time > 2 and int(fmod(tween_stuck_time,3)) == 2 : 
 			print("Tween Stuck for ",tween_stuck_time,"seconds. Reports leftover runtime: ",$Tween.get_runtime ( ))
@@ -66,6 +66,7 @@ func _process(delta) -> void:
 			# Used when card is focused on by the mouse hovering over it.
 			if not $Tween.is_active() and not focus_completed:
 				var expected_position: Vector2 = recalculatePosition()
+				# We figure out our neighbours by their index
 				for neighbour_index_diff in [-2,-1,1,2]:
 					var hand_size: int = get_parent().get_card_count()
 					var neighbour_index: int = get_my_card_index() + neighbour_index_diff
@@ -175,6 +176,7 @@ func _process(delta) -> void:
 				$Tween.start()
 				# We don't change state yet, only when the focus is removed from the neighbour
 		Dragged:
+			# Used when the card is dragged around the game with the mouse
 			if not $Tween.is_active() and not rect_scale.is_equal_approx(Vector2(0.4,0.4)):
 				$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'rect_scale',
@@ -183,6 +185,7 @@ func _process(delta) -> void:
 				$Tween.start()
 			rect_global_position = determine_board_position_from_mouse()
 		OnPlayBoard:
+			# Used when the card is idle on the board
 			if not $Tween.is_active() and not rect_scale.is_equal_approx(cfc_config.play_area_scale):
 				$Tween.remove(self,'rect_scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'rect_scale',
@@ -375,7 +378,9 @@ func _on_Card_gui_input(_viewport,event,_idx):
 					dragging_attempted = true
 					yield(get_tree().create_timer(0.1), "timeout")
 					# If this variable is still set to true, it means the mouse-button is still pressed
-					if dragging_attempted and not cfc_config.card_drag_ongoing:
+					# We also check if another card is already selected for dragging, 
+					# to prevent from picking 2 cards at the same time.
+					if dragging_attempted and not cfc_config.card_drag_ongoing: 
 						dragging_attempted = false
 						# While the mouse is kept pressed, we tell the engine that a card is being dragged
 						state = Dragged
@@ -390,7 +395,8 @@ func _on_Card_gui_input(_viewport,event,_idx):
 					dragging_attempted = false
 
 func _input(event):
-	# A signal for whenever the player clicks on a card
+	# We use _input because we want to also catch the signals when the player is dragging a card
+	# because in that situation, the mouse will not be strictly on the card
 	if event is InputEventMouseButton:
 		if not event.is_pressed() and event.get_button_index() == 1:
 			cfc_config.card_drag_ongoing = null
@@ -411,7 +417,7 @@ func determine_idle_state() -> void:
 
 func tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# Takes care to make a card change visibility nicely
-	if modulate[3] != visibility:
+	if modulate[3] != visibility: # We only want to do something if we're actually doing something
 		$Tween.interpolate_property(self,'modulate',
 		modulate, Color(1, 1, 1, visibility), time,
 		Tween.TRANS_SINE, Tween.EASE_IN)

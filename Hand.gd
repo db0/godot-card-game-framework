@@ -1,8 +1,8 @@
 # This is meant to be a simple container for card objects.
 # Just add a Node2D with this script as a child node anywhere you want your hand to be.
 
-extends CardContainer
-class_name Hand
+extends CardContainer # Hands are just a container with card organization functions
+class_name Hand 
 
 
 

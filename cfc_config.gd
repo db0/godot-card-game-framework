@@ -34,11 +34,11 @@ const hand_names = ['hand']
 
 ### END Behaviour Constants ###
 
-var NMAP: Dictionary
-var piles: Array
-var hands: Array
+var NMAP: Dictionary # A dictionary of all our container nodes for easy access
+var piles: Array # All our piles
+var hands: Array # All our hands
 
-var card_drag_ongoing: Card = null
+var card_drag_ongoing: Card = null # The card actively being dragged
 
 func _ready() -> void:
 	# We reset their contents every time as they repopulated during unit testing many times.
@@ -50,7 +50,7 @@ func _ready() -> void:
 	# using an human-readable name
 	for node in cfc_config.nodes_map.keys():
 		NMAP[node]  = get_node('/root/' + nodes_map[node])
-	# The below loops, populate two arrays which allows us to specify any number of card containers and hands
+	# The below loops, populate two arrays which allows us to quickly figure out if a container is a pile or hand
 	for name in pile_names:
 		piles.append(NMAP[name])
 	for name in hand_names:
