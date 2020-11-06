@@ -10,6 +10,11 @@ config_version=4
 
 _global_script_classes=[ {
 "base": "Node2D",
+"class": "Board",
+"language": "GDScript",
+"path": "res://BoardTemplate.gd"
+}, {
+"base": "Node2D",
 "class": "Card",
 "language": "GDScript",
 "path": "res://CardTemplate.gd"
@@ -35,6 +40,7 @@ _global_script_classes=[ {
 "path": "res://tests/unit/UTcommon.gd"
 } ]
 _global_script_class_icons={
+"Board": "",
 "Card": "",
 "CardContainer": "",
 "Hand": "",

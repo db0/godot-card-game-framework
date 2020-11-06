@@ -28,7 +28,6 @@ var state := InPile # Starting state for each card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
-var dragging_attempted := true
 signal card_dropped(card) # No support for static typing in signals yet (godotengine/godot#26045)
 
 # Called when the node enters the scene tree for the first time.
@@ -183,11 +182,10 @@ func _process(delta) -> void:
 					scale, Vector2(0.4,0.4), 0.2,
 					Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
-			z_index = 99
 			# The position of the card object is relevant to the parent only.
 			# To make the card start moving from the right spot, we need to adjust the global mouse pos
 			# To where it would be in respect to the card's parent
-			position = get_parent().to_local(_determine_board_position_from_mouse())
+			global_position = _determine_board_position_from_mouse()
 		OnPlayBoard:
 			# Used when the card is idle on the board
 			if not $Tween.is_active() and not scale.is_equal_approx(cfc_config.play_area_scale):
@@ -385,24 +383,37 @@ func _on_Card_gui_input(_viewport,event,_idx):
 				if event.is_pressed() and event.get_button_index() == 1:
 					# But first we check if the player does a long-press.
 					# We don't want to start dragging the card immediately.
-					dragging_attempted = true
+					if cfc_config.card_drag_ongoing:
+						# We set a singleton variable with the card object
+						# Then we compare to see if that variable was already filled
+						# If it was, we compare z_index. If the card already stored has lower index, then self was drawn over,
+						# so it has priority on being dragged.
+						# If z_index was equal, we compare child index as well.
+						# Cards with higher child index as always drawn over others in thew same parent.
+						if (cfc_config.card_drag_ongoing.z_index <= z_index and
+							cfc_config.card_drag_ongoing.get_my_card_index() < get_my_card_index()):
+							cfc_config.card_drag_ongoing = self
+					else: # If the singleton variable is empty, we just store outselfves
+						cfc_config.card_drag_ongoing = self
+					# We need to wait a bit to make sure the other card has a chance to go through their scripts
 					yield(get_tree().create_timer(0.1), "timeout")
 					# If this variable is still set to true, it means the mouse-button is still pressed
 					# We also check if another card is already selected for dragging,
 					# to prevent from picking 2 cards at the same time.
-					if dragging_attempted and not cfc_config.card_drag_ongoing:
-						dragging_attempted = false
+					if cfc_config.card_drag_ongoing == self:
 						# While the mouse is kept pressed, we tell the engine that a card is being dragged
+						z_index = 99
 						state = Dragged
-						cfc_config.card_drag_ongoing = self
 						if get_parent() in cfc_config.hands:
 							# While we're dragging the card from hand, we want the other cards to move to their expected position in hand
 							for c in get_parent().get_all_cards():
 								if c != self:
 									c.interruptTweening()
 									c.reorganizeSelf()
+				# If the mouse button was released we unset the dragged card
+				# This means a card clicked once won't try to immediately drag
 				elif not event.is_pressed() and event.get_button_index() == 1:
-					dragging_attempted = false
+					cfc_config.card_drag_ongoing = null
 
 func _input(event):
 	# We use _input because we want to also catch the signals when the player is dragging a card

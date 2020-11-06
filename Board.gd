@@ -1,15 +1,9 @@
-extends Node2D
+extends Board
+
 # Code for a sample playspace, you're expected to provide your own ;)
 
 var allCards := [] # A pseudo-deck array to hold the card objects we want to pull
 const cardTemplate = preload("res://CardTemplate.tscn")
-var UT := false # Unit Testing flag
-var UT_mouse_position := Vector2(0,0) # Simulated mouse position for Unit Testing
-var UT_current_mouse_position := Vector2(0,0) # Simulated mouse position for Unit Testing
-var UT_target_mouse_position := Vector2(0,0) # Simulated mouse position for Unit Testing
-var UT_mouse_speed := 3 # Simulated mouse movement speed for Unit Testing. The bigger the number, the faster the mouse moves
-var UT_interpolation_requested := false
-var t = 0 # Used for interpolating
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -34,25 +28,6 @@ func load_test_cards():
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck
 		card.modulate.a = 0 # We use this for a nice transition effect	
 
-func UT_interpolate_mouse_move(newpos: Vector2, startpos := Vector2(-1,-1), mouseSpeed := 3) -> void:
-	# This function is called by our unit testing to simulate mouse movement on the board
-	if startpos == Vector2(-1,-1):
-		UT_current_mouse_position = UT_mouse_position
-	else:
-		UT_current_mouse_position = startpos
-	UT_mouse_speed = mouseSpeed
-	UT_target_mouse_position = newpos
-	UT_interpolation_requested = true
-
-func _physics_process(delta):
-	if UT_interpolation_requested:
-		if UT_mouse_position != UT_target_mouse_position:
-			t += delta * UT_mouse_speed
-			UT_mouse_position = UT_current_mouse_position.linear_interpolate(UT_target_mouse_position, t)
-		else:
-			t = 0
-			UT_interpolation_requested = false
-
 func _on_FancyMovementToggle_toggled(_button_pressed):
 	# This function is to avoid relating the logic in the card objects to a node which might not be there in another game
 	# You can remove this function and the FancyMovementToggle button without issues
@@ -63,11 +38,3 @@ func _on_ReshuffleAll_pressed():
 		if c.get_parent() != cfc_config.NMAP.deck:
 			c.reHost(cfc_config.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
-
-func _on_dropped_card(card: Card) -> void:
-	var card_for_board := true
-	for node in cfc_config.hands + cfc_config.piles:
-		if node.waiting_for_card_drop:
-			card_for_board = false
-	if card_for_board:
-		card.reHost(self)
