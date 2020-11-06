@@ -28,6 +28,7 @@ var state := InPile # Starting state for each card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
+var overlapping_cards := []
 signal card_dropped(card) # No support for static typing in signals yet (godotengine/godot#26045)
 
 # Called when the node enters the scene tree for the first time.
@@ -37,7 +38,11 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	connect("mouse_exited", self, "_on_Card_mouse_exited")
 	# warning-ignore:return_value_discarded
-	connect("input_event", self, "_on_Card_gui_input")
+	connect("area_entered", self, "_on_Card_area_entered")
+	# warning-ignore:return_value_discarded
+	connect("area_exited", self, "_on_Card_area_exited")
+	# warning-ignore:return_value_discarded
+	connect("input_event", self, "_on_Card_input_event")
 	# warning-ignore:return_value_discarded
 	for node in cfc_config.piles + cfc_config.hands:
 		# warning-ignore:return_value_discarded
@@ -176,10 +181,10 @@ func _process(delta) -> void:
 				# We don't change state yet, only when the focus is removed from the neighbour
 		Dragged:
 			# Used when the card is dragged around the game with the mouse
-			if not $Tween.is_active() and not scale.is_equal_approx(Vector2(0.4,0.4)):
+			if not $Tween.is_active() and not scale.is_equal_approx(cfc_config.card_scale_while_dragging):
 				$Tween.remove(self,'scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'scale',
-					scale, Vector2(0.4,0.4), 0.2,
+					scale, cfc_config.card_scale_while_dragging, 0.2,
 					Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
 			# The position of the card object is relevant to the parent only.
@@ -374,7 +379,7 @@ func _on_Card_mouse_exited():
 			focus_completed = false
 			state = OnPlayBoard
 
-func _on_Card_gui_input(_viewport,event,_idx):
+func _on_Card_input_event(_viewport,event,_idx):
 	# A signal for whenever the player clicks on a card
 	if event is InputEventMouseButton:
 		match state:
@@ -423,7 +428,14 @@ func _input(event):
 			cfc_config.card_drag_ongoing = null
 			match state:
 				Dragged:
-					z_index = 0
+					# if the card was being dragged, it's index is very high to always draw above other objects
+					# We need to reset it either to the default of 0
+					# Or if the card was left overlapping with other cards, the the higher index among them
+					if overlapping_cards.empty():
+						z_index = 0
+					else:
+						z_index = overlapping_cards.back().z_index + 1
+
 					focus_completed = false
 					emit_signal("card_dropped",self)
 
@@ -507,5 +519,32 @@ func reHost(targetHost):
 			state = DroppingToBoard
 
 func get_my_card_index() -> int:
+	# Return out index among card nodes in the same parent.
 	return get_parent().get_card_index(self)
 
+func _on_Card_area_entered(card: Card):
+	# This function triggers any time the card object touches another card object on the board
+	# It then figures out what the highest z_index is among all the card objects it touches 
+	# And sets itself 1 higher, therefore always dropping over anything below it.
+	var new_index = 0
+	if not card in overlapping_cards:
+		overlapping_cards.append(card)
+	overlapping_cards.sort_custom(IndexSorter,"sort_z_index_ascending")
+	if cfc_config.card_drag_ongoing == self and card.get_parent() == cfc_config.NMAP.board:
+		z_index = overlapping_cards.back().z_index + 1
+
+class IndexSorter:
+	# A custom function to use with sort_custom to find the highest z_index among them
+	# It takes into account parent index, in case z_index are equal
+	static func sort_z_index_ascending(c1: Card, c2: Card):
+		if c1.z_index <= c2.z_index and c1.get_my_card_index() < c2.get_my_card_index():
+			return true
+		return false
+
+func _on_Card_area_exited(card: Card):
+	# This function triggers any time a card object exits another card object
+	# It clear out cards from the z_index comparison table
+	# and it will also set z_index to 99 when it touches no more cards on table
+	overlapping_cards.erase(card)
+	if cfc_config.card_drag_ongoing == self and overlapping_cards.empty():
+		z_index = 99

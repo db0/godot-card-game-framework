@@ -22,6 +22,10 @@ const bottom_margin_multiplier := 0.5
 # Switch this off to disable fancy movement of cards during draw/discard
 var fancy_movement := true
 
+# The below scales down cards down while being dragged
+# if you don't want this behaviour, change it to Vector2(1,1)
+var card_scale_while_dragging := Vector2(0.4,0.4)
+
 # The below vars predefine the position in your node structure to reach the nodes relevant to the cards
 # Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
 const nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader
