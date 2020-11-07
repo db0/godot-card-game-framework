@@ -1,4 +1,4 @@
-# Godot Card Gaming Framework 0.7
+# Godot Card Gaming Framework 0.8
 
 This framework is meant to provide well-designed, statically-typed, and well-commented classes which you can plug into any potential card game to provide a polished way to handle typical behaviour expected from cards in a game.
 
@@ -57,7 +57,7 @@ The below instructions will set up your game to use the `Hand` class as a framew
 		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the hand area (to allow mouse detection)
 		* A control node (called "Control") to provide rect_size
 
- 2. Extend your hand script (attached to your Area2D root node) from the Hand class
+2. Extend your hand script (attached to your Area2D root node) from the Hand class
 
    `extends Hand`
 
@@ -72,11 +72,21 @@ The below instructions will set up your game to use the `CardContainer` class as
 		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the hand area (to allow mouse detection)
 		* A control node (called "Control") to provide rect_size
 
- 2. Extend your hand script (attached to your Area2D root node) from the Hand class
+2. Extend your hand script (attached to your Area2D root node) from the Hand class
 
    `extends Hand`
 
 2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the Deck.tcsn node for a sample of such a signal)
+
+### Board Class
+
+The below instructions will set up your game to use the `Board` class as a framework for you main play area (i.e. the play "board").
+
+1. If you're not using the provided Board.tcsn, then all you need to do is add a Node2D in the root of your game.
+
+2. Extend your board script from the Board class
+
+   `extends Board`
 
 ### Unit Testing
 
