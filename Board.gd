@@ -14,7 +14,7 @@ func _ready():
 	# Deck goes bottom left
 	$Deck.position = Vector2(0,get_viewport().size.y - $Deck/Control.rect_size.y)
 	# Hand goes in the middle of the two
-	$Hand.position = Vector2(150,get_viewport().size.y - $Hand/Control.rect_size.y)
+	$Hand.position = Vector2(150,get_viewport().size.y - $Hand/Control.rect_size.y + $Hand.bottom_margin)
 	# Fill up the deck for demo purposes
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()

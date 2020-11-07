@@ -4,9 +4,7 @@ class_name Card
 # Simply make your card scripts extend this class and you'll have all the provided scripts available
 # If your card node type is not control, make sure you change the extends type above
 
-## Load Config
-var tween_stuck_time = 0
-onready var bottom_margin: float = $Control.rect_size.y * cfc_config.bottom_margin_multiplier
+var tween_stuck_time = 0 # Debug
 # warning-ignore:unused_class_variable
 # We export this variable to the editor to allow us to add scripts to each card object directly instead of only via code.
 export var scripts := [{'name':'','args':['',0]}]
@@ -86,7 +84,7 @@ func _process(delta) -> void:
 						c.interruptTweening()
 						c.reorganizeSelf()
 				# When zooming in, we also want to move the card higher, so that it's not under the screen's bottom edge.
-				target_position = expected_position - Vector2($Control.rect_size.x * 0.25,$Control.rect_size.y * 0.5 + bottom_margin)
+				target_position = expected_position - Vector2($Control.rect_size.x * 0.25,$Control.rect_size.y * 0.5 + cfc_config.NMAP.hand.bottom_margin)
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'position',
 					expected_position, target_position, 0.3,
@@ -307,7 +305,7 @@ func _recalculatePosition() ->Vector2:
 	card_position_x = max_hand_size_width/2 - hand_width/2 + cards_gap * get_my_card_index()
 	# Since our control container has the same size as the cards, we start from 0,
 	# and just offset the card if we want it higher or lower.
-	card_position_y = 0 + bottom_margin
+	card_position_y = 0
 	return Vector2(card_position_x,card_position_y)
 #
 func reorganizeSelf() ->void:
@@ -476,6 +474,9 @@ func reHost(targetHost):
 			previous_pos = targetHost.to_local(global_pos)
 			# The end position is always the final position the card would be inside the hand
 			target_position = _recalculatePosition()
+			# We want to prevent a card coming from the table in fast movement
+			# From keeping a table index
+			z_index = 0
 			state = MovingToContainer
 			# We reorganize the left over cards in hand.
 			for c in targetHost.get_all_cards():
@@ -527,7 +528,9 @@ func _on_Card_area_entered(card: Card):
 	# It then figures out what the highest z_index is among all the card objects it touches 
 	# And sets itself 1 higher, therefore always dropping over anything below it.
 	var new_index = 0
-	if not card in overlapping_cards:
+	if (not card in overlapping_cards and 
+		((card.get_parent() == cfc_config.NMAP.board and cfc_config.card_drag_ongoing == self) or
+		card.state == Dragged and get_parent() == cfc_config.NMAP.board)):
 		overlapping_cards.append(card)
 	overlapping_cards.sort_custom(IndexSorter,"sort_z_index_ascending")
 	if cfc_config.card_drag_ongoing == self and card.get_parent() == cfc_config.NMAP.board:
@@ -545,6 +548,7 @@ func _on_Card_area_exited(card: Card):
 	# This function triggers any time a card object exits another card object
 	# It clear out cards from the z_index comparison table
 	# and it will also set z_index to 99 when it touches no more cards on table
-	overlapping_cards.erase(card)
+	if card in overlapping_cards:
+		overlapping_cards.erase(card)
 	if cfc_config.card_drag_ongoing == self and overlapping_cards.empty():
 		z_index = 99

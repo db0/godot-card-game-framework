@@ -1,13 +1,14 @@
 # Changelog
 
-## 0.8 (in progress
+## 0.8
 
 * Added capability for any number of hands and/or piles
 * Can drop cards into piles
 * Can pick up cards from table
 * Hand is a type of container (like piles) and behaves similarly to keep things consistent.
 * Cards dragged will always be in front of other elements now
-* When 2+ cards overlap on the board, game will always pick the top one.
+* When 2+ cards overlap on the board, game will always pick the top one when clicking to drag.
+
 
 ## 0.7
 

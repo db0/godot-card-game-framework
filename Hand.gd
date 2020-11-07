@@ -4,7 +4,7 @@
 extends CardContainer # Hands are just a container with card organization functions
 class_name Hand 
 
-
+onready var bottom_margin: float = $Control.rect_size.y * cfc_config.bottom_margin_multiplier
 
 ### BEGIN Behaviour Constants ###
 # The maximum amount of cards allowed to draw in this hand
