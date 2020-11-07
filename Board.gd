@@ -15,6 +15,7 @@ func _ready():
 	$Deck.position = Vector2(0,get_viewport().size.y - $Deck/Control.rect_size.y)
 	# Hand goes in the middle of the two
 	$Hand.position = Vector2(150,get_viewport().size.y - $Hand/Control.rect_size.y + $Hand.bottom_margin)
+	$FancyMovementToggle.pressed = cfc_config.fancy_movement
 	# Fill up the deck for demo purposes
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
@@ -23,6 +24,7 @@ func load_test_cards():
 	for _i in range(20):
 		var card: Card = cardTemplate.instance()
 		$Deck.add_child(card)
+		card._determine_idle_state()
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		card.position = Vector2(0,0)
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck

@@ -8,7 +8,7 @@ var tween_stuck_time = 0 # Debug
 # warning-ignore:unused_class_variable
 # We export this variable to the editor to allow us to add scripts to each card object directly instead of only via code.
 export var scripts := [{'name':'','args':['',0]}]
-enum{ # Finite state engine for all posible states a card might be in
+enum{ # rudimentary Finite State Machine for all posible states a card might be in
 	  # This simply is a way to refer to the values with a human-readable name.
 	InHand					#0
 	FocusedInHand			#1
@@ -51,7 +51,7 @@ func card_action() -> void:
 	pass
 
 func _process(delta) -> void:
-	# A basic finite state engine
+	# A rudimentary Finite State Engine
 	if $Tween.is_active(): # Debug code for catch potential Tween deadlocks
 		tween_stuck_time += delta
 		if tween_stuck_time > 2 and int(fmod(tween_stuck_time,3)) == 2 :
@@ -341,7 +341,7 @@ func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_my_card_index()) # Debug
 	match state:
-		InHand, Reorganizing,PushedAside:
+		InHand, Reorganizing, PushedAside:
 			if not cfc_config.card_drag_ongoing:
 				#print("focusing:",get_my_card_index()) # debug
 				interruptTweening()
