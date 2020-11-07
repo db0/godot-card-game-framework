@@ -43,9 +43,9 @@ The below instructions will set up your game to use the `Card` class as a framew
    It will also make it easy to upgrade your framework by just copying more recent versions of CardTemplate.gd.
 
 4. If you're not using the provided CardTemplate.tcsn, then you need to add the following nodes. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root. These are merely what the existing code expects when trying to detect things like drag&drop, if you want a different setup, you will need to modify the relevant code yourself
-	* An Area2D node called "Area2D" to serve as the root node of your card scene. 
+	* An Area2D node (name irrelevant) to serve as the root node of your card scene. 
 		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the card (to allow mouse detection)
-		* A control node (name irrelevant) as we rely on rect_size for card manipulation.
+		* A control node (called "Control") as we rely on rect_size for card manipulation.
 		* A Tween node called "Tween"
 
 ### Hand Class
