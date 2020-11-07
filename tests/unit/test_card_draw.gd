@@ -77,3 +77,8 @@ func test_container_custom_card_functions():
 	assert_eq(hand.get_card(5), card5, "Check that get_card() returns the card at the correct index")
 	assert_eq(hand.get_card_index(card5), 5, "Check that get_card_index() returns the correct index")
 	
+func test_card_does_not_become_focused_during_movement():
+	var card0 = hand.draw_card()
+	yield(yield_for(0.2), YIELD)
+	card0._on_Card_mouse_entered()
+	assert_eq(2, card0.state, "Check that card state is still MovingToContainer")

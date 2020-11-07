@@ -30,6 +30,7 @@ func load_test_cards():
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck
 		card.modulate.a = 0 # We use this for a nice transition effect	
 
+
 func _on_FancyMovementToggle_toggled(_button_pressed):
 	# This function is to avoid relating the logic in the card objects to a node which might not be there in another game
 	# You can remove this function and the FancyMovementToggle button without issues

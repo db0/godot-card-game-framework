@@ -146,6 +146,7 @@ func _process(delta) -> void:
 						position, target_position, 0.35,
 						Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					$Tween.start()
+					yield($Tween, "tween_all_completed")
 					_determine_idle_state()
 				fancy_move_second_part = false
 		Reorganizing:
@@ -468,7 +469,7 @@ func reHost(targetHost):
 		global_position = previous_pos # Ensure card stays where it was before it changed parents
 		if targetHost in cfc_config.hands:
 			visible = true
-			_tween_interpolate_visibility(1,0.5)
+			_tween_interpolate_visibility(1,0.3)
 			# We need to adjust the start position based on the global position coordinates as they would be inside the hand control node
 			# So we transform global coordinates to hand rect coordinates.
 			previous_pos = targetHost.to_local(global_pos)
@@ -527,7 +528,6 @@ func _on_Card_area_entered(card: Card):
 	# This function triggers any time the card object touches another card object on the board
 	# It then figures out what the highest z_index is among all the card objects it touches 
 	# And sets itself 1 higher, therefore always dropping over anything below it.
-	var new_index = 0
 	if (not card in overlapping_cards and 
 		((card.get_parent() == cfc_config.NMAP.board and cfc_config.card_drag_ongoing == self) or
 		card.state == Dragged and get_parent() == cfc_config.NMAP.board)):
