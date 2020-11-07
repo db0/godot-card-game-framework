@@ -95,7 +95,7 @@ Do the following if you want to use/import the provided unit tests
 1. [install Gut](https://github.com/bitwes/Gut/wiki/Install) and do the relevant setup, if you don't have it already.
 2. If you followed the standard Gut instructions, you should have already have created the tests folder, copy the test_*.gd from /tests/unit inside your own `res://tests/unit`.
 3. Edit TestVars.gd and modify the boardScene const to point to the root board (i.e. where the cards are played) of your game.
-4. You need to either copy and use (load directly ot set it as an extension class to your own board scene) the provided Board.tscn to your own resources, or you need to copy the code inside Board.tcsn into your own board (at there's necessary Unit Testing code in there)
+4. You need to use the Board class on the root of your game or you need to copy the code inside BoardTemplate.tcsn into your own board (at there's necessary Unit Testing code in there)
 
 ## Easy Customation
 
