@@ -22,7 +22,7 @@ script = ExtResource( 2 )
 [node name="Control" type="Panel" parent="."]
 margin_right = 150.0
 margin_bottom = 240.0
-mouse_filter = 2
+mouse_filter = 1
 custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false

@@ -51,7 +51,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Card Gaming Framework"
-run/main_scene="res://Board.tscn"
+run/main_scene="res://Main.tscn"
 config/icon="res://icon.png"
 
 [autoload]

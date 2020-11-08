@@ -26,6 +26,9 @@ var fancy_movement := true
 # if you don't want this behaviour, change it to Vector2(1,1)
 var card_scale_while_dragging := Vector2(0.4,0.4)
 
+# If true, then the game will use the card focusing method where it scales up the card itself.
+# It will also mean you cannot focus on card on the table.
+var scaling_focus := false
 # The below vars predefine the position in your node structure to reach the nodes relevant to the cards
 # Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
 const nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader
@@ -56,9 +59,16 @@ func _ready() -> void:
 	card_drag_ongoing = null
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
-	for node in cfc_config.nodes_map.keys():
-		NMAP[node]  = get_node('/root/' + nodes_map[node])
-	# The below loops, populate two arrays which allows us to quickly figure out if a container is a pile or hand
+	if get_tree().get_root().has_node('Main'):
+		for node in cfc_config.nodes_map.keys():
+			NMAP[node]  = get_node('/root/Main/ViewportContainer/Viewport/' + nodes_map[node])
+		NMAP['main'] = get_node('/root/Main')
+	else:
+		# If we're not using the main viewport scene, we need to fallback to the basic focus
+		scaling_focus = true
+		for node in cfc_config.nodes_map.keys():
+			NMAP[node]  = get_node('/root/' + nodes_map[node])
+		# The below loops, populate two arrays which allows us to quickly figure out if a container is a pile or hand
 	for name in pile_names:
 		piles.append(NMAP[name])
 	for name in hand_names:

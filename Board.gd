@@ -19,7 +19,7 @@ func _ready():
 	# Fill up the deck for demo purposes
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
-
+	
 func load_test_cards():
 	for _i in range(20):
 		var card: Card = cardTemplate.instance()

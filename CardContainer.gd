@@ -9,13 +9,13 @@ var waiting_for_card_drop: bool = false
 func _ready():
 	pass
 	# warning-ignore:return_value_discarded
-	connect("mouse_entered", self, "_on_mouse_entered")
+	$Control.connect("mouse_entered", self, "_on_mouse_entered")
 	# warning-ignore:return_value_discarded
-	connect("mouse_exited", self, "_on_mouse_exited")
+	$Control.connect("mouse_exited", self, "_on_mouse_exited")
 
 func _on_dropped_card(card: Card) -> void:
 #	print(self.name,waiting_for_card_drop)
-	if waiting_for_card_drop:
+	if card in get_overlapping_areas():
 		card.reHost(self)
 
 func _on_mouse_entered():
@@ -40,3 +40,7 @@ func get_card(idx: int) -> Card:
 
 func get_card_index(card: Card) -> int:
 	return get_all_cards().find(card)
+
+#func _input(event):
+	#if event is InputEventMouseButton: 
+		#print(event.position)
