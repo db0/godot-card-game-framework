@@ -7,6 +7,7 @@ extends Node
 #-----------------------------------------------------------------------------
 
 
+const card_size_multiplier := 0.5
 # The amount of distance neighboring cards are pushed during card focus
 # It's based on the card width. Bigger percentage means larger push.
 const neighbour_push := 0.75
@@ -50,7 +51,7 @@ var piles: Array # All our piles
 var hands: Array # All our hands
 
 var card_drag_ongoing: Card = null # The card actively being dragged
-
+var done = false
 func _ready() -> void:
 	# We reset their contents every time as they repopulated during unit testing many times.
 	NMAP = {}
@@ -64,10 +65,10 @@ func _ready() -> void:
 			NMAP[node]  = get_node('/root/Main/ViewportContainer/Viewport/' + nodes_map[node])
 		NMAP['main'] = get_node('/root/Main')
 	else:
-		# If we're not using the main viewport scene, we need to fallback to the basic focus
-		scaling_focus = true
 		for node in cfc_config.nodes_map.keys():
 			NMAP[node]  = get_node('/root/' + nodes_map[node])
+		# If we're not using the main viewport scene, we need to fallback to the basic focus
+		scaling_focus = true
 		# To prevent accidental switching this option when there's no other viewports active
 		NMAP.board.get_node("ScalingFocusToggle").disabled = true
 		# The below loops, populate two arrays which allows us to quickly figure out if a container is a pile or hand

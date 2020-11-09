@@ -355,7 +355,8 @@ func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
 	#print(state,"exit:",get_my_card_index()) # debug
 #	print("exit:",z_index)
-	if cfc_config.scaling_focus:
+	if not cfc_config.scaling_focus:
+		cfc_config.NMAP.main.unfocus()
 		match state:
 			FocusedInHand:
 				#focus_completed = false
@@ -380,6 +381,8 @@ func start_dragging():
 	# Pick up a card to drag around with the mouse.
 	# When dragging we want the dragged card to always be drawn above all else
 	z_index = 99
+	if not cfc_config.scaling_focus:
+		cfc_config.NMAP.main.unfocus()
 	# We have to do the below offset hack due to godotengine/godot#30215
 	# This is caused because we're using a viewport node and scaling the game in full-creen.
 	if ProjectSettings.get("display/window/stretch/mode") != 'disabled':

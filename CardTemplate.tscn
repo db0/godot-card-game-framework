@@ -70,8 +70,8 @@ position = Vector2( 75, 120 )
 shape = SubResource( 1 )
 
 [node name="Control" type="Panel" parent="."]
-margin_right = 125.0
-margin_bottom = 200.0
+margin_right = 150.0
+margin_bottom = 240.0
 rect_min_size = Vector2( 150, 240 )
 custom_styles/panel = SubResource( 2 )
 __meta__ = {
