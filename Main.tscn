@@ -1,0 +1,51 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Board.tscn" type="PackedScene" id=1]
+[ext_resource path="res://Main.gd" type="Script" id=2]
+
+[node name="Main" type="Node2D"]
+script = ExtResource( 2 )
+
+[node name="ViewportContainer" type="ViewportContainer" parent="."]
+margin_right = 1280.0
+margin_bottom = 720.0
+stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Viewport" type="Viewport" parent="ViewportContainer"]
+size = Vector2( 1280, 720 )
+handle_input_locally = false
+render_target_update_mode = 3
+
+[node name="Camera2D" type="Camera2D" parent="ViewportContainer/Viewport"]
+anchor_mode = 0
+current = true
+
+[node name="Board" parent="ViewportContainer/Viewport" instance=ExtResource( 1 )]
+
+[node name="Focus" type="ViewportContainer" parent="."]
+visible = false
+modulate = Color( 1, 1, 1, 0 )
+margin_right = 300.0
+margin_bottom = 460.0
+mouse_filter = 2
+stretch = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Viewport" type="Viewport" parent="Focus"]
+size = Vector2( 299, 460 )
+handle_input_locally = false
+usage = 0
+render_target_update_mode = 0
+gui_disable_input = true
+
+[node name="Camera2D" type="Camera2D" parent="Focus/Viewport"]
+anchor_mode = 0
+current = true
+zoom = Vector2( 0.75, 0.8 )
+
+[node name="Tween" type="Tween" parent="Focus"]
