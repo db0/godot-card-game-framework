@@ -183,7 +183,7 @@ func _process(delta) -> void:
 			# The control will not receive the mouse input and this will stay dragging forever
 			Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 			$Control.set_default_cursor_shape(Input.CURSOR_CROSS)
-			# We set the card to be centered on the mouse cursor to allow the player to properly understand 
+			# We set the card to be centered on the mouse cursor to allow the player to properly understand
 			# where it will go once dropped.
 			global_position = _determine_board_position_from_mouse()# - $Control.rect_size/2 * scale
 		OnPlayBoard:
@@ -250,16 +250,18 @@ func _process(delta) -> void:
 func _determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
 	var mouse_position
+	var zoom = Vector2(1,1)
 	# We have to do the below offset hack due to godotengine/godot#30215
 	# This is caused because we're using a viewport node and scaling the game in full-creen.
-	var zoom = get_viewport().get_node("Camera2D").zoom
-	var offset_position = get_tree().current_scene.get_global_mouse_position() - get_viewport_transform().origin
-	offset_position *= zoom
+	if get_viewport().has_node("Camera2D"):
+		zoom = get_viewport().get_node("Camera2D").zoom
+	var offset_mouse_position = get_tree().current_scene.get_global_mouse_position() - get_viewport_transform().origin
+	offset_mouse_position *= zoom
 	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
 	if cfc_config.NMAP.board.UT: mouse_position = cfc_config.NMAP.board.UT_mouse_position
-	else: mouse_position = offset_position
+	else: mouse_position = offset_mouse_position
 	return mouse_position
-		
+
 func _determine_board_position_from_mouse() -> Vector2:
 	#The following if statements prevents the dragged card from being dragged outside the viewport boundaries
 	var targetpos: Vector2 = _determine_global_mouse_pos()
@@ -376,6 +378,7 @@ func _on_Card_mouse_exited():
 
 func start_dragging():
 	# Pick up a card to drag around with the mouse.
+	# When dragging we want the dragged card to always be drawn above all else
 	z_index = 99
 	# We have to do the below offset hack due to godotengine/godot#30215
 	# This is caused because we're using a viewport node and scaling the game in full-creen.
@@ -383,7 +386,7 @@ func start_dragging():
 		var offset = get_tree().current_scene.get_viewport().get_size_override()
 		get_viewport().warp_mouse(global_position / offset * OS.window_size)
 	# However the above messes things if we don't have stretch mode, so we ignore it then
-	else: 
+	else:
 		get_viewport().warp_mouse(global_position)
 	state = Dragged
 	if get_parent() in cfc_config.hands:
@@ -427,6 +430,7 @@ func _on_Card_gui_input(event):
 					for obj in get_overlapping_areas():
 						if obj.get_class() == 'CardContainer':
 							destination = obj #TODO: Need some more player-obvious logic on what to do if card area overlaps two CardContainers
+							print(obj.name)
 					reHost(destination)
 					focus_completed = false
 					#emit_signal("card_dropped",self)
@@ -500,7 +504,7 @@ func reHost(targetHost):
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
 				# But this time we don't want to rearrange ourselves, as we're in a different container by now
-				if c != self:
+				if c != self and c.state != Dragged:
 					c.interruptTweening()
 					c.reorganizeSelf()
 	else:

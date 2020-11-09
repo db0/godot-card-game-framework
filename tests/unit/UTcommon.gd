@@ -26,6 +26,7 @@ func setup_board(b: Node) -> Node:
 	cfc_config._ready()
 	board.UT = true
 	board.load_test_cards()
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 	return board
 
 func draw_test_cards(count: int) -> Array:
