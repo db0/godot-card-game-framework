@@ -26,7 +26,6 @@ current = true
 [node name="Board" parent="ViewportContainer/Viewport" instance=ExtResource( 1 )]
 
 [node name="Focus" type="ViewportContainer" parent="."]
-visible = false
 modulate = Color( 1, 1, 1, 0 )
 margin_right = 300.0
 margin_bottom = 460.0
@@ -40,7 +39,7 @@ __meta__ = {
 size = Vector2( 299, 460 )
 handle_input_locally = false
 usage = 0
-render_target_update_mode = 0
+render_target_update_mode = 3
 gui_disable_input = true
 
 [node name="Camera2D" type="Camera2D" parent="Focus/Viewport"]

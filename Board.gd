@@ -16,7 +16,7 @@ func _ready():
 	# Hand goes in the middle of the two
 	$Hand.position = Vector2(150,get_viewport().size.y - $Hand/Control.rect_size.y + $Hand.bottom_margin)
 	$FancyMovementToggle.pressed = cfc_config.fancy_movement
-	$ScalingFocusToggle.pressed = cfc_config.scaling_focus
+	$ScalingFocusOptions.selected = cfc_config.focus_style
 	# Fill up the deck for demo purposes
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
@@ -36,13 +36,11 @@ func _on_FancyMovementToggle_toggled(_button_pressed):
 	# You can remove this function and the FancyMovementToggle button without issues
 	cfc_config.fancy_movement = $FancyMovementToggle.pressed
 
-func _on_ScalingFocusToggle_toggled(_button_pressed):
-	# This function is to avoid relating the logic in the card objects to a node which might not be there in another game
-	# You can remove this function and the FancyMovementToggle button without issues
-	cfc_config.scaling_focus = $ScalingFocusToggle.pressed
-
 func _on_ReshuffleAll_pressed():
 	for c in allCards:
 		if c.get_parent() != cfc_config.NMAP.deck:
 			c.reHost(cfc_config.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
+
+func _on_ScalingFocusOptions_item_selected(index):
+	cfc_config.focus_style = $ScalingFocusOptions.selected

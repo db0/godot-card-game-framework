@@ -42,13 +42,15 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ScalingFocusToggle" type="CheckButton" parent="."]
+[node name="ScalingFocusOptions" type="OptionButton" parent="."]
 margin_left = -1.33484
 margin_top = 44.0497
 margin_right = 187.665
 margin_bottom = 84.0497
 pressed = true
-text = "Scaling Focus"
+text = "Scaling + Viewport Focus"
+items = [ "Scaling Focus", null, false, 0, null, "Viewport Focus", null, false, 1, null, "Scaling + Viewport Focus", null, false, 2, null ]
+selected = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -63,7 +65,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
-[connection signal="toggled" from="ScalingFocusToggle" to="." method="_on_ScalingFocusToggle_toggled"]
+[connection signal="item_selected" from="ScalingFocusOptions" to="." method="_on_ScalingFocusOptions_item_selected"]
 [connection signal="pressed" from="ReshuffleAll" to="." method="_on_ReshuffleAll_pressed"]
 
 [editable path="DiscardPile"]
