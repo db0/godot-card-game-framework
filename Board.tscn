@@ -42,6 +42,17 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="ScalingFocusToggle" type="CheckButton" parent="."]
+margin_left = -1.33484
+margin_top = 44.0497
+margin_right = 187.665
+margin_bottom = 84.0497
+pressed = true
+text = "Scaling Focus"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="ReshuffleAll" type="Button" parent="."]
 margin_left = 9.89948
 margin_top = 473.762
@@ -52,6 +63,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
+[connection signal="toggled" from="ScalingFocusToggle" to="." method="_on_ScalingFocusToggle_toggled"]
 [connection signal="pressed" from="ReshuffleAll" to="." method="_on_ReshuffleAll_pressed"]
 
 [editable path="DiscardPile"]

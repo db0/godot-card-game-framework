@@ -68,6 +68,8 @@ func _ready() -> void:
 		scaling_focus = true
 		for node in cfc_config.nodes_map.keys():
 			NMAP[node]  = get_node('/root/' + nodes_map[node])
+		# To prevent accidental switching this option when there's no other viewports active
+		NMAP.board.get_node("ScalingFocusToggle").disabled = true
 		# The below loops, populate two arrays which allows us to quickly figure out if a container is a pile or hand
 	for name in pile_names:
 		piles.append(NMAP[name])
