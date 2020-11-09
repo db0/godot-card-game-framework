@@ -1,6 +1,6 @@
 extends Node2D
 
-# This array holds all the previously focused cards. 
+# This array holds all the previously focused cards.
 var previously_focused_cards := []
 # This var hold the currently focused card duplicate.
 var card_focus = null
@@ -24,7 +24,7 @@ func focus_card(card: Card):
 	card_focus.scale = Vector2(1.5,1.5)
 	# We make the viewport camera focus on it
 	$Focus/Viewport/Camera2D.position = card_focus.global_position
-	# We do a nice alpha-modulate tween 
+	# We do a nice alpha-modulate tween
 	$Focus/Tween.remove_all() # We always make sure to clean tweening conflicts
 	$Focus/Tween.interpolate_property($Focus,'modulate',
 	modulate, Color(1,1,1,1), 0.25,

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9 (In progress)
+
+* Added viewport focus
+* Switched back to control-centric signals. Kept the Area2D base of cards for collision detection only. Ignored z_index except when dragging
+
 ## 0.8
 
 * Added capability for any number of hands and/or piles
