@@ -18,7 +18,6 @@ func focus_card(card: Card):
 	card_focus = card.duplicate()
 	# We store all our previously focused cards in an array, and clean them up process when they're not focused anymore
 	previously_focused_cards.append(card_focus)
-	print('adding')
 	$Focus/Viewport.add_child(card_focus)
 	# We scale it up to allow the player a better viewing experience
 	card_focus.scale = Vector2(1.5,1.5)

@@ -418,7 +418,6 @@ func _on_Card_gui_input(event):
 					for obj in get_overlapping_areas():
 						if obj.get_class() == 'CardContainer':
 							destination = obj #TODO: Need some more player-obvious logic on what to do if card area overlaps two CardContainers
-							print(obj.name)
 					reHost(destination)
 					focus_completed = false
 					#emit_signal("card_dropped",self)
