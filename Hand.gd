@@ -30,7 +30,7 @@ func draw_card(pile = cfc_config.NMAP.deck) -> Card:
 		card.reHost(self)
 	return card # Returning the card object for unit testing
 
-func _on_Deck_input_event(_viewport, event, _idx):
+func _on_Deck_input_event(event):
 	if event.is_pressed() and event.get_button_index() == 1:
 		# warning-ignore:return_value_discarded
 		draw_card() # Replace with function body.

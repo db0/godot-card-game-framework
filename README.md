@@ -12,8 +12,6 @@ Pull requests are more than welcome ;)
 
 ## Installation
 
-First of all, make sure your project's window stretch mode is set to either 'disabled' or 'viewport'
-
 ### Global configuration
 
 The framework uses a common singleton called cfc_config to control overall configuration.
@@ -88,6 +86,16 @@ The below instructions will set up your game to use the `Board` class as a frame
 
    `extends Board`
 
+### Viewport Focus
+
+The framework includes two forms of showing details about a card. One is simply to scale up a the card a bit while in hand, and the other is to pop-up a new viewport with a copy of the card object in it.
+
+By default the game has both active, but the viewport focus requires a bit more extensive setup to be usable by your game. Specifically you need to setup a parent scene which utilizes multiple viewports.
+
+If you do not already have anything like this, you can simply use the Main.tcsn scene as a template and modify accordingly. The framework will utilize it automatically if it detects a Main.tcsn as the root.
+
+If you do not want or need the viewport focus, then simply ignore it. However you'll need to make sure table cards are legible as they are since there's no other good way to get a closeup of them without viewports
+
 ### Unit Testing
 
 Do the following if you want to use/import the provided unit tests
@@ -111,6 +119,7 @@ For more fine customization, you'll need to modify manually
 * Automatic re-arranging of hand as cards are added or removed.
 * Drag & Drop
 * Option for multiple hands and piles
+* Larger image of card when moving mouse cursor over it
 
 ## Credits
 

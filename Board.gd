@@ -16,10 +16,11 @@ func _ready():
 	# Hand goes in the middle of the two
 	$Hand.position = Vector2(150,get_viewport().size.y - $Hand/Control.rect_size.y + $Hand.bottom_margin)
 	$FancyMovementToggle.pressed = cfc_config.fancy_movement
+	$ScalingFocusOptions.selected = cfc_config.focus_style
 	# Fill up the deck for demo purposes
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
-
+	
 func load_test_cards():
 	for _i in range(20):
 		var card: Card = cardTemplate.instance()
@@ -29,7 +30,6 @@ func load_test_cards():
 		card.position = Vector2(0,0)
 		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck
 		card.modulate.a = 0 # We use this for a nice transition effect	
-
 
 func _on_FancyMovementToggle_toggled(_button_pressed):
 	# This function is to avoid relating the logic in the card objects to a node which might not be there in another game
@@ -41,3 +41,6 @@ func _on_ReshuffleAll_pressed():
 		if c.get_parent() != cfc_config.NMAP.deck:
 			c.reHost(cfc_config.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
+
+func _on_ScalingFocusOptions_item_selected(index):
+	cfc_config.focus_style = $ScalingFocusOptions.selected

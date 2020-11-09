@@ -1,4 +1,4 @@
-extends Node2D
+extends Area2D
 class_name Card
 # This class is meant to be used as the basis for your card scripting
 # Simply make your card scripts extend this class and you'll have all the provided scripts available
@@ -10,19 +10,18 @@ var tween_stuck_time = 0 # Debug
 export var scripts := [{'name':'','args':['',0]}]
 enum{ # rudimentary Finite State Machine for all posible states a card might be in
 	  # This simply is a way to refer to the values with a human-readable name.
-	InHand					#0
-	FocusedInHand			#1
-	MovingToContainer		#2
-	Reorganizing			#3
-	PushedAside				#4
-	Dragged					#5
-	DroppingToBoard			#6
-	OnPlayBoard				#7
-	FocusedOnBoard			#8
-	DroppingIntoPile 		#9
-	InPile					#10
+	IN_HAND					#0
+	FOCUSED_IN_HAND			#1
+	MOVING_TO_CONTAINER		#2
+	REORGANIZING			#3
+	PUSHED_ASIDE			#4
+	DRAGGED					#5
+	DROPPING_TO_BOARD		#6
+	ON_PLAY_BOARD			#7
+	DROPPING_INTO_PILE 		#8
+	IN_PILE					#9
 }
-var state := InPile # Starting state for each card
+var state := IN_PILE # Starting state for each card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
@@ -32,23 +31,16 @@ signal card_dropped(card) # No support for static typing in signals yet (godoten
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
-	connect("mouse_entered", self, "_on_Card_mouse_entered")
+	$Control.connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
-	connect("mouse_exited", self, "_on_Card_mouse_exited")
+	$Control.connect("mouse_exited", self, "_on_Card_mouse_exited")
 	# warning-ignore:return_value_discarded
-	connect("area_entered", self, "_on_Card_area_entered")
-	# warning-ignore:return_value_discarded
-	connect("area_exited", self, "_on_Card_area_exited")
-	# warning-ignore:return_value_discarded
-	connect("input_event", self, "_on_Card_input_event")
-	# warning-ignore:return_value_discarded
-	for node in cfc_config.piles + cfc_config.hands:
-		# warning-ignore:return_value_discarded
-		connect("card_dropped", node, "_on_dropped_card")
-	connect("card_dropped", cfc_config.NMAP.board, "_on_dropped_card")
+	$Control.connect("gui_input", self, "_on_Card_gui_input")
 
 func card_action() -> void:
 	pass
+
+func get_class(): return "Card"
 
 func _process(delta) -> void:
 	# A rudimentary Finite State Engine
@@ -61,11 +53,11 @@ func _process(delta) -> void:
 	else:
 		tween_stuck_time = 0
 	match state:
-		InHand:
+		IN_HAND:
 			pass
-		FocusedInHand:
+		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
-			if not $Tween.is_active() and not focus_completed:
+			if not $Tween.is_active() and not focus_completed and cfc_config.focus_style != cfc_config.FocusStyle.VIEWPORT:
 				var expected_position: Vector2 = _recalculatePosition()
 				# We figure out our neighbours by their index
 				var neighbours := []
@@ -96,7 +88,7 @@ func _process(delta) -> void:
 				$Tween.start()
 				focus_completed = true
 				# We don't change state yet, only when the focus is removed from this card
-		MovingToContainer:
+		MOVING_TO_CONTAINER:
 			# Used when moving card between places (i.e. deck to hand, hand to discard etc)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
@@ -140,7 +132,7 @@ func _process(delta) -> void:
 					yield($Tween, "tween_all_completed")
 					tween_stuck_time = 0
 					fancy_move_second_part = true
-				if state == MovingToContainer: # We need to check again, just in case it's been reorganized instead.
+				if state == MOVING_TO_CONTAINER: # We need to check again, just in case it's been reorganized instead.
 					$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
 					$Tween.interpolate_property(self,'position',
 						position, target_position, 0.35,
@@ -149,7 +141,7 @@ func _process(delta) -> void:
 					yield($Tween, "tween_all_completed")
 					_determine_idle_state()
 				fancy_move_second_part = false
-		Reorganizing:
+		REORGANIZING:
 			# Used when reorganizing the cards in the hand
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
@@ -163,8 +155,8 @@ func _process(delta) -> void:
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
-				state = InHand
-		PushedAside:
+				state = IN_HAND
+		PUSHED_ASIDE:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
 			if not $Tween.is_active() and not position.is_equal_approx(target_position):
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
@@ -178,7 +170,7 @@ func _process(delta) -> void:
 						Tween.TRANS_QUART, Tween.EASE_IN)
 				$Tween.start()
 				# We don't change state yet, only when the focus is removed from the neighbour
-		Dragged:
+		DRAGGED:
 			# Used when the card is dragged around the game with the mouse
 			if not $Tween.is_active() and not scale.is_equal_approx(cfc_config.card_scale_while_dragging):
 				$Tween.remove(self,'scale') # We make sure to remove other tweens of the same type to avoid a deadlock
@@ -186,11 +178,15 @@ func _process(delta) -> void:
 					scale, cfc_config.card_scale_while_dragging, 0.2,
 					Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
-			# The position of the card object is relevant to the parent only.
-			# To make the card start moving from the right spot, we need to adjust the global mouse pos
-			# To where it would be in respect to the card's parent
-			global_position = _determine_board_position_from_mouse()
-		OnPlayBoard:
+			# We need to capture the mouse cursos in the window while dragging
+			# because if the player drags the cursor outside the window and unclicks
+			# The control will not receive the mouse input and this will stay dragging forever
+			Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
+			$Control.set_default_cursor_shape(Input.CURSOR_CROSS)
+			# We set the card to be centered on the mouse cursor to allow the player to properly understand
+			# where it will go once dropped.
+			global_position = _determine_board_position_from_mouse()# - $Control.rect_size/2 * scale
+		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			if not $Tween.is_active() and not scale.is_equal_approx(cfc_config.play_area_scale):
 				$Tween.remove(self,'scale') # We make sure to remove other tweens of the same type to avoid a deadlock
@@ -198,24 +194,19 @@ func _process(delta) -> void:
 					scale, cfc_config.play_area_scale, 0.3,
 					Tween.TRANS_SINE, Tween.EASE_OUT)
 			$Tween.start()
-		FocusedOnBoard:
-			# We check if the drag is ongoing here so that we can focus on a card even after the drag finished
-			if not cfc_config.card_drag_ongoing and not $Tween.is_active():
-				pass
-#				if not scale.is_equal_approx(Vector2(1.2,1.2)):
-#					$Tween.remove(self,'scale') # We make sure to remove other tweens of the same type to avoid a deadlock
-#					$Tween.interpolate_property(self,'scale',
-#						scale, Vector2(1.2,1.2), 0.3,
-#						Tween.TRANS_SINE, Tween.EASE_OUT)
-#				$Tween.start()
-		DroppingToBoard:
+		DROPPING_TO_BOARD:
 			# Used when dropping the cards to the table
 			# When dragging the card, the card is slightly behind the mouse cursor
 			# so we tween it to the right location
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
+				target_position = _determine_board_position_from_mouse()
+				if target_position.x + $Control.rect_size.x * cfc_config.play_area_scale.x > get_viewport().size.x:
+					target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc_config.play_area_scale.x
+				if target_position.y + $Control.rect_size.y * cfc_config.play_area_scale.y > get_viewport().size.y:
+					target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc_config.play_area_scale.y
 				$Tween.interpolate_property(self,'position',
-					position, _determine_board_position_from_mouse(), 0.25,
+					position, target_position, 0.25,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not scale.is_equal_approx(cfc_config.play_area_scale):
@@ -224,8 +215,8 @@ func _process(delta) -> void:
 						scale, cfc_config.play_area_scale, 0.5,
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
-				state = OnPlayBoard
-		DroppingIntoPile:
+				state = ON_PLAY_BOARD
+		DROPPING_INTO_PILE:
 			# Used when dropping the cards into a container (Deck, Discard etc)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
@@ -252,25 +243,33 @@ func _process(delta) -> void:
 				$Tween.start()
 				_determine_idle_state()
 				fancy_move_second_part = false
-				state = InPile
-		InPile:
+				state = IN_PILE
+		IN_PILE:
 			pass
 
 func _determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
 	var mouse_position
+	var zoom = Vector2(1,1)
+	# We have to do the below offset hack due to godotengine/godot#30215
+	# This is caused because we're using a viewport node and scaling the game in full-creen.
+	if get_viewport().has_node("Camera2D"):
+		zoom = get_viewport().get_node("Camera2D").zoom
+	var offset_mouse_position = get_tree().current_scene.get_global_mouse_position() - get_viewport_transform().origin
+	offset_mouse_position *= zoom
+	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
 	if cfc_config.NMAP.board.UT: mouse_position = cfc_config.NMAP.board.UT_mouse_position
-	else: mouse_position = get_global_mouse_position()
+	else: mouse_position = offset_mouse_position
 	return mouse_position
 
 func _determine_board_position_from_mouse() -> Vector2:
 	#The following if statements prevents the dragged card from being dragged outside the viewport boundaries
-	var targetpos: Vector2 = _determine_global_mouse_pos() + Vector2(10,10)
-	if targetpos.x + $Control.rect_size.x * 0.4 >= get_viewport().size.x:
+	var targetpos: Vector2 = _determine_global_mouse_pos()
+	if targetpos.x + $Control.rect_size.x * scale.x >= get_viewport().size.x:
 		targetpos.x = get_viewport().size.x - $Control.rect_size.x * scale.x
 	if targetpos.x < 0:
 		targetpos.x = 0
-	if targetpos.y + $Control.rect_size.y * 0.4 >= get_viewport().size.y:
+	if targetpos.y + $Control.rect_size.y * scale.y >= get_viewport().size.y:
 		targetpos.y = get_viewport().size.y - $Control.rect_size.y * scale.y
 	if targetpos.y < 0:
 		targetpos.y = 0
@@ -281,7 +280,7 @@ func pushAside(targetpos: Vector2) -> void:
 	# We have it as its own function as it's called by other cards
 	interruptTweening()
 	target_position = targetpos
-	state = PushedAside
+	state = PUSHED_ASIDE
 
 func _recalculatePosition() ->Vector2:
 	# This function recalculates the position of the current card object
@@ -313,18 +312,18 @@ func reorganizeSelf() ->void:
 	# We make the card find its expected position in the hand
 	focus_completed = false # We clear the card as being in focus if it's reorganized
 	match state:
-		InHand, FocusedInHand, PushedAside:
+		IN_HAND, FOCUSED_IN_HAND, PUSHED_ASIDE:
 			# We set the start position to their current position
 			# this prevents the card object to teleport back to where it was if the animations change too fast
 			# when the next animation happens
 			target_position = _recalculatePosition()
-			state = Reorganizing
+			state = REORGANIZING
 	# This second match is  to prevent from changing the state when we're doing fancy movement
 	# and we're still in the first part (which is waiting on an animation yield).
 	# Instead, we just change the target position transparently, and when the second part of the animation begins
 	# it will automatically pick up the right location.
 	match state:
-		MovingToContainer:
+		MOVING_TO_CONTAINER:
 			target_position = _recalculatePosition()
 
 func interruptTweening() ->void:
@@ -334,119 +333,104 @@ func interruptTweening() ->void:
 	# as we want the first part to play always
 	# Effectively we're saying if fancy movement is turned on, and you're still doing the first part, don't interrupt
 	# If you've finished the first part and are not still in the move to another container movement, then you can interrupt.
-	if not cfc_config.fancy_movement or (cfc_config.fancy_movement and (fancy_move_second_part or state != MovingToContainer)):
+	if not cfc_config.fancy_movement or (cfc_config.fancy_movement and (fancy_move_second_part or state != MOVING_TO_CONTAINER)):
 		$Tween.remove_all()
-		state = InHand
+		state = IN_HAND
 
 func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_my_card_index()) # Debug
+	if cfc_config.focus_style: # value 0 means only scaling focus
+		cfc_config.NMAP.main.focus_card(self)
 	match state:
-		InHand, Reorganizing, PushedAside:
+		IN_HAND, REORGANIZING, PUSHED_ASIDE:
 			if not cfc_config.card_drag_ongoing:
 				#print("focusing:",get_my_card_index()) # debug
 				interruptTweening()
-				state = FocusedInHand
-		OnPlayBoard:
-			#interruptTweening()
-			state = FocusedOnBoard
+				state = FOCUSED_IN_HAND
 
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
 	#print(state,"exit:",get_my_card_index()) # debug
-#	print("exit:",z_index)
+	if cfc_config.focus_style: # value 0 means only scaling focus
+		cfc_config.NMAP.main.unfocus()
 	match state:
-		FocusedInHand:
+		FOCUSED_IN_HAND:
 			#focus_completed = false
 			if get_parent() in cfc_config.hands:  # To avoid errors during fast player actions
-				# Using Node2D instead of Control introduces an issue in that sometimes during very fast mouse movement
-				# The detection of mouse enterring a new card comes earlier than the detection of the mouse exiting the previous one
-				# This causes complications.
-				# The code below will reset card organization only another card hasn't gotten focus in the meantime
-				var another_focus := false
 				for c in get_parent().get_all_cards():
-					# Check if any other card has focus by now.
-					if c != self and c.state == 1: another_focus = true
-				if not another_focus:
-					#print("resetting via:",get_my_card_index()) # debug
-					for c in get_parent().get_all_cards():
-						# We need to make sure afterwards all card will return to their expected positions
-						# Therefore we simply stop all tweens and reorganize then whole hand
-						c.interruptTweening()
-						c.reorganizeSelf()
-		FocusedOnBoard:
-			focus_completed = false
-			state = OnPlayBoard
+					# We need to make sure afterwards all card will return to their expected positions
+					# Therefore we simply stop all tweens and reorganize then whole hand
+					c.interruptTweening()
+					c.reorganizeSelf()
 
-func _on_Card_input_event(_viewport,event,_idx):
+func start_dragging():
+	# Pick up a card to drag around with the mouse.
+	# When dragging we want the dragged card to always be drawn above all else
+	z_index = 99
+	# We have to do the below offset hack due to godotengine/godot#30215
+	# This is caused because we're using a viewport node and scaling the game in full-creen.
+	if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
+		var offset = get_tree().current_scene.get_viewport().get_size_override()
+		get_viewport().warp_mouse(global_position / offset * OS.window_size)
+	# However the above messes things if we don't have stretch mode, so we ignore it then
+	else:
+		get_viewport().warp_mouse(global_position)
+	state = DRAGGED
+	if get_parent() in cfc_config.hands:
+		# While we're dragging the card from hand, we want the other cards to move to their expected position in hand
+		for c in get_parent().get_all_cards():
+			if c != self:
+				c.interruptTweening()
+				c.reorganizeSelf()
+
+func _on_Card_gui_input(event):
 	# A signal for whenever the player clicks on a card
 	if event is InputEventMouseButton:
-		match state:
-			FocusedInHand, FocusedOnBoard:
-				# If the player presses the left click, it might be because they want to drag the card
-				if event.is_pressed() and event.get_button_index() == 1:
-					# But first we check if the player does a long-press.
-					# We don't want to start dragging the card immediately.
-					if cfc_config.card_drag_ongoing:
-						# We set a singleton variable with the card object
-						# Then we compare to see if that variable was already filled
-						# If it was, we compare z_index. If the card already stored has lower index, then self was drawn over,
-						# so it has priority on being dragged.
-						# If z_index was equal, we compare child index as well.
-						# Cards with higher child index as always drawn over others in thew same parent.
-						if (cfc_config.card_drag_ongoing.z_index <= z_index and
-							cfc_config.card_drag_ongoing.get_my_card_index() < get_my_card_index()):
-							cfc_config.card_drag_ongoing = self
-					else: # If the singleton variable is empty, we just store outselfves
-						cfc_config.card_drag_ongoing = self
-					# We need to wait a bit to make sure the other card has a chance to go through their scripts
-					yield(get_tree().create_timer(0.1), "timeout")
-					# If this variable is still set to true, it means the mouse-button is still pressed
-					# We also check if another card is already selected for dragging,
-					# to prevent from picking 2 cards at the same time.
-					if cfc_config.card_drag_ongoing == self:
-						# While the mouse is kept pressed, we tell the engine that a card is being dragged
-						z_index = 99
-						state = Dragged
-						if get_parent() in cfc_config.hands:
-							# While we're dragging the card from hand, we want the other cards to move to their expected position in hand
-							for c in get_parent().get_all_cards():
-								if c != self:
-									c.interruptTweening()
-									c.reorganizeSelf()
-				# If the mouse button was released we unset the dragged card
-				# This means a card clicked once won't try to immediately drag
-				elif not event.is_pressed() and event.get_button_index() == 1:
-					cfc_config.card_drag_ongoing = null
+		# If the player presses the left click, it might be because they want to drag the card
+		if event.is_pressed() and event.get_button_index() == 1:
+			if (cfc_config.focus_style != cfc_config.FocusStyle.VIEWPORT and (state == FOCUSED_IN_HAND or state == ON_PLAY_BOARD)) or cfc_config.focus_style:
+				# But first we check if the player does a long-press.
+				# We don't want to start dragging the card immediately.
+				cfc_config.card_drag_ongoing = self
+				# We need to wait a bit to make sure the other card has a chance to go through their scripts
+				yield(get_tree().create_timer(0.1), "timeout")
+				# If this variable is still set to true, it means the mouse-button is still pressed
+				# We also check if another card is already selected for dragging,
+				# to prevent from picking 2 cards at the same time.
+				if cfc_config.card_drag_ongoing == self:
+					# While the mouse is kept pressed, we tell the engine that a card is being dragged
+					start_dragging()
 
-func _input(event):
-	# We use _input because we want to also catch the signals when the player is dragging a card
-	# because in that situation, the mouse will not be strictly on the card
-	if event is InputEventMouseButton:
+		# If the mouse button was released we drop the dragged card
+		# This also means a card clicked once won't try to immediately drag
 		if not event.is_pressed() and event.get_button_index() == 1:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
+			$Control.set_default_cursor_shape(Input.CURSOR_ARROW)
 			cfc_config.card_drag_ongoing = null
 			match state:
-				Dragged:
+				DRAGGED:
 					# if the card was being dragged, it's index is very high to always draw above other objects
 					# We need to reset it either to the default of 0
 					# Or if the card was left overlapping with other cards, the the higher index among them
-					if overlapping_cards.empty():
-						z_index = 0
-					else:
-						z_index = overlapping_cards.back().z_index + 1
-
+					z_index = 0
+					var destination = cfc_config.NMAP.board
+					for obj in get_overlapping_areas():
+						if obj.get_class() == 'CardContainer':
+							destination = obj #TODO: Need some more player-obvious logic on what to do if card area overlaps two CardContainers
+					reHost(destination)
 					focus_completed = false
-					emit_signal("card_dropped",self)
+					#emit_signal("card_dropped",self)
 
 func _determine_idle_state() -> void:
 	# Some logic is generic and doesn't always know the state the card should be afterwards
 	# We use this function to determine the state it should have, based on the card's container grouping.
 	if get_parent() in cfc_config.hands:
-		state = InHand
+		state = IN_HAND
 	elif get_parent() in cfc_config.piles:
-		state = InPile
+		state = IN_PILE
 	else:
-		state = OnPlayBoard
+		state = ON_PLAY_BOARD
 
 func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# Takes care to make a card change visibility nicely
@@ -475,10 +459,7 @@ func reHost(targetHost):
 			previous_pos = targetHost.to_local(global_pos)
 			# The end position is always the final position the card would be inside the hand
 			target_position = _recalculatePosition()
-			# We want to prevent a card coming from the table in fast movement
-			# From keeping a table index
-			z_index = 0
-			state = MovingToContainer
+			state = MOVING_TO_CONTAINER
 			# We reorganize the left over cards in hand.
 			for c in targetHost.get_all_cards():
 				if c != self:
@@ -486,14 +467,14 @@ func reHost(targetHost):
 					c.reorganizeSelf()
 		# 'HostedCards' here is the dummy child node inside Containers where we store the card objects
 		elif targetHost in cfc_config.piles:
-			state = InPile
+			state = IN_PILE
 			$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
 			# We need to adjust the end position based on the local rect inside the container control node
 			# So we transform global coordinates to container rect coordinates.
 			previous_pos = targetHost.to_local(global_pos)
 			# The target position is always local coordinates 0,0 of the final container
 			target_position = Vector2(0,0)
-			state = MovingToContainer
+			state = MOVING_TO_CONTAINER
 			# If we have fancy movement, we need to wait for 2 tweens to finish before we vanish the card.
 			if cfc_config.fancy_movement:
 				yield($Tween, "tween_all_completed")
@@ -504,51 +485,24 @@ func reHost(targetHost):
 		else:
 			interruptTweening()
 			target_position = _determine_board_position_from_mouse()
-			state = DroppingToBoard
+			state = DROPPING_TO_BOARD
+			raise()
 		if parentHost in cfc_config.hands:
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
 				# But this time we don't want to rearrange ourselves, as we're in a different container by now
-				if c != self:
+				if c != self and c.state != DRAGGED:
 					c.interruptTweening()
 					c.reorganizeSelf()
 	else:
 		# Here we check what to do if the player just moved the card back to the same container
 		if parentHost == cfc_config.NMAP.hand:
-			state = InHand
+			state = IN_HAND
 			reorganizeSelf()
 		if parentHost == cfc_config.NMAP.board:
-			state = DroppingToBoard
+			raise()
+			state = DROPPING_TO_BOARD
 
 func get_my_card_index() -> int:
 	# Return out index among card nodes in the same parent.
 	return get_parent().get_card_index(self)
-
-func _on_Card_area_entered(card: Card):
-	# This function triggers any time the card object touches another card object on the board
-	# It then figures out what the highest z_index is among all the card objects it touches 
-	# And sets itself 1 higher, therefore always dropping over anything below it.
-	if (not card in overlapping_cards and 
-		((card.get_parent() == cfc_config.NMAP.board and cfc_config.card_drag_ongoing == self) or
-		card.state == Dragged and get_parent() == cfc_config.NMAP.board)):
-		overlapping_cards.append(card)
-	overlapping_cards.sort_custom(IndexSorter,"sort_z_index_ascending")
-	if cfc_config.card_drag_ongoing == self and card.get_parent() == cfc_config.NMAP.board:
-		z_index = overlapping_cards.back().z_index + 1
-
-class IndexSorter:
-	# A custom function to use with sort_custom to find the highest z_index among them
-	# It takes into account parent index, in case z_index are equal
-	static func sort_z_index_ascending(c1: Card, c2: Card):
-		if c1.z_index <= c2.z_index and c1.get_my_card_index() < c2.get_my_card_index():
-			return true
-		return false
-
-func _on_Card_area_exited(card: Card):
-	# This function triggers any time a card object exits another card object
-	# It clear out cards from the z_index comparison table
-	# and it will also set z_index to 99 when it touches no more cards on table
-	if card in overlapping_cards:
-		overlapping_cards.erase(card)
-	if cfc_config.card_drag_ongoing == self and overlapping_cards.empty():
-		z_index = 99

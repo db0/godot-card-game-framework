@@ -7,6 +7,7 @@ extends Node
 #-----------------------------------------------------------------------------
 
 
+const card_size_multiplier := 0.5
 # The amount of distance neighboring cards are pushed during card focus
 # It's based on the card width. Bigger percentage means larger push.
 const neighbour_push := 0.75
@@ -26,6 +27,15 @@ var fancy_movement := true
 # if you don't want this behaviour, change it to Vector2(1,1)
 var card_scale_while_dragging := Vector2(0.4,0.4)
 
+# If true, then the game will use the card focusing method where it scales up the card itself.
+# It will also mean you cannot focus on card on the table.
+
+enum FocusStyle { 
+	SCALED					#0
+	VIEWPORT				#1
+	BOTH					#2
+}
+var focus_style = FocusStyle.BOTH
 # The below vars predefine the position in your node structure to reach the nodes relevant to the cards
 # Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
 const nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader
@@ -47,7 +57,7 @@ var piles: Array # All our piles
 var hands: Array # All our hands
 
 var card_drag_ongoing: Card = null # The card actively being dragged
-
+var done = false
 func _ready() -> void:
 	# We reset their contents every time as they repopulated during unit testing many times.
 	NMAP = {}
@@ -56,9 +66,19 @@ func _ready() -> void:
 	card_drag_ongoing = null
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
-	for node in cfc_config.nodes_map.keys():
-		NMAP[node]  = get_node('/root/' + nodes_map[node])
-	# The below loops, populate two arrays which allows us to quickly figure out if a container is a pile or hand
+	if get_tree().get_root().has_node('Main'):
+		for node in cfc_config.nodes_map.keys():
+			NMAP[node]  = get_node('/root/Main/ViewportContainer/Viewport/' + nodes_map[node])
+		NMAP['main'] = get_node('/root/Main')
+	else:
+		for node in cfc_config.nodes_map.keys():
+			NMAP[node]  = get_node('/root/' + nodes_map[node])
+		# If we're not using the main viewport scene, we need to fallback to the basic focus
+		focus_style = cfc_config.FocusStyle.SCALED
+		# To prevent accidental switching this option when there's no other viewports active
+		if NMAP.board: # Needed for UT
+			NMAP.board.get_node("ScalingFocusOptions").disabled = true
+		# The below loops, populate two arrays which allows us to quickly figure out if a container is a pile or hand
 	for name in pile_names:
 		piles.append(NMAP[name])
 	for name in hand_names:
