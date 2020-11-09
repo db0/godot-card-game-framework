@@ -14,10 +14,12 @@ func before_each():
 
 func test_move_to_container():
 	yield(yield_for(1), YIELD)
-	cfc_config.NMAP.discard._on_mouse_entered()
+
 	cards[2]._on_Card_mouse_entered()
 	common.click_card(cards[2])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	board.UT_interpolate_mouse_move(cfc_config.NMAP.discard.position,cards[0].position)
+	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[2],board.UT_mouse_position)
 	yield(yield_for(1), YIELD)
 	assert_almost_eq(cards[2].global_position,cfc_config.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
@@ -25,34 +27,35 @@ func test_move_to_container():
 	
 func test_move_to_multiple_container():
 	yield(yield_for(1), YIELD)
-	cfc_config.NMAP.discard._on_mouse_entered()
+
 	cards[2]._on_Card_mouse_entered()
 	common.click_card(cards[2])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	board.UT_interpolate_mouse_move(cfc_config.NMAP.discard.position,cards[0].position)
+	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[2],board.UT_mouse_position)
 	yield(yield_for(0.1), YIELD)
-	cfc_config.NMAP.discard._on_mouse_exited()
-	cfc_config.NMAP.deck._on_mouse_entered()
 	cards[4]._on_Card_mouse_entered()
 	common.click_card(cards[4])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	board.UT_interpolate_mouse_move(cfc_config.NMAP.deck.position,cards[4].position)
+	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[4],board.UT_mouse_position)
 	yield(yield_for(0.1), YIELD)
-	cfc_config.NMAP.deck._on_mouse_exited()
-	cfc_config.NMAP.discard._on_mouse_entered()
 	cards[1]._on_Card_mouse_entered()
 	common.click_card(cards[1])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	board.UT_interpolate_mouse_move(cfc_config.NMAP.discard.position,cards[0].position)
+	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[1],board.UT_mouse_position)
 	yield(yield_for(0.1), YIELD)
-	cfc_config.NMAP.discard._on_mouse_exited()
-	cfc_config.NMAP.deck._on_mouse_entered()
 	cards[3]._on_Card_mouse_entered()
 	common.click_card(cards[3])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	board.UT_interpolate_mouse_move(cfc_config.NMAP.deck.position,cards[4].position)
+	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[3],board.UT_mouse_position)
 	yield(yield_for(1), YIELD)
-	cfc_config.NMAP.deck._on_mouse_exited()
 	assert_almost_eq(cards[2].global_position,cfc_config.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
 	assert_almost_eq(cards[1].global_position,cfc_config.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
 	assert_almost_eq(cards[4].global_position,cfc_config.NMAP.deck.position,Vector2(2,2), "Confirm Card's final position matches pile's position")

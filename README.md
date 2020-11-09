@@ -12,8 +12,6 @@ Pull requests are more than welcome ;)
 
 ## Installation
 
-First of all, make sure your project's window stretch mode is set to either 'disabled' or 'viewport'
-
 ### Global configuration
 
 The framework uses a common singleton called cfc_config to control overall configuration.

@@ -8,20 +8,9 @@ var waiting_for_card_drop: bool = false
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
-	# warning-ignore:return_value_discarded
-	$Control.connect("mouse_entered", self, "_on_mouse_entered")
-	# warning-ignore:return_value_discarded
-	$Control.connect("mouse_exited", self, "_on_mouse_exited")
+
 
 func get_class(): return "CardContainer"
-
-func _on_mouse_entered():
-	waiting_for_card_drop = true
-#	print('Enter: ', self.name)
-
-func _on_mouse_exited():
-	waiting_for_card_drop = false
-#	print('Exit: ', self.name)
 
 func get_all_cards() -> Array:
 	var cardsArray := []

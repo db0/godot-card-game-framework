@@ -15,11 +15,11 @@ func fake_click(pressed,position, flags=0) -> InputEvent:
 
 func click_card(card: Card) -> void:
 	var fc:= fake_click(true, card.global_position)
-	card._on_Card_input_event(fc)
+	card._on_Card_gui_input(fc)
 	
 func drop_card(card: Card, drop_location: Vector2) -> void:
 	var fc:= fake_click(false, drop_location)
-	card._on_Card_input_event(fc)
+	card._on_Card_gui_input(fc)
 
 func setup_board(b: Node) -> Node:
 	board = b

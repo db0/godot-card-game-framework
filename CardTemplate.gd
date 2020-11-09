@@ -35,7 +35,7 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_exited", self, "_on_Card_mouse_exited")
 	# warning-ignore:return_value_discarded
-	$Control.connect("gui_input", self, "_on_Card_input_event")
+	$Control.connect("gui_input", self, "_on_Card_gui_input")
 
 func card_action() -> void:
 	pass
@@ -250,10 +250,16 @@ func _process(delta) -> void:
 func _determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
 	var mouse_position
+	# We have to do the below offset hack due to godotengine/godot#30215
+	# This is caused because we're using a viewport node and scaling the game in full-creen.
+	var zoom = get_viewport().get_node("Camera2D").zoom
+	var offset_position = get_tree().current_scene.get_global_mouse_position() - get_viewport_transform().origin
+	offset_position *= zoom
+	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
 	if cfc_config.NMAP.board.UT: mouse_position = cfc_config.NMAP.board.UT_mouse_position
-	else: mouse_position = get_global_mouse_position()
+	else: mouse_position = offset_position
 	return mouse_position
-
+		
 func _determine_board_position_from_mouse() -> Vector2:
 	#The following if statements prevents the dragged card from being dragged outside the viewport boundaries
 	var targetpos: Vector2 = _determine_global_mouse_pos()
@@ -371,6 +377,14 @@ func _on_Card_mouse_exited():
 func start_dragging():
 	# Pick up a card to drag around with the mouse.
 	z_index = 99
+	# We have to do the below offset hack due to godotengine/godot#30215
+	# This is caused because we're using a viewport node and scaling the game in full-creen.
+	if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
+		var offset = get_tree().current_scene.get_viewport().get_size_override()
+		get_viewport().warp_mouse(global_position / offset * OS.window_size)
+	# However the above messes things if we don't have stretch mode, so we ignore it then
+	else: 
+		get_viewport().warp_mouse(global_position)
 	state = Dragged
 	if get_parent() in cfc_config.hands:
 		# While we're dragging the card from hand, we want the other cards to move to their expected position in hand
@@ -379,7 +393,7 @@ func start_dragging():
 				c.interruptTweening()
 				c.reorganizeSelf()
 
-func _on_Card_input_event(event):
+func _on_Card_gui_input(event):
 	# A signal for whenever the player clicks on a card
 	if event is InputEventMouseButton:
 		# If the player presses the left click, it might be because they want to drag the card
