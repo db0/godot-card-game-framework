@@ -13,10 +13,7 @@ func _ready():
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_exited", self, "_on_mouse_exited")
 
-func _on_dropped_card(card: Card) -> void:
-#	print(self.name,waiting_for_card_drop)
-	if card in get_overlapping_areas():
-		card.reHost(self)
+func get_class(): return "CardContainer"
 
 func _on_mouse_entered():
 	waiting_for_card_drop = true

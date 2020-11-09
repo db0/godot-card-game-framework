@@ -14,7 +14,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://BoardTemplate.gd"
 }, {
-"base": "Node2D",
+"base": "Area2D",
 "class": "Card",
 "language": "GDScript",
 "path": "res://CardTemplate.gd"
