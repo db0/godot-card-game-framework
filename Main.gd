@@ -26,7 +26,7 @@ func focus_card(card: Card):
 	# We do a nice alpha-modulate tween
 	$Focus/Tween.remove_all() # We always make sure to clean tweening conflicts
 	$Focus/Tween.interpolate_property($Focus,'modulate',
-	modulate, Color(1,1,1,1), 0.25,
+	Color(1,1,1,0), Color(1,1,1,1), 0.25,
 	Tween.TRANS_SINE, Tween.EASE_IN)
 	$Focus/Tween.start()
 
@@ -34,7 +34,7 @@ func unfocus():
 	# This is responsible for cleaning upthe card closeup on the Focus viewport
 	$Focus/Tween.remove_all() # We always make sure to clean tweening conflicts
 	$Focus/Tween.interpolate_property($Focus,'modulate',
-	modulate, Color(1,1,1,0), 0.25,
+	Color(1,1,1,1), Color(1,1,1,0), 0.25,
 	Tween.TRANS_SINE, Tween.EASE_IN)
 	$Focus/Tween.start()
 	yield($Focus/Tween, "tween_all_completed")
