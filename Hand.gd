@@ -14,8 +14,18 @@ const hand_size := 12
 #var hand_rect: Vector2
 
 func _ready():
-	pass
+	$Control/ManipulationButtons/Shuffle.connect("pressed",self,'_on_Shuffle_Button_pressed')
 
+func _on_Shuffle_Button_pressed():
+	var cardsArray := []
+	for card in get_all_cards():
+		cardsArray.append(card)
+	randomize()
+	cardsArray.shuffle()
+	for card in cardsArray:
+		move_child(card,cardsArray.find(card))
+	for card in get_all_cards():
+		card.reorganizeSelf()
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta):
 #    pass

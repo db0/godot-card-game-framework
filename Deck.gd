@@ -1,4 +1,4 @@
-extends  CardContainer
+extends Pile
 
 
 # Declare member variables here. Examples:

@@ -48,6 +48,39 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
+modulate = Color( 1, 1, 1, 0 )
+margin_left = 2.0
+margin_top = 20.0
+margin_right = 20.0
+margin_bottom = 44.0
+mouse_filter = 0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="View" type="Button" parent="Control/ManipulationButtons"]
+margin_right = 20.0
+margin_bottom = 20.0
+mouse_filter = 1
+text = "V"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Shuffle" type="Button" parent="Control/ManipulationButtons"]
+margin_top = 24.0
+margin_right = 20.0
+margin_bottom = 44.0
+mouse_filter = 1
+text = "S"
+expand_icon = true
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 75, 120 )
 shape = SubResource( 3 )
