@@ -14,6 +14,7 @@ func _ready() -> void:
 	for button in $Control/ManipulationButtons.get_children():
 		if button.name != "Tween":
 			button.connect("mouse_entered",self,"_on_button_mouse_entered")
+			button.connect("mouse_exited",self,"_on_button_mouse_exited")
 	$Control.connect("mouse_entered",self,"_on_Control_mouse_entered")
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_exited",self,"_on_Control_mouse_exited")
@@ -38,6 +39,11 @@ func get_card(idx: int) -> Card:
 func get_card_index(card: Card) -> int:
 	return get_all_cards().find(card)
 
+func get_random_card() -> Card:
+	var cardsArray := get_all_cards()
+	randomize()
+	return cardsArray[randi()%len(cardsArray)]
+
 func _on_Control_mouse_entered():
 	# This function shows the container manipulation buttons when you hover over them
 	$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
@@ -57,6 +63,9 @@ func _on_Control_mouse_exited():
 func _on_button_mouse_entered():
 	$Control/ManipulationButtons/Tween.remove_all()
 	$Control/ManipulationButtons.modulate[3] = 1
+func _on_button_mouse_exited():
+	$Control/ManipulationButtons/Tween.remove_all()
+	$Control/ManipulationButtons.modulate[3] = 0
 
 func _on_Shuffle_Button_pressed() -> void:
 	# Reshuffles the cards in container

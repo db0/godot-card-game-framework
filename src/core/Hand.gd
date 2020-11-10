@@ -14,7 +14,8 @@ const hand_size := 12
 #var hand_rect: Vector2
 
 func _ready():
-	pass
+	# warning-ignore:return_value_discarded
+	$Control/ManipulationButtons/DiscardRandom.connect("pressed",self,'_on_DiscardRandom_Button_pressed')
 
 func _on_Shuffle_Button_pressed():
 	# When shuffling the hand, we also want to show the player
@@ -38,4 +39,6 @@ func _on_Deck_input_event(event):
 		# warning-ignore:return_value_discarded
 		draw_card() # Replace with function body.
 
-
+func _on_DiscardRandom_Button_pressed() -> void:
+	var card = get_random_card()
+	card.reHost(cfc_config.NMAP.discard)
