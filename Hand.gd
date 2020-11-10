@@ -14,21 +14,14 @@ const hand_size := 12
 #var hand_rect: Vector2
 
 func _ready():
-	$Control/ManipulationButtons/Shuffle.connect("pressed",self,'_on_Shuffle_Button_pressed')
+	pass
 
 func _on_Shuffle_Button_pressed():
-	var cardsArray := []
-	for card in get_all_cards():
-		cardsArray.append(card)
-	randomize()
-	cardsArray.shuffle()
-	for card in cardsArray:
-		move_child(card,cardsArray.find(card))
+	# When shuffling the hand, we also want to show the player
+	# So execute the parent function, then call each card to reorg itself
+	._on_Shuffle_Button_pressed()
 	for card in get_all_cards():
 		card.reorganizeSelf()
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#    pass
 
 func draw_card(pile = cfc_config.NMAP.deck) -> Card:
 	var card: Card = null

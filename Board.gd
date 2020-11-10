@@ -28,7 +28,6 @@ func load_test_cards():
 		card._determine_idle_state()
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		card.position = Vector2(0,0)
-		card.visible = false # This needs to start false, otherwise the card children will be drawn on-top of the deck
 		card.modulate.a = 0 # We use this for a nice transition effect	
 
 func _on_FancyMovementToggle_toggled(_button_pressed):
@@ -43,4 +42,4 @@ func _on_ReshuffleAll_pressed():
 			yield(get_tree().create_timer(0.1), "timeout")
 
 func _on_ScalingFocusOptions_item_selected(index):
-	cfc_config.focus_style = $ScalingFocusOptions.selected
+	cfc_config.focus_style = index

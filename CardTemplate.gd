@@ -26,7 +26,6 @@ var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
 var overlapping_cards := []
-signal card_dropped(card) # No support for static typing in signals yet (godotengine/godot#26045)
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -452,7 +451,6 @@ func reHost(targetHost):
 		targetHost.add_child(self)
 		global_position = previous_pos # Ensure card stays where it was before it changed parents
 		if targetHost in cfc_config.hands:
-			visible = true
 			_tween_interpolate_visibility(1,0.3)
 			# We need to adjust the start position based on the global position coordinates as they would be inside the hand control node
 			# So we transform global coordinates to hand rect coordinates.
@@ -480,7 +478,6 @@ func reHost(targetHost):
 				yield($Tween, "tween_all_completed")
 			_tween_interpolate_visibility(0,0.3)
 			yield($Tween, "tween_all_completed")
-			visible = false
 		# The state for the card being on the board
 		else:
 			interruptTweening()
@@ -494,6 +491,7 @@ func reHost(targetHost):
 				if c != self and c.state != DRAGGED:
 					c.interruptTweening()
 					c.reorganizeSelf()
+
 	else:
 		# Here we check what to do if the player just moved the card back to the same container
 		if parentHost == cfc_config.NMAP.hand:

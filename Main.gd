@@ -41,7 +41,7 @@ func unfocus():
 	# Once the tween is completed,we make sure we cleanup all cards
 
 
-func _process(delta):
+func _process(_delta):
 	# The below makes sure to display the closeup of the card, only on the side the player's mouse is not in.
 	if get_global_mouse_position().x < get_viewport().size.x/2:
 		$Focus.rect_position.x = get_viewport().size.x - $Focus.rect_size.x
