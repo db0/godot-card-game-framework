@@ -20,7 +20,7 @@ func focus_card(card: Card):
 	# We scale it up to allow the player a better viewing experience
 	card_focus.scale = Vector2(1.5,1.5)
 	# We make the viewport camera focus on it
-	$Focus/Viewport/Camera2D.position = card_focus.global_position
+	$Focus/Viewport/Camera2D.position = card_focus.global_position 
 	# We do a nice alpha-modulate tween
 	$Focus/Tween.remove_all() # We always make sure to clean tweening conflicts
 	$Focus/Tween.interpolate_property($Focus,'modulate',

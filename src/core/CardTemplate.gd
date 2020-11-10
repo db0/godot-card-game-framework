@@ -367,11 +367,10 @@ func start_dragging():
 	# Pick up a card to drag around with the mouse.
 	# When dragging we want the dragged card to always be drawn above all else
 	z_index = 99
-	# We have to do the below offset hack due to godotengine/godot#30215
+	# We have use parent viewport to calculate global_position due to godotengine/godot#30215
 	# This is caused because we're using a viewport node and scaling the game in full-creen.
 	if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
-		var offset = get_tree().current_scene.get_viewport().get_size_override()
-		get_viewport().warp_mouse(global_position / offset * OS.window_size)
+		get_tree().current_scene.get_viewport().warp_mouse(global_position)
 	# However the above messes things if we don't have stretch mode, so we ignore it then
 	else:
 		get_viewport().warp_mouse(global_position)
