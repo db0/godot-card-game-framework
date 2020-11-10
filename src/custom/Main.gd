@@ -8,8 +8,6 @@ var card_focus = null
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	pass
-	#$Focus/Viewport.world_2d = $ViewportContainer/Viewport.world_2d
-	#$Focus/Viewport/Camera2D.position = $ViewportContainer/Viewport/Board/Deck.position
 
 func focus_card(card: Card):
 	# This is responsible for showing the card closeup in the Focus viewport

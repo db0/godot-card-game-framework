@@ -6,10 +6,17 @@ var waiting_for_card_drop: bool = false
 func get_class(): return "CardContainer"
 
 func _ready() -> void:
-# warning-ignore:return_value_discarded
-	$Control/ManipulationButtons.connect("mouse_entered",self,"_on_ManipulationButtons_mouse_entered")
-# warning-ignore:return_value_discarded
-	$Control/ManipulationButtons.connect("mouse_exited",self,"_on_ManipulationButtons_mouse_exited")
+	# warning-ignore:return_value_discarded
+	$Control.connect("mouse_entered",self,"_on_Control_mouse_entered")
+	# warning-ignore:return_value_discarded
+	$Control.connect("mouse_exited",self,"_on_Control_mouse_exited")
+	# warning-ignore:return_value_discarded
+	for button in $Control/ManipulationButtons.get_children():
+		if button.name != "Tween":
+			button.connect("mouse_entered",self,"_on_button_mouse_entered")
+	$Control.connect("mouse_entered",self,"_on_Control_mouse_entered")
+	# warning-ignore:return_value_discarded
+	$Control.connect("mouse_exited",self,"_on_Control_mouse_exited")
 	# warning-ignore:return_value_discarded
 	$Control/ManipulationButtons/Shuffle.connect("pressed",self,'_on_Shuffle_Button_pressed')
 
@@ -31,7 +38,7 @@ func get_card(idx: int) -> Card:
 func get_card_index(card: Card) -> int:
 	return get_all_cards().find(card)
 
-func _on_ManipulationButtons_mouse_entered():
+func _on_Control_mouse_entered():
 	# This function shows the container manipulation buttons when you hover over them
 	$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
 	$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
@@ -39,13 +46,17 @@ func _on_ManipulationButtons_mouse_entered():
 	Tween.TRANS_SINE, Tween.EASE_IN)
 	$Control/ManipulationButtons/Tween.start()
 
-func _on_ManipulationButtons_mouse_exited():
+func _on_Control_mouse_exited():
 	# This function hides the container manipulation buttons when you stop hovering over them
 	$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
 	$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
 	$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
 	Tween.TRANS_SINE, Tween.EASE_IN)
 	$Control/ManipulationButtons/Tween.start()
+
+func _on_button_mouse_entered():
+	$Control/ManipulationButtons/Tween.remove_all()
+	$Control/ManipulationButtons.modulate[3] = 1
 
 func _on_Shuffle_Button_pressed() -> void:
 	# Reshuffles the cards in container

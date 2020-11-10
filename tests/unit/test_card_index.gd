@@ -13,7 +13,7 @@ func before_each():
 	cards.clear()
 
 func test_hand_z_index():
-	for iter in range(0,8):
+	for _iter in range(0,8):
 		cards.append(hand.draw_card())
 		yield(yield_for(0.07), YIELD)
 	yield(yield_for(1), YIELD)
@@ -21,7 +21,7 @@ func test_hand_z_index():
 		assert_eq(0,card.z_index,"Check if card in hand at index 0")
 	
 func test_table_hand_z_index():
-	for iter in range(0,8):
+	for _iter in range(0,8):
 		cards.append(hand.draw_card())
 		yield(yield_for(0.07), YIELD)
 	yield(yield_for(1), YIELD)

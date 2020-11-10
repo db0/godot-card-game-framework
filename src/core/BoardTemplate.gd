@@ -33,16 +33,6 @@ func _physics_process(delta):
 			t = 0
 			UT_interpolation_requested = false
 
-func _on_dropped_card(card: Card) -> void:
-	# This function fires when a card is dropped and checks if any other container is primed to host it
-	# If not, it's hosted on the table
-	var card_for_board := true
-	for node in cfc_config.hands + cfc_config.piles:
-		if node.waiting_for_card_drop:
-			card_for_board = false
-	if card_for_board:
-		card.reHost(self)
-
 func get_all_cards() -> Array:
 	var cardsArray := []
 	for obj in get_children():

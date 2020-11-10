@@ -2,8 +2,12 @@
 
 ## 0.9 (In progress)
 
-* Added viewport focus
+* Added viewport-based focus
 * Switched back to control-centric signals. Kept the Area2D base of cards for collision detection only. Ignored z_index except when dragging
+* Added a way to display buttons when hovering over CardContainers.The buttons would trigger predefined actions.
+* Added a container button which creates a rudimentary popup for seeing the cards inside containers
+* Added a contaiber button which shuffles the contained cards
+
 
 ## 0.8
 

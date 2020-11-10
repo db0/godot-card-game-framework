@@ -38,6 +38,11 @@ func _process(_delta) -> void:
 	for obj in $ViewPopup/CardView.get_children():
 		if not obj.get_child_count():
 			obj.queue_free()
+		# This is needed for the instance where a player tries to drag a card from the gid
+		# to the same CardContainer
+		elif obj.get_child(0).modulate[3] != 1:
+				obj.get_child(0).modulate[3] = 1
+				obj.get_child(0).scale = Vector2(0.75,0.75)
 	# We make sure to adjust our popup if cards were removed from it while it's open
 	$ViewPopup.set_as_minsize()
 
@@ -53,17 +58,15 @@ func add_child(node, _legible_unique_name=false) -> void:
 	elif node as Card: # This triggers if the ViewPopup node is active
 		# When the player adds card while the viewpopup is active
 		# we move them automatically to the viewpopup grid.
-		node.modulate[3] = 1
-		var card_slot := Control.new()
-		card_slot.rect_min_size = node.get_node("Control").rect_min_size * node.scale
-		card_slot.set_name("CardPopUpSlot")
-		$ViewPopup/CardView.add_child(card_slot)
-		card_slot.add_child(node)
-		node.scale = Vector2(0.75,0.75)
 		_slot_card_into_popup(node)
 
 func _slot_card_into_popup(card) -> void:
 	# This function prepares the card to be added to the popup grid
+	# We need to make the cards visible as they're by default invisible in piles
+	card.modulate[3] = 1
+	# We also scale-down the cards to be able to see more at the same time.
+	# We need to do it before we add the card object to the control temp, otherwise it will default to the pre-scaled size
+	card.scale = Vector2(0.75,0.75)
 	# The grid container will only grid control objects
 	# and the card nodes have an Area2D as a root
 	# Therefore we instantatiate a new Control container to put the card objects in
@@ -72,11 +75,7 @@ func _slot_card_into_popup(card) -> void:
 	# We set the control container its size to be equal to the card size the card will scale to
 	card_slot.rect_min_size = card.get_node("Control").rect_min_size * card.scale
 	$ViewPopup/CardView.add_child(card_slot)
-	# We need to make the cards visible as they're by default invisible in piles
-	card.modulate[3] = 1
-	# We also scale-down the cards to be able to see more at the same time.
-	card.scale = Vector2(0.75,0.75)
-	# Finalle, the card is added to the temporary control node parent.
+	# Finally, the card is added to the temporary control node parent.
 	card_slot.add_child(card)
 
 func get_all_cards() -> Array:

@@ -60,7 +60,7 @@ func test_move_to_multiple_container():
 	assert_almost_eq(cards[4].global_position,cfc_config.NMAP.deck.position,Vector2(2,2), "Confirm Card 3 final position matches pile's position")
 	assert_almost_eq(cards[0].global_position,cfc_config.NMAP.deck.position,Vector2(2,2), "Confirm Card 0 final position matches pile's position")
 	assert_eq(2,cfc_config.NMAP.discard.get_card_count(), "Confirm the correct amount of cards are hosted in discard")
-	assert_eq(17,cfc_config.NMAP.deck.get_card_count(), "Confirm the correct amount of cards are hosted in deck")
+	assert_eq(12,cfc_config.NMAP.deck.get_card_count(), "Confirm the correct amount of cards are hosted in deck")
 	assert_eq(1,cfc_config.NMAP.hand.get_card_count(), "Confirm the correct amount of cards are hosted in hand")
 
 func test_pile_functions():

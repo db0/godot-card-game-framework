@@ -3,7 +3,7 @@ extends Board
 # Code for a sample playspace, you're expected to provide your own ;)
 
 var allCards := [] # A pseudo-deck array to hold the card objects we want to pull
-const cardTemplate = preload("res://CardTemplate.tscn")
+const cardTemplate = preload("res://src/core/CardTemplate.tscn")
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -22,7 +22,7 @@ func _ready():
 		load_test_cards()
 	
 func load_test_cards():
-	for _i in range(20):
+	for _i in range(15):
 		var card: Card = cardTemplate.instance()
 		$Deck.add_child(card)
 		card._determine_idle_state()

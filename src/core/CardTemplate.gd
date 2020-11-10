@@ -426,7 +426,8 @@ func _determine_idle_state() -> void:
 	# We use this function to determine the state it should have, based on the card's container grouping.
 	if get_parent() in cfc_config.hands:
 		state = IN_HAND
-	elif get_parent() in cfc_config.piles:
+	# The extra if is in case the ViewPopup is currently active when the card is being moved into the container
+	elif get_parent() in cfc_config.piles or "CardPopUpSlot" in get_parent().name:
 		state = IN_PILE
 	else:
 		state = ON_PLAY_BOARD
@@ -465,7 +466,6 @@ func reHost(targetHost):
 					c.reorganizeSelf()
 		# 'HostedCards' here is the dummy child node inside Containers where we store the card objects
 		elif targetHost in cfc_config.piles:
-			state = IN_PILE
 			$Tween.remove_all() # Added because sometimes it ended up stuck and a card remained visible on top of deck
 			# We need to adjust the end position based on the local rect inside the container control node
 			# So we transform global coordinates to container rect coordinates.
@@ -491,7 +491,6 @@ func reHost(targetHost):
 				if c != self and c.state != DRAGGED:
 					c.interruptTweening()
 					c.reorganizeSelf()
-
 	else:
 		# Here we check what to do if the player just moved the card back to the same container
 		if parentHost == cfc_config.NMAP.hand:

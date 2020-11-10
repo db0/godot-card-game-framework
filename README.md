@@ -12,6 +12,24 @@ Pull requests are more than welcome ;)
 
 ## Installation
 
+Copy the src folder to your project
+
+Strictly speaking, the tcsn files inside are optional but **highly recommended** as they come preset with all the node configuration needed to run all interactions defined in the code properly. 
+
+While you could simply use only the provided scripts, you will then need to adapt your own scenes to contain the nodes required with retaining the the correct name.
+
+A notable exception is the optional Board.tcsn. While referenced from the Main.tcsn, this one is the easiest to replace with your own custom board. 
+Just remember to adjust Main.tcsn to have your own Board scene under ViewportContainer/Viewport)
+
+**It is strongly suggested you start by importing the provided scenes in src and modify them further to fit your own requirements.**
+
+For example, you can easily switch the CardTemplate.tcsn's Panel (called "Control") to a TextureRect and it will not affect the framework.
+
+However if you forget to add a ViewPopup Control node into your custom CardContainer scene, things will start crashing.
+
+The scripts and scenes inside /srv/custom are option. They are just there to create a sample setup of the capabilties of the framework.
+
+
 ### Global configuration
 
 The framework uses a common singleton called cfc_config to control overall configuration.
@@ -27,12 +45,7 @@ The framework uses a common singleton called cfc_config to control overall confi
 
 The below instructions will set up your game to use the `Card` class as a framework for card handling.
 
-1. Copy the CardTemplate.gd and Hand.gd in an appropriate location in your project.
-
-   The CardTemplate.tcsn file is optional, but if you're looking for a design template for your cards,
-   feel free to use it by instancing child scenes based on it. If not, see below for which nodes are necessary in your own templates
-
-2. Extend your card root node's script, from the Card class. If your card scene's root node is not a panel, modify the CardTemplate to extend the correct node type
+1. Extend your card root node's script, from the Card class. If your card scene's root node is not an Area2D, modify the CardTemplate to extend the correct node type
 
     `extends Card`
 
@@ -40,51 +53,64 @@ The below instructions will set up your game to use the `Card` class as a framew
 
    It will also make it easy to upgrade your framework by just copying more recent versions of CardTemplate.gd.
 
-4. If you're not using the provided CardTemplate.tcsn, then you need to add the following nodes. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root. These are merely what the existing code expects when trying to detect things like drag&drop, if you want a different setup, you will need to modify the relevant code yourself
-	* An Area2D node (name irrelevant) to serve as the root node of your card scene. 
-		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the card (to allow mouse detection)
-		* A control node (called "Control") as we rely on rect_size for card manipulation.
-		* A Tween node called "Tween"
+4. If you're not using the provided CardTemplate.tcsn, then the following nodes inside CardTemplate.tcsn are mandatory. Place them in the same indentation and with the same name. Nodes with an asterisk next to their name can be modified to a different type but have to retain their name.
+	* Area2D
+	* CollisionShape2D
+	* Control* (Has to always be a Control-type node)
+	* Tween node called "Tween"
 
+If you want a different setup, you will need to modify the relevant code yourself
 ### Hand Class
 
-The below instructions will set up your game to use the `Hand` class as a framework for hand handling.
+The Hand class retains cards face up in an organized fashion. Card which detect being in a Hand container, will always attempt to keep themselves sorted.
 
-1. If you're not using the provided Hand.tcsn, then you need to add the following nodes. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root. These are merely what the existing code expects when trying to detect things like drag&drop, if you want a different setup, you will need to modify the relevant code yourself
-	* An Area2D (name irrelevant) to serve as the root node of your hand scene
-		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the hand area (to allow mouse detection)
-		* A control node (called "Control") to provide rect_size
+The below instructions will set up your game to use the `Hand` class as a framework for hand handling. 
 
-2. Extend your hand script (attached to your Area2D root node) from the Hand class
+2. Extend your hand's script (attached to your Area2D root node) from the Hand class
 
    `extends Hand`
 
 2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the Deck.tcsn node for a sample of such a signal)
 
-### Container Class
+4. If you're not using the provided Hand.tcsn, then the following nodes inside CardTemplate.tcsn are mandatory. Place them in the same indentation and with the same name. Nodes with an asterisk next to their name can be modified to a different type but have to retain their name.
+	* Area2D
+	* CollisionShape2D node
+	* Control* (Has to always be a Control-type node)
+	* ManipulationButtons
+	* Tween
+	
 
-The below instructions will set up your game to use the `CardContainer` class as a framework for pile handling.
+### Pile Class
+
+The Pile class keeps child cards hidden and acts as a stack from which to pick or put out-of-play cards
+
+The below instructions will set up your game to use the `Pile` class as a framework for pile handling.
+
+2. Extend your pile's script (attached to your Area2D root node) from the Hand class
+
+   `extends Pile`
 
 1. If you're not using the provided Container.tcsn to instance new piles, then you need to add the following nodes. The indentation of the below points the hierarchy of the nodes you need to add, starting with scene root.
-	* An Area2D (name irrelevant) to serve as the root node of your hand scene
-		* A CollisionShape2D node called "CollisionShape2D" which has the same size as the hand area (to allow mouse detection)
-		* A control node (called "Control") to provide rect_size
+	* Area2D
+	* CollisionShape2D node
+	* Control* (Has to always be a Control-type node)
+	* ManipulationButtons
+	* Tween
 
-2. Extend your hand script (attached to your Area2D root node) from the Hand class
-
-   `extends Hand`
-
-2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the Deck.tcsn node for a sample of such a signal)
 
 ### Board Class
 
-The below instructions will set up your game to use the `Board` class as a framework for you main play area (i.e. the play "board").
+The Board class is keeping track of cards in-play, but also provides some Unit Testing functionality.
 
-1. If you're not using the provided Board.tcsn, then all you need to do is add a Node2D in the root of your game.
+The below instructions will set up your game to use the `Board` class as a framework for you main play area (i.e. the play "board").
 
 2. Extend your board script from the Board class
 
    `extends Board`
+
+1. If you're not using the provided Board.tcsn, then all you need to do is add a Node2D in the root of your game. 
+
+Of course without instancing a few Hand or Pile objects, there won't be anything you can do.
 
 ### Viewport Focus
 
@@ -120,6 +146,7 @@ For more fine customization, you'll need to modify manually
 * Drag & Drop
 * Option for multiple hands and piles
 * Larger image of card when moving mouse cursor over it
+* Pop-up buttons for predefined functions
 
 ## Credits
 

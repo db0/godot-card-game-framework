@@ -12,27 +12,27 @@ _global_script_classes=[ {
 "base": "Node2D",
 "class": "Board",
 "language": "GDScript",
-"path": "res://BoardTemplate.gd"
+"path": "res://src/core/BoardTemplate.gd"
 }, {
 "base": "Area2D",
 "class": "Card",
 "language": "GDScript",
-"path": "res://CardTemplate.gd"
+"path": "res://src/core/CardTemplate.gd"
 }, {
 "base": "Area2D",
 "class": "CardContainer",
 "language": "GDScript",
-"path": "res://CardContainer.gd"
+"path": "res://src/core/CardContainer.gd"
 }, {
 "base": "CardContainer",
 "class": "Hand",
 "language": "GDScript",
-"path": "res://Hand.gd"
+"path": "res://src/core/Hand.gd"
 }, {
 "base": "CardContainer",
 "class": "Pile",
 "language": "GDScript",
-"path": "res://Pile.gd"
+"path": "res://src/core/Pile.gd"
 }, {
 "base": "Reference",
 "class": "TestVars",
@@ -57,12 +57,12 @@ _global_script_class_icons={
 [application]
 
 config/name="Card Gaming Framework"
-run/main_scene="res://Main.tscn"
+run/main_scene="res://src/custom/Main.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-cfc_config="*res://cfc_config.gd"
+cfc_config="*res://src/core/cfc_config.gd"
 
 [display]
 
