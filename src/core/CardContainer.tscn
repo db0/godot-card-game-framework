@@ -95,8 +95,8 @@ __meta__ = {
 [node name="CardView" type="GridContainer" parent="ViewPopup"]
 margin_left = 4.0
 margin_top = 4.0
-margin_right = 18.0
-margin_bottom = 18.0
+margin_right = 4.0
+margin_bottom = 4.0
 columns = 7
 __meta__ = {
 "_edit_use_anchors_": false

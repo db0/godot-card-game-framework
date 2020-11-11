@@ -257,7 +257,7 @@ func _determine_global_mouse_pos() -> Vector2:
 	var offset_mouse_position = get_tree().current_scene.get_global_mouse_position() - get_viewport_transform().origin
 	offset_mouse_position *= zoom
 	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
-	if cfc_config.NMAP.board.UT: mouse_position = cfc_config.NMAP.board.UT_mouse_position
+	if cfc_config.UT: mouse_position = cfc_config.NMAP.board.UT_mouse_position
 	else: mouse_position = offset_mouse_position
 	return mouse_position
 
@@ -439,6 +439,10 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 		Tween.TRANS_SINE, Tween.EASE_IN)
 
 func reHost(targetHost):
+	if cfc_config.focus_style:
+		# We make to sure to clear the viewport focus because
+		# the mouse exited signal will not fire after drag&drop in a container
+		cfc_config.NMAP.main.unfocus()
 	# We need to store the parent, because we won't be able to know it later
 	var parentHost = get_parent()
 	if targetHost != parentHost:

@@ -29,13 +29,12 @@ var card_scale_while_dragging := Vector2(0.4,0.4)
 
 # If true, then the game will use the card focusing method where it scales up the card itself.
 # It will also mean you cannot focus on card on the table.
-
+var focus_style = FocusStyle.BOTH
 enum FocusStyle { 
 	SCALED					#0
 	VIEWPORT				#1
 	BOTH					#2
 }
-var focus_style = FocusStyle.BOTH
 # The below vars predefine the position in your node structure to reach the nodes relevant to the cards
 # Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
 const nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader
@@ -47,7 +46,7 @@ const nodes_map := { # Optimally this should be moved to its own reference class
 
 const pile_names = ['deck','discard']
 const hand_names = ['hand']
-
+var UT := false # Unit Testing flag
 #-----------------------------------------------------------------------------
 # END Behaviour Constants #
 #-----------------------------------------------------------------------------
@@ -64,12 +63,18 @@ func _ready() -> void:
 	piles = []
 	hands = []
 	card_drag_ongoing = null
+	# The below takes care that we adjust some settings when testing via Gut
+	if get_tree().get_root().has_node('Gut'):
+		UT = true
 	# The below code allows us to quickly refer to nodes meant to host cards (i.e. parents)
 	# using an human-readable name
 	if get_tree().get_root().has_node('Main'):
 		for node in cfc_config.nodes_map.keys():
 			NMAP[node]  = get_node('/root/Main/ViewportContainer/Viewport/' + nodes_map[node])
 		NMAP['main'] = get_node('/root/Main')
+		# When Unite Testing, we want to always have both scaling options possible
+		if UT:
+			focus_style = cfc_config.FocusStyle.BOTH
 	else:
 		for node in cfc_config.nodes_map.keys():
 			NMAP[node]  = get_node('/root/' + nodes_map[node])

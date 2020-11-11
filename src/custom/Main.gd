@@ -37,6 +37,7 @@ func unfocus():
 	$Focus/Tween.start()
 	yield($Focus/Tween, "tween_all_completed")
 	# Once the tween is completed,we make sure we cleanup all cards
+	card_focus = null
 
 
 func _process(_delta):
