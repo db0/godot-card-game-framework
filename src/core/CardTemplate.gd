@@ -35,6 +35,11 @@ func _ready() -> void:
 	$Control.connect("mouse_exited", self, "_on_Card_mouse_exited")
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
+	# warning-ignore:return_value_discarded
+	for button in $Control/ManipulationButtons.get_children():
+		if button.name != "Tween":
+			button.connect("mouse_entered",self,"_on_button_mouse_entered")
+			button.connect("mouse_exited",self,"_on_button_mouse_exited")
 
 func card_action() -> void:
 	pass
@@ -347,6 +352,13 @@ func _on_Card_mouse_entered():
 				#print("focusing:",get_my_card_index()) # debug
 				interruptTweening()
 				state = FOCUSED_IN_HAND
+		ON_PLAY_BOARD:
+			# This function shows the container manipulation buttons when you hover over them
+			$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
+			$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
+			$Control/ManipulationButtons.modulate, Color(1,1,1,1), 0.25,
+			Tween.TRANS_SINE, Tween.EASE_IN)
+			$Control/ManipulationButtons/Tween.start()
 
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
@@ -362,6 +374,12 @@ func _on_Card_mouse_exited():
 					# Therefore we simply stop all tweens and reorganize then whole hand
 					c.interruptTweening()
 					c.reorganizeSelf()
+	# This function hides the container manipulation buttons when you stop hovering over them
+	$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
+	$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
+	$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
+	Tween.TRANS_SINE, Tween.EASE_IN)
+	$Control/ManipulationButtons/Tween.start()
 
 func start_dragging():
 	# Pick up a card to drag around with the mouse.
@@ -506,3 +524,12 @@ func reHost(targetHost):
 func get_my_card_index() -> int:
 	# Return out index among card nodes in the same parent.
 	return get_parent().get_card_index(self)
+
+func _on_button_mouse_entered():
+	match state:
+		ON_PLAY_BOARD:
+			$Control/ManipulationButtons/Tween.remove_all()
+			$Control/ManipulationButtons.modulate[3] = 1
+func _on_button_mouse_exited():
+	$Control/ManipulationButtons/Tween.remove_all()
+	$Control/ManipulationButtons.modulate[3] = 0
