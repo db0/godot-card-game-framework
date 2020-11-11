@@ -7,13 +7,14 @@ func _ready():
 	$Control/ManipulationButtons/View.connect("pressed",self,'_on_View_Button_pressed')
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("popup_hide",self,'_on_ViewPopup_popup_hide')
+	$ViewPopup.connect("about_to_show",self,'_on_ViewPopup_about_to_show')
 
 
 func _on_View_Button_pressed() -> void:
 	# This populates our pop-up window with all the cards in the deck
 	# Then displays it
 	# We set the size of the grid to hold slightly scaled-down cards
-	for card in get_all_cards():
+	for card in get_all_cards(false):
 		# We remove the card to rehost it in the popup grid container
 		remove_child(card)
 		_slot_card_into_popup(card)
@@ -21,8 +22,24 @@ func _on_View_Button_pressed() -> void:
 	$ViewPopup.popup_centered()
 
 
+func _on_ViewPopup_about_to_show() -> void:
+	if not $ViewPopup/Tween.is_active():
+		$ViewPopup/Tween.interpolate_property($ViewPopup,'modulate',
+			Color(1,1,1,0), Color(1,1,1,1), 0.5,
+			Tween.TRANS_EXPO, Tween.EASE_IN)
+		$ViewPopup/Tween.start()
+
 func _on_ViewPopup_popup_hide() -> void:
 	# This function makes sure to return all card objects to the root node once the pop-up closes
+	$ViewPopup/Tween.remove_all()
+#		$Tween.interpolate_property($ViewPopup,'rect_size:x',
+#			0, $ViewPopup.rect_size.x, 0.5,
+#			Tween.TRANS_CUBIC, Tween.EASE_OUT)
+	$ViewPopup/Tween.interpolate_property($ViewPopup,'modulate',
+		Color(1,1,1,1), Color(1,1,1,0), 0.5,
+		Tween.TRANS_EXPO, Tween.EASE_OUT)
+	$ViewPopup/Tween.start()
+	yield($ViewPopup/Tween, "tween_all_completed")
 	for card in get_all_cards():
 		# For each card we have hosted, we check if it's hosted in the popup. If it is, we move it to the root.
 		if "CardPopUpSlot" in card.get_parent().name:
@@ -78,10 +95,10 @@ func _slot_card_into_popup(card) -> void:
 	# Finally, the card is added to the temporary control node parent.
 	card_slot.add_child(card)
 
-func get_all_cards() -> Array:
+func get_all_cards(scanViewPopup := true) -> Array:
 	var cardsArray := .get_all_cards()
 	# For piles, we need to check if the card objects are inside the ViewPopup.
-	if not len(cardsArray):
+	if not len(cardsArray) and scanViewPopup:
 		if $ViewPopup/CardView.get_child_count():
 			# We know it's not possible to have a temp control container (due to the garbage collection)
 			# So we know if we find one, it will have 1 child, which is a Card object.
