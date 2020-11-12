@@ -29,6 +29,10 @@ var overlapping_cards := []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# Set the card to always pivot from its center.
+	# We only rotate the Control node however, so the collision shape is not rotated
+	# Looking for a better solution, but this is the best I have until now.
+	$Control.rect_pivot_offset = $Control.rect_size/2
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
@@ -40,6 +44,8 @@ func _ready() -> void:
 		if button.name != "Tween":
 			button.connect("mouse_entered",self,"_on_button_mouse_entered")
 			button.connect("mouse_exited",self,"_on_button_mouse_exited")
+	$Control/ManipulationButtons/Rot90.connect("pressed",self,'_on_rot90_pressed')
+	$Control/ManipulationButtons/Rot180.connect("pressed",self,'_on_rot180_pressed')
 
 func card_action() -> void:
 	pass
@@ -454,7 +460,7 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 	if modulate[3] != visibility: # We only want to do something if we're actually doing something
 		$Tween.interpolate_property(self,'modulate',
 		modulate, Color(1, 1, 1, visibility), time,
-		Tween.TRANS_SINE, Tween.EASE_IN)
+		Tween.TRANS_QUAD, Tween.EASE_OUT)
 
 func reHost(targetHost):
 	if cfc_config.focus_style:
@@ -498,8 +504,6 @@ func reHost(targetHost):
 			if cfc_config.fancy_movement:
 				yield($Tween, "tween_all_completed")
 			_tween_interpolate_visibility(0,0.3)
-			yield($Tween, "tween_all_completed")
-		# The state for the card being on the board
 		else:
 			interruptTweening()
 			target_position = _determine_board_position_from_mouse()
@@ -512,6 +516,15 @@ func reHost(targetHost):
 				if c != self and c.state != DRAGGED:
 					c.interruptTweening()
 					c.reorganizeSelf()
+		elif parentHost == cfc_config.NMAP.board:
+			# When the card was removed from the board, we need to make sure it recovers to 0 degress rotation
+			$Tween.remove($Control,'rect_rotation') # We make sure to remove other tweens of the same type to avoid a deadlock
+			$Tween.interpolate_property($Control,'rect_rotation',
+				$Control.rect_rotation, 0, 0.2,
+				Tween.TRANS_QUINT, Tween.EASE_OUT)
+			# We also make sure the card buttons don't stay visible
+			$Control/ManipulationButtons/Tween.remove_all()
+			$Control/ManipulationButtons.modulate[3] = 0
 	else:
 		# Here we check what to do if the player just moved the card back to the same container
 		if parentHost == cfc_config.NMAP.hand:
@@ -526,10 +539,37 @@ func get_my_card_index() -> int:
 	return get_parent().get_card_index(self)
 
 func _on_button_mouse_entered():
+	# We use this function to detect when the mouse enters the button area
+	# We need to detect this extra, because the button stops event propagation
+	# This means that the Control parent, will send a mouse_exit signal when the mouse enter a button area
+	# which will make the buttons disappear again
+	# So we make sure buttons stay visible while the mouse is on top.
 	match state:
 		ON_PLAY_BOARD:
 			$Control/ManipulationButtons/Tween.remove_all()
 			$Control/ManipulationButtons.modulate[3] = 1
+
 func _on_button_mouse_exited():
+	# When the mouse exits a button, we make it disappear as well.
+	# It will make the mouse "blink" a bit if the mouse exits via the main body of the card
+	# But making that "blink" disappear is more effort than it's worth.
 	$Control/ManipulationButtons/Tween.remove_all()
 	$Control/ManipulationButtons.modulate[3] = 0
+
+func rotate_card(rot: int, toggle := false) -> int:
+	# Rotate the card the specified number of degrees
+	# If the player specifies the degree the card already has, and they enable the toggle flag
+	# Then we just reset the card to 0 degrees
+	if $Control.rect_rotation == rot and toggle:
+		rot = 0
+	$Tween.remove($Control,'rect_rotation') # We make sure to remove other tweens of the same type to avoid a deadlock
+	$Tween.interpolate_property($Control,'rect_rotation',
+		$Control.rect_rotation, rot, 0.3,
+		Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+	return rot
+
+func _on_rot90_pressed():
+	rotate_card(90, true)
+
+func _on_rot180_pressed():
+	rotate_card(180, true)
