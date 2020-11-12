@@ -23,6 +23,7 @@ func _on_Shuffle_Button_pressed():
 	._on_Shuffle_Button_pressed()
 	for card in get_all_cards():
 		card.reorganizeSelf()
+	move_child($Control,0)
 
 func draw_card(pile = cfc_config.NMAP.deck) -> Card:
 	var card: Card = null
