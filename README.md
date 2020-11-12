@@ -14,11 +14,11 @@ Pull requests are more than welcome ;)
 
 Copy the src folder to your project
 
-Strictly speaking, the tcsn files inside are optional but **highly recommended** as they come preset with all the node configuration needed to run all interactions defined in the code properly. 
+Strictly speaking, the tcsn files inside are optional but **highly recommended** as they come preset with all the node configuration needed to run all interactions defined in the code properly.
 
 While you could simply use only the provided scripts, you will then need to adapt your own scenes to contain the nodes required with retaining the the correct name.
 
-A notable exception is the optional Board.tcsn. While referenced from the Main.tcsn, this one is the easiest to replace with your own custom board. 
+A notable exception is the optional Board.tcsn. While referenced from the Main.tcsn, this one is the easiest to replace with your own custom board.
 Just remember to adjust Main.tcsn to have your own Board scene under ViewportContainer/Viewport)
 
 **It is strongly suggested you start by importing the provided scenes in src and modify them further to fit your own requirements.**
@@ -57,14 +57,16 @@ The below instructions will set up your game to use the `Card` class as a framew
 	* Area2D
 	* CollisionShape2D
 	* Control* (Has to always be a Control-type node)
-	* Tween node called "Tween"
+	* ManipulationButtons
+	* all Tween nodes called "Tween"
+
 
 If you want a different setup, you will need to modify the relevant code yourself
 ### Hand Class
 
 The Hand class retains cards face up in an organized fashion. Card which detect being in a Hand container, will always attempt to keep themselves sorted.
 
-The below instructions will set up your game to use the `Hand` class as a framework for hand handling. 
+The below instructions will set up your game to use the `Hand` class as a framework for hand handling.
 
 2. Extend your hand's script (attached to your Area2D root node) from the Hand class
 
@@ -77,8 +79,8 @@ The below instructions will set up your game to use the `Hand` class as a framew
 	* CollisionShape2D node
 	* Control* (Has to always be a Control-type node)
 	* ManipulationButtons
-	* Tween
-	
+	* all Tween nodes called "Tween"
+
 
 ### Pile Class
 
@@ -95,7 +97,7 @@ The below instructions will set up your game to use the `Pile` class as a framew
 	* CollisionShape2D node
 	* Control* (Has to always be a Control-type node)
 	* ManipulationButtons
-	* Tween
+	* all Tween nodes called "Tween"
 
 
 ### Board Class
@@ -108,7 +110,7 @@ The below instructions will set up your game to use the `Board` class as a frame
 
    `extends Board`
 
-1. If you're not using the provided Board.tcsn, then all you need to do is add a Node2D in the root of your game. 
+1. If you're not using the provided Board.tcsn, then all you need to do is add a Node2D in the root of your game.
 
 Of course without instancing a few Hand or Pile objects, there won't be anything you can do.
 
@@ -146,7 +148,9 @@ For more fine customization, you'll need to modify manually
 * Drag & Drop
 * Option for multiple hands and piles
 * Larger image of card when moving mouse cursor over it
-* Pop-up buttons for predefined functions
+* Pop-up buttons for predefined functions on cards and card containers
+* Option to look inside the piles and choose cards to move out
+* Cards can rotate on the table
 
 ## Credits
 

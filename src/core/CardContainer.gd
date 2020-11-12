@@ -15,10 +15,6 @@ func _ready() -> void:
 		if button.name != "Tween":
 			button.connect("mouse_entered",self,"_on_button_mouse_entered")
 			button.connect("mouse_exited",self,"_on_button_mouse_exited")
-	$Control.connect("mouse_entered",self,"_on_Control_mouse_entered")
-	# warning-ignore:return_value_discarded
-	$Control.connect("mouse_exited",self,"_on_Control_mouse_exited")
-	# warning-ignore:return_value_discarded
 	$Control/ManipulationButtons/Shuffle.connect("pressed",self,'_on_Shuffle_Button_pressed')
 
 func get_all_cards() -> Array:
