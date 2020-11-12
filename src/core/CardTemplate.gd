@@ -25,7 +25,9 @@ var state := IN_PILE # Starting state for each card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
-var overlapping_cards := []
+# The below is used to know when the mouse didn't exit the card but is just hovering over card buttons
+# This is necessary as a workaround for godotengine/godot#16854
+var _button_hover := 0 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -350,42 +352,51 @@ func interruptTweening() ->void:
 func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_my_card_index()) # Debug
-	if cfc_config.focus_style: # value 0 means only scaling focus
-		cfc_config.NMAP.main.focus_card(self)
-	match state:
-		IN_HAND, REORGANIZING, PUSHED_ASIDE:
-			if not cfc_config.card_drag_ongoing:
-				#print("focusing:",get_my_card_index()) # debug
-				interruptTweening()
-				state = FOCUSED_IN_HAND
-		ON_PLAY_BOARD:
-			# This function shows the container manipulation buttons when you hover over them
-			$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
-			$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
-			$Control/ManipulationButtons.modulate, Color(1,1,1,1), 0.25,
-			Tween.TRANS_SINE, Tween.EASE_IN)
-			$Control/ManipulationButtons/Tween.start()
+	# We use this variable to check if mouse thinks it changed nodes because it just entered a child node
+	if not _button_hover:
+		if cfc_config.focus_style: # value 0 means only scaling focus
+			cfc_config.NMAP.main.focus_card(self)
+		match state:
+			IN_HAND, REORGANIZING, PUSHED_ASIDE:
+				if not cfc_config.card_drag_ongoing:
+					#print("focusing:",get_my_card_index()) # debug
+					interruptTweening()
+					state = FOCUSED_IN_HAND
+			ON_PLAY_BOARD:
+				# This function shows the container manipulation buttons when you hover over them
+				$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
+				$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
+				$Control/ManipulationButtons.modulate, Color(1,1,1,1), 0.25,
+				Tween.TRANS_SINE, Tween.EASE_IN)
+				$Control/ManipulationButtons/Tween.start()
+		$Control/FocusHighlight.visible = true
 
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
+	# On exiting this node, we wait a tiny bit to make sure the mouse didn't just enter a child button
+	# If it did, then that button will immediately set a variable to let us know not to restart the focus
+	yield(get_tree().create_timer(0.05), "timeout")
 	#print(state,"exit:",get_my_card_index()) # debug
-	if cfc_config.focus_style: # value 0 means only scaling focus
-		cfc_config.NMAP.main.unfocus()
-	match state:
-		FOCUSED_IN_HAND:
-			#focus_completed = false
-			if get_parent() in cfc_config.hands:  # To avoid errors during fast player actions
-				for c in get_parent().get_all_cards():
-					# We need to make sure afterwards all card will return to their expected positions
-					# Therefore we simply stop all tweens and reorganize then whole hand
-					c.interruptTweening()
-					c.reorganizeSelf()
-	# This function hides the container manipulation buttons when you stop hovering over them
-	$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
-	$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
-	$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
-	Tween.TRANS_SINE, Tween.EASE_IN)
-	$Control/ManipulationButtons/Tween.start()
+	# We use this variable to check if mouse thinks it changed nodes because it just entered a child node
+	if not _button_hover:
+		if cfc_config.focus_style: # value 0 means only scaling focus
+			cfc_config.NMAP.main.unfocus()
+		match state:
+			FOCUSED_IN_HAND:
+				#focus_completed = false
+				if get_parent() in cfc_config.hands:  # To avoid errors during fast player actions
+					for c in get_parent().get_all_cards():
+						# We need to make sure afterwards all card will return to their expected positions
+						# Therefore we simply stop all tweens and reorganize then whole hand
+						c.interruptTweening()
+						c.reorganizeSelf()
+		# This function hides the container manipulation buttons when you stop hovering over them
+		$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
+		$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
+		$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
+		Tween.TRANS_SINE, Tween.EASE_IN)
+		$Control/ManipulationButtons/Tween.start()
+		$Control/FocusHighlight.visible = false
 
 func start_dragging():
 	# Pick up a card to drag around with the mouse.
@@ -538,7 +549,7 @@ func get_my_card_index() -> int:
 	# Return out index among card nodes in the same parent.
 	return get_parent().get_card_index(self)
 
-func _on_button_mouse_entered():
+func _on_button_mouse_entered() -> void:
 	# We use this function to detect when the mouse enters the button area
 	# We need to detect this extra, because the button stops event propagation
 	# This means that the Control parent, will send a mouse_exit signal when the mouse enter a button area
@@ -548,13 +559,25 @@ func _on_button_mouse_entered():
 		ON_PLAY_BOARD:
 			$Control/ManipulationButtons/Tween.remove_all()
 			$Control/ManipulationButtons.modulate[3] = 1
+			# This is  anincrementing counter every time we enter a button
+			# This lets us prevent rapid button changes from breaking the focus
+			_button_hover += 1
 
-func _on_button_mouse_exited():
+func _on_button_mouse_exited() -> void:
 	# When the mouse exits a button, we make it disappear as well.
-	# It will make the mouse "blink" a bit if the mouse exits via the main body of the card
-	# But making that "blink" disappear is more effort than it's worth.
-	$Control/ManipulationButtons/Tween.remove_all()
-	$Control/ManipulationButtons.modulate[3] = 0
+	var hover_id := _button_hover
+	# We wait a tiny bit before trying to clear the counter, to allow the mouse_enter() code
+	# of the parent control node, to know if the mouse was on top of a button previously
+	yield(get_tree().create_timer(0.05), "timeout")
+	if not $Control/FocusHighlight.visible:
+		$Control/ManipulationButtons/Tween.remove_all()
+		$Control/ManipulationButtons.modulate[3] = 0
+	# The below check prevents exiting the mouse causing the card focus 
+	# to be disrupted due to godotengine/godot#16854
+	# On exit, after waiting a bit, we checked if by that time, the mouse entered another button already
+	# If not, then we clear it
+	if _button_hover == hover_id:
+		_button_hover = 0
 
 func rotate_card(rot: int, toggle := false) -> int:
 	# Rotate the card the specified number of degrees
@@ -568,8 +591,8 @@ func rotate_card(rot: int, toggle := false) -> int:
 		Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 	return rot
 
-func _on_rot90_pressed():
+func _on_rot90_pressed() -> void:
 	rotate_card(90, true)
 
-func _on_rot180_pressed():
+func _on_rot180_pressed() -> void:
 	rotate_card(180, true)

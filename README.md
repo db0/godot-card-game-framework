@@ -27,7 +27,7 @@ For example, you can easily switch the CardTemplate.tcsn's Panel (called "Contro
 
 However if you forget to add a ViewPopup Control node into your custom CardContainer scene, things will start crashing.
 
-The scripts and scenes inside /srv/custom are option. They are just there to create a sample setup of the capabilties of the framework.
+The scripts and scenes inside /srv/custom are optional. They are just there to create a sample setup of the capabilties of the framework.
 
 
 ### Global configuration
@@ -143,7 +143,7 @@ For more fine customization, you'll need to modify manually
 ## Provided features
 
 * Tween animations that look good for card movements.
-* Automatic zoom-in on cards when moused over.
+* Automatic focus-in on cards when moused over in-hand.
 * Automatic re-arranging of hand as cards are added or removed.
 * Drag & Drop
 * Option for multiple hands and piles

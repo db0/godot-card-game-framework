@@ -150,7 +150,7 @@ margin_bottom = 240.0
 custom_fonts/font = SubResource( 9 )
 text = "Cost: 0"
 
-[node name="Focus" type="Panel" parent="Control"]
+[node name="FocusHighlight" type="Panel" parent="Control"]
 visible = false
 show_behind_parent = true
 margin_left = -2.0
@@ -175,6 +175,7 @@ __meta__ = {
 [node name="Rot90" type="Button" parent="Control/ManipulationButtons"]
 margin_right = 29.0
 margin_bottom = 26.0
+mouse_filter = 1
 custom_fonts/font = SubResource( 11 )
 text = "T"
 
@@ -182,6 +183,7 @@ text = "T"
 margin_top = 30.0
 margin_right = 29.0
 margin_bottom = 56.0
+mouse_filter = 1
 custom_fonts/font = SubResource( 11 )
 text = "@"
 
