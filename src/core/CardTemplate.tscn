@@ -164,10 +164,11 @@ __meta__ = {
 
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
 modulate = Color( 1, 1, 1, 0 )
-margin_left = 5.0
-margin_top = 10.0
-margin_right = 28.0
-margin_bottom = 66.0
+margin_left = 8.0
+margin_top = 16.0
+margin_right = 37.0
+margin_bottom = 72.0
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }

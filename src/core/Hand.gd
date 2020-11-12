@@ -25,7 +25,7 @@ func _on_Shuffle_Button_pressed():
 		card.reorganizeSelf()
 	move_child($Control,0)
 
-func draw_card(pile = cfc_config.NMAP.deck) -> Card:
+func draw_card(pile : Pile = cfc_config.NMAP.deck) -> Card:
 	var card: Card = null
 	# A basic function to pull a card from out deck into our hand.
 	if pile.get_card_count() and get_card_count() < hand_size: # prevent from drawing more cards than are in our deck and crashing godot.

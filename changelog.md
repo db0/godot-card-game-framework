@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.10 (Οngoing)
+
+* Added visible highlight when mousing over a card
+
 ## 0.9
 
 * Added viewport-based focus

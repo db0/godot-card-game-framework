@@ -47,6 +47,7 @@ func _ready() -> void:
 			button.connect("mouse_entered",self,"_on_button_mouse_entered")
 			button.connect("mouse_exited",self,"_on_button_mouse_exited")
 	$Control/ManipulationButtons/Rot90.connect("pressed",self,'_on_rot90_pressed')
+# warning-ignore:return_value_discarded
 	$Control/ManipulationButtons/Rot180.connect("pressed",self,'_on_rot180_pressed')
 
 func card_action() -> void:
@@ -81,7 +82,7 @@ func _process(delta) -> void:
 						# Neighbouring cards are pushed to the side to allow the focused card to not be overlapped
 						# The amount they're pushed is relevant to how close neighbours they are.
 						# Closest neighbours (1 card away) are pushed more than further neighbours.
-						neighbour_card.pushAside(neighbour_card._recalculatePosition() + Vector2(neighbour_card.get_node('Control').rect_size.x/neighbour_index_diff * cfc_config.neighbour_push,0))
+						neighbour_card._pushAside(neighbour_card._recalculatePosition() + Vector2(neighbour_card.get_node('Control').rect_size.x/neighbour_index_diff * cfc_config.neighbour_push,0))
 						neighbours.append(neighbour_card)
 				for c in get_parent().get_all_cards():
 					if not c in neighbours and c != self:
@@ -287,7 +288,7 @@ func _determine_board_position_from_mouse() -> Vector2:
 		targetpos.y = 0
 	return targetpos
 
-func pushAside(targetpos: Vector2) -> void:
+func _pushAside(targetpos: Vector2) -> void:
 	# Instructs the card to move aside for another card enterring focus
 	# We have it as its own function as it's called by other cards
 	interruptTweening()
@@ -353,7 +354,7 @@ func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_my_card_index()) # Debug
 	# We use this variable to check if mouse thinks it changed nodes because it just entered a child node
-	if not _button_hover:
+	if not _button_hover or (_button_hover and not $Control/FocusHighlight.visible):
 		if cfc_config.focus_style: # value 0 means only scaling focus
 			cfc_config.NMAP.main.focus_card(self)
 		match state:
@@ -375,7 +376,7 @@ func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
 	# On exiting this node, we wait a tiny bit to make sure the mouse didn't just enter a child button
 	# If it did, then that button will immediately set a variable to let us know not to restart the focus
-	yield(get_tree().create_timer(0.05), "timeout")
+	yield(get_tree().create_timer(0.03), "timeout")
 	#print(state,"exit:",get_my_card_index()) # debug
 	# We use this variable to check if mouse thinks it changed nodes because it just entered a child node
 	if not _button_hover:
@@ -398,7 +399,7 @@ func _on_Card_mouse_exited():
 		$Control/ManipulationButtons/Tween.start()
 		$Control/FocusHighlight.visible = false
 
-func start_dragging():
+func _start_dragging():
 	# Pick up a card to drag around with the mouse.
 	# When dragging we want the dragged card to always be drawn above all else
 	z_index = 99
@@ -433,7 +434,7 @@ func _on_Card_gui_input(event):
 				# to prevent from picking 2 cards at the same time.
 				if cfc_config.card_drag_ongoing == self:
 					# While the mouse is kept pressed, we tell the engine that a card is being dragged
-					start_dragging()
+					_start_dragging()
 
 		# If the mouse button was released we drop the dragged card
 		# This also means a card clicked once won't try to immediately drag
@@ -473,7 +474,7 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 		modulate, Color(1, 1, 1, visibility), time,
 		Tween.TRANS_QUAD, Tween.EASE_OUT)
 
-func reHost(targetHost):
+func reHost(targetHost: Node2D, boardPosition := Vector2(-1,-1)) -> void:
 	if cfc_config.focus_style:
 		# We make to sure to clear the viewport focus because
 		# the mouse exited signal will not fire after drag&drop in a container
@@ -517,9 +518,14 @@ func reHost(targetHost):
 			_tween_interpolate_visibility(0,0.3)
 		else:
 			interruptTweening()
-			target_position = _determine_board_position_from_mouse()
+			# The developer is allowed to pass a position override to the card placement
+			if boardPosition == Vector2(-1,-1):
+				target_position = _determine_board_position_from_mouse()
+			else: 
+				target_position = boardPosition
 			state = DROPPING_TO_BOARD
 			raise()
+			# While on the board, the buttons are active
 		if parentHost in cfc_config.hands:
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
@@ -533,7 +539,7 @@ func reHost(targetHost):
 			$Tween.interpolate_property($Control,'rect_rotation',
 				$Control.rect_rotation, 0, 0.2,
 				Tween.TRANS_QUINT, Tween.EASE_OUT)
-			# We also make sure the card buttons don't stay visible
+			# We also make sure the card buttons don't stay visible or enabled
 			$Control/ManipulationButtons/Tween.remove_all()
 			$Control/ManipulationButtons.modulate[3] = 0
 	else:
@@ -561,7 +567,8 @@ func _on_button_mouse_entered() -> void:
 			$Control/ManipulationButtons.modulate[3] = 1
 			# This is  anincrementing counter every time we enter a button
 			# This lets us prevent rapid button changes from breaking the focus
-			_button_hover += 1
+	_button_hover += 1
+	#print("button enter: ",_button_hover) # debug
 
 func _on_button_mouse_exited() -> void:
 	# When the mouse exits a button, we make it disappear as well.
@@ -578,6 +585,7 @@ func _on_button_mouse_exited() -> void:
 	# If not, then we clear it
 	if _button_hover == hover_id:
 		_button_hover = 0
+	#print("button exit: ",_button_hover) # Debug
 
 func rotate_card(rot: int, toggle := false) -> int:
 	# Rotate the card the specified number of degrees
@@ -592,7 +600,9 @@ func rotate_card(rot: int, toggle := false) -> int:
 	return rot
 
 func _on_rot90_pressed() -> void:
+# warning-ignore:return_value_discarded
 	rotate_card(90, true)
 
 func _on_rot180_pressed() -> void:
+# warning-ignore:return_value_discarded
 	rotate_card(180, true)

@@ -40,7 +40,7 @@ func get_random_card() -> Card:
 	randomize()
 	return cardsArray[randi()%len(cardsArray)]
 
-func _on_Control_mouse_entered():
+func _on_Control_mouse_entered() -> void:
 	# This function shows the container manipulation buttons when you hover over them
 	$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
 	$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
@@ -48,7 +48,7 @@ func _on_Control_mouse_entered():
 	Tween.TRANS_SINE, Tween.EASE_IN)
 	$Control/ManipulationButtons/Tween.start()
 
-func _on_Control_mouse_exited():
+func _on_Control_mouse_exited() -> void:
 	# This function hides the container manipulation buttons when you stop hovering over them
 	$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
 	$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
@@ -56,7 +56,7 @@ func _on_Control_mouse_exited():
 	Tween.TRANS_SINE, Tween.EASE_IN)
 	$Control/ManipulationButtons/Tween.start()
 
-func _on_button_mouse_entered():
+func _on_button_mouse_entered() -> void:
 	$Control/ManipulationButtons/Tween.remove_all()
 	$Control/ManipulationButtons.modulate[3] = 1
 func _on_button_mouse_exited():
