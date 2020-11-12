@@ -7,3 +7,6 @@ export_presets.cfg
 
 # Mono-specific ignores
 .mono/
+
+# Other
+demo.txt
