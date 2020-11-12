@@ -2,7 +2,6 @@ extends Node2D
 class_name Board
 # Code for a sample playspace, you're expected to provide your own ;)
 
-var UT := false # Unit Testing flag
 var UT_mouse_position := Vector2(0,0) # Simulated mouse position for Unit Testing
 var UT_current_mouse_position := Vector2(0,0) # Simulated mouse position for Unit Testing
 var UT_target_mouse_position := Vector2(0,0) # Simulated mouse position for Unit Testing

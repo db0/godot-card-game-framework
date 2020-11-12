@@ -29,12 +29,23 @@ var overlapping_cards := []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# Set the card to always pivot from its center.
+	# We only rotate the Control node however, so the collision shape is not rotated
+	# Looking for a better solution, but this is the best I have until now.
+	$Control.rect_pivot_offset = $Control.rect_size/2
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_exited", self, "_on_Card_mouse_exited")
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
+	# warning-ignore:return_value_discarded
+	for button in $Control/ManipulationButtons.get_children():
+		if button.name != "Tween":
+			button.connect("mouse_entered",self,"_on_button_mouse_entered")
+			button.connect("mouse_exited",self,"_on_button_mouse_exited")
+	$Control/ManipulationButtons/Rot90.connect("pressed",self,'_on_rot90_pressed')
+	$Control/ManipulationButtons/Rot180.connect("pressed",self,'_on_rot180_pressed')
 
 func card_action() -> void:
 	pass
@@ -257,7 +268,7 @@ func _determine_global_mouse_pos() -> Vector2:
 	var offset_mouse_position = get_tree().current_scene.get_global_mouse_position() - get_viewport_transform().origin
 	offset_mouse_position *= zoom
 	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
-	if cfc_config.NMAP.board.UT: mouse_position = cfc_config.NMAP.board.UT_mouse_position
+	if cfc_config.UT: mouse_position = cfc_config.NMAP.board.UT_mouse_position
 	else: mouse_position = offset_mouse_position
 	return mouse_position
 
@@ -347,6 +358,13 @@ func _on_Card_mouse_entered():
 				#print("focusing:",get_my_card_index()) # debug
 				interruptTweening()
 				state = FOCUSED_IN_HAND
+		ON_PLAY_BOARD:
+			# This function shows the container manipulation buttons when you hover over them
+			$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
+			$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
+			$Control/ManipulationButtons.modulate, Color(1,1,1,1), 0.25,
+			Tween.TRANS_SINE, Tween.EASE_IN)
+			$Control/ManipulationButtons/Tween.start()
 
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
@@ -362,6 +380,12 @@ func _on_Card_mouse_exited():
 					# Therefore we simply stop all tweens and reorganize then whole hand
 					c.interruptTweening()
 					c.reorganizeSelf()
+	# This function hides the container manipulation buttons when you stop hovering over them
+	$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
+	$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
+	$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
+	Tween.TRANS_SINE, Tween.EASE_IN)
+	$Control/ManipulationButtons/Tween.start()
 
 func start_dragging():
 	# Pick up a card to drag around with the mouse.
@@ -436,9 +460,13 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 	if modulate[3] != visibility: # We only want to do something if we're actually doing something
 		$Tween.interpolate_property(self,'modulate',
 		modulate, Color(1, 1, 1, visibility), time,
-		Tween.TRANS_SINE, Tween.EASE_IN)
+		Tween.TRANS_QUAD, Tween.EASE_OUT)
 
 func reHost(targetHost):
+	if cfc_config.focus_style:
+		# We make to sure to clear the viewport focus because
+		# the mouse exited signal will not fire after drag&drop in a container
+		cfc_config.NMAP.main.unfocus()
 	# We need to store the parent, because we won't be able to know it later
 	var parentHost = get_parent()
 	if targetHost != parentHost:
@@ -476,8 +504,6 @@ func reHost(targetHost):
 			if cfc_config.fancy_movement:
 				yield($Tween, "tween_all_completed")
 			_tween_interpolate_visibility(0,0.3)
-			yield($Tween, "tween_all_completed")
-		# The state for the card being on the board
 		else:
 			interruptTweening()
 			target_position = _determine_board_position_from_mouse()
@@ -490,6 +516,15 @@ func reHost(targetHost):
 				if c != self and c.state != DRAGGED:
 					c.interruptTweening()
 					c.reorganizeSelf()
+		elif parentHost == cfc_config.NMAP.board:
+			# When the card was removed from the board, we need to make sure it recovers to 0 degress rotation
+			$Tween.remove($Control,'rect_rotation') # We make sure to remove other tweens of the same type to avoid a deadlock
+			$Tween.interpolate_property($Control,'rect_rotation',
+				$Control.rect_rotation, 0, 0.2,
+				Tween.TRANS_QUINT, Tween.EASE_OUT)
+			# We also make sure the card buttons don't stay visible
+			$Control/ManipulationButtons/Tween.remove_all()
+			$Control/ManipulationButtons.modulate[3] = 0
 	else:
 		# Here we check what to do if the player just moved the card back to the same container
 		if parentHost == cfc_config.NMAP.hand:
@@ -502,3 +537,39 @@ func reHost(targetHost):
 func get_my_card_index() -> int:
 	# Return out index among card nodes in the same parent.
 	return get_parent().get_card_index(self)
+
+func _on_button_mouse_entered():
+	# We use this function to detect when the mouse enters the button area
+	# We need to detect this extra, because the button stops event propagation
+	# This means that the Control parent, will send a mouse_exit signal when the mouse enter a button area
+	# which will make the buttons disappear again
+	# So we make sure buttons stay visible while the mouse is on top.
+	match state:
+		ON_PLAY_BOARD:
+			$Control/ManipulationButtons/Tween.remove_all()
+			$Control/ManipulationButtons.modulate[3] = 1
+
+func _on_button_mouse_exited():
+	# When the mouse exits a button, we make it disappear as well.
+	# It will make the mouse "blink" a bit if the mouse exits via the main body of the card
+	# But making that "blink" disappear is more effort than it's worth.
+	$Control/ManipulationButtons/Tween.remove_all()
+	$Control/ManipulationButtons.modulate[3] = 0
+
+func rotate_card(rot: int, toggle := false) -> int:
+	# Rotate the card the specified number of degrees
+	# If the player specifies the degree the card already has, and they enable the toggle flag
+	# Then we just reset the card to 0 degrees
+	if $Control.rect_rotation == rot and toggle:
+		rot = 0
+	$Tween.remove($Control,'rect_rotation') # We make sure to remove other tweens of the same type to avoid a deadlock
+	$Tween.interpolate_property($Control,'rect_rotation',
+		$Control.rect_rotation, rot, 0.3,
+		Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+	return rot
+
+func _on_rot90_pressed():
+	rotate_card(90, true)
+
+func _on_rot180_pressed():
+	rotate_card(180, true)

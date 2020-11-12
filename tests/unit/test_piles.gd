@@ -14,7 +14,6 @@ func before_each():
 
 func test_move_to_container():
 	yield(yield_for(1), YIELD)
-
 	cards[2]._on_Card_mouse_entered()
 	common.click_card(cards[2])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
