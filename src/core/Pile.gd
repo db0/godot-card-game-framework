@@ -78,6 +78,11 @@ func add_child(node, _legible_unique_name=false) -> void:
 		# we move them automatically to the viewpopup grid.
 		_slot_card_into_popup(node)
 
+func move_child(child_node, to_position) -> void:
+	# Another takeover of a builtin function, to make sure the $Control node is always on top
+	.move_child(child_node, to_position)
+	$Control.raise()
+
 func _slot_card_into_popup(card) -> void:
 	# This function prepares the card to be added to the popup grid
 	# We need to make the cards visible as they're by default invisible in piles
