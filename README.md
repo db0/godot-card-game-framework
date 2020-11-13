@@ -32,11 +32,11 @@ The scripts and scenes inside /srv/custom are optional. They are just there to c
 
 ### Global configuration
 
-The framework uses a common singleton called cfc_config to control overall configuration.
+The framework uses a common singleton called cfc to control overall configuration.
 
-1. Add cfc_config.gd as an autoloaded singleton with name 'cfc_config'
+1. Add cfc.gd as an autoloaded singleton with name 'cfc'
 
-2. Edit the `var nodes_map` in cfc_config.gd in the "Behaviour Constants" section, to point to your board and other container scenes (Deck, discard etc)
+2. Edit the `var nodes_map` in cfc.gd in the "Behaviour Constants" section, to point to your board and other container scenes (Deck, discard etc)
 
 4. Edit the pile_names and hand_names arrays with the names of your respective piles (deck, discard etc) and hand(s).
 
@@ -136,7 +136,7 @@ Do the following if you want to use/import the provided unit tests
 ## Easy Customation
 
 The classes provide some easy customization options, such as how the card move, where they appear etc
-Check the "Behaviour Constants" header at the start of the cfc_config singleton.
+Check the "Behaviour Constants" header at the start of the cfc singleton.
 For more fine customization, you'll need to modify manually
 
 
