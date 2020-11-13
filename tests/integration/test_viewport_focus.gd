@@ -16,8 +16,8 @@ func before_each():
 func test_single_card_focus():
 	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
-	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),"Ensure duplicate card has been added for viewport focus")
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),"Ensure duplicate card has been added for viewport focus")
 	cards[0]._on_Card_mouse_exited()
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),"Ensure duplicate card has been removed from focus")

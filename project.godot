@@ -37,12 +37,12 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "TestVars",
 "language": "GDScript",
-"path": "res://tests/unit/TestVars.gd"
+"path": "res://tests/integration/TestVars.gd"
 }, {
 "base": "Reference",
 "class": "UTCommon",
 "language": "GDScript",
-"path": "res://tests/unit/UTcommon.gd"
+"path": "res://tests/UTcommon.gd"
 } ]
 _global_script_class_icons={
 "Board": "",

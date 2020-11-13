@@ -11,9 +11,9 @@ func before_each():
 	common.setup_board(board)
 	cards = common.draw_test_cards(5)
 	hand = cfc_config.NMAP.hand
+	yield(yield_for(1), YIELD)
 
 func test_move_to_container():
-	yield(yield_for(1), YIELD)
 	cards[2]._on_Card_mouse_entered()
 	common.click_card(cards[2])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -25,7 +25,6 @@ func test_move_to_container():
 	assert_eq(1,cfc_config.NMAP.discard.get_card_count(), "Confirm the correct amount of cards are hosted")
 
 func test_move_to_multiple_container():
-	yield(yield_for(1), YIELD)
 	cards[2]._on_Card_mouse_entered()
 	common.click_card(cards[2])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start

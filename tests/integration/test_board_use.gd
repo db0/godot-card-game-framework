@@ -11,10 +11,10 @@ func before_each():
 	common.setup_board(board)
 	cards = common.draw_test_cards(5)
 	hand = cfc_config.NMAP.hand
+	yield(yield_for(1), YIELD)
 
 
 func test_card_table_drop_location():
-	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -27,7 +27,6 @@ func test_card_table_drop_location():
 	assert_almost_eq(Vector2(800, 200),cards[0].position,Vector2(2,2), "Check card dragged in correct global position")
 
 func test_card_hand_drop_recovery():
-	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -40,7 +39,6 @@ func test_card_hand_drop_recovery():
 	assert_eq(hand.get_card_count(),5, "Check card dragged back in hand remains in hand")
 
 func test_card_drag_block_by_board_borders():
-	yield(yield_for(1), YIELD)
 	cards[4]._on_Card_mouse_entered()
 	common.click_card(cards[4])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -60,7 +58,6 @@ func test_card_drag_block_by_board_borders():
 
 func test_fast_card_table_drop():
 	# This catches a bug where the card keeps following the mouse after being dropped
-	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start

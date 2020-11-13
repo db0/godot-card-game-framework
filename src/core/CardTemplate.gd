@@ -18,8 +18,9 @@ enum{ # rudimentary Finite State Machine for all posible states a card might be 
 	DRAGGED					#5
 	DROPPING_TO_BOARD		#6
 	ON_PLAY_BOARD			#7
-	DROPPING_INTO_PILE 		#8
-	IN_PILE					#9
+	FOCUSED_ON_BOARD		#8
+	DROPPING_INTO_PILE 		#9
+	IN_PILE					#10
 }
 var state := IN_PILE # Starting state for each card
 var target_position: Vector2 # Used for animating the card
@@ -67,9 +68,10 @@ func _process(delta) -> void:
 		tween_stuck_time = 0
 	match state:
 		IN_HAND:
-			pass
+			set_focus(false)
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
+			set_focus(true)
 			if not $Tween.is_active() and not focus_completed and cfc_config.focus_style != cfc_config.FocusStyle.VIEWPORT:
 				var expected_position: Vector2 = _recalculatePosition()
 				# We figure out our neighbours by their index
@@ -103,6 +105,7 @@ func _process(delta) -> void:
 				# We don't change state yet, only when the focus is removed from this card
 		MOVING_TO_CONTAINER:
 			# Used when moving card between places (i.e. deck to hand, hand to discard etc)
+			set_focus(false)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if cfc_config.fancy_movement:
@@ -156,6 +159,7 @@ func _process(delta) -> void:
 				fancy_move_second_part = false
 		REORGANIZING:
 			# Used when reorganizing the cards in the hand
+			set_focus(false)
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'position',
@@ -171,6 +175,7 @@ func _process(delta) -> void:
 				state = IN_HAND
 		PUSHED_ASIDE:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
+			set_focus(false)
 			if not $Tween.is_active() and not position.is_equal_approx(target_position):
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'position',
@@ -201,12 +206,21 @@ func _process(delta) -> void:
 			global_position = _determine_board_position_from_mouse()# - $Control.rect_size/2 * scale
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
+			set_focus(false)
 			if not $Tween.is_active() and not scale.is_equal_approx(cfc_config.play_area_scale):
 				$Tween.remove(self,'scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'scale',
 					scale, cfc_config.play_area_scale, 0.3,
 					Tween.TRANS_SINE, Tween.EASE_OUT)
-			$Tween.start()
+				$Tween.start()
+			# This tween hides the container manipulation buttons
+			if not $Control/ManipulationButtons/Tween.is_active() and $Control/ManipulationButtons.modulate[3] != 0:
+				$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
+				$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
+				$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
+				Tween.TRANS_SINE, Tween.EASE_IN)
+				$Control/ManipulationButtons/Tween.start()
+			# We also clear the card highlight
 		DROPPING_TO_BOARD:
 			# Used when dropping the cards to the table
 			# When dragging the card, the card is slightly behind the mouse cursor
@@ -214,6 +228,7 @@ func _process(delta) -> void:
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
 				target_position = _determine_board_position_from_mouse()
+				# The below ensures the card doesn't leave the viewport dimentions
 				if target_position.x + $Control.rect_size.x * cfc_config.play_area_scale.x > get_viewport().size.x:
 					target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc_config.play_area_scale.x
 				if target_position.y + $Control.rect_size.y * cfc_config.play_area_scale.y > get_viewport().size.y:
@@ -229,8 +244,20 @@ func _process(delta) -> void:
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = ON_PLAY_BOARD
+		FOCUSED_ON_BOARD:
+			# Used when card is focused on by the mouse hovering over it while it is on the board.
+			# The below tween shows the container manipulation buttons when you hover over them
+			set_focus(true)
+			if not $Control/ManipulationButtons/Tween.is_active() and $Control/ManipulationButtons.modulate[3] != 1:
+				$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
+				$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
+				$Control/ManipulationButtons.modulate, Color(1,1,1,1), 0.25,
+				Tween.TRANS_SINE, Tween.EASE_IN)
+				$Control/ManipulationButtons/Tween.start()
+			# We don't change state yet, only when the focus is removed from this card
 		DROPPING_INTO_PILE:
 			# Used when dropping the cards into a container (Deck, Discard etc)
+			set_focus(false)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if cfc_config.fancy_movement:
@@ -258,7 +285,7 @@ func _process(delta) -> void:
 				fancy_move_second_part = false
 				state = IN_PILE
 		IN_PILE:
-			pass
+			set_focus(false)
 
 func _determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
@@ -354,9 +381,7 @@ func _on_Card_mouse_entered():
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_my_card_index()) # Debug
 	# We use this variable to check if mouse thinks it changed nodes because it just entered a child node
-	if not _button_hover or (_button_hover and not $Control/FocusHighlight.visible):
-		if cfc_config.focus_style: # value 0 means only scaling focus
-			cfc_config.NMAP.main.focus_card(self)
+	if not _button_hover or (_button_hover and not get_focus()):
 		match state:
 			IN_HAND, REORGANIZING, PUSHED_ASIDE:
 				if not cfc_config.card_drag_ongoing:
@@ -364,24 +389,16 @@ func _on_Card_mouse_entered():
 					interruptTweening()
 					state = FOCUSED_IN_HAND
 			ON_PLAY_BOARD:
-				# This function shows the container manipulation buttons when you hover over them
-				$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
-				$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
-				$Control/ManipulationButtons.modulate, Color(1,1,1,1), 0.25,
-				Tween.TRANS_SINE, Tween.EASE_IN)
-				$Control/ManipulationButtons/Tween.start()
-		$Control/FocusHighlight.visible = true
+					state = FOCUSED_ON_BOARD
 
 func _on_Card_mouse_exited():
 	# This triggers the focus-out effect on the card
 	# On exiting this node, we wait a tiny bit to make sure the mouse didn't just enter a child button
 	# If it did, then that button will immediately set a variable to let us know not to restart the focus
 	yield(get_tree().create_timer(0.03), "timeout")
-	#print(state,"exit:",get_my_card_index()) # debug
+	#print(state,":exit:",get_my_card_index()) # debug
 	# We use this variable to check if mouse thinks it changed nodes because it just entered a child node
 	if not _button_hover:
-		if cfc_config.focus_style: # value 0 means only scaling focus
-			cfc_config.NMAP.main.unfocus()
 		match state:
 			FOCUSED_IN_HAND:
 				#focus_completed = false
@@ -390,14 +407,29 @@ func _on_Card_mouse_exited():
 						# We need to make sure afterwards all card will return to their expected positions
 						# Therefore we simply stop all tweens and reorganize then whole hand
 						c.interruptTweening()
-						c.reorganizeSelf()
-		# This function hides the container manipulation buttons when you stop hovering over them
-		$Control/ManipulationButtons/Tween.remove_all() # We always make sure to clean tweening conflicts
-		$Control/ManipulationButtons/Tween.interpolate_property($Control/ManipulationButtons,'modulate',
-		$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
-		Tween.TRANS_SINE, Tween.EASE_IN)
-		$Control/ManipulationButtons/Tween.start()
-		$Control/FocusHighlight.visible = false
+						c.reorganizeSelf() # This will also set the state to IN_HAND afterwards
+			FOCUSED_ON_BOARD:
+				state = ON_PLAY_BOARD
+
+func set_focus(requestedFocus: bool) -> void:
+	# A helper function for changing card focus. 
+	# Having it in its own function allows us to expand how it works it in the future in one place
+	if $Control/FocusHighlight.visible != requestedFocus: # We use an if to avoid performing constant operations in _process
+		$Control/FocusHighlight.visible = requestedFocus
+	if cfc_config.focus_style: # value 0 means only scaling focus
+		if requestedFocus:
+			cfc_config.NMAP.main.focus_card(self)
+		else:
+			cfc_config.NMAP.main.unfocus(self)
+
+
+func get_focus() -> bool:
+	# A helper function for knowing if a card is currently in focus
+	var focusState = false
+	match state:
+		FOCUSED_IN_HAND, FOCUSED_ON_BOARD:
+			focusState = true
+	return(focusState)
 
 func _start_dragging():
 	# Pick up a card to drag around with the mouse.
@@ -423,7 +455,7 @@ func _on_Card_gui_input(event):
 	if event is InputEventMouseButton:
 		# If the player presses the left click, it might be because they want to drag the card
 		if event.is_pressed() and event.get_button_index() == 1:
-			if (cfc_config.focus_style != cfc_config.FocusStyle.VIEWPORT and (state == FOCUSED_IN_HAND or state == ON_PLAY_BOARD)) or cfc_config.focus_style:
+			if (cfc_config.focus_style != cfc_config.FocusStyle.VIEWPORT and (state == FOCUSED_IN_HAND or state == FOCUSED_ON_BOARD)) or cfc_config.focus_style:
 				# But first we check if the player does a long-press.
 				# We don't want to start dragging the card immediately.
 				cfc_config.card_drag_ongoing = self
@@ -475,10 +507,10 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 		Tween.TRANS_QUAD, Tween.EASE_OUT)
 
 func reHost(targetHost: Node2D, boardPosition := Vector2(-1,-1)) -> void:
-	if cfc_config.focus_style:
-		# We make to sure to clear the viewport focus because
-		# the mouse exited signal will not fire after drag&drop in a container
-		cfc_config.NMAP.main.unfocus()
+#	if cfc_config.focus_style:
+#		# We make to sure to clear the viewport focus because
+#		# the mouse exited signal will not fire after drag&drop in a container
+#		cfc_config.NMAP.main.unfocus()
 	# We need to store the parent, because we won't be able to know it later
 	var parentHost = get_parent()
 	if targetHost != parentHost:
@@ -576,7 +608,7 @@ func _on_button_mouse_exited() -> void:
 	# We wait a tiny bit before trying to clear the counter, to allow the mouse_enter() code
 	# of the parent control node, to know if the mouse was on top of a button previously
 	yield(get_tree().create_timer(0.05), "timeout")
-	if not $Control/FocusHighlight.visible:
+	if not get_focus():
 		$Control/ManipulationButtons/Tween.remove_all()
 		$Control/ManipulationButtons.modulate[3] = 0
 	# The below check prevents exiting the mouse causing the card focus 

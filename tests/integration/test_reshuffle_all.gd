@@ -11,10 +11,10 @@ func before_each():
 	common.setup_board(board)
 	cards = common.draw_test_cards(5)
 	hand = cfc_config.NMAP.hand
+	yield(yield_for(1), YIELD)
 
 func test_fancy_reshuffle_all():
 	cfc_config.fancy_movement = true
-	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -37,7 +37,6 @@ func test_fancy_reshuffle_all():
 
 func test_basic_reshuffle_all():
 	cfc_config.fancy_movement = false
-	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -58,8 +57,8 @@ func test_basic_reshuffle_all():
 	assert_almost_eq(Vector2(1000, 10),cards[4].global_position,Vector2(10,10), "Check that card is not being teleported from where is expect by Tween")
 	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	
-func test_card_redraw_order():
-	pass # Don't think this is actually a bug.
+#func test_card_redraw_order():
+#	# Don't think this is actually a bug.
 #	var prev_idx
 #	var card
 #	var cards := []

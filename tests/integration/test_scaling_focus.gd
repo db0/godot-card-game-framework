@@ -11,9 +11,9 @@ func before_each():
 	common.setup_board(board)
 	cards = common.draw_test_cards(5)
 	hand = cfc_config.NMAP.hand
+	yield(yield_for(1), YIELD)
 
 func test_single_card_focus():
-	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_almost_eq(Vector2(47.5, -240),cards[0].position,Vector2(2,2), "Check card dragged in correct global position")
@@ -24,7 +24,6 @@ func test_single_card_focus():
 	assert_almost_eq(Vector2(1, 1),cards[0].scale,Vector2(0.1,0.1), "Check card has correct scale")
 #
 func test_card_focus_neighbour_push():
-	yield(yield_for(1), YIELD)
 	cards[2]._on_Card_mouse_entered()
 	yield(yield_for(1), YIELD)
 	assert_almost_eq(Vector2(29, 0),cards[0].position,Vector2(2,2), "Check card dragged in correct global position")
@@ -36,7 +35,6 @@ func test_card_focus_neighbour_push():
 func test_card_change_focus_to_neighbour():
 	var YIELD_TIME := 0.07
 	var YIELD_TIME2 := 0.5
-	yield(yield_for(1), YIELD)
 	cards[2]._on_Card_mouse_entered()
 	yield(yield_for(YIELD_TIME), YIELD)
 	cards[2]._on_Card_mouse_exited()
@@ -67,7 +65,6 @@ func test_card_change_focus_to_neighbour():
 
 func test_card_hand_mouseslide():
 	var YIELD_TIME := 0.02
-	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	yield(yield_for(YIELD_TIME), YIELD)
 	cards[0]._on_Card_mouse_exited()
