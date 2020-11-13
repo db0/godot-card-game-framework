@@ -21,14 +21,13 @@ enum{ # rudimentary Finite State Machine for all posible states a card might be 
 	FOCUSED_ON_BOARD		#8
 	DROPPING_INTO_PILE 		#9
 	IN_PILE					#10
+	FOCUSED_IN_POPUP		#11
 }
 var state := IN_PILE # Starting state for each card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
-# The below is used to know when the mouse didn't exit the card but is just hovering over card buttons
-# This is necessary as a workaround for godotengine/godot#16854
-var _button_hover := 0 
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -286,6 +285,9 @@ func _process(delta) -> void:
 				state = IN_PILE
 		IN_PILE:
 			set_focus(false)
+		FOCUSED_IN_POPUP:
+			# Used when the card is displayed in the popup grid container
+			set_focus(true)
 
 func _determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
@@ -377,11 +379,12 @@ func interruptTweening() ->void:
 		$Tween.remove_all()
 		state = IN_HAND
 
-func _on_Card_mouse_entered():
+func _on_Card_mouse_entered() -> void:
 	# This triggers the focus-in effect on the card
-	#print(state,":enter:",get_my_card_index()) # Debug
+	#print(state,":enter:",get_index()) # Debug
+	#print(_get_button_hover()) # debug
 	# We use this variable to check if mouse thinks it changed nodes because it just entered a child node
-	if not _button_hover or (_button_hover and not get_focus()):
+	if not _get_button_hover() or (_get_button_hover() and not get_focus()):
 		match state:
 			IN_HAND, REORGANIZING, PUSHED_ASIDE:
 				if not cfc_config.card_drag_ongoing:
@@ -390,15 +393,17 @@ func _on_Card_mouse_entered():
 					state = FOCUSED_IN_HAND
 			ON_PLAY_BOARD:
 					state = FOCUSED_ON_BOARD
+			IN_PILE: # The only way to mouse over a card in a pile, is when it's in a the grid popup
+					state = FOCUSED_IN_POPUP
 
-func _on_Card_mouse_exited():
+func _on_Card_mouse_exited() -> void:
 	# This triggers the focus-out effect on the card
 	# On exiting this node, we wait a tiny bit to make sure the mouse didn't just enter a child button
 	# If it did, then that button will immediately set a variable to let us know not to restart the focus
-	yield(get_tree().create_timer(0.03), "timeout")
-	#print(state,":exit:",get_my_card_index()) # debug
+	#print(state,":exit:",get_index()) # debug
+	#print(_get_button_hover()) # debug
 	# We use this variable to check if mouse thinks it changed nodes because it just entered a child node
-	if not _button_hover:
+	if not _get_button_hover():
 		match state:
 			FOCUSED_IN_HAND:
 				#focus_completed = false
@@ -410,9 +415,11 @@ func _on_Card_mouse_exited():
 						c.reorganizeSelf() # This will also set the state to IN_HAND afterwards
 			FOCUSED_ON_BOARD:
 				state = ON_PLAY_BOARD
+			FOCUSED_IN_POPUP:
+				state = IN_PILE
 
 func set_focus(requestedFocus: bool) -> void:
-	# A helper function for changing card focus. 
+	# A helper function for changing card focus.
 	# Having it in its own function allows us to expand how it works it in the future in one place
 	if $Control/FocusHighlight.visible != requestedFocus: # We use an if to avoid performing constant operations in _process
 		$Control/FocusHighlight.visible = requestedFocus
@@ -553,7 +560,7 @@ func reHost(targetHost: Node2D, boardPosition := Vector2(-1,-1)) -> void:
 			# The developer is allowed to pass a position override to the card placement
 			if boardPosition == Vector2(-1,-1):
 				target_position = _determine_board_position_from_mouse()
-			else: 
+			else:
 				target_position = boardPosition
 			state = DROPPING_TO_BOARD
 			raise()
@@ -587,37 +594,33 @@ func get_my_card_index() -> int:
 	# Return out index among card nodes in the same parent.
 	return get_parent().get_card_index(self)
 
+func _get_button_hover() -> bool:
+# The below is used to know when the mouse didn't exit the card but is just hovering over card buttons
+# This is necessary as a workaround for godotengine/godot#16854
+# We use this function to detect when the mouse is still hovering over the buttons area
+# We need to detect this extra, because the buttons restart event propagation
+# This means that the Control parent, will send a mouse_exit signal when the mouse enter a button rect
+# which will make the buttons disappear again
+# So we make sure buttons stay visible while the mouse is on top.
+	var ret = false
+	if (get_global_mouse_position().x >= $Control/ManipulationButtons.rect_global_position.x and
+		get_global_mouse_position().y >= $Control/ManipulationButtons.rect_global_position.y and
+		get_global_mouse_position().x <= $Control/ManipulationButtons.rect_global_position.x + $Control/ManipulationButtons.rect_size.x and
+		get_global_mouse_position().y <= $Control/ManipulationButtons.rect_global_position.y + $Control/ManipulationButtons.rect_size.y):
+		ret = true
+	return(ret)
+
 func _on_button_mouse_entered() -> void:
-	# We use this function to detect when the mouse enters the button area
-	# We need to detect this extra, because the button stops event propagation
-	# This means that the Control parent, will send a mouse_exit signal when the mouse enter a button area
-	# which will make the buttons disappear again
-	# So we make sure buttons stay visible while the mouse is on top.
 	match state:
 		ON_PLAY_BOARD:
 			$Control/ManipulationButtons/Tween.remove_all()
 			$Control/ManipulationButtons.modulate[3] = 1
-			# This is  anincrementing counter every time we enter a button
-			# This lets us prevent rapid button changes from breaking the focus
-	_button_hover += 1
-	#print("button enter: ",_button_hover) # debug
 
 func _on_button_mouse_exited() -> void:
 	# When the mouse exits a button, we make it disappear as well.
-	var hover_id := _button_hover
-	# We wait a tiny bit before trying to clear the counter, to allow the mouse_enter() code
-	# of the parent control node, to know if the mouse was on top of a button previously
-	yield(get_tree().create_timer(0.05), "timeout")
 	if not get_focus():
 		$Control/ManipulationButtons/Tween.remove_all()
 		$Control/ManipulationButtons.modulate[3] = 0
-	# The below check prevents exiting the mouse causing the card focus 
-	# to be disrupted due to godotengine/godot#16854
-	# On exit, after waiting a bit, we checked if by that time, the mouse entered another button already
-	# If not, then we clear it
-	if _button_hover == hover_id:
-		_button_hover = 0
-	#print("button exit: ",_button_hover) # Debug
 
 func rotate_card(rot: int, toggle := false) -> int:
 	# Rotate the card the specified number of degrees

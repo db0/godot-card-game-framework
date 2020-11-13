@@ -28,7 +28,7 @@ current = true
 [node name="Focus" type="ViewportContainer" parent="."]
 modulate = Color( 1, 1, 1, 0 )
 margin_right = 300.0
-margin_bottom = 460.0
+margin_bottom = 450.0
 mouse_filter = 2
 stretch = true
 __meta__ = {
@@ -36,7 +36,7 @@ __meta__ = {
 }
 
 [node name="Viewport" type="Viewport" parent="Focus"]
-size = Vector2( 299, 460 )
+size = Vector2( 300, 450 )
 handle_input_locally = false
 usage = 0
 render_target_update_mode = 3
