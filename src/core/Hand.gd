@@ -4,7 +4,7 @@
 extends CardContainer # Hands are just a container with card organization functions
 class_name Hand 
 
-onready var bottom_margin: float = $Control.rect_size.y * cfc_config.bottom_margin_multiplier
+onready var bottom_margin: float = $Control.rect_size.y * cfc.bottom_margin_multiplier
 
 ### BEGIN Behaviour Constants ###
 # The maximum amount of cards allowed to draw in this hand
@@ -28,7 +28,7 @@ func shuffle_cards() -> void:
 		card.reorganizeSelf()
 	move_child($Control,0)
 
-func draw_card(pile : Pile = cfc_config.NMAP.deck) -> Card:
+func draw_card(pile : Pile = cfc.NMAP.deck) -> Card:
 	var card: Card = pile.get_top_card()
 	# A basic function to pull a card from out deck into our hand.
 	if get_card_count() < hand_size: # prevent from exceeding our hand size
@@ -42,4 +42,4 @@ func _on_Deck_input_event(event) -> void:
 
 func _on_DiscardRandom_Button_pressed() -> void:
 	var card = get_random_card()
-	card.reHost(cfc_config.NMAP.discard)
+	card.reHost(cfc.NMAP.discard)

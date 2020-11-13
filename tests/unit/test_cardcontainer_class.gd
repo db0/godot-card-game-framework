@@ -11,11 +11,11 @@ func before_each():
 	common.setup_board(board)
 
 func test_methods():
-	var container : Pile = cfc_config.NMAP.deck
+	var container : Pile = cfc.NMAP.deck
 	assert_eq('CardContainer',container.get_class(), 'Check that class name returns correct value')
 	
 func test_get_card_methods():
-	var container : Pile = cfc_config.NMAP.deck
+	var container : Pile = cfc.NMAP.deck
 	assert_eq(container.get_child(2),container.get_all_cards()[0],"Check that get_all_cards() works")
 	assert_eq(container.get_child(12),container.get_card(10),"Check that get_card works")
 	assert_eq(5,container.get_card_index(container.get_child(7)),"Check that get_card_index works")

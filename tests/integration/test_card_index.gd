@@ -21,7 +21,7 @@ func before_each():
 	board = autoqfree(TestVars.new().boardScene.instance())
 	get_tree().get_root().add_child(board)
 	common.setup_board(board)
-	hand = cfc_config.NMAP.hand
+	hand = cfc.NMAP.hand
 	cards.clear()
 
 func test_hand_z_index():
@@ -111,6 +111,6 @@ func test_table_hand_z_index():
 	yield(yield_for(0.7), YIELD)
 	assert_eq(8,hand.get_card_count(),"Check if we have the correct amount of cards in hand")
 	for c in cards:
-		if c.get_parent() == cfc_config.NMAP.hand:
+		if c.get_parent() == cfc.NMAP.hand:
 			assert_eq(0,c.z_index,"Check if card in hand at index 0")
 

@@ -8,7 +8,7 @@ func before_each():
 	board = autoqfree(TestVars.new().boardScene.instance())
 	get_tree().get_root().add_child(board)
 	common.setup_board(board)
-	hand = cfc_config.NMAP.hand
+	hand = cfc.NMAP.hand
 
 func test_single_card_draw():
 	var card0: Card = hand.draw_card()

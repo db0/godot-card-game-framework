@@ -10,7 +10,7 @@ func before_each():
 	get_tree().get_root().add_child(board)
 	common.setup_board(board)
 	cards = common.draw_test_cards(5)
-	hand = cfc_config.NMAP.hand
+	hand = cfc.NMAP.hand
 	yield(yield_for(1), YIELD)
 
 

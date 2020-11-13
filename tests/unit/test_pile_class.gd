@@ -11,7 +11,7 @@ func before_each():
 	common.setup_board(board)
 
 func test_get_card_methods():
-	var pile : Pile = cfc_config.NMAP.deck
+	var pile : Pile = cfc.NMAP.deck
 	# The Panel is always put to the bottom with code. Therefore the third child node is always a card
 	assert_eq(pile.get_child(2),pile.get_top_card(), 'Check that get_top_card() returns top card')
 	# Likewise, the first card from the bottom is the previous to last.

@@ -10,11 +10,11 @@ func before_each():
 	get_tree().get_root().add_child(board)
 	common.setup_board(board)
 	cards = common.draw_test_cards(5)
-	hand = cfc_config.NMAP.hand
+	hand = cfc.NMAP.hand
 	yield(yield_for(1), YIELD)
 
 func test_fancy_reshuffle_all():
-	cfc_config.fancy_movement = true
+	cfc.fancy_movement = true
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -36,7 +36,7 @@ func test_fancy_reshuffle_all():
 	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
 
 func test_basic_reshuffle_all():
-	cfc_config.fancy_movement = false
+	cfc.fancy_movement = false
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -73,10 +73,10 @@ func test_basic_reshuffle_all():
 #			yield(yield_for(0.07), YIELD)
 #		yield(yield_for(0.8), YIELD)
 #		for c in board.allCards:
-#			if c.get_parent() != cfc_config.NMAP.deck:
+#			if c.get_parent() != cfc.NMAP.deck:
 #				#assert_eq(2,c.get_index(),"Check if cards retrieved in order")
 #				assert_eq(0,c.z_index,"Check if cards retrieved in order")
-#				c.reHost(cfc_config.NMAP.deck)
+#				c.reHost(cfc.NMAP.deck)
 #				yield(get_tree().create_timer(0.1), "timeout")
 #		board._on_ReshuffleAll_pressed()
 #		yield(yield_for(1.2), YIELD)

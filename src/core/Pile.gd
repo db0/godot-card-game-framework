@@ -79,7 +79,7 @@ func add_child(node, _legible_unique_name=false) -> void:
 		_slot_card_into_popup(node)
 
 func move_child(child_node, to_position) -> void:
-	# Another takeover of a builtin function, to make sure the $Control node is always on top
+	# Another override of a builtin function, to make sure the $Control node is always on top
 	.move_child(child_node, to_position)
 	$Control.raise()
 

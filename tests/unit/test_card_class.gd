@@ -9,7 +9,7 @@ func before_each():
 	board = autoqfree(TestVars.new().boardScene.instance())
 	get_tree().get_root().add_child(board)
 	common.setup_board(board)
-	card = cfc_config.NMAP.deck.get_card(0)
+	card = cfc.NMAP.deck.get_card(0)
 
 func test_methods():
 	assert_eq('Card',card.get_class(), 'Check that class name returns correct value')
@@ -25,12 +25,12 @@ func test_focus_setget():
 	assert_false(card.get_focus(), 'Check that get_focus returns false correct value correctly')
 
 func test_moveTo():
-	var discard : Pile = cfc_config.NMAP.discard
-	var card2 = cfc_config.NMAP.deck.get_card(1)
-	var card3 = cfc_config.NMAP.deck.get_card(2)
-	var card4 = cfc_config.NMAP.deck.get_card(3)
-	var card5 = cfc_config.NMAP.deck.get_card(4)
-	var card6 = cfc_config.NMAP.deck.get_card(5)
+	var discard : Pile = cfc.NMAP.discard
+	var card2 = cfc.NMAP.deck.get_card(1)
+	var card3 = cfc.NMAP.deck.get_card(2)
+	var card4 = cfc.NMAP.deck.get_card(3)
+	var card5 = cfc.NMAP.deck.get_card(4)
+	var card6 = cfc.NMAP.deck.get_card(5)
 	card.moveTo(discard)
 	card2.moveTo(discard)
 	assert_eq(1,discard.get_card_index(card2), 'Check that moveTo without arguments puts card at the end')
