@@ -65,6 +65,9 @@ func _on_button_mouse_exited():
 
 func _on_Shuffle_Button_pressed() -> void:
 	# Reshuffles the cards in container
+	shuffle_cards()
+
+func shuffle_cards() -> void:
 	var cardsArray := []
 	for card in get_all_cards():
 		cardsArray.append(card)

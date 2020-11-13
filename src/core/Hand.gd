@@ -18,9 +18,12 @@ func _ready() -> void:
 	$Control/ManipulationButtons/DiscardRandom.connect("pressed",self,'_on_DiscardRandom_Button_pressed')
 
 func _on_Shuffle_Button_pressed() -> void:
+	shuffle_cards()
+
+func shuffle_cards() -> void:
 	# When shuffling the hand, we also want to show the player
 	# So execute the parent function, then call each card to reorg itself
-	._on_Shuffle_Button_pressed()
+	.shuffle_cards()
 	for card in get_all_cards():
 		card.reorganizeSelf()
 	move_child($Control,0)

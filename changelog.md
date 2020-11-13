@@ -3,6 +3,10 @@
 ## 0.10 (Οngoing)
 
 * Added visible highlight when mousing over a card
+* Can move cards to top/bottom or any index in Card Containers
+* Can retrieve cards from top/bottom of Card Containers
+* Can retrieve random cards from Card Containers
+* Can shuffle Card Containers
 
 ## 0.9
 
