@@ -72,3 +72,21 @@ func _on_Shuffle_Button_pressed() -> void:
 	cardsArray.shuffle()
 	for card in cardsArray:
 		move_child(card,cardsArray.find(card))
+
+func translate_card_index_to_node_index(index: int) -> int:
+	# This function is responsible for translating requested card index to true node index.
+	# I.e the index it would have among all its existing children, inlcuding non-Card nodes
+	var node_index := 0
+	# To figure out the index, we use the existing cards
+	var all_cards := get_all_cards()
+	# First we check if the requested index is higher than the amount of cards
+	# If so, we give back the next available index
+	if index >= len(all_cards):
+		node_index = len(get_child_count())
+		print("WARNING: Higher card index than hosted cards requested. Returning last position.")
+	else:
+		# If the requester index is not higher than the number of cards
+		# We figure out which card has the index at the moment, and return its node index
+		var card_at_index = all_cards[index]
+		node_index = card_at_index.get_index()
+	return(node_index)

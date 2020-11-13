@@ -513,7 +513,7 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 		modulate, Color(1, 1, 1, visibility), time,
 		Tween.TRANS_QUAD, Tween.EASE_OUT)
 
-func moveTo(targetHost: Node2D, boardPosition := Vector2(-1,-1)) -> void:
+func moveTo(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) -> void:
 #	if cfc_config.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -528,6 +528,8 @@ func moveTo(targetHost: Node2D, boardPosition := Vector2(-1,-1)) -> void:
 		# We need to remove the current parent node before adding a different one
 		parentHost.remove_child(self)
 		targetHost.add_child(self)
+		if index >= 0:
+			targetHost.move_child(self,targetHost.translate_card_index_to_node_index(index))
 		global_position = previous_pos # Ensure card stays where it was before it changed parents
 		if targetHost in cfc_config.hands:
 			_tween_interpolate_visibility(1,0.3)
