@@ -10,7 +10,7 @@ var UT_interpolation_requested := false
 var t = 0 # Used for interpolating
 
 # Called when the node enters the scene tree for the first time.
-func _ready():
+func _ready() -> void:
 	pass
 
 func UT_interpolate_mouse_move(newpos: Vector2, startpos := Vector2(-1,-1), mouseSpeed := 3) -> void:
@@ -23,7 +23,7 @@ func UT_interpolate_mouse_move(newpos: Vector2, startpos := Vector2(-1,-1), mous
 	UT_target_mouse_position = newpos
 	UT_interpolation_requested = true
 
-func _physics_process(delta):
+func _physics_process(delta) -> void:
 	if UT_interpolation_requested:
 		if UT_mouse_position != UT_target_mouse_position:
 			t += delta * UT_mouse_speed

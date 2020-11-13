@@ -438,7 +438,7 @@ func get_focus() -> bool:
 			focusState = true
 	return(focusState)
 
-func _start_dragging():
+func _start_dragging() -> void:
 	# Pick up a card to drag around with the mouse.
 	# When dragging we want the dragged card to always be drawn above all else
 	z_index = 99
@@ -457,7 +457,7 @@ func _start_dragging():
 				c.interruptTweening()
 				c.reorganizeSelf()
 
-func _on_Card_gui_input(event):
+func _on_Card_gui_input(event) -> void:
 	# A signal for whenever the player clicks on a card
 	if event is InputEventMouseButton:
 		# If the player presses the left click, it might be because they want to drag the card
@@ -491,7 +491,7 @@ func _on_Card_gui_input(event):
 					for obj in get_overlapping_areas():
 						if obj.get_class() == 'CardContainer':
 							destination = obj #TODO: Need some more player-obvious logic on what to do if card area overlaps two CardContainers
-					reHost(destination)
+					moveTo(destination)
 					focus_completed = false
 					#emit_signal("card_dropped",self)
 
@@ -513,7 +513,7 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 		modulate, Color(1, 1, 1, visibility), time,
 		Tween.TRANS_QUAD, Tween.EASE_OUT)
 
-func reHost(targetHost: Node2D, boardPosition := Vector2(-1,-1)) -> void:
+func moveTo(targetHost: Node2D, boardPosition := Vector2(-1,-1)) -> void:
 #	if cfc_config.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -622,7 +622,7 @@ func _on_button_mouse_exited() -> void:
 		$Control/ManipulationButtons/Tween.remove_all()
 		$Control/ManipulationButtons.modulate[3] = 0
 
-func rotate_card(rot: int, toggle := false) -> int:
+func rotate_card(rot: int, toggle := false) -> void:
 	# Rotate the card the specified number of degrees
 	# If the player specifies the degree the card already has, and they enable the toggle flag
 	# Then we just reset the card to 0 degrees
@@ -632,7 +632,7 @@ func rotate_card(rot: int, toggle := false) -> int:
 	$Tween.interpolate_property($Control,'rect_rotation',
 		$Control.rect_rotation, rot, 0.3,
 		Tween.TRANS_BACK, Tween.EASE_IN_OUT)
-	return rot
+	$Tween.start()
 
 func _on_rot90_pressed() -> void:
 # warning-ignore:return_value_discarded

@@ -14,7 +14,7 @@ func before_each():
 	yield(yield_for(1), YIELD)
 
 
-func test_card_table_drop_location():
+func test_card_table_drop_location_and_rotation():
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -25,6 +25,18 @@ func test_card_table_drop_location():
 	common.drop_card(cards[0],board.UT_mouse_position)
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_almost_eq(Vector2(800, 200),cards[0].position,Vector2(2,2), "Check card dragged in correct global position")
+	cards[0].rotate_card(90)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
+	assert_almost_eq(90,cards[0].get_node("Control").rect_rotation,2, "Check card rotates 90")
+	cards[0].rotate_card(180)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
+	assert_almost_eq(180,cards[0].get_node("Control").rect_rotation,2, "Check card rotates 180")
+	cards[0].rotate_card(180)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
+	assert_almost_eq(180,cards[0].get_node("Control").rect_rotation,2, "Check card rotation doesn't revert without toggle")
+	cards[0].rotate_card(180, true)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
+	assert_almost_eq(0,cards[0].get_node("Control").rect_rotation,2, "Check card rotation toggle works to reset to 0")
 
 func test_card_hand_drop_recovery():
 	cards[0]._on_Card_mouse_entered()

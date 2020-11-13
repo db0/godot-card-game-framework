@@ -7,7 +7,7 @@ extends Pile
 
 
 # Called when the node enters the scene tree for the first time.
-func _ready():
+func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", cfc_config.NMAP.hand, "_on_Deck_input_event")
 	#print(get_signal_connection_list("input_event")[0]['target'].name)

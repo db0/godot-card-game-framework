@@ -12,7 +12,7 @@ var dupes_dict := {}
 func _ready():
 	pass
 
-func focus_card(card: Card):
+func focus_card(card: Card) -> void:
 	# This is responsible for showing the card closeup in the Focus viewport
 	# We check if we're already focused on this card, to avoid making duplicates the whole time
 	if not current_focus_source:
@@ -37,7 +37,7 @@ func focus_card(card: Card):
 		Tween.TRANS_SINE, Tween.EASE_IN)
 		$Focus/Tween.start()
 
-func unfocus(card: Card):
+func unfocus(card: Card) -> void:
 	# This is responsible for hiding the focus viewport when we're done looking at it
 	if current_focus_source == card:
 		current_focus_source = null
@@ -48,7 +48,7 @@ func unfocus(card: Card):
 		$Focus/Tween.start()
 
 
-func _process(_delta):
+func _process(_delta) -> void:
 	# The below makes sure to display the closeup of the card, only on the side the player's mouse is not in.
 	if get_global_mouse_position().x < get_viewport().size.x/2:
 		$Focus.rect_position.x = get_viewport().size.x - $Focus.rect_size.x

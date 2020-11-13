@@ -6,7 +6,7 @@ var allCards := [] # A pseudo-deck array to hold the card objects we want to pul
 const cardTemplate = preload("res://src/core/CardTemplate.tscn")
 
 # Called when the node enters the scene tree for the first time.
-func _ready():
+func _ready() -> void:
 	# We're assigning our positions programmatically, instead of defining them on the scene.
 	# This way any they will work with any size of viewport in a game.
 	# Discard pile goes bottom right
@@ -21,7 +21,7 @@ func _ready():
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
 	
-func load_test_cards():
+func load_test_cards() -> void:
 	for _i in range(15):
 		var card: Card = cardTemplate.instance()
 		$Deck.add_child(card)
@@ -30,16 +30,16 @@ func load_test_cards():
 		card.position = Vector2(0,0)
 		card.modulate.a = 0 # We use this for a nice transition effect	
 
-func _on_FancyMovementToggle_toggled(_button_pressed):
+func _on_FancyMovementToggle_toggled(_button_pressed) -> void:
 	# This function is to avoid relating the logic in the card objects to a node which might not be there in another game
 	# You can remove this function and the FancyMovementToggle button without issues
 	cfc_config.fancy_movement = $FancyMovementToggle.pressed
 
-func _on_ReshuffleAll_pressed():
+func _on_ReshuffleAll_pressed() -> void:
 	for c in allCards:
 		if c.get_parent() != cfc_config.NMAP.deck:
-			c.reHost(cfc_config.NMAP.deck)
+			c.moveTo(cfc_config.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
 
-func _on_ScalingFocusOptions_item_selected(index):
+func _on_ScalingFocusOptions_item_selected(index) -> void:
 	cfc_config.focus_style = index

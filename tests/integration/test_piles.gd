@@ -63,3 +63,9 @@ func test_move_to_multiple_container():
 
 func test_pile_functions():
 	pending("Check that shuffle really does shuffle")
+
+func test_popup_view():
+	pending("Check that all cards all migrated to popup window")
+	pending("Check that requesting all cards, includes cards in then popup")
+	pending("Check that drawing a card from the pile, picks it from the popup")
+	pending("Check that hosting a card in the pile, puts it in the popup")

@@ -16,9 +16,12 @@ func test_methods():
 
 func test_focus_setget():
 	card.set_focus(true)
+	card.state = 1
 	assert_true(card.get_node('Control/FocusHighlight').visible, 'Check that highlight is set correctly to visible')
 	assert_true(card.get_focus(), 'Check that get_focus returns true correct value correctly')
+	gut.p(card.get_focus())
 	card.set_focus(false)
+	card.state = 0
 	assert_false(card.get_node('Control/FocusHighlight').visible, 'Check that highlight is set correctly to invisible')
 	assert_false(card.get_focus(), 'Check that get_focus returns false correct value correctly')
 	
