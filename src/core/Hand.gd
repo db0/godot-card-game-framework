@@ -26,12 +26,9 @@ func _on_Shuffle_Button_pressed():
 	move_child($Control,0)
 
 func draw_card(pile : Pile = cfc_config.NMAP.deck) -> Card:
-	var card: Card = null
+	var card: Card = pile.get_top_card()
 	# A basic function to pull a card from out deck into our hand.
-	if pile.get_card_count() and get_card_count() < hand_size: # prevent from drawing more cards than are in our deck and crashing godot.
-		# We need to remove the current parent node before adding a different one
-		# We simply pick the first one.
-		card = pile.get_card(0)
+	if get_card_count() < hand_size: # prevent from exceeding our hand size
 		card.reHost(self)
 	return card # Returning the card object for unit testing
 

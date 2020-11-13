@@ -105,3 +105,17 @@ func get_all_cards(scanViewPopup := true) -> Array:
 			for obj in $ViewPopup/CardView.get_children():
 				cardsArray.append(obj.get_child(0))
 	return cardsArray
+
+func get_top_card() -> Card:
+	var card: Card = null
+	# A basic function to return the top a card from a pile.
+	if get_card_count(): # prevent from trying to retrieve more cards than are in our deck and crashing godot.
+		card = get_card(0)
+	return card # Returning the card object for unit testing
+
+func get_bottom_card() -> Card:
+	var card: Card = null
+	# A basic function to return the bottom card from a pile.
+	if get_card_count(): # prevent from trying to retrieve more cards than are in our deck and crashing godot.
+		card = get_card(get_card_count() - 1)
+	return card # Returning the card object for unit testing
