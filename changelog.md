@@ -7,6 +7,7 @@
 * Can retrieve cards from top/bottom of Card Containers
 * Can retrieve random cards from Card Containers
 * Can shuffle Card Containers
+* Can attach cards to other cards
 
 ## 0.9
 

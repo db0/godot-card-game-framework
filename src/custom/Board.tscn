@@ -42,6 +42,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="EnableAttach" type="CheckButton" parent="."]
+margin_left = 209.57
+margin_top = 1.33484
+margin_right = 398.57
+margin_bottom = 41.3348
+text = "Enable Attachment"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="ScalingFocusOptions" type="OptionButton" parent="."]
 margin_left = -1.33484
 margin_top = 44.0497

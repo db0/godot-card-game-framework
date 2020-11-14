@@ -27,14 +27,19 @@ var state := IN_PILE # Starting state for each card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
-
-
+var potential_hosts := []
+var current_host_card : Card = null
+var attachments := []
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# Set the card to always pivot from its center.
 	# We only rotate the Control node however, so the collision shape is not rotated
 	# Looking for a better solution, but this is the best I have until now.
 	$Control.rect_pivot_offset = $Control.rect_size/2
+	# warning-ignore:return_value_discarded
+	connect("area_entered", self, "_on_Card_area_entered")
+	# warning-ignore:return_value_discarded
+	connect("area_exited", self, "_on_Card_area_exited")
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
@@ -189,7 +194,9 @@ func _process(delta) -> void:
 				# We don't change state yet, only when the focus is removed from the neighbour
 		DRAGGED:
 			# Used when the card is dragged around the game with the mouse
-			if not $Tween.is_active() and not scale.is_equal_approx(cfc.card_scale_while_dragging):
+			if (not $Tween.is_active() and
+				not scale.is_equal_approx(cfc.card_scale_while_dragging) and
+				get_parent() != cfc.NMAP.board):
 				$Tween.remove(self,'scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'scale',
 					scale, cfc.card_scale_while_dragging, 0.2,
@@ -203,6 +210,7 @@ func _process(delta) -> void:
 			# We set the card to be centered on the mouse cursor to allow the player to properly understand
 			# where it will go once dropped.
 			global_position = _determine_board_position_from_mouse()# - $Control.rect_size/2 * scale
+			_organize_attachments()
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			set_focus(false)
@@ -219,19 +227,19 @@ func _process(delta) -> void:
 				$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
 				Tween.TRANS_SINE, Tween.EASE_IN)
 				$Control/ManipulationButtons/Tween.start()
-			# We also clear the card highlight
+			_organize_attachments()
 		DROPPING_TO_BOARD:
 			# Used when dropping the cards to the table
 			# When dragging the card, the card is slightly behind the mouse cursor
 			# so we tween it to the right location
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
-				target_position = _determine_board_position_from_mouse()
-				# The below ensures the card doesn't leave the viewport dimentions
-				if target_position.x + $Control.rect_size.x * cfc.play_area_scale.x > get_viewport().size.x:
-					target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.play_area_scale.x
-				if target_position.y + $Control.rect_size.y * cfc.play_area_scale.y > get_viewport().size.y:
-					target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.play_area_scale.y
+#				target_position = _determine_board_position_from_mouse()
+#				# The below ensures the card doesn't leave the viewport dimentions
+#				if target_position.x + $Control.rect_size.x * cfc.play_area_scale.x > get_viewport().size.x:
+#					target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.play_area_scale.x
+#				if target_position.y + $Control.rect_size.y * cfc.play_area_scale.y > get_viewport().size.y:
+#					target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.play_area_scale.y
 				$Tween.interpolate_property(self,'position',
 					position, target_position, 0.25,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
@@ -288,6 +296,28 @@ func _process(delta) -> void:
 		FOCUSED_IN_POPUP:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
+
+func _organize_attachments() -> void:
+	# Takes care to make attachments always move with their parent around the board
+	# We only do this if the parent is still on the board
+	if get_parent() == cfc.NMAP.board:
+		var current_index = get_index()
+		for card in attachments:
+			# We use the index of the attachment among other attachments to figure out its index and placement
+			var attach_index = attachments.find(card)
+			if attach_index:
+				# if the card is not the first attachment to this host
+				# Then we make sure that each subsequent card is higher in the node hierarchy than its parent
+				# This will make latter cards draw below the others
+				if card.get_index() > attachments[attach_index - 1].get_index():
+					get_parent().move_child(card,attachments[attach_index - 1].get_index())
+			# If the card if the first for its host, we need to make sure it is higher in the hierarchy than the host
+			elif card.get_index() > self.get_index():
+				get_parent().move_child(card,self.get_index())
+			# We don't want to try and move it if it's still tweening.
+			# But if it isn't, we make sure it always follows its parent
+			if not card.get_node('Tween').is_active() and card.state == ON_PLAY_BOARD:
+				card.global_position = global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.attachment_offset)
 
 func _determine_global_mouse_pos() -> Vector2:
 	# We're using this helper function, to allow our mouse-position relevant code to work during unit testing
@@ -421,7 +451,8 @@ func _on_Card_mouse_exited() -> void:
 func set_focus(requestedFocus: bool) -> void:
 	# A helper function for changing card focus.
 	# Having it in its own function allows us to expand how it works it in the future in one place
-	if $Control/FocusHighlight.visible != requestedFocus: # We use an if to avoid performing constant operations in _process
+
+	if $Control/FocusHighlight.visible != requestedFocus and $Control/FocusHighlight.modulate == Color(1, 1, 1): # We use an if to avoid performing constant operations in _process
 		$Control/FocusHighlight.visible = requestedFocus
 	if cfc.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
@@ -559,14 +590,18 @@ func moveTo(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) ->
 			_tween_interpolate_visibility(0,0.3)
 		else:
 			interruptTweening()
-			# The developer is allowed to pass a position override to the card placement
-			if boardPosition == Vector2(-1,-1):
-				target_position = _determine_board_position_from_mouse()
+			if len(potential_hosts):
+				# The potential_hosts are always organized so that the card higher
+				# in index that we were hovering over, is the last in the array.
+				attach_to_host(potential_hosts.back())
 			else:
-				target_position = boardPosition
+				# The developer is allowed to pass a position override to the card placement
+				if boardPosition == Vector2(-1,-1):
+					_determine_target_position_from_mouse()
+				else:
+					target_position = boardPosition
+				raise()
 			state = DROPPING_TO_BOARD
-			raise()
-			# While on the board, the buttons are active
 		if parentHost in cfc.hands:
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
@@ -575,6 +610,8 @@ func moveTo(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) ->
 					c.interruptTweening()
 					c.reorganizeSelf()
 		elif parentHost == cfc.NMAP.board:
+			# If the card was or had attachments and it is removed from the table, all attachments status is cleared
+			_clear_attachment_status()
 			# When the card was removed from the board, we need to make sure it recovers to 0 degress rotation
 			$Tween.remove($Control,'rect_rotation') # We make sure to remove other tweens of the same type to avoid a deadlock
 			$Tween.interpolate_property($Control,'rect_rotation',
@@ -589,8 +626,71 @@ func moveTo(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) ->
 			state = IN_HAND
 			reorganizeSelf()
 		if parentHost == cfc.NMAP.board:
-			raise()
+			# Having this if first, allows us to change hosts by drag & drop
+			if len(potential_hosts):
+				attach_to_host(potential_hosts.back())
+			elif current_host_card:
+				var attach_index = current_host_card.attachments.find(self)
+				target_position = current_host_card.global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.attachment_offset)
+			else:
+				_determine_target_position_from_mouse()
+				raise()
 			state = DROPPING_TO_BOARD
+	# Just in case there's any leftover potential host highlights
+	if len(potential_hosts):
+		for card in potential_hosts:
+			card.set_hostFocus(false)
+		potential_hosts.clear()
+
+func attach_to_host(host: Card, follows_previous_host = false) -> void:
+	# This method handles the card becoming an attachment at a specified host
+	# First we check if the selected host is not the current host anyway. If it is, we do nothing else
+	if host != current_host_card:
+		# If we already had a host, we clear our state with it
+		# I don't know why, but logic breaks if I don't use the follows_previous_host flag
+		# It should work without it, but it doesn't
+		if current_host_card and not follows_previous_host:
+			current_host_card.attachments.erase(self)
+		current_host_card = host
+		# Once we selected the host, we don't need anything in the array anymore
+		potential_hosts.clear()
+		# We also clear the highlights on our new host
+		current_host_card.set_hostFocus(false)
+		# We set outselves as an attachment on the target host for easy iteration
+		current_host_card.attachments.append(self)
+		#print(current_host_card.attachments)
+		# We make existing attachments reattach to the new host directly
+		# Otherwise it becomes too complex to handle attachment indexes
+		for card in attachments:
+			card.attach_to_host(host,true)
+		attachments.clear()
+		# The position below the host is based on how many other attachments it has
+		# We offset our position below the host based on a percentage of the card size, times the index among other attachments
+		var attach_index = current_host_card.attachments.find(self)
+		target_position = current_host_card.global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.attachment_offset)
+
+func _clear_attachment_status() -> void:
+	# This clears all attachment/hosting status.
+	# It it typically called when a card is removed from the table
+	if current_host_card:
+		current_host_card.attachments.erase(self)
+		current_host_card = null
+	for card in attachments:
+		card.current_host_card = null
+		# Attachments typically follow their parents to the same container
+		card.moveTo(get_parent())
+	attachments.clear()
+
+func _determine_target_position_from_mouse() -> void:
+	# This function figures out where on the table a card should be placed based on the mouse position
+	# It takes extra care not to drop the card outside viewport margins
+	target_position = _determine_board_position_from_mouse()
+	# The below ensures the card doesn't leave the viewport dimentions
+	if target_position.x + $Control.rect_size.x * cfc.play_area_scale.x > get_viewport().size.x:
+		target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.play_area_scale.x
+	if target_position.y + $Control.rect_size.y * cfc.play_area_scale.y > get_viewport().size.y:
+		target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.play_area_scale.y
+
 
 func get_my_card_index() -> int:
 	# Return out index among card nodes in the same parent.
@@ -643,3 +743,42 @@ func _on_rot90_pressed() -> void:
 func _on_rot180_pressed() -> void:
 # warning-ignore:return_value_discarded
 	rotate_card(180, true)
+
+class HostSorter:
+	   # A custom function to use with sort_custom to find the highest child index among potential hosts
+	   static func sort_index_ascending(c1: Card, c2: Card):
+			   if c1.get_my_card_index() < c2.get_my_card_index():
+					   return true
+			   return false
+
+func _on_Card_area_entered(card: Card) -> void:
+	# The EnableAttach button part is just for demo purposes.
+	# Instead, there should be logic here that only specific cards can attach
+	if card and cfc.NMAP.board.get_node("EnableAttach").pressed:
+		if not card in potential_hosts and card.get_parent() == cfc.NMAP.board and cfc.card_drag_ongoing == self:
+			potential_hosts.append(card)
+			potential_hosts.sort_custom(HostSorter,"sort_index_ascending")
+			highlight_potential_host()
+
+func _on_Card_area_exited(card: Card) -> void:
+	if card:
+		if card in potential_hosts and card.get_parent() == cfc.NMAP.board and cfc.card_drag_ongoing == self:
+			potential_hosts.erase(card)
+			card.set_hostFocus(false)
+			highlight_potential_host()
+
+func highlight_potential_host() -> void:
+	for idx in range(0,len(potential_hosts)):
+			if idx == len(potential_hosts) - 1:
+				potential_hosts[idx].set_hostFocus(true)
+			else:
+				potential_hosts[idx].set_hostFocus(false)
+
+func set_hostFocus(requestedFocus: bool) -> void:
+	# A helper function for changing card focus.
+	# Having it in its own function allows us to expand how it works it in the future in one place
+	$Control/FocusHighlight.visible = requestedFocus
+	if requestedFocus:
+		$Control/FocusHighlight.modulate = Color(1, 0.87, 0.4)
+	else:
+		$Control/FocusHighlight.modulate = Color(1, 1, 1)

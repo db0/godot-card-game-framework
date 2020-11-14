@@ -151,6 +151,7 @@ For more fine customization, you'll need to modify manually
 * Pop-up buttons for predefined functions on cards and card containers
 * Option to look inside the piles and choose cards to move out
 * Cards can rotate on the table
+* Cards can attach to other cards and move together as a group.
 
 ## Credits
 

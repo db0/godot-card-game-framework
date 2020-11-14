@@ -23,7 +23,7 @@ func test_get_card_methods():
 	var sameget := 0
 	# We compare 2 random cards 5 times. Every time we have a match, we increment at 1.
 	# If we get 5 matching pairs, something is going bad with rng
-	for iter in range(0,5):
+	for _iter in range(0,5):
 		if container.get_random_card() == container.get_random_card():
 			sameget += 1
 	assert_lt(sameget,5, 'Check that get_random_card() works')
