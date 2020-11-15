@@ -23,7 +23,10 @@ const bottom_margin_multiplier := 0.5
 # The amount of offset towards the bottom of their host card that attachments are placed in
 # This is a multiplier of the card size. 
 # Put a negative number here if you want attachments to offset towards the top of the host
-const attachment_offset := 0.2
+const attachment_offset := -0.2
+
+# The colour to use when hovering over a card with an attachment to signify a valid host
+const host_hover_colour := Color(1, 0.87, 0.4)
 
 # Switch this off to disable fancy movement of cards during draw/discard
 var fancy_movement := true

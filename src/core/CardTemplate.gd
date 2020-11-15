@@ -205,7 +205,7 @@ func _process(delta) -> void:
 			# We need to capture the mouse cursos in the window while dragging
 			# because if the player drags the cursor outside the window and unclicks
 			# The control will not receive the mouse input and this will stay dragging forever
-			Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
+			if not cfc.UT: Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 			$Control.set_default_cursor_shape(Input.CURSOR_CROSS)
 			# We set the card to be centered on the mouse cursor to allow the player to properly understand
 			# where it will go once dropped.
@@ -301,7 +301,6 @@ func _organize_attachments() -> void:
 	# Takes care to make attachments always move with their parent around the board
 	# We only do this if the parent is still on the board
 	if get_parent() == cfc.NMAP.board:
-		var current_index = get_index()
 		for card in attachments:
 			# We use the index of the attachment among other attachments to figure out its index and placement
 			var attach_index = attachments.find(card)
@@ -475,11 +474,12 @@ func _start_dragging() -> void:
 	z_index = 99
 	# We have use parent viewport to calculate global_position due to godotengine/godot#30215
 	# This is caused because we're using a viewport node and scaling the game in full-creen.
-	if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
-		get_tree().current_scene.get_viewport().warp_mouse(global_position)
-	# However the above messes things if we don't have stretch mode, so we ignore it then
-	else:
-		get_viewport().warp_mouse(global_position)
+	if not cfc.UT:
+		if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
+			get_tree().current_scene.get_viewport().warp_mouse(global_position)
+		# However the above messes things if we don't have stretch mode, so we ignore it then
+		else:
+			get_viewport().warp_mouse(global_position)
 	state = DRAGGED
 	if get_parent() in cfc.hands:
 		# While we're dragging the card from hand, we want the other cards to move to their expected position in hand
@@ -754,7 +754,9 @@ class HostSorter:
 func _on_Card_area_entered(card: Card) -> void:
 	# The EnableAttach button part is just for demo purposes.
 	# Instead, there should be logic here that only specific cards can attach
-	if card and cfc.NMAP.board.get_node("EnableAttach").pressed:
+	if (card and
+		cfc.NMAP.board.get_node("EnableAttach").pressed and
+		not card in attachments):
 		if not card in potential_hosts and card.get_parent() == cfc.NMAP.board and cfc.card_drag_ongoing == self:
 			potential_hosts.append(card)
 			potential_hosts.sort_custom(HostSorter,"sort_index_ascending")
@@ -779,6 +781,6 @@ func set_hostFocus(requestedFocus: bool) -> void:
 	# Having it in its own function allows us to expand how it works it in the future in one place
 	$Control/FocusHighlight.visible = requestedFocus
 	if requestedFocus:
-		$Control/FocusHighlight.modulate = Color(1, 0.87, 0.4)
+		$Control/FocusHighlight.modulate = cfc.host_hover_colour
 	else:
 		$Control/FocusHighlight.modulate = Color(1, 1, 1)
