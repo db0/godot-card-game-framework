@@ -191,3 +191,9 @@ text = "@"
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="TargetLine" type="Line2D" parent="."]
+points = PoolVector2Array( 0, 0 )
+joint_mode = 2
+begin_cap_mode = 2
+end_cap_mode = 2

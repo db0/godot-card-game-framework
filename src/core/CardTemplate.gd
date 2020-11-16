@@ -30,6 +30,7 @@ var fancy_move_second_part := false # We use this to know at which stage of fanc
 var potential_hosts := []
 var current_host_card : Card = null
 var attachments := []
+var targetting := false
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# Set the card to always pivot from its center.
@@ -70,6 +71,27 @@ func _process(delta) -> void:
 			tween_stuck_time = 0
 	else:
 		tween_stuck_time = 0
+	if targetting:
+		# The below calculates a straight line from the center of a card, to the mouse pointer
+		# This variable calculates the card center's position on the whole board
+		var centerpos = position + $Control.rect_size/2
+		# We want the line to be drawn anew every frame
+		$TargetLine.clear_points()
+		# The first point of our line is always the center position 
+		# but if has to be seen from the perspective of the $TargetLine node
+		$TargetLine.add_point($TargetLine.to_local(centerpos))
+		# We figure out how many points to draw in our line from the distance between mouse and card center
+		var line_steps = int(centerpos.distance_to(get_global_mouse_position()))
+		# The current point is calculated via vector math
+		var curr_point = get_global_mouse_position() - position
+		# Because targetline always adds point from its own perspective internal to the card,
+		# we need to offset any point, by the distance the card has from the board's 0,0 point
+		$TargetLine.add_point($TargetLine.to_local(position + curr_point))
+#		for p in range(1,line_steps):
+#			var final_point = get_global_mouse_position() - position
+#			var curr_point = final_point#/(line_steps - p)
+#			$TargetLine.add_point($TargetLine.to_local(curr_point))
+
 	match state:
 		IN_HAND:
 			set_focus(false)
@@ -525,6 +547,12 @@ func _on_Card_gui_input(event) -> void:
 					moveTo(destination)
 					focus_completed = false
 					#emit_signal("card_dropped",self)
+		if event.is_pressed() and event.get_button_index() == 2:
+			targetting = true
+		if not event.is_pressed() and event.get_button_index() == 2:
+			targetting = false
+			$TargetLine.clear_points()
+
 
 func _determine_idle_state() -> void:
 	# Some logic is generic and doesn't always know the state the card should be afterwards
@@ -559,6 +587,8 @@ func moveTo(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) ->
 		# We need to remove the current parent node before adding a different one
 		parentHost.remove_child(self)
 		targetHost.add_child(self)
+		# The below is used when a specific card position is requested
+		# It converts the requested card position, to absolute node position between all nodes
 		if index >= 0:
 			targetHost.move_child(self,targetHost.translate_card_index_to_node_index(index))
 		global_position = previous_pos # Ensure card stays where it was before it changed parents
