@@ -92,10 +92,17 @@ func _process(delta) -> void:
 		# Our end point also has to be translated to the local position of the Line2D node
 		# The in control point is likewise the direction to the screen center
 		# with a magnitude that I found via trial and error to look good
-		curve.add_point($TargetLine.to_local(position + $Control.rect_size/2 + final_point), get_global_mouse_position().direction_to(get_viewport().size/2) * 75, Vector2(0, 0))
+		curve.add_point($TargetLine.to_local(position + $Control.rect_size/2 + final_point), Vector2(0, 0), Vector2(0, 0))
 		# Finally we use the Curve2D object to get the points which will be drawn by out lined2D
 		$TargetLine.set_points(curve.get_baked_points())
-
+		# We place the arrowhead to start from the last point in the line2D
+		$TargetLine/ArrowHead.position = $TargetLine.get_point_position($TargetLine.get_point_count( ) - 1)
+		# We delete the last 3 Line2D points, because the arrowhead will be covering those areas
+		for del in range(1,3):
+			$TargetLine.remove_point($TargetLine.get_point_count( ) - 1)
+		# We setup the angle the arrowhead is pointing by finding the direction of the last point to the final location
+		$TargetLine/ArrowHead.rotation = $TargetLine.get_point_position($TargetLine.get_point_count( ) - 1).direction_to($TargetLine.to_local(position + $Control.rect_size/2 + final_point)).angle()
+		$TargetLine/ArrowHead.visible = true
 	match state:
 		IN_HAND:
 			set_focus(false)
@@ -556,6 +563,7 @@ func _on_Card_gui_input(event) -> void:
 		if not event.is_pressed() and event.get_button_index() == 2:
 			targetting = false
 			$TargetLine.clear_points()
+			$TargetLine/ArrowHead.visible = false
 
 
 func _determine_idle_state() -> void:

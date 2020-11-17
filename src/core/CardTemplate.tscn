@@ -1,4 +1,4 @@
-[gd_scene load_steps=14 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
@@ -62,6 +62,9 @@ corner_radius_bottom_left = 10
 
 [sub_resource type="DynamicFont" id=11]
 font_data = ExtResource( 1 )
+
+[sub_resource type="Curve" id=12]
+_data = [ Vector2( 0, 0.463636 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 1.4, 0.0, 0, 0 ]
 
 [node name="Card" type="Area2D"]
 z_as_relative = false
@@ -194,7 +197,13 @@ text = "@"
 
 [node name="TargetLine" type="Line2D" parent="."]
 z_index = 50
-points = PoolVector2Array( 0, 0 )
-joint_mode = 2
-begin_cap_mode = 2
-end_cap_mode = 2
+width = 15.0
+width_curve = SubResource( 12 )
+default_color = Color( 0.4, 0.501961, 1, 1 )
+antialiased = true
+
+[node name="ArrowHead" type="Polygon2D" parent="TargetLine"]
+visible = false
+color = Color( 0.4, 0.501961, 1, 1 )
+offset = Vector2( -32, -8 )
+polygon = PoolVector2Array( 16, 16, 16, 24, 32, 8, 16, -8, 16, 0 )
