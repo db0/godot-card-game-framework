@@ -13,7 +13,7 @@ const card_size_multiplier := 0.5
 const neighbour_push := 0.75
 
 # The scale of the card while on the play area
-const play_area_scale := Vector2(1,1)
+const play_area_scale := Vector2(0.8,0.8)
 
 # The margin towards the bottom of the viewport on which to draw the cards.
 # More than 0 and the card will appear hidden under the display area.

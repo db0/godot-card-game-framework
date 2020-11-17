@@ -193,6 +193,7 @@ text = "@"
 [node name="Tween" type="Tween" parent="."]
 
 [node name="TargetLine" type="Line2D" parent="."]
+z_index = 50
 points = PoolVector2Array( 0, 0 )
 joint_mode = 2
 begin_cap_mode = 2

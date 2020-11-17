@@ -74,23 +74,27 @@ func _process(delta) -> void:
 	if targetting:
 		# The below calculates a straight line from the center of a card, to the mouse pointer
 		# This variable calculates the card center's position on the whole board
-		var centerpos = position + $Control.rect_size/2
+		var centerpos = global_position + $Control.rect_size/2*scale
 		# We want the line to be drawn anew every frame
 		$TargetLine.clear_points()
-		# The first point of our line is always the center position 
-		# but if has to be seen from the perspective of the $TargetLine node
-		$TargetLine.add_point($TargetLine.to_local(centerpos))
-		# We figure out how many points to draw in our line from the distance between mouse and card center
-		var line_steps = int(centerpos.distance_to(get_global_mouse_position()))
-		# The current point is calculated via vector math
-		var curr_point = get_global_mouse_position() - position
-		# Because targetline always adds point from its own perspective internal to the card,
-		# we need to offset any point, by the distance the card has from the board's 0,0 point
-		$TargetLine.add_point($TargetLine.to_local(position + curr_point))
-#		for p in range(1,line_steps):
-#			var final_point = get_global_mouse_position() - position
-#			var curr_point = final_point#/(line_steps - p)
-#			$TargetLine.add_point($TargetLine.to_local(curr_point))
+		# The final position is the mouse position, 
+		# but we offset it by the position of the card center on the map
+		var final_point = get_global_mouse_position() - (position + $Control.rect_size/2)
+		var curve = Curve2D.new()
+#		var middle_point = centerpos + (get_global_mouse_position() - centerpos)/2
+#		var middle_dir_to_vpcenter = middle_point.direction_to(get_viewport().size/2)
+#		var offmid = middle_point + middle_dir_to_vpcenter * 50
+		# Our starting point has to be translated to the local position of the Line2D node
+		# The out control point is the direction to the screen center, 
+		# with a magnitude that I found via trial and error to look good
+		curve.add_point($TargetLine.to_local(centerpos), Vector2(0,0), centerpos.direction_to(get_viewport().size/2) * 75)
+#		curve.add_point($TargetLine.to_local(offmid), Vector2(0,0), Vector2(0,0))
+		# Our end point also has to be translated to the local position of the Line2D node
+		# The in control point is likewise the direction to the screen center
+		# with a magnitude that I found via trial and error to look good
+		curve.add_point($TargetLine.to_local(position + $Control.rect_size/2 + final_point), get_global_mouse_position().direction_to(get_viewport().size/2) * 75, Vector2(0, 0))
+		# Finally we use the Curve2D object to get the points which will be drawn by out lined2D
+		$TargetLine.set_points(curve.get_baked_points())
 
 	match state:
 		IN_HAND:
