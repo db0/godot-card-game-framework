@@ -68,7 +68,8 @@ _data = [ Vector2( 0, 0.463636 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 1.4, 0.0, 0, 
 
 [node name="Card" type="Area2D"]
 z_as_relative = false
-collision_mask = 2147483649
+collision_layer = 3
+collision_mask = 2147483651
 script = ExtResource( 2 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
@@ -206,4 +207,13 @@ antialiased = true
 visible = false
 color = Color( 0.4, 0.501961, 1, 1 )
 offset = Vector2( -32, -8 )
-polygon = PoolVector2Array( 16, 16, 16, 24, 32, 8, 16, -8, 16, 0 )
+polygon = PoolVector2Array( 16, 24, 32, 8, 16, -8 )
+
+[node name="Area2D" type="Area2D" parent="TargetLine/ArrowHead"]
+monitoring = false
+collision_layer = 2
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TargetLine/ArrowHead/Area2D"]
+position = Vector2( -32, -8 )
+polygon = PoolVector2Array( 16, 24, 32, 8, 16, -8 )

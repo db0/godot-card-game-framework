@@ -27,10 +27,14 @@ var state := IN_PILE # Starting state for each card
 var target_position: Vector2 # Used for animating the card
 var focus_completed: bool = false # Used to avoid the focus animation repeating once it's completed.
 var fancy_move_second_part := false # We use this to know at which stage of fancy movement this is.
-var potential_hosts := []
-var current_host_card : Card = null
-var attachments := []
-var targetting := false
+var potential_cards := [] # We use this to track multiple cards when our card is about to drop onto or target them
+var current_host_card : Card = null # If this card is set as an attachment to another card, this tracks who its host is
+var attachments := [] # If this card is hosting other card, this list retains links to their objects in order
+var is_attachment := false # If this is true, this card can be attached to others
+var targetting := false # To track that this card attempting to target another card (Maybe it should be a state?)
+var target_card : Card = null # Used to store a card succesfully targeted. 
+							  # It should be cleared from whichever effect requires a target once it  has finished
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# Set the card to always pivot from its center.
@@ -41,6 +45,10 @@ func _ready() -> void:
 	connect("area_entered", self, "_on_Card_area_entered")
 	# warning-ignore:return_value_discarded
 	connect("area_exited", self, "_on_Card_area_exited")
+	# warning-ignore:return_value_discarded
+	$TargetLine/ArrowHead/Area2D.connect("area_entered", self, "_on_ArrowHead_area_entered")
+	# warning-ignore:return_value_discarded
+	$TargetLine/ArrowHead/Area2D.connect("area_exited", self, "_on_ArrowHead_area_exited")
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
@@ -98,11 +106,12 @@ func _process(delta) -> void:
 		# We place the arrowhead to start from the last point in the line2D
 		$TargetLine/ArrowHead.position = $TargetLine.get_point_position($TargetLine.get_point_count( ) - 1)
 		# We delete the last 3 Line2D points, because the arrowhead will be covering those areas
-		for del in range(1,3):
+		for _del in range(1,3):
 			$TargetLine.remove_point($TargetLine.get_point_count( ) - 1)
 		# We setup the angle the arrowhead is pointing by finding the direction of the last point to the final location
 		$TargetLine/ArrowHead.rotation = $TargetLine.get_point_position($TargetLine.get_point_count( ) - 1).direction_to($TargetLine.to_local(position + $Control.rect_size/2 + final_point)).angle()
 		$TargetLine/ArrowHead.visible = true
+		$TargetLine/ArrowHead/Area2D.monitoring = true
 	match state:
 		IN_HAND:
 			set_focus(false)
@@ -559,11 +568,9 @@ func _on_Card_gui_input(event) -> void:
 					focus_completed = false
 					#emit_signal("card_dropped",self)
 		if event.is_pressed() and event.get_button_index() == 2:
-			targetting = true
+			initiate_targeting()
 		if not event.is_pressed() and event.get_button_index() == 2:
-			targetting = false
-			$TargetLine.clear_points()
-			$TargetLine/ArrowHead.visible = false
+			complete_targeting()
 
 
 func _determine_idle_state() -> void:
@@ -632,10 +639,10 @@ func moveTo(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) ->
 			_tween_interpolate_visibility(0,0.3)
 		else:
 			interruptTweening()
-			if len(potential_hosts):
-				# The potential_hosts are always organized so that the card higher
+			if len(potential_cards):
+				# The potential_cards are always organized so that the card higher
 				# in index that we were hovering over, is the last in the array.
-				attach_to_host(potential_hosts.back())
+				attach_to_host(potential_cards.back())
 			else:
 				# The developer is allowed to pass a position override to the card placement
 				if boardPosition == Vector2(-1,-1):
@@ -669,8 +676,8 @@ func moveTo(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) ->
 			reorganizeSelf()
 		if parentHost == cfc.NMAP.board:
 			# Having this if first, allows us to change hosts by drag & drop
-			if len(potential_hosts):
-				attach_to_host(potential_hosts.back())
+			if len(potential_cards):
+				attach_to_host(potential_cards.back())
 			elif current_host_card:
 				var attach_index = current_host_card.attachments.find(self)
 				target_position = current_host_card.global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.attachment_offset)
@@ -679,10 +686,10 @@ func moveTo(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) ->
 				raise()
 			state = DROPPING_TO_BOARD
 	# Just in case there's any leftover potential host highlights
-	if len(potential_hosts):
-		for card in potential_hosts:
-			card.set_hostFocus(false)
-		potential_hosts.clear()
+	if len(potential_cards):
+		for card in potential_cards:
+			card.set_cardFocus(false)
+		potential_cards.clear()
 
 func attach_to_host(host: Card, follows_previous_host = false) -> void:
 	# This method handles the card becoming an attachment at a specified host
@@ -695,9 +702,9 @@ func attach_to_host(host: Card, follows_previous_host = false) -> void:
 			current_host_card.attachments.erase(self)
 		current_host_card = host
 		# Once we selected the host, we don't need anything in the array anymore
-		potential_hosts.clear()
+		potential_cards.clear()
 		# We also clear the highlights on our new host
-		current_host_card.set_hostFocus(false)
+		current_host_card.set_cardFocus(false)
 		# We set outselves as an attachment on the target host for easy iteration
 		current_host_card.attachments.append(self)
 		#print(current_host_card.attachments)
@@ -786,43 +793,91 @@ func _on_rot180_pressed() -> void:
 # warning-ignore:return_value_discarded
 	rotate_card(180, true)
 
-class HostSorter:
-	   # A custom function to use with sort_custom to find the highest child index among potential hosts
+class CardIndexSorter:
+	   # A custom function to use with sort_custom to find the highest child index among multiple cards
 	   static func sort_index_ascending(c1: Card, c2: Card):
 			   if c1.get_my_card_index() < c2.get_my_card_index():
 					   return true
 			   return false
 
 func _on_Card_area_entered(card: Card) -> void:
+	# This function triggers when a card hovers over another card while being dragged
+	# It takes care to highlight potential cards which can serve as hosts
 	# The EnableAttach button part is just for demo purposes.
 	# Instead, there should be logic here that only specific cards can attach
-	if (card and
-		cfc.NMAP.board.get_node("EnableAttach").pressed and
-		not card in attachments):
-		if not card in potential_hosts and card.get_parent() == cfc.NMAP.board and cfc.card_drag_ongoing == self:
-			potential_hosts.append(card)
-			potential_hosts.sort_custom(HostSorter,"sort_index_ascending")
-			highlight_potential_host()
+	if (card and is_attachment and not card in attachments):
+		# Thhe below if, checks if the card we're hovering has already been considered
+		# If it hasn't we add it to an array of all the cards we're hovering onto at the moment, at the same time
+		# But we only care for cards on the table, and only while this card is the one being dragged
+		if not card in potential_cards and card.get_parent() == cfc.NMAP.board and cfc.card_drag_ongoing == self:
+			# We add the card to the list which tracks out simultaneous hovers
+			potential_cards.append(card)
+			# We sort all potential cards by their index
+			potential_cards.sort_custom(CardIndexSorter,"sort_index_ascending")
+			# Finally we use a method which  handles changing highlights on the top index card
+			highlight_potential_card(cfc.host_hover_colour)
 
 func _on_Card_area_exited(card: Card) -> void:
+	# This triggers when a card stops hovering over another
+	# It clears potential highlights and adjusts potential cards as hosts
 	if card:
-		if card in potential_hosts and card.get_parent() == cfc.NMAP.board and cfc.card_drag_ongoing == self:
-			potential_hosts.erase(card)
-			card.set_hostFocus(false)
-			highlight_potential_host()
+		# We only do any step if the card we exited was already considered and was on the board
+		# And only while this is the card being dragged
+		if card in potential_cards and card.get_parent() == cfc.NMAP.board and cfc.card_drag_ongoing == self:
+			# We remove the card we stopped hovering from the potential_cards
+			potential_cards.erase(card)
+			# And we explicitly hide its cards focus since we don't care about it anymore
+			card.set_cardFocus(false)
+			# Finally, we make sure we highlight any other cards we're still hovering
+			highlight_potential_card(cfc.host_hover_colour)
 
-func highlight_potential_host() -> void:
-	for idx in range(0,len(potential_hosts)):
-			if idx == len(potential_hosts) - 1:
-				potential_hosts[idx].set_hostFocus(true)
+func highlight_potential_card(colour : Color) -> void:
+	# This goes through all the potential cards we're currently hovering onto with a card or targetting arrow
+	# And highlights the one with the highest index among their common parent.
+	# It uses the passed colour to this function.
+	for idx in range(0,len(potential_cards)):
+			if idx == len(potential_cards) - 1: # The last card in the sorted array is always the highest index
+				potential_cards[idx].set_cardFocus(true,colour)
 			else:
-				potential_hosts[idx].set_hostFocus(false)
+				potential_cards[idx].set_cardFocus(false)
 
-func set_hostFocus(requestedFocus: bool) -> void:
+func set_cardFocus(requestedFocus: bool, hoverColour = cfc.host_hover_colour) -> void:
 	# A helper function for changing card focus.
 	# Having it in its own function allows us to expand how it works it in the future in one place
 	$Control/FocusHighlight.visible = requestedFocus
 	if requestedFocus:
-		$Control/FocusHighlight.modulate = cfc.host_hover_colour
+		$Control/FocusHighlight.modulate = hoverColour
 	else:
 		$Control/FocusHighlight.modulate = Color(1, 1, 1)
+
+func _on_ArrowHead_area_entered(card: Card) -> void:
+	# This function triggers when a targetting arrow hovers over another card while being dragged
+	# It takes care to highlight potential cards which can serve as targets.
+	if card and not card in potential_cards:
+		potential_cards.append(card)
+		potential_cards.sort_custom(CardIndexSorter,"sort_index_ascending")
+		highlight_potential_card(cfc.target_hover_colour)
+
+func _on_ArrowHead_area_exited(card: Card) -> void:
+	# This triggers when a targetting arrow stops hovering over a card
+	# It clears potential highlights and adjusts potential cards as targets
+	if card and card in potential_cards:
+		# We remove the card we stopped hovering from the potential_cards
+		potential_cards.erase(card)
+		# And we explicitly hide its cards focus since we don't care about it anymore
+		card.set_cardFocus(false)
+		# Finally, we make sure we highlight any other cards we're still hovering
+		highlight_potential_card(cfc.target_hover_colour)
+
+func initiate_targeting() -> void:
+	targetting = true # Maybe this should be a state?
+
+func complete_targeting() -> void:
+	if len(potential_cards) and targetting:
+		target_card = potential_cards.back()
+		print("Targeting Demo: ", self.name," targeted ", target_card.name, " in ", target_card.get_parent().name)
+		targetting = false
+		$TargetLine.clear_points()
+		$TargetLine/ArrowHead.visible = false
+		$TargetLine/ArrowHead/Area2D.monitoring = false
+

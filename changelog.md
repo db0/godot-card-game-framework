@@ -8,6 +8,7 @@
 * Can retrieve random cards from Card Containers
 * Can shuffle Card Containers
 * Can attach cards to other cards
+* Can target cards with a targetting arrow
 
 ## 0.9
 

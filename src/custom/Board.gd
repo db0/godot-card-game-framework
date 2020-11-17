@@ -43,3 +43,7 @@ func _on_ReshuffleAll_pressed() -> void:
 
 func _on_ScalingFocusOptions_item_selected(index) -> void:
 	cfc.focus_style = index
+
+func _on_EnableAttach_toggled(button_pressed: bool) -> void:
+	for c in allCards:
+		c.is_attachment = $EnableAttach.pressed
