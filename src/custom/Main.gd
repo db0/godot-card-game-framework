@@ -23,6 +23,7 @@ func focus_card(card: Card) -> void:
 		dupes_dict[dupe_focus] = card
 		# We hide the manipulation buttons if the card was cloned with them visible
 		dupe_focus.get_node('Control/ManipulationButtons').modulate[3] = 0
+		dupe_focus.get_node('Control').rect_rotation = 0
 		# We store all our previously focused cards in an array, and clean them up process when they're not focused anymore
 		previously_focused_cards.append(dupe_focus)
 		$Focus/Viewport.add_child(dupe_focus)

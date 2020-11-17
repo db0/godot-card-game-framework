@@ -10,6 +10,24 @@ Once we hit v1.0 things should become more stable.
 
 Pull requests are more than welcome ;)
 
+## Usage
+
+Most of the card manipulation functionalities work without any extra work, as long as the relevant scenes have been setup correctly (see #Installation section). For example, the code which handles moving cards around or focusing on them etc should work out of the box.
+
+However some effects require some trigger, such as targeting of cards etc. The method calls to perform these are available to use and some demo functions have been provided to understand how it works, but it is expected that each game will provide their own logic in their own scripts to call the relevant methods. 
+
+You can find documentation about all the provided methods [in the wiki](https://github.com/db0/godot-card-gaming/wiki)
+
+### Demonstrations
+
+#### Targeting
+
+Right-click and hold on a a card to begin dragging a targeting arrow. Release right-click on top of a card to target it. A print will inform you of the target name and container
+
+#### Attachments
+
+Click on the "Enable Attachment" toggle to make all cards act as attachments and therefore allow them  to attach to others.
+
 ## Installation
 
 Copy the src folder to your project
@@ -28,7 +46,6 @@ For example, you can easily switch the CardTemplate.tcsn's Panel (called "Contro
 However if you forget to add a ViewPopup Control node into your custom CardContainer scene, things will start crashing.
 
 The scripts and scenes inside /srv/custom are optional. They are just there to create a sample setup of the capabilties of the framework.
-
 
 ### Global configuration
 
@@ -59,6 +76,7 @@ The below instructions will set up your game to use the `Card` class as a framew
 	* Control* (Has to always be a Control-type node)
 	* ManipulationButtons
 	* all Tween nodes called "Tween"
+	* TargetLine and all children nodes
 
 
 If you want a different setup, you will need to modify the relevant code yourself
@@ -154,6 +172,7 @@ For more fine customization, you'll need to modify manually
 * Option to look inside the piles and choose cards to move out
 * Cards can rotate on the table
 * Cards can attach to other cards and move together as a group.
+* Cards can target other cards with a draggable arrow (demo with right-mouse drag & drop)
 
 ## Credits
 

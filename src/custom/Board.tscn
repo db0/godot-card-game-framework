@@ -75,6 +75,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
+[connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
 [connection signal="item_selected" from="ScalingFocusOptions" to="." method="_on_ScalingFocusOptions_item_selected"]
 [connection signal="pressed" from="ReshuffleAll" to="." method="_on_ReshuffleAll_pressed"]
 

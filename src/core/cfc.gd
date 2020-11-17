@@ -27,6 +27,8 @@ const attachment_offset := -0.2
 
 # The colour to use when hovering over a card with an attachment to signify a valid host
 const host_hover_colour := Color(1, 0.87, 0.4)
+# The colour to use when hovering over a card with an targetting arrow to signify a valid target
+const target_hover_colour := Color(0.4, 0.5, 1)
 
 # Switch this off to disable fancy movement of cards during draw/discard
 var fancy_movement := true
