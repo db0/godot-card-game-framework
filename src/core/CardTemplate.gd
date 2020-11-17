@@ -2,12 +2,23 @@ extends Area2D
 class_name Card
 # This class is meant to be used as the basis for your card scripting
 # Simply make your card scripts extend this class and you'll have all the provided scripts available
-# If your card node type is not control, make sure you change the extends type above
+# If your card node type is not Area2D, make sure you change the extends type above
 
-var tween_stuck_time = 0 # Debug
-# warning-ignore:unused_class_variable
+#-----------------------------------------------------------------------------
+# Properties
+#-----------------------------------------------------------------------------
 # We export this variable to the editor to allow us to add scripts to each card object directly instead of only via code.
+# warning-ignore:unused_class_variable
 export var scripts := [{'name':'','args':['',0]}]
+# If this is true, this card can be attached to others
+export var is_attachment := false setget set_is_attachment, get_is_attachment
+# Used to store a card succesfully targeted.
+# It should be cleared from whichever effect requires a target once it  has finished
+var target_card : Card = null setget set_targetcard, get_targetcard
+
+#-----------------------------------------------------------------------------
+# Internal variables
+#-----------------------------------------------------------------------------
 enum{ # rudimentary Finite State Machine for all posible states a card might be in
 	  # This simply is a way to refer to the values with a human-readable name.
 	IN_HAND					#0
@@ -30,11 +41,25 @@ var fancy_move_second_part := false # We use this to know at which stage of fanc
 var potential_cards := [] # We use this to track multiple cards when our card is about to drop onto or target them
 var current_host_card : Card = null # If this card is set as an attachment to another card, this tracks who its host is
 var attachments := [] # If this card is hosting other card, this list retains links to their objects in order
-var is_attachment := false # If this is true, this card can be attached to others
 var targetting := false # To track that this card attempting to target another card (Maybe it should be a state?)
-var target_card : Card = null # Used to store a card succesfully targeted. 
-							  # It should be cleared from whichever effect requires a target once it  has finished
+var tween_stuck_time = 0 # Debug
 
+#-----------------------------------------------------------------------------
+# Setters/Getters
+#-----------------------------------------------------------------------------
+func set_is_attachment(value: bool) -> void:
+	is_attachment = value
+func get_is_attachment() -> bool:
+	return is_attachment
+
+func set_targetcard(card: Card) -> void:
+	target_card = card
+func get_targetcard() -> Card:
+	return target_card
+
+#-----------------------------------------------------------------------------
+# Internal Functions
+#-----------------------------------------------------------------------------
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# Set the card to always pivot from its center.
@@ -85,7 +110,7 @@ func _process(delta) -> void:
 		var centerpos = global_position + $Control.rect_size/2*scale
 		# We want the line to be drawn anew every frame
 		$TargetLine.clear_points()
-		# The final position is the mouse position, 
+		# The final position is the mouse position,
 		# but we offset it by the position of the card center on the map
 		var final_point = get_global_mouse_position() - (position + $Control.rect_size/2)
 		var curve = Curve2D.new()
@@ -93,7 +118,7 @@ func _process(delta) -> void:
 #		var middle_dir_to_vpcenter = middle_point.direction_to(get_viewport().size/2)
 #		var offmid = middle_point + middle_dir_to_vpcenter * 50
 		# Our starting point has to be translated to the local position of the Line2D node
-		# The out control point is the direction to the screen center, 
+		# The out control point is the direction to the screen center,
 		# with a magnitude that I found via trial and error to look good
 		curve.add_point($TargetLine.to_local(centerpos), Vector2(0,0), centerpos.direction_to(get_viewport().size/2) * 75)
 #		curve.add_point($TargetLine.to_local(offmid), Vector2(0,0), Vector2(0,0))
