@@ -43,6 +43,11 @@ _global_script_classes=[ {
 "class": "UTCommon",
 "language": "GDScript",
 "path": "res://tests/UTcommon.gd"
+}, {
+"base": "Node2D",
+"class": "ViewportCardFocus",
+"language": "GDScript",
+"path": "res://src/core/ViewportCardFocus.gd"
 } ]
 _global_script_class_icons={
 "Board": "",
@@ -51,13 +56,14 @@ _global_script_class_icons={
 "Hand": "",
 "Pile": "",
 "TestVars": "",
-"UTCommon": ""
+"UTCommon": "",
+"ViewportCardFocus": ""
 }
 
 [application]
 
 config/name="Card Gaming Framework"
-run/main_scene="res://src/custom/Main.tscn"
+run/main_scene="res://src/core/Main.tscn"
 config/icon="res://icon.png"
 
 [autoload]

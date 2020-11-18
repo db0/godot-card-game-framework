@@ -1,3 +1,7 @@
+# This class is meant to serve as your main scene for your card game
+# In that case, it will enable the game to use hovering viewports
+# For displaying card information
+class_name ViewportCardFocus
 extends Node2D
 
 # This array holds all the previously focused cards.
