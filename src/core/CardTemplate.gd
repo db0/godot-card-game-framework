@@ -479,7 +479,8 @@ func card_action() -> void:
 	pass
 
 
-# Overrides the built-in get_class to return "Card" instead of "Area2D"
+# Overrides the built-in get_class to
+# Returns "Card" instead of "Area2D"
 func get_class(): return "Card"
 
 
@@ -654,7 +655,7 @@ func _organize_attachments() -> void:
 # We're using this helper function, to allow our mouse-position relevant code
 # to work during integration testing
 # Returns either the adjusted global mouse position
-# Or a fake mouse position provided by integration testing
+# or a fake mouse position provided by integration testing
 func _determine_global_mouse_pos() -> Vector2:
 	var mouse_position
 	var zoom = Vector2(1,1)

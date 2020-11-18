@@ -1,3 +1,5 @@
+# A type of CardContainer that stores its Card objects without visibility
+# to the player and provides methods for retrieving and viewing them
 class_name Pile
 extends  CardContainer
 
@@ -27,9 +29,9 @@ func _process(_delta) -> void:
 	$ViewPopup.set_as_minsize()
 
 
+# Populates the popup view window with all the cards in the deck
+# then displays it
 func _on_View_Button_pressed() -> void:
-	# This populates our pop-up window with all the cards in the deck
-	# Then displays it
 	# We set the size of the grid to hold slightly scaled-down cards
 	for card in get_all_cards(false):
 		# We remove the card to rehost it in the popup grid container
@@ -39,38 +41,43 @@ func _on_View_Button_pressed() -> void:
 	$ViewPopup.popup_centered()
 
 
+# Ensures the popup window interpolates to visibility when opened
 func _on_ViewPopup_about_to_show() -> void:
 	if not $ViewPopup/Tween.is_active():
 		$ViewPopup/Tween.interpolate_property($ViewPopup,'modulate',
-			Color(1,1,1,0), Color(1,1,1,1), 0.5,
-			Tween.TRANS_EXPO, Tween.EASE_IN)
+				Color(1,1,1,0), Color(1,1,1,1), 0.5,
+				Tween.TRANS_EXPO, Tween.EASE_IN)
 		$ViewPopup/Tween.start()
 
 
+# Puts all card objects to the root node once the popup view window closes
 func _on_ViewPopup_popup_hide() -> void:
-	# This function makes sure to return all card objects to the root node once the pop-up closes
 	$ViewPopup/Tween.remove_all()
 #		$Tween.interpolate_property($ViewPopup,'rect_size:x',
 #			0, $ViewPopup.rect_size.x, 0.5,
 #			Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	$ViewPopup/Tween.interpolate_property($ViewPopup,'modulate',
-		Color(1,1,1,1), Color(1,1,1,0), 0.5,
-		Tween.TRANS_EXPO, Tween.EASE_OUT)
+			Color(1,1,1,1), Color(1,1,1,0), 0.5,
+			Tween.TRANS_EXPO, Tween.EASE_OUT)
 	$ViewPopup/Tween.start()
 	yield($ViewPopup/Tween, "tween_all_completed")
 	for card in get_all_cards():
-		# For each card we have hosted, we check if it's hosted in the popup. If it is, we move it to the root.
+		# For each card we have hosted, we check if it's hosted in the popup.
+		# If it is, we move it to the root.
 		if "CardPopUpSlot" in card.get_parent().name:
 			card.get_parent().remove_child(card)
 			add_child(card)
-			# We need to remember that cards in piles should be left invisible and at default scale
+			# We need to remember that cards in piles should be left invisible
+			# and at default scale
 			card.scale = Vector2(1,1)
 			card.modulate[3] = 0
 
 
+# Overrides the built-in add_child() method,
+# To make sure the control node is set to be the last one among siblings.
+# Also checks if the popup window is currently open, and puts the card
+# directly there in that case.
 func add_child(node, _legible_unique_name=false) -> void:
-	# We override the built-in add_child() method
-	# because we want to do more stuff depending if the object is a Card
 	if not $ViewPopup.visible:
 		.add_child(node)
 		if node as Card:
@@ -82,53 +89,66 @@ func add_child(node, _legible_unique_name=false) -> void:
 		# we move them automatically to the viewpopup grid.
 		_slot_card_into_popup(node)
 
+
+# Override the godot builtin move_child() method,
+# to make sure the $Control node is always drawn on top of Card nodes
 func move_child(child_node, to_position) -> void:
-	# Another override of a builtin function, to make sure the $Control node is always on top
 	.move_child(child_node, to_position)
 	$Control.raise()
 
 
+# Overrides CardContainer function to include cards in the popup window
+# Returns an array with all children nodes which are of Card class
 func get_all_cards(scanViewPopup := true) -> Array:
 	var cardsArray := .get_all_cards()
 	# For piles, we need to check if the card objects are inside the ViewPopup.
 	if not len(cardsArray) and scanViewPopup:
 		if $ViewPopup/CardView.get_child_count():
-			# We know it's not possible to have a temp control container (due to the garbage collection)
-			# So we know if we find one, it will have 1 child, which is a Card object.
+			# We know it's not possible to have a temp control container
+			# (due to the garbage collection)
+			# So we know if we find one, it will have 1 child,
+			# which is a Card object.
 			for obj in $ViewPopup/CardView.get_children():
 				cardsArray.append(obj.get_child(0))
 	return cardsArray
 
 
+# Return the top a Card object from the pile.
 func get_top_card() -> Card:
 	var card: Card = null
-	# A basic function to return the top a card from a pile.
-	if get_card_count(): # prevent from trying to retrieve more cards than are in our deck and crashing godot.
+	# prevent from trying to retrieve more cards
+	# than are in our deck and crashing godot.
+	if get_card_count():
 		card = get_card(0)
 	return card # Returning the card object for unit testing
 
 
+# Teturn the bottom Card object from the pile.
 func get_bottom_card() -> Card:
 	var card: Card = null
-	# A basic function to return the bottom card from a pile.
-	if get_card_count(): # prevent from trying to retrieve more cards than are in our deck and crashing godot.
+	# prevent from trying to retrieve more cards
+	# than are in our deck and crashing godot.
+	if get_card_count():
 		card = get_card(get_card_count() - 1)
 	return card # Returning the card object for unit testing
 
 
+# Prepares a Card object to be added to the popup grid
 func _slot_card_into_popup(card) -> void:
-	# This function prepares the card to be added to the popup grid
 	# We need to make the cards visible as they're by default invisible in piles
 	card.modulate[3] = 1
 	# We also scale-down the cards to be able to see more at the same time.
-	# We need to do it before we add the card object to the control temp, otherwise it will default to the pre-scaled size
+	# We need to do it before we add the card object to the control temp,
+	# otherwise it will default to the pre-scaled size
 	card.scale = Vector2(0.75,0.75)
 	# The grid container will only grid control objects
 	# and the card nodes have an Area2D as a root
-	# Therefore we instantatiate a new Control container to put the card objects in
+	# Therefore we instantatiate a new Control container
+	# in which to put the card objects.
 	var card_slot := Control.new()
 	card_slot.set_name("CardPopUpSlot")
-	# We set the control container its size to be equal to the card size the card will scale to
+	# We set the control container size to be equal
+	# to the card size to which the card will scale.
 	card_slot.rect_min_size = card.get_node("Control").rect_min_size * card.scale
 	$ViewPopup/CardView.add_child(card_slot)
 	# Finally, the card is added to the temporary control node parent.
