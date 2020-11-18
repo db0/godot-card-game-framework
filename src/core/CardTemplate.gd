@@ -595,6 +595,8 @@ func highlight_potential_card(colour : Color) -> void:
 # and will become the target when complete_targeting() is called
 func initiate_targeting() -> void:
 	_is_targetting = true
+	$TargetLine/ArrowHead.visible = true
+	$TargetLine/ArrowHead/Area2D.monitoring = true
 
 
 # Will end the targeting process.
@@ -845,7 +847,7 @@ func _draw_targeting_arrow() -> void:
 	$TargetLine.clear_points()
 	# The final position is the mouse position,
 	# but we offset it by the position of the card center on the map
-	var final_point = get_global_mouse_position() - (position + $Control.rect_size/2)
+	var final_point =  _determine_global_mouse_pos() - (position + $Control.rect_size/2)
 	var curve = Curve2D.new()
 #		var middle_point = centerpos + (get_global_mouse_position() - centerpos)/2
 #		var middle_dir_to_vpcenter = middle_point.direction_to(get_viewport().size/2)
@@ -873,14 +875,12 @@ func _draw_targeting_arrow() -> void:
 	# be covering those areas
 	for _del in range(1,3):
 		$TargetLine.remove_point($TargetLine.get_point_count( ) - 1)
-	# We setup the angle the arrowhead is pointing by finding the direction of
-	# the last point to the final location
+	# We setup the angle the arrowhead is pointing by finding the angle of
+	# the last point on the line towards the mouse position
 	$TargetLine/ArrowHead.rotation = $TargetLine.get_point_position(
 				$TargetLine.get_point_count( ) - 1).direction_to(
 				$TargetLine.to_local(
 				position + $Control.rect_size/2 + final_point)).angle()
-	$TargetLine/ArrowHead.visible = true
-	$TargetLine/ArrowHead/Area2D.monitoring = true
 
 
 # A rudimentary Finite State Engine for cards

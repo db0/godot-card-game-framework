@@ -5,6 +5,26 @@ var hand
 var cards := []
 var common = UTCommon.new()
 
+# Takes care of simple drag&drop requests
+func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fast") -> void:
+	var mouse_yield_wait: int
+	var mouse_speed: int
+	if interpolation_speed == "fast":
+		mouse_yield_wait = 0.3
+		mouse_speed = 10
+	else:
+		mouse_yield_wait = 0.6
+		mouse_speed = 3
+	card._on_Card_mouse_entered()
+	common.click_card(card)
+	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	board._UT_interpolate_mouse_move(target_position,card.position,mouse_speed)
+	yield(yield_for(mouse_yield_wait), YIELD)
+	common.drop_card(card,board._UT_mouse_position)
+	card._on_Card_mouse_exited()
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+
+
 func before_each():
 	board = autoqfree(TestVars.new().boardScene.instance())
 	get_tree().get_root().add_child(board)
@@ -20,15 +40,7 @@ func test_attaching_and_switching_parent():
 	var card_prev_pos : Vector2
 	var exhost_attachments: Array
 
-	card = cards[0]
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(300,300),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(cards[0],Vector2(300,300)), 'completed')
 
 	card = cards[1]
 	card._on_Card_mouse_entered()
@@ -48,25 +60,11 @@ func test_attaching_and_switching_parent():
 	assert_eq(cards[0].get_node('Control/FocusHighlight').modulate, Color(1,1,1), "Test that an attaching card turns attach highlights off")
 
 	card = cards[2]
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(310,310),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(310,310)), 'completed')
 	assert_almost_eq(card.global_position,cards[0].global_position + Vector2(0,2) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Test that multiple attached card are placed in the right position in regards to their parent")
 
 	card = cards[3]
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(310,310),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(310,310)), 'completed')
 	assert_almost_eq(card.global_position,cards[0].global_position + Vector2(0,3) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Test that multiple attached card are placed in the right position in regards to their parent")
 	assert_eq(3,len(cards[0].attachments),"Test a parent attachments array is the right size")
 	card_prev_pos = card.global_position
@@ -131,26 +129,10 @@ func test_attaching_and_switching_parent():
 	assert_almost_eq(cards[3].global_position,cards[0].global_position + Vector2(0,2) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Test that removing an attachment reorganizes other attachments")
 
 	card = cards[4]
-	gut.p(card.name)
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(610,230),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(610,230)), 'completed')
 
 	card = cards[3]
-	gut.p(card.name)
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(630,230),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(630,230)), 'completed')
 	assert_eq(card.current_host_card,cards[4],"Test that an attached card can attach to another and clears out previous attachments")
 	assert_eq(card,cards[4].attachments[0],"Test that a reattached card is added to new host correctly")
 	assert_false(card in cards[0].attachments,"Test that a reattached card is removed from old host correctly")
@@ -159,14 +141,7 @@ func test_attaching_and_switching_parent():
 
 	card = cards[0]
 	exhost_attachments = card.attachments.duplicate()
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(630,230),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(630,230)), 'completed')
 	assert_eq(card.current_host_card,cards[4],"Test that a previous host, attaches properly itself")
 	assert_eq(0,len(card.attachments),"Test ex-host's attachments array cleared")
 	assert_eq(3,len(cards[4].attachments),"Test a new host's attachments array has hosted all old ex-host's cards")
@@ -175,14 +150,7 @@ func test_attaching_and_switching_parent():
 
 	card = cards[4]
 	exhost_attachments = card.attachments.duplicate()
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(30,530),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(30,530)), 'completed')
 	assert_eq(0,len(card.attachments),"Test that a card leaving the table clears out attachment variables in it")
 	for c in exhost_attachments:
 		assert_null(c.current_host_card,"Test that an attachment of a host that left play clears out correctly")
@@ -195,34 +163,13 @@ func test_multi_host_hover():
 	board.get_node("EnableAttach").pressed = false
 
 	card = cards[0]
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(100,100),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(100,100)), 'completed')
 
 	card = cards[1]
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(200,100),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(200,100)), 'completed')
 
 	card = cards[2]
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(150,100),card.position,10)
-	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(150,100)), 'completed')
 
 	board.get_node("EnableAttach").pressed = true
 
@@ -240,8 +187,3 @@ func test_multi_host_hover():
 	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
-
-
-
-
-
