@@ -5,15 +5,15 @@ var hand
 var cards := []
 var common = UTCommon.new()
 
-	
+
 func drag_and_drop_card(card: Card, drop_location: Vector2) -> void:
 	# Doesn't work due to https://github.com/bitwes/Gut/issues/247
 	card._on_Card_mouse_entered()
 	common.click_card(card)
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board.UT_interpolate_mouse_move(drop_location,card.position,6)	
+	board._UT_interpolate_mouse_move(drop_location,card.position,6)
 	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board.UT_mouse_position)
+	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_for(0.3), YIELD)
 
@@ -47,19 +47,19 @@ func test_table_hand_z_index():
 	card._on_Card_mouse_entered()
 	common.click_card(card)
 	yield(yield_for(0.2), YIELD) # Wait to allow dragging to start
-	board.UT_interpolate_mouse_move(Vector2(300,100),card.position,6)	
+	board._UT_interpolate_mouse_move(Vector2(300,100),card.position,6)
 	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board.UT_mouse_position)
+	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_for(0.3), YIELD)
-	
+
 	card = cards[1]
 	card._on_Card_mouse_entered()
 	common.click_card(card)
 	yield(yield_for(0.2), YIELD) # Wait to allow dragging to start
-	board.UT_interpolate_mouse_move(Vector2(300,200),card.position,6)	
+	board._UT_interpolate_mouse_move(Vector2(300,200),card.position,6)
 	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board.UT_mouse_position)
+	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_for(0.3), YIELD)
 
@@ -67,9 +67,9 @@ func test_table_hand_z_index():
 	card._on_Card_mouse_entered()
 	common.click_card(card)
 	yield(yield_for(0.2), YIELD) # Wait to allow dragging to start
-	board.UT_interpolate_mouse_move(Vector2(300,300),card.position,6)	
+	board._UT_interpolate_mouse_move(Vector2(300,300),card.position,6)
 	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board.UT_mouse_position)
+	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_for(0.3), YIELD)
 
@@ -77,9 +77,9 @@ func test_table_hand_z_index():
 	card._on_Card_mouse_entered()
 	common.click_card(card)
 	yield(yield_for(0.2), YIELD) # Wait to allow dragging to start
-	board.UT_interpolate_mouse_move(Vector2(300,400),card.position,6)	
+	board._UT_interpolate_mouse_move(Vector2(300,400),card.position,6)
 	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board.UT_mouse_position)
+	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_for(0.3), YIELD)
 
@@ -87,9 +87,9 @@ func test_table_hand_z_index():
 	card._on_Card_mouse_entered()
 	common.click_card(card)
 	yield(yield_for(1), YIELD) # Wait to allow dragging to start
-	board.UT_interpolate_mouse_move(Vector2(300,600),card.position,3)
+	board._UT_interpolate_mouse_move(Vector2(300,600),card.position,3)
 	yield(yield_for(1), YIELD)
-	common.drop_card(card,board.UT_mouse_position)
+	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_for(1), YIELD)
 
@@ -102,9 +102,9 @@ func test_table_hand_z_index():
 	card._on_Card_mouse_entered()
 	common.click_card(card)
 	yield(yield_for(0.2), YIELD) # Wait to allow dragging to start
-	board.UT_interpolate_mouse_move(Vector2(300,600),card.position,3)
+	board._UT_interpolate_mouse_move(Vector2(300,600),card.position,3)
 	yield(yield_for(0.6), YIELD)
-	common.drop_card(card,board.UT_mouse_position)
+	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_for(0.3), YIELD)
 
