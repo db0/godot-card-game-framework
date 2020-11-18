@@ -124,11 +124,11 @@ func _on_Card_mouse_entered() -> void:
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
-		# If the player presses the left click, it might be because 
+		# If the player presses the left click, it might be because
 		# they want to drag the card
 		if event.is_pressed() and event.get_button_index() == 1:
-			if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and 
-					(state == FOCUSED_IN_HAND 
+			if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
+					(state == FOCUSED_IN_HAND
 					or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
 				# But first we check if the player does a long-press.
 				# We don't want to start dragging the card immediately.
@@ -136,12 +136,12 @@ func _on_Card_gui_input(event) -> void:
 				# We need to wait a bit to make sure the other card has a chance
 				# to go through their scripts
 				yield(get_tree().create_timer(0.1), "timeout")
-				# If this variable is still set to true, 
+				# If this variable is still set to true,
 				# it means the mouse-button is still pressed
 				# We also check if another card is already selected for dragging,
 				# to prevent from picking 2 cards at the same time.
 				if cfc.card_drag_ongoing == self:
-					# While the mouse is kept pressed, we tell the engine 
+					# While the mouse is kept pressed, we tell the engine
 					# that a card is being dragged
 					_start_dragging()
 		# If the mouse button was released we drop the dragged card
@@ -153,18 +153,18 @@ func _on_Card_gui_input(event) -> void:
 			cfc.card_drag_ongoing = null
 			match state:
 				DRAGGED:
-					# if the card was being dragged, it's index is very high 
+					# if the card was being dragged, it's index is very high
 					# to always draw above other objects
 					# We need to reset it either to the default of 0
-					# Or if the card was left overlapping with other cards, 
+					# Or if the card was left overlapping with other cards,
 					# the higher index among them
 					z_index = 0
 					var destination = cfc.NMAP.board
 					for obj in get_overlapping_areas():
 						if obj.get_class() == 'CardContainer':
-							#TODO: Need some more player-obvious logic on 
+							#TODO: Need some more player-obvious logic on
 							# what to do if card area overlaps two CardContainers
-							destination = obj 
+							destination = obj
 					moveTo(destination)
 					_focus_completed = false
 					#emit_signal("card_dropped",self)
@@ -443,7 +443,7 @@ func moveTo(targetHost: Node2D,
 
 func attach_to_host(host: Card, follows_previous_host = false) -> void:
 	# This method handles the card becoming an attachment at a specified host
-	# First we check if the selected host is not the current host anyway. 
+	# First we check if the selected host is not the current host anyway.
 	# If it is, we do nothing else
 	if host != current_host_card:
 		# If we already had a host, we clear our state with it
@@ -510,19 +510,19 @@ func reorganizeSelf() ->void:
 func interruptTweening() ->void:
 	# This if-logic is there to avoid interrupting animations during fancy_movement,
 	# as we want the first part to play always
-	# Effectively we're saying if fancy movement is turned on, and you're 
+	# Effectively we're saying if fancy movement is turned on, and you're
 	# still doing the first part, don't interrupt
-	# If you've finished the first part and are not still in the 
+	# If you've finished the first part and are not still in the
 	# move to another container movement, then you can interrupt.
-	if not cfc.fancy_movement or (cfc.fancy_movement 
-			and (_fancy_move_second_part 
+	if not cfc.fancy_movement or (cfc.fancy_movement
+			and (_fancy_move_second_part
 			or state != MOVING_TO_CONTAINER)):
 		$Tween.remove_all()
 		state = IN_HAND
 
 
 # A helper function for changing card focus.
-# Having it in its own function allows us to expand how it works it in the future 
+# Having it in its own function allows us to expand how it works it in the future
 # in one place
 func set_focus(requestedFocus: bool) -> void:
 	 # We use an if to avoid performing constant operations in _process
@@ -547,7 +547,7 @@ func get_focus() -> bool:
 
 
 # A helper function for changing card highlight.
-# Having it in its own function allows us to expand how it works it in the future 
+# Having it in its own function allows us to expand how it works it in the future
 # in one place
 func set_cardFocus(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) -> void:
 	$Control/FocusHighlight.visible = requestedFocus
@@ -603,9 +603,9 @@ func initiate_targeting() -> void:
 func complete_targeting() -> void:
 	if len(_potential_cards) and _is_targetting:
 		target_card = _potential_cards.back()
-		print("Targeting Demo: ", 
-				self.name," targeted ", 
-				target_card.name, " in ", 
+		print("Targeting Demo: ",
+				self.name," targeted ",
+				target_card.name, " in ",
 				target_card.get_parent().name)
 	_is_targetting = false
 	$TargetLine.clear_points()
@@ -626,18 +626,18 @@ func _organize_attachments() -> void:
 	# We only do this if the parent is still on the board
 	if get_parent() == cfc.NMAP.board:
 		for card in attachments:
-			# We use the index of the attachment among other attachments 
+			# We use the index of the attachment among other attachments
 			# to figure out its index and placement
 			var attach_index = attachments.find(card)
 			if attach_index:
 				# if the card is not the first attachment to this host
-				# Then we make sure that each subsequent card is higher 
+				# Then we make sure that each subsequent card is higher
 				# in the node hierarchy than its parent
 				# This will make latter cards draw below the others
 				if card.get_index() > attachments[attach_index - 1].get_index():
 					get_parent().move_child(card,
 							attachments[attach_index - 1].get_index())
-			# If the card if the first for its host, we need to make sure 
+			# If the card if the first for its host, we need to make sure
 			# it is higher in the hierarchy than the host
 			elif card.get_index() > self.get_index():
 				get_parent().move_child(card,self.get_index())
@@ -659,7 +659,7 @@ func _determine_global_mouse_pos() -> Vector2:
 	var mouse_position
 	var zoom = Vector2(1,1)
 	# We have to do the below offset hack due to godotengine/godot#30215
-	# This is caused because we're using a viewport node and 
+	# This is caused because we're using a viewport node and
 	# scaling the game in full-creen.
 	if get_viewport().has_node("Camera2D"):
 		zoom = get_viewport().get_node("Camera2D").zoom
@@ -853,27 +853,27 @@ func _draw_targeting_arrow() -> void:
 	# Our starting point has to be translated to the local position of the Line2D node
 	# The out control point is the direction to the screen center,
 	# with a magnitude that I found via trial and error to look good
-	curve.add_point($TargetLine.to_local(centerpos), 
-			Vector2(0,0), 
+	curve.add_point($TargetLine.to_local(centerpos),
+			Vector2(0,0),
 			centerpos.direction_to(get_viewport().size/2) * 75)
 #		curve.add_point($TargetLine.to_local(offmid), Vector2(0,0), Vector2(0,0))
 	# Our end point also has to be translated to the local position of the Line2D node
 	# The in control point is likewise the direction to the screen center
 	# with a magnitude that I found via trial and error to look good
-	curve.add_point($TargetLine.to_local(position + 
-			$Control.rect_size/2 + final_point), 
+	curve.add_point($TargetLine.to_local(position +
+			$Control.rect_size/2 + final_point),
 			Vector2(0, 0), Vector2(0, 0))
-	# Finally we use the Curve2D object to get the points which will be drawn 
+	# Finally we use the Curve2D object to get the points which will be drawn
 	# by our lined2D
 	$TargetLine.set_points(curve.get_baked_points())
 	# We place the arrowhead to start from the last point in the line2D
 	$TargetLine/ArrowHead.position = $TargetLine.get_point_position(
 			$TargetLine.get_point_count( ) - 1)
-	# We delete the last 3 Line2D points, because the arrowhead will 
+	# We delete the last 3 Line2D points, because the arrowhead will
 	# be covering those areas
 	for _del in range(1,3):
 		$TargetLine.remove_point($TargetLine.get_point_count( ) - 1)
-	# We setup the angle the arrowhead is pointing by finding the direction of 
+	# We setup the angle the arrowhead is pointing by finding the direction of
 	# the last point to the final location
 	$TargetLine/ArrowHead.rotation = $TargetLine.get_point_position(
 				$TargetLine.get_point_count( ) - 1).direction_to(
@@ -926,7 +926,7 @@ func _process_card_state() -> void:
 						- Vector2($Control.rect_size.x \
 						* 0.25,$Control.rect_size.y \
 						* 0.5 + cfc.NMAP.hand.bottom_margin)
-				# We make sure to remove other tweens of the same type 
+				# We make sure to remove other tweens of the same type
 				# to avoid a deadlock
 				$Tween.remove(self,'position')
 				$Tween.interpolate_property(self,'position',
@@ -938,10 +938,10 @@ func _process_card_state() -> void:
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				$Tween.start()
 				_focus_completed = true
-				# We don't change state yet, only when the focus is removed 
+				# We don't change state yet, only when the focus is removed
 				# from this card
 		MOVING_TO_CONTAINER:
-			# Used when moving card between places 
+			# Used when moving card between places
 			# (i.e. deck to hand, hand to discard etc)
 			set_focus(false)
 			if not $Tween.is_active():
@@ -968,7 +968,7 @@ func _process_card_state() -> void:
 						if controlNode_center_position.y < get_viewport().size.y/2:
 							direction_y = 1
 						# The offset amount if calculated by creating a multiplier
-						# based on the distance of our target container 
+						# based on the distance of our target container
 						# from the viewport center
 						# The further away they are, the more the intermediate point
 						# moves towards the screen center
@@ -982,9 +982,9 @@ func _process_card_state() -> void:
 								+ direction_x * offset_x
 						var inter_y = controlNode_center_position.y \
 								+ direction_y * offset_y
-						# We calculate the position we want the card to move 
+						# We calculate the position we want the card to move
 						# on the viewport
-						# then we translate that position to the local coordinates 
+						# then we translate that position to the local coordinates
 						# within the parent control node
 						#intermediate_position = Vector2(inter_x,inter_y)
 						intermediate_position = Vector2(inter_x,inter_y)
@@ -1147,7 +1147,7 @@ func _process_card_state() -> void:
 					_fancy_move_second_part = true
 				else:
 					intermediate_position = get_parent().position
-				$Tween.remove(self,'position') 
+				$Tween.remove(self,'position')
 				$Tween.interpolate_property(self,'position',
 						intermediate_position, get_parent().position, 0.35,
 						Tween.TRANS_SINE, Tween.EASE_IN_OUT)
