@@ -133,7 +133,7 @@ func _process(delta) -> void:
 						# Neighbouring cards are pushed to the side to allow the focused card to not be overlapped
 						# The amount they're pushed is relevant to how close neighbours they are.
 						# Closest neighbours (1 card away) are pushed more than further neighbours.
-						neighbour_card._pushAside(neighbour_card._recalculatePosition() + Vector2(neighbour_card.get_node('Control').rect_size.x/neighbour_index_diff * cfc.neighbour_push,0))
+						neighbour_card._pushAside(neighbour_card._recalculatePosition() + Vector2(neighbour_card.get_node('Control').rect_size.x/neighbour_index_diff * cfc.NEIGHBOUR_PUSH,0))
 						neighbours.append(neighbour_card)
 				for c in get_parent().get_all_cards():
 					if not c in neighbours and c != self:
@@ -259,10 +259,10 @@ func _process(delta) -> void:
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			set_focus(false)
-			if not $Tween.is_active() and not scale.is_equal_approx(cfc.play_area_scale):
+			if not $Tween.is_active() and not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 				$Tween.remove(self,'scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 				$Tween.interpolate_property(self,'scale',
-					scale, cfc.play_area_scale, 0.3,
+					scale, cfc.PLAY_AREA_SCALE, 0.3,
 					Tween.TRANS_SINE, Tween.EASE_OUT)
 				$Tween.start()
 			# This tween hides the container manipulation buttons
@@ -281,18 +281,18 @@ func _process(delta) -> void:
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
 #				_target_position = _determine_board_position_from_mouse()
 #				# The below ensures the card doesn't leave the viewport dimentions
-#				if _target_position.x + $Control.rect_size.x * cfc.play_area_scale.x > get_viewport().size.x:
-#					_target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.play_area_scale.x
-#				if _target_position.y + $Control.rect_size.y * cfc.play_area_scale.y > get_viewport().size.y:
-#					_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.play_area_scale.y
+#				if _target_position.x + $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x > get_viewport().size.x:
+#					_target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x
+#				if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y > get_viewport().size.y:
+#					_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y
 				$Tween.interpolate_property(self,'position',
 					position, _target_position, 0.25,
 					Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				# We want cards on the board to be slightly smaller than in hand.
-				if not scale.is_equal_approx(cfc.play_area_scale):
+				if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 					$Tween.remove(self,'scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 					$Tween.interpolate_property(self,'scale',
-						scale, cfc.play_area_scale, 0.5,
+						scale, cfc.PLAY_AREA_SCALE, 0.5,
 						Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = ON_PLAY_BOARD
@@ -319,7 +319,7 @@ func _process(delta) -> void:
 						position, intermediate_position, 0.25,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
 					yield($Tween, "tween_all_completed")
-					if not scale.is_equal_approx(cfc.play_area_scale):
+					if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 						$Tween.remove(self,'scale') # We make sure to remove other tweens of the same type to avoid a deadlock
 						$Tween.interpolate_property(self,'scale',
 							scale, Vector2(1,1), 0.5,
@@ -465,7 +465,7 @@ func _on_Card_area_entered(card: Card) -> void:
 			# We sort all potential cards by their index
 			_potential_cards.sort_custom(CardIndexSorter,"sort_index_ascending")
 			# Finally we use a method which  handles changing highlights on the top index card
-			highlight_potential_card(cfc.host_hover_colour)
+			highlight_potential_card(cfc.HOST_HOVER_COLOUR)
 
 
 func _on_Card_area_exited(card: Card) -> void:
@@ -480,7 +480,7 @@ func _on_Card_area_exited(card: Card) -> void:
 			# And we explicitly hide its cards focus since we don't care about it anymore
 			card.set_cardFocus(false)
 			# Finally, we make sure we highlight any other cards we're still hovering
-			highlight_potential_card(cfc.host_hover_colour)
+			highlight_potential_card(cfc.HOST_HOVER_COLOUR)
 
 
 func _on_ArrowHead_area_entered(card: Card) -> void:
@@ -489,7 +489,7 @@ func _on_ArrowHead_area_entered(card: Card) -> void:
 	if card and not card in _potential_cards:
 		_potential_cards.append(card)
 		_potential_cards.sort_custom(CardIndexSorter,"sort_index_ascending")
-		highlight_potential_card(cfc.target_hover_colour)
+		highlight_potential_card(cfc.TARGET_HOVER_COLOUR)
 
 
 func _on_ArrowHead_area_exited(card: Card) -> void:
@@ -501,7 +501,7 @@ func _on_ArrowHead_area_exited(card: Card) -> void:
 		# And we explicitly hide its cards focus since we don't care about it anymore
 		card.set_cardFocus(false)
 		# Finally, we make sure we highlight any other cards we're still hovering
-		highlight_potential_card(cfc.target_hover_colour)
+		highlight_potential_card(cfc.TARGET_HOVER_COLOUR)
 
 
 func set_is_attachment(value: bool) -> void:
@@ -609,7 +609,7 @@ func moveTo(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) ->
 				attach_to_host(_potential_cards.back())
 			elif current_host_card:
 				var attach_index = current_host_card.attachments.find(self)
-				_target_position = current_host_card.global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.attachment_offset)
+				_target_position = current_host_card.global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.ATTACHMENT_OFFSET)
 			else:
 				_determine__target_position_from_mouse()
 				raise()
@@ -646,7 +646,7 @@ func attach_to_host(host: Card, follows_previous_host = false) -> void:
 		# The position below the host is based on how many other attachments it has
 		# We offset our position below the host based on a percentage of the card size, times the index among other attachments
 		var attach_index = current_host_card.attachments.find(self)
-		_target_position = current_host_card.global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.attachment_offset)
+		_target_position = current_host_card.global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.ATTACHMENT_OFFSET)
 
 
 func card_action() -> void:
@@ -737,7 +737,7 @@ func highlight_potential_card(colour : Color) -> void:
 				_potential_cards[idx].set_cardFocus(false)
 
 
-func set_cardFocus(requestedFocus: bool, hoverColour = cfc.host_hover_colour) -> void:
+func set_cardFocus(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) -> void:
 	# A helper function for changing card focus.
 	# Having it in its own function allows us to expand how it works it in the future in one place
 	$Control/FocusHighlight.visible = requestedFocus
@@ -788,7 +788,7 @@ func _organize_attachments() -> void:
 			# We don't want to try and move it if it's still tweening.
 			# But if it isn't, we make sure it always follows its parent
 			if not card.get_node('Tween').is_active() and card.state == ON_PLAY_BOARD:
-				card.global_position = global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.attachment_offset)
+				card.global_position = global_position + Vector2(0,(attach_index + 1) * $Control.rect_size.y * cfc.ATTACHMENT_OFFSET)
 
 
 func _determine_global_mouse_pos() -> Vector2:
@@ -915,10 +915,10 @@ func _determine__target_position_from_mouse() -> void:
 	# It takes extra care not to drop the card outside viewport margins
 	_target_position = _determine_board_position_from_mouse()
 	# The below ensures the card doesn't leave the viewport dimentions
-	if _target_position.x + $Control.rect_size.x * cfc.play_area_scale.x > get_viewport().size.x:
-		_target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.play_area_scale.x
-	if _target_position.y + $Control.rect_size.y * cfc.play_area_scale.y > get_viewport().size.y:
-		_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.play_area_scale.y
+	if _target_position.x + $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x > get_viewport().size.x:
+		_target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x
+	if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y > get_viewport().size.y:
+		_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y
 
 
 func _get_button_hover() -> bool:

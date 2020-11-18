@@ -1,50 +1,46 @@
 ### Card Gaming Framework Global Config
 extends Node
 
-#-----------------------------------------------------------------------------
-# BEGIN Behaviour Constants #
-# Change the below to change how all cards behave to match your game.
-#-----------------------------------------------------------------------------
-
-
-const card_size_multiplier := 0.5
-# The amount of distance neighboring cards are pushed during card focus
-# It's based on the card width. Bigger percentage means larger push.
-const neighbour_push := 0.75
-
-# The scale of the card while on the play area
-const play_area_scale := Vector2(0.8,0.8)
-
-# The margin towards the bottom of the viewport on which to draw the cards.
-# More than 0 and the card will appear hidden under the display area.
-# Less than 0 and it will float higher than the bottom of the viewport
-const bottom_margin_multiplier := 0.5
-
-# The amount of offset towards the bottom of their host card that attachments are placed in
-# This is a multiplier of the card size. 
-# Put a negative number here if you want attachments to offset towards the top of the host
-const attachment_offset := -0.2
-
-# The colour to use when hovering over a card with an attachment to signify a valid host
-const host_hover_colour := Color(1, 0.87, 0.4)
-# The colour to use when hovering over a card with an targetting arrow to signify a valid target
-const target_hover_colour := Color(0.4, 0.5, 1)
-
-# Switch this off to disable fancy movement of cards during draw/discard
-var fancy_movement := true
-
-# The below scales down cards down while being dragged
-# if you don't want this behaviour, change it to Vector2(1,1)
-var card_scale_while_dragging := Vector2(0.4,0.4)
-
-# If true, then the game will use the card focusing method where it scales up the card itself.
-# It will also mean you cannot focus on card on the table.
-var focus_style = FocusStyle.BOTH
 enum FocusStyle { 
 	SCALED					#0
 	VIEWPORT				#1
 	BOTH					#2
 }
+
+#-----------------------------------------------------------------------------
+# BEGIN Behaviour Constants #
+# Change the below to change how all cards behave to match your game.
+#-----------------------------------------------------------------------------
+
+const CARD_SIZE_MULTIPLIER := 0.5
+# The amount of distance neighboring cards are pushed during card focus
+# It's based on the card width. Bigger percentage means larger push.
+const NEIGHBOUR_PUSH := 0.75
+# The scale of the card while on the play area
+const PLAY_AREA_SCALE := Vector2(0.8,0.8)
+# The margin towards the bottom of the viewport on which to draw the cards.
+# More than 0 and the card will appear hidden under the display area.
+# Less than 0 and it will float higher than the bottom of the viewport
+const BOTTOM_MARGIN_MULTIPLIER := 0.5
+# The amount of offset towards the bottom of their host card that attachments are placed in
+# This is a multiplier of the card size. 
+# Put a negative number here if you want attachments to offset towards the top of the host
+const ATTACHMENT_OFFSET := -0.2
+# The colour to use when hovering over a card with an attachment to signify a valid host
+const HOST_HOVER_COLOUR := Color(1, 0.87, 0.4)
+# The colour to use when hovering over a card with an targetting arrow to signify a valid target
+const TARGET_HOVER_COLOUR := Color(0.4, 0.5, 1)
+
+# Switch this off to disable fancy movement of cards during draw/discard
+var fancy_movement := true
+# The below scales down cards down while being dragged
+# if you don't want this behaviour, change it to Vector2(1,1)
+var card_scale_while_dragging := Vector2(0.4,0.4)
+# If true, then the game will use the card focusing method where it scales up the card itself.
+# It will also mean you cannot focus on card on the table.
+var focus_style = FocusStyle.BOTH
+
+
 # The below vars predefine the position in your node structure to reach the nodes relevant to the cards
 # Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
 const nodes_map := { # Optimally this should be moved to its own reference class and set in the autoloader

@@ -37,11 +37,11 @@ func test_attaching_and_switching_parent():
 	board.UT_interpolate_mouse_move(Vector2(310,310),card.position,10)
 	yield(yield_for(0.3), YIELD)
 	assert_true(cards[0].get_node('Control/FocusHighlight').visible, "Test that a card hovering over another with attachment flag on, highlights it")
-	assert_eq(cards[0].get_node('Control/FocusHighlight').modulate, cfc.host_hover_colour, "Test that a hovered host has the right colour highlight")
+	assert_eq(cards[0].get_node('Control/FocusHighlight').modulate, cfc.HOST_HOVER_COLOUR, "Test that a hovered host has the right colour highlight")
 	common.drop_card(card,board.UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
-	assert_almost_eq(card.global_position,cards[0].global_position + Vector2(0,1) * card.get_node('Control').rect_size.y * cfc.attachment_offset, Vector2(2,2),"Check card dragged in correct global position")
+	assert_almost_eq(card.global_position,cards[0].global_position + Vector2(0,1) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Check card dragged in correct global position")
 	assert_eq(card.current_host_card,cards[0],"Test that an attached card has its parent in the current_host_card var")
 	assert_eq(card,cards[0].attachments[0],"Test that card with hosted card has its children attachments array")
 	assert_eq(1,len(cards[0].attachments),"Test a parent attachments array is the right size")
@@ -56,7 +56,7 @@ func test_attaching_and_switching_parent():
 	common.drop_card(card,board.UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
-	assert_almost_eq(card.global_position,cards[0].global_position + Vector2(0,2) * card.get_node('Control').rect_size.y * cfc.attachment_offset, Vector2(2,2),"Test that multiple attached card are placed in the right position in regards to their parent")
+	assert_almost_eq(card.global_position,cards[0].global_position + Vector2(0,2) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Test that multiple attached card are placed in the right position in regards to their parent")
 
 	card = cards[3]
 	card._on_Card_mouse_entered()
@@ -67,7 +67,7 @@ func test_attaching_and_switching_parent():
 	common.drop_card(card,board.UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
-	assert_almost_eq(card.global_position,cards[0].global_position + Vector2(0,3) * card.get_node('Control').rect_size.y * cfc.attachment_offset, Vector2(2,2),"Test that multiple attached card are placed in the right position in regards to their parent")
+	assert_almost_eq(card.global_position,cards[0].global_position + Vector2(0,3) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Test that multiple attached card are placed in the right position in regards to their parent")
 	assert_eq(3,len(cards[0].attachments),"Test a parent attachments array is the right size")
 	card_prev_pos = card.global_position
 
@@ -85,7 +85,7 @@ func test_attaching_and_switching_parent():
 	board.UT_interpolate_mouse_move(Vector2(100,400),card.position,10)
 	yield(yield_for(0.3), YIELD)
 	assert_almost_ne(card_prev_pos,cards[3].global_position, Vector2(2,2),"Test that drop also drops attachments in the right position")
-	assert_almost_eq(cards[3].global_position,card.global_position + Vector2(0,3) * card.get_node('Control').rect_size.y * cfc.attachment_offset, Vector2(2,2),"Test that after drag, drop is placed correctly according to parent")
+	assert_almost_eq(cards[3].global_position,card.global_position + Vector2(0,3) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Test that after drag, drop is placed correctly according to parent")
 	card._on_Card_mouse_entered()
 	common.click_card(card)
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
@@ -128,7 +128,7 @@ func test_attaching_and_switching_parent():
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_null(card.current_host_card,"Test that an attachment clears out correctly when removed from table")
 	assert_eq(2,len(cards[0].attachments),"Test that an attachment clears out correctly when removed from table")
-	assert_almost_eq(cards[3].global_position,cards[0].global_position + Vector2(0,2) * card.get_node('Control').rect_size.y * cfc.attachment_offset, Vector2(2,2),"Test that removing an attachment reorganizes other attachments")
+	assert_almost_eq(cards[3].global_position,cards[0].global_position + Vector2(0,2) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Test that removing an attachment reorganizes other attachments")
 
 	card = cards[4]
 	gut.p(card.name)
