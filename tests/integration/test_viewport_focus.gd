@@ -28,9 +28,9 @@ func test_for_leftover_focus_objects():
 	cards[2]._on_Card_mouse_entered()
 	common.click_card(cards[2])
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board.UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
+	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[2],board.UT_mouse_position)
+	common.drop_card(cards[2],board._UT_mouse_position)
 	yield(yield_for(1), YIELD)
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),"Ensure duplicate card has been removed from focus")

@@ -10,7 +10,7 @@ func fake_click(pressed,position, flags=0) -> InputEvent:
 	ev.pressed = pressed
 	ev.position = position
 	ev.meta = flags
-	board.UT_mouse_position = position
+	board._UT_mouse_position = position
 	return ev
 
 

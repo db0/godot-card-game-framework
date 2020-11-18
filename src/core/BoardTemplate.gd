@@ -3,18 +3,18 @@ class_name Board
 extends Node2D
 
 # Simulated mouse position for Unit Testing
-var UT_mouse_position := Vector2(0,0)
+var _UT_mouse_position := Vector2(0,0)
 # Simulated mouse position for Unit Testing
-var UT_current_mouse_position := Vector2(0,0)
+var _UT_current_mouse_position := Vector2(0,0)
 # Simulated mouse position for Unit Testing
-var UT_target_mouse_position := Vector2(0,0)
+var _UT_target_mouse_position := Vector2(0,0)
 # Simulated mouse movement speed for Unit Testing.
 # The bigger the number, the faster the mouse moves
-var UT_mouse_speed := 3
+var _UT_mouse_speed := 3
 # Set to true if there's an actual interpolation ongoing
-var UT_interpolation_requested := false
+var _UT_interpolation_requested := false
 # Used for interpolating
-var t = 0
+var _t = 0
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -22,26 +22,26 @@ func _ready() -> void:
 
 
 func _physics_process(delta) -> void:
-	if UT_interpolation_requested:
-		if UT_mouse_position != UT_target_mouse_position:
-			t += delta * UT_mouse_speed
-			UT_mouse_position = UT_current_mouse_position.linear_interpolate(
-					UT_target_mouse_position, t)
+	if _UT_interpolation_requested:
+		if _UT_mouse_position != _UT_target_mouse_position:
+			_t += delta * _UT_mouse_speed
+			_UT_mouse_position = _UT_current_mouse_position.linear_interpolate(
+					_UT_target_mouse_position, _t)
 		else:
-			t = 0
-			UT_interpolation_requested = false
+			_t = 0
+			_UT_interpolation_requested = false
 
 
 # This function is called by unit testing to simulate mouse movement on the board
-func UT_interpolate_mouse_move(newpos: Vector2,
+func _UT_interpolate_mouse_move(newpos: Vector2,
 		startpos := Vector2(-1,-1), mouseSpeed := 3) -> void:
 	if startpos == Vector2(-1,-1):
-		UT_current_mouse_position = UT_mouse_position
+		_UT_current_mouse_position = _UT_mouse_position
 	else:
-		UT_current_mouse_position = startpos
-	UT_mouse_speed = mouseSpeed
-	UT_target_mouse_position = newpos
-	UT_interpolation_requested = true
+		_UT_current_mouse_position = startpos
+	_UT_mouse_speed = mouseSpeed
+	_UT_target_mouse_position = newpos
+	_UT_interpolation_requested = true
 
 
 # Returns an array with all children nodes which are of Card class
