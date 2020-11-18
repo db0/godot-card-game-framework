@@ -140,6 +140,8 @@ By default the game has both active, but the viewport focus requires a bit more 
 
 If you do not already have anything like this, you can simply use the Main.tcsn scene as a template and modify accordingly. The framework will utilize it automatically if it detects a Main.tcsn as the root.
 
+If you want to use your own root scene, then you can simply extend it from the ViewportCardFocus class to inherit all the required methods
+
 If you do not want or need the viewport focus, then simply ignore it. However you'll need to make sure table cards are legible as they are since there's no other good way to get a closeup of them without viewports
 
 ### Unit Testing
