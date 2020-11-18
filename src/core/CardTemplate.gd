@@ -5,7 +5,6 @@
 # Simply make your card scripts extend this class and you'll have all the
 # provided scripts available.
 # If your card node type is not Area2D, make sure you change the extends type.
-
 class_name Card
 extends Area2D
 
@@ -775,8 +774,8 @@ func _determine_idle_state() -> void:
 		state = ON_PLAY_BOARD
 
 
+# Makes the card change visibility nicely
 func _tween_interpolate_visibility(visibility: float, time: float) -> void:
-	# Takes care to make a card change visibility nicely
 	# We only want to do something if we're actually doing something
 	if modulate[3] != visibility:
 		$Tween.interpolate_property(self,'modulate',
