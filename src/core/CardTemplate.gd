@@ -440,9 +440,8 @@ func moveTo(targetHost: Node2D,
 			card.set_cardFocus(false)
 		_potential_cards.clear()
 
-
+# Handles the card becoming an attachment for a specified host Card object
 func attach_to_host(host: Card, follows_previous_host = false) -> void:
-	# This method handles the card becoming an attachment at a specified host
 	# First we check if the selected host is not the current host anyway.
 	# If it is, we do nothing else
 	if host != current_host_card:
