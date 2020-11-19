@@ -21,7 +21,7 @@ const CARD_SIZE_MULTIPLIER := 0.5
 # It's based on the card width. Bigger percentage means larger push.
 const NEIGHBOUR_PUSH := 0.75
 # The scale of the card while on the play area
-const PLAY_AREA_SCALE := Vector2(1,1)
+const PLAY_AREA_SCALE := Vector2(0.8,0.8)
 # The margin towards the bottom of the viewport on which to draw the cards.
 # More than 0 and the card will appear hidden under the display area.
 # Less than 0 and it will float higher than the bottom of the viewport
@@ -30,10 +30,14 @@ const BOTTOM_MARGIN_MULTIPLIER := 0.5
 # This is a multiplier of the card size.
 # Put a negative number here if you want attachments to offset towards the top of the host
 const ATTACHMENT_OFFSET := -0.2
+# The colour to use when hovering over a card
+const FOCUS_HOVER_COLOUR := Color(1, 1, 1)
 # The colour to use when hovering over a card with an attachment to signify a valid host
-const HOST_HOVER_COLOUR := Color(1, 0.87, 0.4)
+# We multiply it a bit to make it as bright as FOCUS_HOVER_COLOUR for the glow effect
+const HOST_HOVER_COLOUR := Color(1, 0.8, 0) 
 # The colour to use when hovering over a card with an targetting arrow to signify a valid target
-const TARGET_HOVER_COLOUR := Color(0.4, 0.5, 1)
+# We multiply it a bit to make it about as bright as FOCUS_HOVER_COLOUR for the glow effect
+const TARGET_HOVER_COLOUR := Color(0, 0.4, 1) * 1.3
 # The below vars predefine the position in your node structure to reach the nodes relevant to the cards
 # Adapt this according to your node structure. Do not prepent /root in front, as this is assumed
 # Optimally this should be moved to its own reference class and set in the autoloader

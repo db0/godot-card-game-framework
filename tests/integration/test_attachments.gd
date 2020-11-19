@@ -7,7 +7,7 @@ var common = UTCommon.new()
 
 # Takes care of simple drag&drop requests
 func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fast") -> void:
-	var mouse_yield_wait: int
+	var mouse_yield_wait: float
 	var mouse_speed: int
 	if interpolation_speed == "fast":
 		mouse_yield_wait = 0.3

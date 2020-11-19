@@ -619,7 +619,7 @@ func interruptTweening() ->void:
 func set_focus(requestedFocus: bool) -> void:
 	 # We use an if to avoid performing constant operations in _process
 	if $Control/FocusHighlight.visible != requestedFocus and \
-			$Control/FocusHighlight.modulate == Color(1, 1, 1):
+			$Control/FocusHighlight.modulate == cfc.FOCUS_HOVER_COLOUR:
 		$Control/FocusHighlight.visible = requestedFocus
 	if cfc.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
@@ -643,8 +643,10 @@ func set_highlight(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) ->
 	$Control/FocusHighlight.visible = requestedFocus
 	if requestedFocus:
 		$Control/FocusHighlight.modulate = hoverColour
+		print('a')
 	else:
-		$Control/FocusHighlight.modulate = Color(1, 1, 1)
+		$Control/FocusHighlight.modulate = cfc.FOCUS_HOVER_COLOUR
+		print('b')
 
 
 # Returns the Card's index position among other card objects
@@ -856,8 +858,8 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# We only want to do something if we're actually doing something
 	if modulate[3] != visibility:
 		$Tween.interpolate_property(self,'modulate',
-		modulate, Color(1, 1, 1, visibility), time,
-		Tween.TRANS_QUAD, Tween.EASE_OUT)
+			modulate, Color(1, 1, 1, visibility), time,
+			Tween.TRANS_QUAD, Tween.EASE_OUT)
 
 
 # Clears all attachment/hosting status.

@@ -1,69 +1,96 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
-[ext_resource path="res://src/core/FocusHighlight.tscn" type="PackedScene" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 75, 120 )
 
 [sub_resource type="StyleBoxFlat" id=2]
+content_margin_left = 6.0
+content_margin_right = 5.0
+content_margin_top = 6.0
+bg_color = Color( 1, 1, 1, 1 )
+draw_center = false
+border_width_left = 3
+border_width_right = 3
+border_color = Color( 3, 3, 3, 1 )
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+
+[sub_resource type="StyleBoxFlat" id=3]
+content_margin_left = 6.0
+content_margin_right = 5.0
+content_margin_top = 6.0
+bg_color = Color( 1, 1, 1, 1 )
+draw_center = false
+border_width_top = 2
+border_width_bottom = 3
+border_color = Color( 1.3, 1.3, 1.3, 1 )
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+
+[sub_resource type="StyleBoxFlat" id=4]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=5]
 border_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=6]
 size = 15
 outline_size = 1
 outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=5]
+[sub_resource type="DynamicFont" id=7]
 size = 10
 outline_size = 1
 outline_color = Color( 0, 0, 0, 1 )
 use_mipmaps = true
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=8]
 size = 13
 outline_size = 1
 use_filter = true
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=9]
 size = 11
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=8]
+[sub_resource type="DynamicFont" id=10]
 size = 12
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=9]
+[sub_resource type="DynamicFont" id=11]
 size = 10
 outline_size = 1
 outline_color = Color( 0.658824, 0.541176, 0, 1 )
 font_data = ExtResource( 1 )
 
-[sub_resource type="StyleBoxFlat" id=10]
+[sub_resource type="StyleBoxFlat" id=12]
 bg_color = Color( 0.501961, 0.443137, 0.0705882, 1 )
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="DynamicFont" id=11]
+[sub_resource type="DynamicFont" id=13]
 font_data = ExtResource( 1 )
 
-[sub_resource type="Curve" id=12]
+[sub_resource type="Curve" id=14]
 _data = [ Vector2( 0, 0.463636 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 1.4, 0.0, 0, 0 ]
 
 [node name="Card" type="Area2D"]
@@ -85,19 +112,43 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="FocusHighlight" parent="Control" instance=ExtResource( 3 )]
+[node name="FocusHighlight" type="Control" parent="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -3.0
 margin_top = -3.0
 margin_right = 3.0
 margin_bottom = 3.00002
+mouse_filter = 2
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="LeftRight" type="Panel" parent="Control/FocusHighlight"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TopBottom" type="Panel" parent="Control/FocusHighlight"]
+modulate = Color( 1.8, 1.8, 1.8, 1 )
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Front" type="Panel" parent="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 2 )
+custom_styles/panel = SubResource( 4 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -114,8 +165,8 @@ __meta__ = {
 margin_right = 150.0
 margin_bottom = 19.0
 size_flags_vertical = 1
-custom_styles/normal = SubResource( 3 )
-custom_fonts/font = SubResource( 4 )
+custom_styles/normal = SubResource( 5 )
+custom_fonts/font = SubResource( 6 )
 text = "Card Name"
 align = 1
 autowrap = true
@@ -125,7 +176,7 @@ margin_top = 23.0
 margin_right = 150.0
 margin_bottom = 36.0
 size_flags_vertical = 1
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = SubResource( 7 )
 text = "Type"
 align = 1
 autowrap = true
@@ -136,7 +187,7 @@ margin_top = 40.0
 margin_right = 150.0
 margin_bottom = 57.0
 size_flags_vertical = 1
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 8 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
 text = "Tag1 - Tag2"
 align = 1
@@ -147,7 +198,7 @@ uppercase = true
 margin_top = 61.0
 margin_right = 150.0
 margin_bottom = 75.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 9 )
 autowrap = true
 
 [node name="Abilities" type="Label" parent="Control/Front/CardText"]
@@ -155,7 +206,7 @@ margin_top = 79.0
 margin_right = 150.0
 margin_bottom = 223.0
 size_flags_vertical = 3
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 10 )
 text = "This is the card ability text.
 
 There should be space for a bit of text here."
@@ -167,7 +218,7 @@ autowrap = true
 margin_top = 227.0
 margin_right = 150.0
 margin_bottom = 240.0
-custom_fonts/font = SubResource( 9 )
+custom_fonts/font = SubResource( 11 )
 text = "Cost: 0"
 
 [node name="Back" type="Panel" parent="Control"]
@@ -177,7 +228,7 @@ margin_left = 75.0
 margin_right = 75.0
 rect_scale = Vector2( 1e-05, 1 )
 mouse_filter = 1
-custom_styles/panel = SubResource( 10 )
+custom_styles/panel = SubResource( 12 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -205,7 +256,7 @@ __meta__ = {
 margin_right = 29.0
 margin_bottom = 26.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 11 )
+custom_fonts/font = SubResource( 13 )
 text = "T"
 
 [node name="Rot180" type="Button" parent="Control/ManipulationButtons"]
@@ -213,7 +264,7 @@ margin_top = 30.0
 margin_right = 29.0
 margin_bottom = 56.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 11 )
+custom_fonts/font = SubResource( 13 )
 text = "@"
 
 [node name="Flip" type="Button" parent="Control/ManipulationButtons"]
@@ -221,7 +272,7 @@ margin_top = 60.0
 margin_right = 29.0
 margin_bottom = 86.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 11 )
+custom_fonts/font = SubResource( 13 )
 text = "F"
 
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
@@ -231,7 +282,7 @@ text = "F"
 [node name="TargetLine" type="Line2D" parent="."]
 z_index = 50
 width = 15.0
-width_curve = SubResource( 12 )
+width_curve = SubResource( 14 )
 default_color = Color( 0.4, 0.501961, 1, 1 )
 antialiased = true
 
