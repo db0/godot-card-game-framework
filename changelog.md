@@ -9,6 +9,7 @@
 * Can shuffle Card Containers
 * Can attach cards to other cards
 * Can target cards with a targetting arrow
+* Made highlights glowing
 
 ## 0.9
 

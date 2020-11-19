@@ -281,14 +281,15 @@ text = "F"
 
 [node name="TargetLine" type="Line2D" parent="."]
 z_index = 50
+points = PoolVector2Array( 384, 112 )
 width = 15.0
 width_curve = SubResource( 14 )
-default_color = Color( 0.4, 0.501961, 1, 1 )
+default_color = Color( 0, 0.7, 1.4, 1 )
 antialiased = true
 
 [node name="ArrowHead" type="Polygon2D" parent="TargetLine"]
 visible = false
-color = Color( 0.4, 0.501961, 1, 1 )
+color = Color( 0, 0.7, 1.4, 1 )
 offset = Vector2( -32, -8 )
 polygon = PoolVector2Array( 16, 24, 32, 8, 16, -8 )
 

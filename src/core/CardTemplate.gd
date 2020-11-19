@@ -9,7 +9,9 @@ class_name Card
 extends Area2D
 
 # All the Card's Finite State Machine states
+#
 # This simply is a way to refer to the values with a human-readable name.
+#
 # See _process_card_state()
 enum{
 	IN_HAND					#0
@@ -26,17 +28,12 @@ enum{
 	FOCUSED_IN_POPUP		#11
 }
 
-# The possible commands we can send to the card facing
-# See set_is_faceup()
-enum CardFacing {
-	TOGGLE,
-	UP,
-	DOWN,
-}
-
 # The possible return codes a function can return
+#
 # OK is returned when the function did not end up doing any changes
+#
 # CHANGE is returned when the function modified the card properties in some way
+#
 # FAILED is returned when the function failed to modify the card for some reason
 enum _ReturnCode {
 	OK,
@@ -79,6 +76,7 @@ var _fancy_move_second_part := false
 var _potential_cards := []
 # Debug for stuck tweens
 var _tween_stuck_time = 0
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -152,6 +150,7 @@ func _on_Card_mouse_entered() -> void:
 			# it's in a the grid popup
 			IN_PILE:
 					state = FOCUSED_IN_POPUP
+
 
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
@@ -235,7 +234,7 @@ func _on_Card_mouse_exited() -> void:
 				state = IN_PILE
 
 
-# Makes the hoverable buttons visible when hovering over them
+# Makes the hoverable buttons visible when hovering over them,
 # but only while the card is on the table
 func _on_button_mouse_entered() -> void:
 	match state:
@@ -262,12 +261,14 @@ func _on_Rot180_pressed() -> void:
 # warning-ignore:return_value_discarded
 	set_card_rotation(180, true)
 
+
 # Hover button which flips the card facedown/faceup
 func _on_Flip_pressed() -> void:
 	set_is_faceup(not is_faceup)
 
 
 # Triggers when a card hovers over another card while being dragged
+#
 # It takes care to highlight potential cards which can serve as hosts
 func _on_Card_area_entered(card: Card) -> void:
 	if (card and is_attachment and not card in attachments):
@@ -289,6 +290,7 @@ func _on_Card_area_entered(card: Card) -> void:
 
 
 # Triggers when a card stops hovering over another
+#
 # It clears potential highlights and adjusts potential cards as hosts
 func _on_Card_area_exited(card: Card) -> void:
 	if card:
@@ -308,6 +310,7 @@ func _on_Card_area_exited(card: Card) -> void:
 
 
 # Triggers when a targetting arrow hovers over another card while being dragged
+#
 # It takes care to highlight potential cards which can serve as targets.
 func _on_ArrowHead_area_entered(card: Card) -> void:
 	if card and not card in _potential_cards:
@@ -317,6 +320,7 @@ func _on_ArrowHead_area_entered(card: Card) -> void:
 
 
 # Triggers when a targetting arrow stops hovering over a card
+#
 # It clears potential highlights and adjusts potential cards as targets
 func _on_ArrowHead_area_exited(card: Card) -> void:
 	if card and card in _potential_cards:
@@ -347,9 +351,13 @@ func set_targetcard(card: Card) -> void:
 func get_targetcard() -> Card:
 	return target_card
 
+
 # Setter for is_faceup
+#
 # Flips the card face-up/face-down
+#
 # Returns _ReturnCode.CHANGED if the card actually changed rotation
+#
 # Returns _ReturnCode.OK if the card was already in the correct rotation
 func set_is_faceup(value: bool) -> int:
 	var retcode: int
@@ -367,19 +375,25 @@ func set_is_faceup(value: bool) -> int:
 		retcode = _ReturnCode.CHANGED
 	return retcode
 
+
 # Getter for is_faceup
 func get_is_faceup() -> bool:
 	return is_faceup
 
 
-# Setter for card_rotation
-# Rotates the card the specified number of degrees
+# Setter for card_rotation.
+#
+# Rotates the card the specified number of degrees.
+#
 # If the caller specifies the degree the card already has,
-# and they have enabled the toggle flag
-# Then we just reset the card to 0 degrees
-# Returns _ReturnCode.CHANGED if the card actually changed rotation
-# Returns _ReturnCode.OK if the card was already in the correct rotation
-# Returns _ReturnCode.FAILED if an invalid rotation was specified
+# and they have enabled the toggle flag,
+# then we just reset the card to 0 degrees.
+#
+# Returns _ReturnCode.CHANGED if the card actually changed rotation.
+#
+# Returns _ReturnCode.OK if the card was already in the correct rotation.
+#
+# Returns _ReturnCode.FAILED if an invalid rotation was specified.
 func set_card_rotation(value: int, toggle := false) -> int:
 	var retcode
 	# For cards we only allow orthogonal degrees of rotation
@@ -415,11 +429,12 @@ func get_card_rotation() -> int:
 	return card_rotation
 
 # Arranges so that the card enters the chosen container.
+#
 # Will take care of interpolation.
+#
 # If the target container is the board, the card will either be placed at the
 # mouse position, or at the 'boardPosition' variable if it's provided
-# Index determines the card's position among other cards.
-# Only really useful for pile placement.
+# index determines the card's position among other cards.
 func moveTo(targetHost: Node2D,
 		index := -1,
 		boardPosition := Vector2(-1,-1)) -> void:
@@ -542,6 +557,7 @@ func moveTo(targetHost: Node2D,
 			card.set_highlight(false)
 		_potential_cards.clear()
 
+
 # Handles the card becoming an attachment for a specified host Card object
 func attach_to_host(host: Card, follows_previous_host = false) -> void:
 	# First we check if the selected host is not the current host anyway.
@@ -587,6 +603,7 @@ func get_class(): return "Card"
 
 # Ensures the card is placed in the right position in the hand
 # In relation to the other cards in the hand
+#
 # It will also adjust the separation between cards depending on the amount
 # of cards in-hand
 func reorganizeSelf() ->void:
@@ -637,6 +654,7 @@ func set_focus(requestedFocus: bool) -> void:
 
 
 # Tells us the focus-state of a card
+#
 # Returns true if card is currently in focus, else false
 func get_focus() -> bool:
 	var focusState = false
@@ -685,6 +703,7 @@ func initiate_targeting() -> void:
 
 
 # Will end the targeting process.
+#
 # The top card which is hovered (if any) will become the target and inserted
 # into the target_card property for future use.
 func complete_targeting() -> void:
@@ -763,6 +782,7 @@ func _determine_global_mouse_pos() -> Vector2:
 
 # Returns the global mouse position but ensures it does not exit the
 # viewport limits when including the card rect
+#
 # Returns the adjusted global_mouse_position
 func _determine_board_position_from_mouse() -> Vector2:
 	var targetpos: Vector2 = _determine_global_mouse_pos()
@@ -848,6 +868,7 @@ func _start_dragging() -> void:
 
 # Determines the state a card should have,
 # based on the card's container grouping.
+#
 # This is needed because some states are generic
 # and don't always know the state the card should be afterwards
 func _determine_idle_state() -> void:
@@ -901,13 +922,18 @@ func _determine__target_position_from_mouse() -> void:
 				* cfc.PLAY_AREA_SCALE.y
 
 
-# Detects when the mouse is still hovering over the buttons area
-# We need to detect this extra, because the buttons restart event propagation
+# Detects when the mouse is still hovering over the buttons area.
+#
+# We need to detect this extra, because the buttons restart event propagation.
+#
 # This means that the Control parent, will send a mouse_exit signal
 # when the mouse enter a button rect
-# which will make the buttons disappear again
+# which will make the buttons disappear again.
+#
 # So we make sure buttons stay visible while the mouse is on top.
+#
 # This is all necessary as a workaround for godotengine/godot#16854
+#
 # Returns true if the mouse is hovering over the buttons, else false
 func _get_button_hover() -> bool:
 	var ret = false
@@ -926,7 +952,8 @@ func _get_button_hover() -> bool:
 
 # Flips the visible parts of the card control nodes
 # so that the correct Panel (Card Back or Card Front) and children is visible
-# If also pretends to flip the highlight, otherwise it looks fake.
+#
+# It also pretends to flip the highlight, otherwise it looks fake.
 func _flip_card(to_invisible: Control, to_visible: Control) -> void:
 	$Tween.interpolate_property(to_invisible,'rect_scale',
 			to_invisible.rect_scale, Vector2(0,1), 0.3,
@@ -1006,8 +1033,9 @@ func _draw_targeting_arrow() -> void:
 				position + $Control.rect_size/2 + final_point)).angle()
 
 
-# A rudimentary Finite State Engine for cards
-# Makes sure that when a card is in a specific state
+# A rudimentary Finite State Engine for cards.
+#
+# Makes sure that when a card is in a specific state while
 # its position, highlights, scaling and so on, stay as expected
 func _process_card_state() -> void:
 	match state:
