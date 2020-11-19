@@ -86,6 +86,11 @@ func _ready() -> void:
 	# We only rotate the Control node however, so the collision shape is not rotated
 	# Looking for a better solution, but this is the best I have until now.
 	$Control.rect_pivot_offset = $Control.rect_size/2
+	# We set the card's Highlight to always extend 3 pixels over
+	# Either side of the card. This way its border will appear
+	# correctly when hovering over the card.
+	$Control/FocusHighlight.rect_size = $Control.rect_size + Vector2(6,6)
+	$Control/FocusHighlight.rect_position = Vector2(-3,-3)
 	# warning-ignore:return_value_discarded
 	connect("area_entered", self, "_on_Card_area_entered")
 	# warning-ignore:return_value_discarded
@@ -343,12 +348,15 @@ func get_targetcard() -> Card:
 	return target_card
 
 # Setter for is_faceup
+# Flips the card face-up/face-down
+# Returns _ReturnCode.CHANGED if the card actually changed rotation
+# Returns _ReturnCode.OK if the card was already in the correct rotation
 func set_is_faceup(value: bool) -> int:
 	var retcode: int
 	if value == is_faceup:
 		retcode = _ReturnCode.OK
 	else:
-		# We make sure to remove other tweens of the same type to avoid a deadlock		
+		# We make sure to remove other tweens of the same type to avoid a deadlock
 		is_faceup = value
 		$Tween.remove($Control/Back,'rect_scale')
 		$Tween.remove($Control/Front,'rect_scale')
@@ -390,14 +398,14 @@ func set_card_rotation(value: int, toggle := false) -> int:
 			value = 0
 		# We make sure to remove other tweens of the same type to avoid a deadlock
 		$Tween.remove($Control,'rect_rotation')
-		# There's no way to rotate the Area2D node, 
+		# There's no way to rotate the Area2D node,
 		# so we just rotate the internal $Control. The results are the same.
 		$Tween.interpolate_property($Control,'rect_rotation',
 				$Control.rect_rotation, value, 0.3,
 				Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 		$Tween.start()
 		# When the card actually changes orientation
-		# We report that it changed. 
+		# We report that it changed.
 		retcode = _ReturnCode.CHANGED
 	return retcode
 
@@ -918,12 +926,22 @@ func _get_button_hover() -> bool:
 
 # Flips the visible parts of the card control nodes
 # so that the correct Panel (Card Back or Card Front) and children is visible
+# If also pretends to flip the highlight, otherwise it looks fake.
 func _flip_card(to_invisible: Control, to_visible: Control) -> void:
 	$Tween.interpolate_property(to_invisible,'rect_scale',
 			to_invisible.rect_scale, Vector2(0,1), 0.3,
 			Tween.TRANS_QUAD, Tween.EASE_IN)
 	$Tween.interpolate_property(to_invisible,'rect_position',
 			to_invisible.rect_position, Vector2(to_invisible.rect_size.x/2,0), 0.3,
+			Tween.TRANS_QUAD, Tween.EASE_IN)
+	$Tween.interpolate_property($Control/FocusHighlight,'rect_scale',
+			$Control/FocusHighlight.rect_scale, Vector2(0,1), 0.3,
+			Tween.TRANS_QUAD, Tween.EASE_IN)
+	# The highlight is larger than the card size, but also offet a big
+	# so that it's still centered. This way its borders only extend
+	# over the card borders. We need to offest to the right location.
+	$Tween.interpolate_property($Control/FocusHighlight,'rect_position',
+			$Control/FocusHighlight.rect_position, Vector2(($Control/FocusHighlight.rect_size.x-3)/2,0), 0.3,
 			Tween.TRANS_QUAD, Tween.EASE_IN)
 	$Tween.start()
 	yield($Tween, "tween_all_completed")
@@ -935,7 +953,13 @@ func _flip_card(to_invisible: Control, to_visible: Control) -> void:
 	$Tween.interpolate_property(to_visible,'rect_position',
 			to_visible.rect_position, Vector2(0,0), 0.3,
 			Tween.TRANS_QUAD, Tween.EASE_OUT)
-	$Tween.start()	
+	$Tween.interpolate_property($Control/FocusHighlight,'rect_scale',
+			$Control/FocusHighlight.rect_scale, Vector2(1,1), 0.3,
+			Tween.TRANS_QUAD, Tween.EASE_OUT)
+	$Tween.interpolate_property($Control/FocusHighlight,'rect_position',
+			$Control/FocusHighlight.rect_position, Vector2(-3,-3), 0.3,
+			Tween.TRANS_QUAD, Tween.EASE_OUT)
+	$Tween.start()
 
 
 # Draws a curved arrow, from the center of a card, to the mouse pointer

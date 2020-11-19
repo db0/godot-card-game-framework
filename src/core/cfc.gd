@@ -34,7 +34,7 @@ const ATTACHMENT_OFFSET := -0.2
 const FOCUS_HOVER_COLOUR := Color(1, 1, 1)
 # The colour to use when hovering over a card with an attachment to signify a valid host
 # We multiply it a bit to make it as bright as FOCUS_HOVER_COLOUR for the glow effect
-const HOST_HOVER_COLOUR := Color(1, 0.8, 0) 
+const HOST_HOVER_COLOUR := Color(1, 0.8, 0)
 # The colour to use when hovering over a card with an targetting arrow to signify a valid target
 # We multiply it a bit to make it about as bright as FOCUS_HOVER_COLOUR for the glow effect
 const TARGET_HOVER_COLOUR := Color(0, 0.4, 1) * 1.3
