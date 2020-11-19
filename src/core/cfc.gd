@@ -21,7 +21,7 @@ const CARD_SIZE_MULTIPLIER := 0.5
 # It's based on the card width. Bigger percentage means larger push.
 const NEIGHBOUR_PUSH := 0.75
 # The scale of the card while on the play area
-const PLAY_AREA_SCALE := Vector2(0.8,0.8)
+const PLAY_AREA_SCALE := Vector2(1,1)
 # The margin towards the bottom of the viewport on which to draw the cards.
 # More than 0 and the card will appear hidden under the display area.
 # Less than 0 and it will float higher than the bottom of the viewport

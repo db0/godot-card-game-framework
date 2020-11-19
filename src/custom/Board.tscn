@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://src/custom/Board.gd" type="Script" id=1]
 [ext_resource path="res://src/custom/Deck.gd" type="Script" id=2]
@@ -12,6 +12,19 @@ corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
+
+[sub_resource type="Environment" id=2]
+background_mode = 4
+glow_enabled = true
+glow_levels/1 = true
+glow_levels/2 = true
+glow_levels/3 = false
+glow_levels/4 = true
+glow_levels/5 = false
+glow_blend_mode = 0
+glow_hdr_threshold = 1.3
+glow_hdr_scale = 1.0
+glow_bicubic_upscale = true
 
 [node name="Board" type="Node2D"]
 script = ExtResource( 1 )
@@ -74,6 +87,9 @@ text = "Reshuffle all cards into deck"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 2 )
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
 [connection signal="item_selected" from="ScalingFocusOptions" to="." method="_on_ScalingFocusOptions_item_selected"]
