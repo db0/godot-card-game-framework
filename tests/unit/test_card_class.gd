@@ -43,4 +43,3 @@ func test_moveTo():
 	assert_eq(2,discard.get_card_index(card6), 'Check that moveTo can takeover/push index spots of other cards')
 	assert_eq(3,discard.get_card_index(card5), 'Check that moveTo can takeover/push index spots of other cards')
 	assert_eq(4,discard.get_card_index(card4), 'Check that moveTo can takeover/push index spots of other cards')
-

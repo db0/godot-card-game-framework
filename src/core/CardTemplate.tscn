@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
@@ -60,6 +60,13 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
+[sub_resource type="StyleBoxFlat" id=13]
+bg_color = Color( 0.501961, 0.443137, 0.0705882, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
 [sub_resource type="DynamicFont" id=11]
 font_data = ExtResource( 1 )
 
@@ -89,6 +96,7 @@ __meta__ = {
 [node name="CardText" type="VBoxContainer" parent="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_bottom = 175.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
@@ -137,7 +145,7 @@ autowrap = true
 [node name="Abilities" type="Label" parent="Control/CardText"]
 margin_top = 76.0
 margin_right = 150.0
-margin_bottom = 223.0
+margin_bottom = 398.0
 size_flags_vertical = 3
 custom_fonts/font = SubResource( 8 )
 text = "This is the card ability text.
@@ -148,9 +156,9 @@ valign = 1
 autowrap = true
 
 [node name="Cost" type="Label" parent="Control/CardText"]
-margin_top = 227.0
+margin_top = 402.0
 margin_right = 150.0
-margin_bottom = 240.0
+margin_bottom = 415.0
 custom_fonts/font = SubResource( 9 )
 text = "Cost: 0"
 
@@ -159,6 +167,8 @@ visible = false
 show_behind_parent = true
 margin_left = -2.0
 margin_top = -2.0
+margin_right = 152.0
+margin_bottom = 242.0
 rect_min_size = Vector2( 154, 244 )
 mouse_filter = 2
 custom_styles/panel = SubResource( 10 )
@@ -166,12 +176,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="CardBack" type="Panel" parent="Control"]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 1
+custom_styles/panel = SubResource( 13 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/CardBack"]
+margin_right = 40.0
+margin_bottom = 14.0
+text = "Card Game Framework"
+
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
 modulate = Color( 1, 1, 1, 0 )
 margin_left = 8.0
 margin_top = 16.0
 margin_right = 37.0
-margin_bottom = 72.0
+margin_bottom = 102.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
@@ -191,6 +216,14 @@ margin_bottom = 56.0
 mouse_filter = 1
 custom_fonts/font = SubResource( 11 )
 text = "@"
+
+[node name="Flip" type="Button" parent="Control/ManipulationButtons"]
+margin_top = 60.0
+margin_right = 29.0
+margin_bottom = 86.0
+mouse_filter = 1
+custom_fonts/font = SubResource( 11 )
+text = "F"
 
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
 

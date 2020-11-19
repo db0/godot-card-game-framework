@@ -8,8 +8,9 @@
 class_name Card
 extends Area2D
 
-# Rudimentary Finite State Machine for all posible states a card might be in
+# All the Card's Finite State Machine states
 # This simply is a way to refer to the values with a human-readable name.
+# See _process_card_state()
 enum{
 	IN_HAND					#0
 	FOCUSED_IN_HAND			#1
@@ -25,6 +26,24 @@ enum{
 	FOCUSED_IN_POPUP		#11
 }
 
+# The possible commands we can send to the card facing
+# See set_is_faceup()
+enum CardFacing {
+	TOGGLE,
+	UP,
+	DOWN,
+}
+
+# The possible return codes a function can return
+# OK is returned when the function did not end up doing any changes
+# CHANGE is returned when the function modified the card properties in some way
+# FAILED is returned when the function failed to modify the card for some reason
+enum _ReturnCode {
+	OK,
+	CHANGED,
+	FAILED,
+}
+
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 # warning-ignore:unused_class_variable
@@ -33,6 +52,11 @@ export var scripts := [{'name':'','args':['',0]}]
 # their host around the table. The card will always return to its host
 # when dragged away
 export var is_attachment := false setget set_is_attachment, get_is_attachment
+# If true, the card will be displayed faceup. If false, it will be facedown
+export var is_faceup  := true setget set_is_faceup, get_is_faceup
+# Specifies the card rotation in increments of 90 degrees
+export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_card_rotation
+
 # Used to store a card succesfully targeted.
 # It should be cleared from whichever effect requires a target once it has finished
 var target_card : Card = null setget set_targetcard, get_targetcard
@@ -81,9 +105,12 @@ func _ready() -> void:
 		if button.name != "Tween":
 			button.connect("mouse_entered",self,"_on_button_mouse_entered")
 			button.connect("mouse_exited",self,"_on_button_mouse_exited")
-	$Control/ManipulationButtons/Rot90.connect("pressed",self,'_on_rot90_pressed')
+	$Control/ManipulationButtons/Rot90.connect("pressed",self,'_on_Rot90_pressed')
 	# warning-ignore:return_value_discarded
-	$Control/ManipulationButtons/Rot180.connect("pressed",self,'_on_rot180_pressed')
+	$Control/ManipulationButtons/Rot180.connect("pressed",self,'_on_Rot180_pressed')
+	# warning-ignore:return_value_discarded
+	$Control/ManipulationButtons/Flip.connect("pressed",self,'_on_Flip_pressed')
+
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta) -> void:
@@ -220,15 +247,19 @@ func _on_button_mouse_exited() -> void:
 
 
 # Hover button which rotates the card 90 degrees
-func _on_rot90_pressed() -> void:
+func _on_Rot90_pressed() -> void:
 # warning-ignore:return_value_discarded
-	rotate_card(90, true)
+	set_card_rotation(90, true)
 
 
 # Hover button which rotates the card 180 degrees
-func _on_rot180_pressed() -> void:
+func _on_Rot180_pressed() -> void:
 # warning-ignore:return_value_discarded
-	rotate_card(180, true)
+	set_card_rotation(180, true)
+
+# Hover button which flips the card facedown/faceup
+func _on_Flip_pressed() -> void:
+	set_is_faceup(not is_faceup)
 
 
 # Triggers when a card hovers over another card while being dragged
@@ -311,6 +342,77 @@ func set_targetcard(card: Card) -> void:
 func get_targetcard() -> Card:
 	return target_card
 
+# Setter for is_faceup
+func set_is_faceup(value: bool) -> void:
+	var retcode
+	if value == is_faceup:
+		retcode = _ReturnCode.OK
+	else:
+		# We make sure to remove other tweens of the same type to avoid a deadlock
+		$Tween.remove($Control,'rect_rotation')
+		# There's no way to rotate the Area2D node, 
+		# so we just rotate the internal $Control. The results are the same.
+		$Tween.interpolate_property($Control,'rect_rotation',
+			$Control.rect_rotation, value, 0.3,
+			Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+		$Tween.start()
+#func flip_card(facing := CardFacing.TOGGLE) -> void:
+#	if facing == "up":
+#		rot = 0
+#	# We make sure to remove other tweens of the same type to avoid a deadlock
+#	$Tween.remove($Control,'rect_rotation')
+#	$Tween.interpolate_property($Control,'rect_rotation',
+#		$Control.rect_rotation, rot, 0.3,
+#		Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+#	$Tween.start()
+
+
+# Getter for is_faceup
+func get_is_faceup() -> bool:
+	return is_faceup
+
+
+# Setter for card_rotation
+# Rotates the card the specified number of degrees
+# If the caller specifies the degree the card already has,
+# and they have enabled the toggle flag
+# Then we just reset the card to 0 degrees
+# Returns _ReturnCode.CHANGED if the card actually changed rotation
+# Returns _ReturnCode.OK if the card was already in the correct rotation
+# Returns _ReturnCode.FAILED if an invalid rotation was specified
+func set_card_rotation(value: int, toggle := false) -> int:
+	var retcode
+	# For cards we only allow orthogonal degrees of rotation
+	# If it's not, we consider the request failed
+	if not value in [0,90,180,270] or \
+		not (state == ON_PLAY_BOARD or state == FOCUSED_ON_BOARD):
+		retcode = _ReturnCode.FAILED
+	# If the card is already in the specified rotation
+	# and a toggle was not requested, we consider we did nothing
+	elif value == $Control.rect_rotation and not toggle:
+		retcode = _ReturnCode.OK
+	else:
+		# If the toggle was specified then if the card matches the requested
+		# rotation, we reset it to 0 degrees
+		if $Control.rect_rotation == value and toggle:
+			value = 0
+		# We make sure to remove other tweens of the same type to avoid a deadlock
+		$Tween.remove($Control,'rect_rotation')
+		# There's no way to rotate the Area2D node, 
+		# so we just rotate the internal $Control. The results are the same.
+		$Tween.interpolate_property($Control,'rect_rotation',
+			$Control.rect_rotation, value, 0.3,
+			Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+		$Tween.start()
+		# When the card actually changes orientation
+		# We report that it changed. 
+		retcode = _ReturnCode.CHANGED
+	return retcode
+
+
+# Getter for card_rotation
+func get_card_rotation() -> int:
+	return card_rotation
 
 # Arranges so that the card enters the chosen container.
 # Will take care of interpolation.
@@ -560,21 +662,6 @@ func set_cardFocus(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) ->
 # Returns the Card's index position among other card objects
 func get_my_card_index() -> int:
 	return get_parent().get_card_index(self)
-
-
-# Rotates the card the specified number of degrees
-# If the caller specifies the degree the card already has,
-# and they have enabled the toggle flag
-# Then we just reset the card to 0 degrees
-func rotate_card(rot: int, toggle := false) -> void:
-	if $Control.rect_rotation == rot and toggle:
-		rot = 0
-	# We make sure to remove other tweens of the same type to avoid a deadlock
-	$Tween.remove($Control,'rect_rotation')
-	$Tween.interpolate_property($Control,'rect_rotation',
-		$Control.rect_rotation, rot, 0.3,
-		Tween.TRANS_BACK, Tween.EASE_IN_OUT)
-	$Tween.start()
 
 
 # Goes through all the potential cards we're currently hovering onto with a card
