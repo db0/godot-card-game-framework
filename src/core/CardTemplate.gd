@@ -348,24 +348,15 @@ func set_is_faceup(value: bool) -> void:
 	if value == is_faceup:
 		retcode = _ReturnCode.OK
 	else:
-		# We make sure to remove other tweens of the same type to avoid a deadlock
-		$Tween.remove($Control,'rect_rotation')
-		# There's no way to rotate the Area2D node, 
-		# so we just rotate the internal $Control. The results are the same.
-		$Tween.interpolate_property($Control,'rect_rotation',
-			$Control.rect_rotation, value, 0.3,
-			Tween.TRANS_BACK, Tween.EASE_IN_OUT)
-		$Tween.start()
-#func flip_card(facing := CardFacing.TOGGLE) -> void:
-#	if facing == "up":
-#		rot = 0
-#	# We make sure to remove other tweens of the same type to avoid a deadlock
-#	$Tween.remove($Control,'rect_rotation')
-#	$Tween.interpolate_property($Control,'rect_rotation',
-#		$Control.rect_rotation, rot, 0.3,
-#		Tween.TRANS_BACK, Tween.EASE_IN_OUT)
-#	$Tween.start()
-
+		# We make sure to remove other tweens of the same type to avoid a deadlock		
+		is_faceup = value
+		$Tween.remove($Control/Back,'rect_scale')
+		$Tween.remove($Control/Front,'rect_scale')
+		if value:
+			_flip_card($Control/Back, $Control/Front)
+		else:
+			_flip_card($Control/Front, $Control/Back)
+		retcode = _ReturnCode.CHANGED
 
 # Getter for is_faceup
 func get_is_faceup() -> bool:
@@ -401,8 +392,8 @@ func set_card_rotation(value: int, toggle := false) -> int:
 		# There's no way to rotate the Area2D node, 
 		# so we just rotate the internal $Control. The results are the same.
 		$Tween.interpolate_property($Control,'rect_rotation',
-			$Control.rect_rotation, value, 0.3,
-			Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+				$Control.rect_rotation, value, 0.3,
+				Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 		$Tween.start()
 		# When the card actually changes orientation
 		# We report that it changed. 
@@ -925,6 +916,28 @@ func _get_button_hover() -> bool:
 			+ $Control/ManipulationButtons.rect_size.y):
 		ret = true
 	return(ret)
+
+# Flips the visible parts of the card control nodes
+# so that the correct Panel (Card Back or Card Front) and children is visible
+func _flip_card(to_invisible: Control, to_visible: Control) -> void:
+	$Tween.interpolate_property(to_invisible,'rect_scale',
+			to_invisible.rect_scale, Vector2(0,1), 0.3,
+			Tween.TRANS_QUAD, Tween.EASE_IN)
+	$Tween.interpolate_property(to_invisible,'rect_position',
+			to_invisible.rect_position, Vector2(to_invisible.rect_size.x/2,0), 0.3,
+			Tween.TRANS_QUAD, Tween.EASE_IN)
+	$Tween.start()
+	yield($Tween, "tween_all_completed")
+	to_visible.visible = true
+	to_invisible.visible = false
+	$Tween.interpolate_property(to_visible,'rect_scale',
+			to_visible.rect_scale, Vector2(1,1), 0.3,
+			Tween.TRANS_QUAD, Tween.EASE_OUT)
+	$Tween.interpolate_property(to_visible,'rect_position',
+			to_visible.rect_position, Vector2(0,0), 0.3,
+			Tween.TRANS_QUAD, Tween.EASE_OUT)
+	$Tween.start()	
+
 
 # Draws a curved arrow, from the center of a card, to the mouse pointer
 func _draw_targeting_arrow() -> void:

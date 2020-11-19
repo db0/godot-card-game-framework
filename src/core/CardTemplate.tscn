@@ -52,19 +52,23 @@ outline_size = 1
 outline_color = Color( 0.658824, 0.541176, 0, 1 )
 font_data = ExtResource( 1 )
 
-[sub_resource type="StyleBoxFlat" id=10]
-bg_color = Color( 1, 1, 1, 1 )
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
 [sub_resource type="StyleBoxFlat" id=13]
 bg_color = Color( 0.501961, 0.443137, 0.0705882, 1 )
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id=10]
+bg_color = Color( 1, 1, 1, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+expand_margin_left = 2.0
+expand_margin_right = 2.0
+expand_margin_top = 2.0
+expand_margin_bottom = 2.0
 
 [sub_resource type="DynamicFont" id=11]
 font_data = ExtResource( 1 )
@@ -167,24 +171,12 @@ margin_bottom = 240.0
 custom_fonts/font = SubResource( 9 )
 text = "Cost: 0"
 
-[node name="FocusHighlight" type="Panel" parent="Control"]
-visible = false
-show_behind_parent = true
-margin_left = -2.0
-margin_top = -2.0
-margin_right = 152.0
-margin_bottom = 242.0
-rect_min_size = Vector2( 154, 244 )
-mouse_filter = 2
-custom_styles/panel = SubResource( 10 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Back" type="Panel" parent="Control"]
-visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_left = 75.0
+margin_right = 75.0
+rect_scale = Vector2( 1e-05, 1 )
 mouse_filter = 1
 custom_styles/panel = SubResource( 13 )
 __meta__ = {
@@ -195,6 +187,17 @@ __meta__ = {
 margin_right = 40.0
 margin_bottom = 14.0
 text = "Card Game Framework"
+
+[node name="FocusHighlight" type="Panel" parent="Control"]
+show_behind_parent = true
+margin_right = 150.0
+margin_bottom = 240.0
+rect_min_size = Vector2( 150, 240 )
+mouse_filter = 2
+custom_styles/panel = SubResource( 10 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
 modulate = Color( 1, 1, 1, 0 )
