@@ -6,25 +6,23 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 75, 120 )
 
-[sub_resource type="StyleBoxFlat" id=2]
-border_width_left = 3
-border_width_right = 3
-border_width_bottom = 2
-border_color = Color( 0, 0, 0, 1 )
+[sub_resource type="StyleBoxFlat" id=14]
+bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="StyleBoxFlat" id=3]
-border_width_top = 2
 border_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 
 [sub_resource type="DynamicFont" id=4]
 size = 15
-outline_color = Color( 0.509804, 0, 0.192157, 1 )
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=5]
@@ -35,8 +33,9 @@ use_mipmaps = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=6]
-size = 9
+size = 13
 outline_size = 1
+use_filter = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=7]
@@ -83,28 +82,34 @@ script = ExtResource( 2 )
 position = Vector2( 75, 120 )
 shape = SubResource( 1 )
 
-[node name="Control" type="Panel" parent="."]
+[node name="Control" type="Control" parent="."]
 margin_right = 150.0
 margin_bottom = 240.0
 rect_min_size = Vector2( 150, 240 )
-custom_styles/panel = SubResource( 2 )
 __meta__ = {
-"_edit_group_": true,
+"_edit_group_": true
+}
+
+[node name="Front" type="Panel" parent="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 14 )
+__meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CardText" type="VBoxContainer" parent="Control"]
+[node name="CardText" type="VBoxContainer" parent="Control/Front"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_bottom = 175.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Name" type="Label" parent="Control/CardText"]
+[node name="Name" type="Label" parent="Control/Front/CardText"]
 margin_right = 150.0
-margin_bottom = 21.0
+margin_bottom = 19.0
 size_flags_vertical = 1
 custom_styles/normal = SubResource( 3 )
 custom_fonts/font = SubResource( 4 )
@@ -112,10 +117,10 @@ text = "Card Name"
 align = 1
 autowrap = true
 
-[node name="Type" type="Label" parent="Control/CardText"]
-margin_top = 25.0
+[node name="Type" type="Label" parent="Control/Front/CardText"]
+margin_top = 23.0
 margin_right = 150.0
-margin_bottom = 38.0
+margin_bottom = 36.0
 size_flags_vertical = 1
 custom_fonts/font = SubResource( 5 )
 text = "Type"
@@ -123,10 +128,10 @@ align = 1
 autowrap = true
 uppercase = true
 
-[node name="Tags" type="Label" parent="Control/CardText"]
-margin_top = 42.0
+[node name="Tags" type="Label" parent="Control/Front/CardText"]
+margin_top = 40.0
 margin_right = 150.0
-margin_bottom = 54.0
+margin_bottom = 57.0
 size_flags_vertical = 1
 custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 0, 0, 0, 1 )
@@ -135,17 +140,17 @@ align = 1
 autowrap = true
 uppercase = true
 
-[node name="Requirements" type="Label" parent="Control/CardText"]
-margin_top = 58.0
+[node name="Requirements" type="Label" parent="Control/Front/CardText"]
+margin_top = 61.0
 margin_right = 150.0
-margin_bottom = 72.0
+margin_bottom = 75.0
 custom_fonts/font = SubResource( 7 )
 autowrap = true
 
-[node name="Abilities" type="Label" parent="Control/CardText"]
-margin_top = 76.0
+[node name="Abilities" type="Label" parent="Control/Front/CardText"]
+margin_top = 79.0
 margin_right = 150.0
-margin_bottom = 398.0
+margin_bottom = 223.0
 size_flags_vertical = 3
 custom_fonts/font = SubResource( 8 )
 text = "This is the card ability text.
@@ -155,10 +160,10 @@ align = 1
 valign = 1
 autowrap = true
 
-[node name="Cost" type="Label" parent="Control/CardText"]
-margin_top = 402.0
+[node name="Cost" type="Label" parent="Control/Front/CardText"]
+margin_top = 227.0
 margin_right = 150.0
-margin_bottom = 415.0
+margin_bottom = 240.0
 custom_fonts/font = SubResource( 9 )
 text = "Cost: 0"
 
@@ -176,7 +181,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="CardBack" type="Panel" parent="Control"]
+[node name="Back" type="Panel" parent="Control"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -186,7 +191,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="Control/CardBack"]
+[node name="Label" type="Label" parent="Control/Back"]
 margin_right = 40.0
 margin_bottom = 14.0
 text = "Card Game Framework"
