@@ -1,10 +1,11 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/custom/Board.gd" type="Script" id=1]
 [ext_resource path="res://src/custom/Deck.gd" type="Script" id=2]
 [ext_resource path="res://src/custom/Discard.gd" type="Script" id=3]
 [ext_resource path="res://src/core/CardContainer.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/core/Hand.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/core/CardTemplate.tscn" type="PackedScene" id=6]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.0392157, 0.0392157, 0.0392157, 1 )
@@ -19,11 +20,11 @@ glow_enabled = true
 glow_levels/1 = true
 glow_levels/2 = true
 glow_levels/3 = false
-glow_levels/4 = true
 glow_levels/5 = false
+glow_intensity = 0.1
 glow_blend_mode = 0
 glow_hdr_threshold = 1.3
-glow_hdr_scale = 1.0
+glow_hdr_luminance_cap = 2.0
 glow_bicubic_upscale = true
 
 [node name="Board" type="Node2D"]
@@ -90,6 +91,9 @@ __meta__ = {
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource( 2 )
+
+[node name="Card" parent="." instance=ExtResource( 6 )]
+position = Vector2( 519.088, 272.143 )
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
 [connection signal="item_selected" from="ScalingFocusOptions" to="." method="_on_ScalingFocusOptions_item_selected"]

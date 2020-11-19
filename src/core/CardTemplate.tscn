@@ -85,6 +85,14 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="FocusHighlight" parent="Control" instance=ExtResource( 3 )]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -3.0
+margin_top = -3.0
+margin_right = 3.0
+margin_bottom = 3.00002
+
 [node name="Front" type="Panel" parent="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -181,13 +189,6 @@ text = "Card Game Framework"
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="FocusHighlight" parent="Control" instance=ExtResource( 3 )]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = 0.0
-margin_bottom = 0.0
 
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
 modulate = Color( 1, 1, 1, 0 )

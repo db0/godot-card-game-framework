@@ -297,7 +297,7 @@ func _on_Card_area_exited(card: Card) -> void:
 			_potential_cards.erase(card)
 			# And we explicitly hide its cards focus since we don't care about
 			# it anymore
-			card.set_cardFocus(false)
+			card.set_highlight(false)
 			# Finally, we make sure we highlight any other cards we're still hovering
 			highlight_potential_card(cfc.HOST_HOVER_COLOUR)
 
@@ -318,7 +318,7 @@ func _on_ArrowHead_area_exited(card: Card) -> void:
 		# We remove the card we stopped hovering from the _potential_cards
 		_potential_cards.erase(card)
 		# And we explicitly hide its cards focus since we don't care about it anymore
-		card.set_cardFocus(false)
+		card.set_highlight(false)
 		# Finally, we make sure we highlight any other cards we're still hovering
 		highlight_potential_card(cfc.TARGET_HOVER_COLOUR)
 
@@ -343,8 +343,8 @@ func get_targetcard() -> Card:
 	return target_card
 
 # Setter for is_faceup
-func set_is_faceup(value: bool) -> void:
-	var retcode
+func set_is_faceup(value: bool) -> int:
+	var retcode: int
 	if value == is_faceup:
 		retcode = _ReturnCode.OK
 	else:
@@ -357,6 +357,7 @@ func set_is_faceup(value: bool) -> void:
 		else:
 			_flip_card($Control/Front, $Control/Back)
 		retcode = _ReturnCode.CHANGED
+	return retcode
 
 # Getter for is_faceup
 func get_is_faceup() -> bool:
@@ -530,7 +531,7 @@ func moveTo(targetHost: Node2D,
 	# Just in case there's any leftover potential host highlights
 	if len(_potential_cards):
 		for card in _potential_cards:
-			card.set_cardFocus(false)
+			card.set_highlight(false)
 		_potential_cards.clear()
 
 # Handles the card becoming an attachment for a specified host Card object
@@ -547,7 +548,7 @@ func attach_to_host(host: Card, follows_previous_host = false) -> void:
 		# Once we selected the host, we don't need anything in the array anymore
 		_potential_cards.clear()
 		# We also clear the highlights on our new host
-		current_host_card.set_cardFocus(false)
+		current_host_card.set_highlight(false)
 		# We set outselves as an attachment on the target host for easy iteration
 		current_host_card.attachments.append(self)
 		#print(current_host_card.attachments)
@@ -614,9 +615,7 @@ func interruptTweening() ->void:
 		state = IN_HAND
 
 
-# A helper function for changing card focus.
-# Having it in its own function allows us to expand how it works it in the future
-# in one place
+# Changes card focus.
 func set_focus(requestedFocus: bool) -> void:
 	 # We use an if to avoid performing constant operations in _process
 	if $Control/FocusHighlight.visible != requestedFocus and \
@@ -639,10 +638,8 @@ func get_focus() -> bool:
 	return(focusState)
 
 
-# A helper function for changing card highlight.
-# Having it in its own function allows us to expand how it works it in the future
-# in one place
-func set_cardFocus(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) -> void:
+# Changes card highlight.
+func set_highlight(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) -> void:
 	$Control/FocusHighlight.visible = requestedFocus
 	if requestedFocus:
 		$Control/FocusHighlight.modulate = hoverColour
@@ -663,9 +660,9 @@ func highlight_potential_card(colour : Color) -> void:
 	for idx in range(0,len(_potential_cards)):
 			# The last card in the sorted array is always the highest index
 			if idx == len(_potential_cards) - 1:
-				_potential_cards[idx].set_cardFocus(true,colour)
+				_potential_cards[idx].set_highlight(true,colour)
 			else:
-				_potential_cards[idx].set_cardFocus(false)
+				_potential_cards[idx].set_highlight(false)
 
 
 # Will generate a targeting arrow on the card which will follow the mouse cursor.
