@@ -151,6 +151,7 @@ func test_attaching_and_switching_parent():
 	card = cards[4]
 	exhost_attachments = card.attachments.duplicate()
 	yield(drag_drop(card,Vector2(30,530)), 'completed')
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	assert_eq(0,len(card.attachments),"Test that a card leaving the table clears out attachment variables in it")
 	for c in exhost_attachments:
 		assert_null(c.current_host_card,"Test that an attachment of a host that left play clears out correctly")

@@ -13,6 +13,9 @@ func before_each():
 	hand = cfc.NMAP.hand
 	yield(yield_for(1), YIELD)
 
+func after_each():
+	cfc.fancy_movement = true
+
 func test_fancy_reshuffle_all():
 	cfc.fancy_movement = true
 	cards[0]._on_Card_mouse_entered()
@@ -56,7 +59,7 @@ func test_basic_reshuffle_all():
 	assert_almost_eq(Vector2(300, 300),cards[0].global_position,Vector2(10,10), "Check that card is not being teleported from where is expect by Tween")
 	assert_almost_eq(Vector2(1000, 10),cards[4].global_position,Vector2(10,10), "Check that card is not being teleported from where is expect by Tween")
 	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	
+
 #func test_card_redraw_order():
 #	# Don't think this is actually a bug.
 #	var prev_idx
