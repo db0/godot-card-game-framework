@@ -91,6 +91,9 @@ func _ready() -> void:
 	# correctly when hovering over the card.
 	$Control/FocusHighlight.rect_size = $Control.rect_size + Vector2(6,6)
 	$Control/FocusHighlight.rect_position = Vector2(-3,-3)
+	# We set the targetting arrow modulation to match our config specification
+	$TargetLine.default_color = cfc.TARGETTING_ARROW_COLOUR
+	$TargetLine/ArrowHead.color = cfc.TARGETTING_ARROW_COLOUR
 	# warning-ignore:return_value_discarded
 	connect("area_entered", self, "_on_Card_area_entered")
 	# warning-ignore:return_value_discarded
@@ -121,7 +124,7 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta) -> void:
-	if $Tween.is_active(): # Debug code for catch potential Tween deadlocks
+	if $Tween.is_active() and not cfc.UT: # Debug code for catch potential Tween deadlocks
 		_tween_stuck_time += delta
 		if _tween_stuck_time > 2 and int(fmod(_tween_stuck_time,3)) == 2 :
 			print("Tween Stuck for ",_tween_stuck_time,
@@ -377,23 +380,43 @@ func set_is_faceup(value: bool) -> int:
 	else:
 		# We make sure to remove other tweens of the same type to avoid a deadlock
 		is_faceup = value
+		# When we change faceup state, we reset the is_viewed to false
+		if set_is_viewed(false) == _ReturnCode.FAILED:
+			print("ERROR: Something went unexpectedly in set_is_faceup")
 		$Tween.remove($Control/Back,'rect_scale')
 		$Tween.remove($Control/Front,'rect_scale')
 		if value:
 			_flip_card($Control/Back, $Control/Front)
 			$Control/ManipulationButtons/View.visible = false
-		else:
-			_flip_card($Control/Front, $Control/Back)
-			$Control/ManipulationButtons/View.visible = true
-			is_viewed = false
-			# When we flip face down, we also want to hide the dupe card
+			# When we flip face up, we also want to show the dupe card
 			# in the focus viewport
 			# However we also need to protect this call from the dupe itself
 			# calling it when it hasn't yet been added to its parent
 			if cfc.NMAP.get("main", null) and get_parent():
-				var dupe_front = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Front")
-				var dupe_back = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Back")
-				_flip_card(dupe_front, dupe_back, true)
+				# we need to check if there's actually a viewport focus
+				# card, as we may be flipping the card via code
+				if len(cfc.NMAP.main._previously_focused_cards):
+					# The currently active viewport focus is always in the
+					# _previously_focused_cards list, as the last card
+					var dupe_card = cfc.NMAP.main._previously_focused_cards.back()
+					var dupe_front = dupe_card.get_node("Control/Front")
+					var dupe_back = dupe_card.get_node("Control/Back")
+					_flip_card(dupe_back, dupe_front, true)
+		else:
+			_flip_card($Control/Front, $Control/Back)
+			$Control/ManipulationButtons/View.visible = true
+			# When we flip face down, we also want to hide the dupe card
+			# in the focus viewport
+			# However we also need to protect this call from the dupe itself
+			# calling it when it hasn't yet been added to its parent
+			if cfc.NMAP.get("main", null):
+				# we need to check if there's actually a viewport focus
+				# card, as we may be flipping the card via code
+				if len(cfc.NMAP.main._previously_focused_cards):
+					var dupe_card = cfc.NMAP.main._previously_focused_cards.back()
+					var dupe_front = dupe_card.get_node("Control/Front")
+					var dupe_back = dupe_card.get_node("Control/Back")
+					_flip_card(dupe_front, dupe_back, true)
 		retcode = _ReturnCode.CHANGED
 	return retcode
 
@@ -414,28 +437,30 @@ func get_is_faceup() -> bool:
 # Returns _ReturnCode.FAILED if changing the status is now allowed
 func set_is_viewed(value: bool) -> int:
 	var retcode: int
-	if value:
-		if is_faceup:
+	if value == true:
+		if is_faceup == true:
 			# Players can already see faceup cards
 			retcode = _ReturnCode.FAILED
 		elif value == is_viewed:
 			retcode = _ReturnCode.OK
 		else:
-			is_viewed = value
+			is_viewed = true
 			if get_parent() != null:
 				var dupe_front = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Front")
 				var dupe_back = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Back")
 				_flip_card(dupe_back, dupe_front, true)
-	else:
-		if is_faceup:
+			$Control/Back/VBoxContainer/CenterContainer/Viewed.visible = true
 			retcode = _ReturnCode.CHANGED
-			is_viewed = value
-		elif value == is_viewed:
+	else:
+		if value == is_viewed:
 			retcode = _ReturnCode.OK
+		elif is_faceup == true:
+			retcode = _ReturnCode.CHANGED
+			is_viewed = false
+			$Control/Back/VBoxContainer/CenterContainer/Viewed.visible = false
 		else:
 			# We don't allow players to unview cards
 			retcode = _ReturnCode.FAILED
-		retcode = _ReturnCode.CHANGED
 	return retcode
 
 
@@ -732,10 +757,8 @@ func set_highlight(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) ->
 	$Control/FocusHighlight.visible = requestedFocus
 	if requestedFocus:
 		$Control/FocusHighlight.modulate = hoverColour
-		print('a')
 	else:
 		$Control/FocusHighlight.modulate = cfc.FOCUS_HOVER_COLOUR
-		print('b')
 
 
 # Returns the Card's index position among other card objects

@@ -1,7 +1,8 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=18 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
+[ext_resource path="res://assets/icons/view.svg" type="Texture" id=3]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 75, 120 )
@@ -223,6 +224,7 @@ custom_fonts/font = SubResource( 11 )
 text = "Cost: 0"
 
 [node name="Back" type="Panel" parent="Control"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = 75.0
@@ -231,13 +233,54 @@ rect_scale = Vector2( 1e-05, 1 )
 mouse_filter = 1
 custom_styles/panel = SubResource( 12 )
 __meta__ = {
+"_edit_group_": true,
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="Control/Back"]
-margin_right = 40.0
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Back"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Label" type="Label" parent="Control/Back/VBoxContainer"]
+margin_right = 150.0
 margin_bottom = 14.0
 text = "Card Game Framework"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="Control/Back/VBoxContainer"]
+margin_top = 18.0
+margin_right = 150.0
+margin_bottom = 105.0
+mouse_filter = 1
+size_flags_vertical = 3
+
+[node name="CenterContainer" type="CenterContainer" parent="Control/Back/VBoxContainer"]
+margin_top = 109.0
+margin_right = 150.0
+margin_bottom = 149.0
+mouse_filter = 1
+
+[node name="Viewed" type="TextureRect" parent="Control/Back/VBoxContainer/CenterContainer"]
+visible = false
+margin_left = 55.0
+margin_right = 95.0
+margin_bottom = 40.0
+texture = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="Control/Back/VBoxContainer"]
+margin_top = 153.0
+margin_right = 150.0
+margin_bottom = 240.0
+mouse_filter = 1
+size_flags_vertical = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -294,12 +337,11 @@ z_index = 50
 points = PoolVector2Array( 384, 112 )
 width = 15.0
 width_curve = SubResource( 14 )
-default_color = Color( 0, 0.7, 1.4, 1 )
+default_color = Color( 1, 1, 1, 1 )
 antialiased = true
 
 [node name="ArrowHead" type="Polygon2D" parent="TargetLine"]
 visible = false
-color = Color( 0, 0.7, 1.4, 1 )
 offset = Vector2( -32, -8 )
 polygon = PoolVector2Array( 16, 24, 32, 8, 16, -8 )
 
