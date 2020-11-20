@@ -1,0 +1,202 @@
+[gd_scene load_steps=2 format=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.164706, 0.203922, 0.223529, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="CardBack" type="Panel"]
+margin_right = 150.0
+margin_bottom = 240.0
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Line2D" type="Line2D" parent="."]
+points = PoolVector2Array( 50, 0, 50, 25, 25, 50, 0, 50 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D2" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 100.961, 0, 100.961, 25, 126.451, 50, 151.941, 50 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D3" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 0.195405, 80.5686, 6.43074, 65.2745, 22.0191, 65.2745, 22.0191, 75.4706, 47.9997, 75.4706, 73.9802, 100.961, 99.9608, 75.4706, 125.941, 75.4706, 125.941, 65.2745, 141.53, 65.2745, 147.765, 80.5686 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D4" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 47.9997, 75.4706, 73.9802, 49.9804, 99.9608, 75.4706 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D5" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( -3.96149, 100.961, 151.922, 100.961 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D6" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( -3.96149, 126.451, 151.922, 126.451 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D7" type="Line2D" parent="."]
+visible = false
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 22.0191, 126.451, 22.0191, 151.941, 32.4113, 151.941, 42.8035, 141.745, 58.3919, 141.745, 73.9802, 126.451, 89.5686, 141.745, 105.157, 141.745, 115.549, 151.941, 125.941, 151.941, 125.941, 126.451 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D8" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( -3.96149, 182.529, 47.9997, 182.529, 47.9997, 172.333 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D9" type="Line2D" parent="."]
+position = Vector2( 4.15061, 0.98077 )
+scale = Vector2( 1.03051, 0.980769 )
+points = PoolVector2Array( -3.96149, 187.627, 54.1958, 187.627, 54.1958, 172.333 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D10" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 151.922, 182.529, 99.9608, 182.529, 99.9608, 172.333 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D11" type="Line2D" parent="."]
+position = Vector2( -4.13816, 0.98077 )
+scale = Vector2( 1.01425, 0.980769 )
+points = PoolVector2Array( 151.922, 187.627, 92.8159, 187.627, 92.8159, 172.333 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D12" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 68.7841, 243.706, 68.7841, 218.216, 58.3919, 218.216 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D13" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 73.9802, 243.706, 73.9802, 208.02 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D14" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 79.1763, 243.706, 79.1763, 218.216, 89.5686, 218.216 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D15" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 73.9802, -1, 73.9802, 19.3922 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D16" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="Line2D17" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+width = 1.0
+default_color = Color( 3, 0.2, 0, 1 )
+
+[node name="LeftCon1" type="Polygon2D" parent="."]
+position = Vector2( -46, -87 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="LeftTopCon1" type="Polygon2D" parent="."]
+position = Vector2( -48, -118 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="TopMidCon" type="Polygon2D" parent="."]
+position = Vector2( 25, -147 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="TopCon1" type="Polygon2D" parent="."]
+position = Vector2( 0, -166 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="TopCon2" type="Polygon2D" parent="."]
+position = Vector2( 51, -166 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="RightCon1" type="Polygon2D" parent="."]
+position = Vector2( 96, -87 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="RightTopCon1" type="Polygon2D" parent="."]
+position = Vector2( 98, -118 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="WireCon1" type="Polygon2D" parent="."]
+position = Vector2( 10, 1 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="WireCon2" type="Polygon2D" parent="."]
+position = Vector2( 40, 1 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="WireCon3" type="Polygon2D" parent="."]
+position = Vector2( 50, 1 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="WireCon4" type="Polygon2D" parent="."]
+position = Vector2( 0, 1 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="BotCon1" type="Polygon2D" parent="."]
+position = Vector2( 25, 36 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="BotCon2" type="Polygon2D" parent="."]
+position = Vector2( 41, 47 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="BotCon3" type="Polygon2D" parent="."]
+position = Vector2( 9, 47 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
