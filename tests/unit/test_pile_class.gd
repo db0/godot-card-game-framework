@@ -17,3 +17,5 @@ func test_get_card_methods():
 	# Likewise, the first card from the bottom is the previous to last.
 	assert_eq(pile.get_child(pile.get_child_count() - 2),pile.get_bottom_card(), 'Check that get_bottom_card returns() bottom card')
 	assert_eq(pile.get_top_card(),pile.get_all_cards()[0],"Check that get_all_cards() works without anything in viewpile")
+	pending("Card has to be facedown when moved into pile")
+	pending("Card has to be faceup when viewed in popup")

@@ -71,6 +71,7 @@ func _on_ViewPopup_popup_hide() -> void:
 			# and at default scale
 			card.scale = Vector2(1,1)
 			card.modulate[3] = 0
+			card.is_faceup = false
 
 
 # Overrides the built-in add_child() method,
@@ -134,7 +135,7 @@ func get_bottom_card() -> Card:
 
 
 # Prepares a Card object to be added to the popup grid
-func _slot_card_into_popup(card) -> void:
+func _slot_card_into_popup(card: Card) -> void:
 	# We need to make the cards visible as they're by default invisible in piles
 	card.modulate[3] = 1
 	# We also scale-down the cards to be able to see more at the same time.
@@ -153,4 +154,5 @@ func _slot_card_into_popup(card) -> void:
 	$ViewPopup/CardView.add_child(card_slot)
 	# Finally, the card is added to the temporary control node parent.
 	card_slot.add_child(card)
+	card.is_faceup = true
 
