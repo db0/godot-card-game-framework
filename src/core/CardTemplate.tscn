@@ -1,8 +1,9 @@
-[gd_scene load_steps=18 format=2]
+[gd_scene load_steps=19 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
 [ext_resource path="res://assets/icons/view.svg" type="Texture" id=3]
+[ext_resource path="res://src/custom/CardBack.tscn" type="PackedScene" id=4]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 75, 120 )
@@ -81,17 +82,14 @@ outline_size = 1
 outline_color = Color( 0.658824, 0.541176, 0, 1 )
 font_data = ExtResource( 1 )
 
-[sub_resource type="StyleBoxFlat" id=12]
-bg_color = Color( 0.501961, 0.443137, 0.0705882, 1 )
-corner_radius_top_left = 10
-corner_radius_top_right = 10
-corner_radius_bottom_right = 10
-corner_radius_bottom_left = 10
-
-[sub_resource type="DynamicFont" id=13]
+[sub_resource type="DynamicFont" id=12]
+size = 12
 font_data = ExtResource( 1 )
 
-[sub_resource type="Curve" id=14]
+[sub_resource type="DynamicFont" id=14]
+font_data = ExtResource( 1 )
+
+[sub_resource type="Curve" id=15]
 _data = [ Vector2( 0, 0.463636 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 1.4, 0.0, 0, 0 ]
 
 [node name="Card" type="Area2D"]
@@ -223,19 +221,7 @@ margin_bottom = 240.0
 custom_fonts/font = SubResource( 11 )
 text = "Cost: 0"
 
-[node name="Back" type="Panel" parent="Control"]
-visible = false
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_left = 75.0
-margin_right = 75.0
-rect_scale = Vector2( 1e-05, 1 )
-mouse_filter = 1
-custom_styles/panel = SubResource( 12 )
-__meta__ = {
-"_edit_group_": true,
-"_edit_use_anchors_": false
-}
+[node name="Back" parent="Control" instance=ExtResource( 4 )]
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/Back"]
 anchor_right = 1.0
@@ -244,29 +230,21 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Label" type="Label" parent="Control/Back/VBoxContainer"]
-margin_right = 150.0
-margin_bottom = 14.0
-text = "Card Game Framework"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="MarginContainer" type="MarginContainer" parent="Control/Back/VBoxContainer"]
-margin_top = 18.0
 margin_right = 150.0
-margin_bottom = 105.0
-mouse_filter = 1
-size_flags_vertical = 3
+margin_bottom = 50.0
+custom_constants/margin_top = 50
 
 [node name="CenterContainer" type="CenterContainer" parent="Control/Back/VBoxContainer"]
-margin_top = 109.0
+margin_top = 54.0
 margin_right = 150.0
-margin_bottom = 149.0
+margin_bottom = 94.0
+rect_min_size = Vector2( 0, 40 )
 mouse_filter = 1
 
 [node name="Viewed" type="TextureRect" parent="Control/Back/VBoxContainer/CenterContainer"]
 visible = false
+modulate = Color( 1.6, 0.8, 0, 1 )
 margin_left = 55.0
 margin_right = 95.0
 margin_bottom = 40.0
@@ -276,11 +254,18 @@ __meta__ = {
 }
 
 [node name="MarginContainer2" type="MarginContainer" parent="Control/Back/VBoxContainer"]
-margin_top = 153.0
+margin_top = 98.0
 margin_right = 150.0
-margin_bottom = 240.0
-mouse_filter = 1
-size_flags_vertical = 3
+margin_bottom = 101.0
+custom_constants/margin_top = 3
+
+[node name="Label" type="Label" parent="Control/Back/VBoxContainer"]
+margin_top = 105.0
+margin_right = 150.0
+margin_bottom = 121.0
+custom_fonts/font = SubResource( 12 )
+custom_colors/font_color = Color( 1, 0.2, 0, 1 )
+text = "Card Game Framework"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -300,7 +285,7 @@ __meta__ = {
 margin_right = 29.0
 margin_bottom = 26.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "T"
 
 [node name="Rot180" type="Button" parent="Control/ManipulationButtons"]
@@ -308,7 +293,7 @@ margin_top = 30.0
 margin_right = 29.0
 margin_bottom = 56.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "@"
 
 [node name="Flip" type="Button" parent="Control/ManipulationButtons"]
@@ -316,7 +301,7 @@ margin_top = 60.0
 margin_right = 29.0
 margin_bottom = 86.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "F"
 
 [node name="View" type="Button" parent="Control/ManipulationButtons"]
@@ -325,7 +310,7 @@ margin_top = 90.0
 margin_right = 40.0
 margin_bottom = 116.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "V"
 
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
@@ -338,7 +323,7 @@ text = "V"
 z_index = 50
 points = PoolVector2Array( 384, 112 )
 width = 15.0
-width_curve = SubResource( 14 )
+width_curve = SubResource( 15 )
 default_color = Color( 1, 1, 1, 1 )
 antialiased = true
 

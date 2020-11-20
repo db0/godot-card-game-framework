@@ -1,14 +1,33 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/core/ViewportCardFocus.gd" type="Script" id=1]
 [ext_resource path="res://src/custom/Board.tscn" type="PackedScene" id=2]
 
+[sub_resource type="Environment" id=1]
+background_mode = 4
+ssao_radius = 95.17
+ssao_bias = 0.961
+glow_enabled = true
+glow_levels/1 = true
+glow_levels/2 = true
+glow_levels/5 = false
+glow_intensity = 0.1
+glow_blend_mode = 0
+glow_hdr_threshold = 1.3
+glow_hdr_luminance_cap = 2.0
+glow_bicubic_upscale = true
+
 [node name="Main" type="Node2D"]
 script = ExtResource( 1 )
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource( 1 )
+
 [node name="ViewportContainer" type="ViewportContainer" parent="."]
-margin_right = 1280.0
-margin_bottom = 720.0
+margin_left = 1.5874
+margin_top = 4.76221
+margin_right = 1281.59
+margin_bottom = 724.762
 stretch = true
 __meta__ = {
 "_edit_use_anchors_": false
@@ -38,7 +57,6 @@ __meta__ = {
 [node name="Viewport" type="Viewport" parent="Focus"]
 size = Vector2( 300, 450 )
 handle_input_locally = false
-usage = 0
 render_target_update_mode = 3
 gui_disable_input = true
 
