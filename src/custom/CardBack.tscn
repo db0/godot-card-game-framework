@@ -19,98 +19,98 @@ __meta__ = {
 [node name="WireLeftTop" type="Line2D" parent="."]
 points = PoolVector2Array( 50, 0, 50, 25, 25, 50, 0, 50 )
 width = 2.0
-default_color = Color( 2, 0.2, 0, 1 )
+default_color = Color( 2, 0.6, 0, 1 )
 
 [node name="WireRighTop" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( 100.961, 0, 100.961, 25, 126.451, 50, 151.941, 50 )
 width = 2.0
-default_color = Color( 2, 0.2, 0, 1 )
+default_color = Color( 2, 0.6, 0, 1 )
 
 [node name="WireMid" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( 0.195405, 80.5686, 6.43074, 65.2745, 22.0191, 65.2745, 22.0191, 75.4706, 47.9997, 75.4706, 73.9802, 100.961, 99.9608, 75.4706, 125.941, 75.4706, 125.941, 65.2745, 141.53, 65.2745, 147.765, 80.5686 )
 width = 2.0
-default_color = Color( 1.8, 0.2, 0, 1 )
+default_color = Color( 1.8, 0.6, 0, 1 )
 
 [node name="WireRhombus" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( 47.9997, 75.4706, 73.9802, 49.9804, 99.9608, 75.4706 )
 width = 2.0
-default_color = Color( 1.8, 0.2, 0, 1 )
+default_color = Color( 1.8, 0.6, 0, 1 )
 
 [node name="WireStraight1" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( -3.96149, 100.961, 151.922, 100.961 )
 width = 2.0
-default_color = Color( 2, 0.2, 0, 1 )
+default_color = Color( 1.8, 0.6, 0, 1 )
 
 [node name="WireStraight2" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( -3.96149, 126.451, 151.922, 126.451 )
 width = 2.0
-default_color = Color( 2, 0.2, 0, 1 )
+default_color = Color( 1.8, 0.6, 0, 1 )
 
 [node name="WireLeft1" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( -3.96149, 182.529, 47.9997, 182.529, 47.9997, 172.333 )
 width = 2.0
-default_color = Color( 1.8, 0.2, 0, 1 )
+default_color = Color( 1.8, 0.6, 0, 1 )
 
 [node name="WireLeft2" type="Line2D" parent="."]
 position = Vector2( 4.15061, 0.98077 )
 scale = Vector2( 1.03051, 0.980769 )
 points = PoolVector2Array( -3.96149, 187.627, 49.3439, 187.627, 49.3439, 172.333 )
 width = 2.0
-default_color = Color( 1.8, 0.2, 0, 1 )
+default_color = Color( 1.8, 0.6, 0, 1 )
 
 [node name="WireRight1" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( 151.922, 182.529, 99.9608, 182.529, 99.9608, 172.333 )
 width = 2.0
-default_color = Color( 1.8, 0.2, 0, 1 )
+default_color = Color( 1.8, 0.6, 0, 1 )
 
 [node name="WireRight2" type="Line2D" parent="."]
 position = Vector2( -4.13816, 0.98077 )
 scale = Vector2( 1.01425, 0.980769 )
 points = PoolVector2Array( 151.922, 187.627, 97.7453, 187.627, 97.7453, 172.333 )
 width = 2.0
-default_color = Color( 1.8, 0.2, 0, 1 )
+default_color = Color( 1.8, 0.6, 0, 1 )
 
 [node name="WireBot1" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( 68.7841, 243.706, 68.7841, 218.216, 58.3919, 218.216 )
 width = 2.0
-default_color = Color( 2, 0.2, 0, 1 )
+default_color = Color( 2, 0.6, 0, 1 )
 
 [node name="WireBot2" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( 73.9802, 243.706, 73.9802, 208.02 )
 width = 2.0
-default_color = Color( 2, 0.2, 0, 1 )
+default_color = Color( 2, 0.6, 0, 1 )
 
 [node name="WireBot3" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( 79.1763, 243.706, 79.1763, 218.216, 89.5686, 218.216 )
 width = 2.0
-default_color = Color( 2, 0.2, 0, 1 )
+default_color = Color( 2, 0.6, 0, 1 )
 
 [node name="WireTop" type="Line2D" parent="."]
 position = Vector2( 3.81197, 0.98077 )
 scale = Vector2( 0.962257, 0.980769 )
 points = PoolVector2Array( 73.9802, -1, 73.9802, 19.3922 )
 width = 2.0
-default_color = Color( 1.8, 0.2, 0, 1 )
+default_color = Color( 2, 0.6, 0, 1 )
 
 [node name="LeftCon1" type="Polygon2D" parent="."]
 position = Vector2( -46, -87 )

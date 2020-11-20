@@ -244,7 +244,7 @@ mouse_filter = 1
 
 [node name="Viewed" type="TextureRect" parent="Control/Back/VBoxContainer/CenterContainer"]
 visible = false
-modulate = Color( 1.6, 0.8, 0, 1 )
+modulate = Color( 1.5, 0.2, 0, 1 )
 margin_left = 55.0
 margin_right = 95.0
 margin_bottom = 40.0
@@ -269,6 +269,8 @@ text = "Card Game Framework"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Pulse" type="Tween" parent="Control/Back"]
 
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
 modulate = Color( 1, 1, 1, 0 )
