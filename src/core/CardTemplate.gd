@@ -383,8 +383,6 @@ func set_is_faceup(value: bool) -> int:
 		# When we change faceup state, we reset the is_viewed to false
 		if set_is_viewed(false) == _ReturnCode.FAILED:
 			print("ERROR: Something went unexpectedly in set_is_faceup")
-		$Tween.remove($Control/Back,'rect_scale')
-		$Tween.remove($Control/Front,'rect_scale')
 		if value:
 			_flip_card($Control/Back, $Control/Front)
 			$Control/ManipulationButtons/View.visible = false
@@ -563,8 +561,8 @@ func moveTo(targetHost: Node2D,
 				if c != self:
 					c.interruptTweening()
 					c.reorganizeSelf()
-		# 'HostedCards' here is the dummy child node inside Containers where
-		# we store the card objects
+			if set_is_faceup(true) == _ReturnCode.FAILED:
+				print("ERROR: Something went unexpectedly in set_is_faceup")
 		elif targetHost in cfc.piles:
 			# Added because sometimes it ended up stuck and a card remained
 			# visible on top of deck
@@ -579,6 +577,8 @@ func moveTo(targetHost: Node2D,
 			# If we have fancy movement, we need to wait for 2 tweens to finish
 			# before we vanish the card.
 			# One for the fancy move, and then the move to the final position
+			if set_is_faceup(false) == _ReturnCode.FAILED:
+				print("ERROR: Something went unexpectedly in set_is_faceup")
 			if cfc.fancy_movement:
 				yield($Tween, "tween_all_completed")
 			_tween_interpolate_visibility(0,0.3)
@@ -614,8 +614,8 @@ func moveTo(targetHost: Node2D,
 			# We make sure to remove other tweens of the same type to avoid a deadlock
 			$Tween.remove($Control,'rect_rotation')
 			$Tween.interpolate_property($Control,'rect_rotation',
-				$Control.rect_rotation, 0, 0.2,
-				Tween.TRANS_QUINT, Tween.EASE_OUT)
+					$Control.rect_rotation, 0, 0.2,
+					Tween.TRANS_QUINT, Tween.EASE_OUT)
 			# We also make sure the card buttons don't stay visible or enabled
 			$Control/ManipulationButtons/Tween.remove_all()
 			$Control/ManipulationButtons.modulate[3] = 0
@@ -987,6 +987,8 @@ func _clear_attachment_status() -> void:
 		card.current_host_card = null
 		# Attachments typically follow their parents to the same container
 		card.moveTo(get_parent())
+		# We do a small wait to make the attachment drag look nicer
+		yield(get_tree().create_timer(0.1), "timeout")
 	attachments.clear()
 
 
@@ -1054,40 +1056,44 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 	elif get_parent() == null:
 		pass
 	else:
-		$Tween.interpolate_property(to_invisible,'rect_scale',
+		# We clear existing tweens to avoid a deadlocks
+		for n in [$Control/Front, $Control/Back, $Control/FocusHighlight]:
+			$Control/FlipTween.remove(n,'rect_scale')
+			$Control/FlipTween.remove(n,'rect_position')
+		$Control/FlipTween.interpolate_property(to_invisible,'rect_scale',
 				to_invisible.rect_scale, Vector2(0,1), 0.3,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
-		$Tween.interpolate_property(to_invisible,'rect_position',
+		$Control/FlipTween.interpolate_property(to_invisible,'rect_position',
 				to_invisible.rect_position, Vector2(
 				to_invisible.rect_size.x/2,0), 0.3,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
-		$Tween.interpolate_property($Control/FocusHighlight,'rect_scale',
+		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_scale',
 				$Control/FocusHighlight.rect_scale, Vector2(0,1), 0.3,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
 		# The highlight is larger than the card size, but also offet a big
 		# so that it's still centered. This way its borders only extend
 		# over the card borders. We need to offest to the right location.
-		$Tween.interpolate_property($Control/FocusHighlight,'rect_position',
+		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_position',
 				$Control/FocusHighlight.rect_position, Vector2(
 				($Control/FocusHighlight.rect_size.x-3)/2,0), 0.3,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
-		$Tween.start()
-		yield($Tween, "tween_all_completed")
+		$Control/FlipTween.start()
+		yield($Control/FlipTween, "tween_all_completed")
 		to_visible.visible = true
 		to_invisible.visible = false
-		$Tween.interpolate_property(to_visible,'rect_scale',
+		$Control/FlipTween.interpolate_property(to_visible,'rect_scale',
 				to_visible.rect_scale, Vector2(1,1), 0.3,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		$Tween.interpolate_property(to_visible,'rect_position',
+		$Control/FlipTween.interpolate_property(to_visible,'rect_position',
 				to_visible.rect_position, Vector2(0,0), 0.3,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		$Tween.interpolate_property($Control/FocusHighlight,'rect_scale',
+		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_scale',
 				$Control/FocusHighlight.rect_scale, Vector2(1,1), 0.3,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		$Tween.interpolate_property($Control/FocusHighlight,'rect_position',
+		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_position',
 				$Control/FocusHighlight.rect_position, Vector2(-3,-3), 0.3,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		$Tween.start()
+		$Control/FlipTween.start()
 
 # Draws a curved arrow, from the center of a card, to the mouse pointer
 func _draw_targeting_arrow() -> void:

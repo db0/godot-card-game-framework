@@ -330,6 +330,8 @@ text = "V"
 
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
 
+[node name="FlipTween" type="Tween" parent="Control"]
+
 [node name="Tween" type="Tween" parent="."]
 
 [node name="TargetLine" type="Line2D" parent="."]

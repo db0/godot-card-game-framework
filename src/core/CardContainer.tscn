@@ -14,14 +14,14 @@ corner_radius_bottom_left = 25
 font_data = ExtResource( 1 )
 
 [sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 75, 120 )
+extents = Vector2( 78, 123 )
 
 [node name="Cards" type="Area2D"]
 script = ExtResource( 2 )
 
 [node name="Control" type="Panel" parent="."]
-margin_right = 150.0
-margin_bottom = 240.0
+margin_right = 156.0
+margin_bottom = 246.0
 mouse_filter = 1
 custom_styles/panel = SubResource( 1 )
 __meta__ = {
@@ -82,7 +82,7 @@ __meta__ = {
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 75, 120 )
+position = Vector2( 78, 123 )
 shape = SubResource( 3 )
 
 [node name="ViewPopup" type="PopupPanel" parent="."]

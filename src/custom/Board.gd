@@ -64,4 +64,5 @@ func load_test_cards() -> void:
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		card.position = Vector2(0,0)
 		card.modulate.a = 0 # We use this for a nice transition effect
+		card.is_faceup = false
 

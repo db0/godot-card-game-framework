@@ -13,6 +13,12 @@
 * Enabled ability to make cards face-down
 * New button to view face-down cards that appears only when card is faced-down
 
+In case you're wondering why the FocusHighlight node has two children panel nodes, instead of making it itself a Panel node.
+
+This is because of https://github.com/godotengine/godot/issues/32030 which doesn't not consistently apply glow effects to vertical lines.
+
+As such, I had to create the vertical and horizontal lines sepearately and apply different intensity of colour to each, to make the glow effect match.
+
 
 ## 0.9
 
