@@ -113,6 +113,7 @@ __meta__ = {
 }
 
 [node name="FocusHighlight" type="Control" parent="Control"]
+visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -3.0
@@ -274,6 +275,15 @@ margin_bottom = 86.0
 mouse_filter = 1
 custom_fonts/font = SubResource( 13 )
 text = "F"
+
+[node name="View" type="Button" parent="Control/ManipulationButtons"]
+visible = false
+margin_top = 90.0
+margin_right = 40.0
+margin_bottom = 116.0
+mouse_filter = 1
+custom_fonts/font = SubResource( 13 )
+text = "V"
 
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
 

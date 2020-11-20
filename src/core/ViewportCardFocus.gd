@@ -53,6 +53,11 @@ func focus_card(card: Card) -> void:
 		dupe_focus.get_node('Control/ManipulationButtons').modulate[3] = 0
 		dupe_focus.get_node('Control').rect_rotation = 0
 		dupe_focus.complete_targeting()
+		# If the card has been viewed, we allow the player hovering over it to see it
+		if not dupe_focus.is_faceup and dupe_focus.is_viewed:
+			print('a')
+			dupe_focus._flip_card(dupe_focus.get_node("Control/Back"), 
+					dupe_focus.get_node("Control/Front"), true)
 		# We store all our previously focused cards in an array, and clean them
 		# up when they're not focused anymore
 		_previously_focused_cards.append(dupe_focus)

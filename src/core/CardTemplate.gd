@@ -52,6 +52,8 @@ export var is_attachment := false setget set_is_attachment, get_is_attachment
 # If true, the card will be displayed faceup. If false, it will be facedown
 export var is_faceup  := true setget set_is_faceup, get_is_faceup
 # Specifies the card rotation in increments of 90 degrees
+export var is_viewed  := false setget set_is_viewed, get_is_viewed
+# Specifies the card rotation in increments of 90 degrees
 export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_card_rotation
 
 # Used to store a card succesfully targeted.
@@ -113,6 +115,8 @@ func _ready() -> void:
 	$Control/ManipulationButtons/Rot180.connect("pressed",self,'_on_Rot180_pressed')
 	# warning-ignore:return_value_discarded
 	$Control/ManipulationButtons/Flip.connect("pressed",self,'_on_Flip_pressed')
+	# warning-ignore:return_value_discarded
+	$Control/ManipulationButtons/View.connect("pressed",self,'_on_View_pressed')
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -264,7 +268,14 @@ func _on_Rot180_pressed() -> void:
 
 # Hover button which flips the card facedown/faceup
 func _on_Flip_pressed() -> void:
+	# warning-ignore:return_value_discarded
 	set_is_faceup(not is_faceup)
+
+
+# Hover button which allows the player to view a facedown card
+func _on_View_pressed() -> void:
+	# warning-ignore:return_value_discarded
+	set_is_viewed(true)
 
 
 # Triggers when a card hovers over another card while being dragged
@@ -370,8 +381,19 @@ func set_is_faceup(value: bool) -> int:
 		$Tween.remove($Control/Front,'rect_scale')
 		if value:
 			_flip_card($Control/Back, $Control/Front)
+			$Control/ManipulationButtons/View.visible = false
 		else:
 			_flip_card($Control/Front, $Control/Back)
+			$Control/ManipulationButtons/View.visible = true
+			is_viewed = false
+			# When we flip face down, we also want to hide the dupe card
+			# in the focus viewport
+			# However we also need to protect this call from the dupe itself
+			# calling it when it hasn't yet been added to its parent
+			if cfc.NMAP.get("main", null) and get_parent():
+				var dupe_front = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Front")
+				var dupe_back = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Back")
+				_flip_card(dupe_front, dupe_back, true)
 		retcode = _ReturnCode.CHANGED
 	return retcode
 
@@ -379,6 +401,47 @@ func set_is_faceup(value: bool) -> int:
 # Getter for is_faceup
 func get_is_faceup() -> bool:
 	return is_faceup
+
+
+# Setter for is_faceup
+#
+# Flips the card face-up/face-down
+#
+# Returns _ReturnCode.CHANGED if the card actually changed view status
+#
+# Returns _ReturnCode.OK if the card was already in the correct view status
+#
+# Returns _ReturnCode.FAILED if changing the status is now allowed
+func set_is_viewed(value: bool) -> int:
+	var retcode: int
+	if value:
+		if is_faceup:
+			# Players can already see faceup cards
+			retcode = _ReturnCode.FAILED
+		elif value == is_viewed:
+			retcode = _ReturnCode.OK
+		else:
+			is_viewed = value
+			if get_parent() != null:
+				var dupe_front = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Front")
+				var dupe_back = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Back")
+				_flip_card(dupe_back, dupe_front, true)
+	else:
+		if is_faceup:
+			retcode = _ReturnCode.CHANGED
+			is_viewed = value
+		elif value == is_viewed:
+			retcode = _ReturnCode.OK
+		else:
+			# We don't allow players to unview cards
+			retcode = _ReturnCode.FAILED
+		retcode = _ReturnCode.CHANGED
+	return retcode
+
+
+# Getter for is_faceup
+func get_is_viewed() -> bool:
+	return is_viewed
 
 
 # Setter for card_rotation.
@@ -954,40 +1017,54 @@ func _get_button_hover() -> bool:
 # so that the correct Panel (Card Back or Card Front) and children is visible
 #
 # It also pretends to flip the highlight, otherwise it looks fake.
-func _flip_card(to_invisible: Control, to_visible: Control) -> void:
-	$Tween.interpolate_property(to_invisible,'rect_scale',
-			to_invisible.rect_scale, Vector2(0,1), 0.3,
-			Tween.TRANS_QUAD, Tween.EASE_IN)
-	$Tween.interpolate_property(to_invisible,'rect_position',
-			to_invisible.rect_position, Vector2(to_invisible.rect_size.x/2,0), 0.3,
-			Tween.TRANS_QUAD, Tween.EASE_IN)
-	$Tween.interpolate_property($Control/FocusHighlight,'rect_scale',
-			$Control/FocusHighlight.rect_scale, Vector2(0,1), 0.3,
-			Tween.TRANS_QUAD, Tween.EASE_IN)
-	# The highlight is larger than the card size, but also offet a big
-	# so that it's still centered. This way its borders only extend
-	# over the card borders. We need to offest to the right location.
-	$Tween.interpolate_property($Control/FocusHighlight,'rect_position',
-			$Control/FocusHighlight.rect_position, Vector2(($Control/FocusHighlight.rect_size.x-3)/2,0), 0.3,
-			Tween.TRANS_QUAD, Tween.EASE_IN)
-	$Tween.start()
-	yield($Tween, "tween_all_completed")
-	to_visible.visible = true
-	to_invisible.visible = false
-	$Tween.interpolate_property(to_visible,'rect_scale',
-			to_visible.rect_scale, Vector2(1,1), 0.3,
-			Tween.TRANS_QUAD, Tween.EASE_OUT)
-	$Tween.interpolate_property(to_visible,'rect_position',
-			to_visible.rect_position, Vector2(0,0), 0.3,
-			Tween.TRANS_QUAD, Tween.EASE_OUT)
-	$Tween.interpolate_property($Control/FocusHighlight,'rect_scale',
-			$Control/FocusHighlight.rect_scale, Vector2(1,1), 0.3,
-			Tween.TRANS_QUAD, Tween.EASE_OUT)
-	$Tween.interpolate_property($Control/FocusHighlight,'rect_position',
-			$Control/FocusHighlight.rect_position, Vector2(-3,-3), 0.3,
-			Tween.TRANS_QUAD, Tween.EASE_OUT)
-	$Tween.start()
-
+func _flip_card(to_invisible: Control, to_visible: Control, instant := false) -> void:
+	if instant:
+		to_visible.visible = true
+		to_visible.rect_scale.x = 1
+		to_visible.rect_position.x = 0
+		to_invisible.visible = false
+		to_invisible.rect_scale.x = 0
+		to_invisible.rect_position.x = to_visible.rect_size.x/2
+	# When dupe cards in focus viewport are created, they have parent == null
+	# This causes them to raise an error trying to create a tween
+	# So we skip that.
+	elif get_parent() == null:
+		pass
+	else:
+		$Tween.interpolate_property(to_invisible,'rect_scale',
+				to_invisible.rect_scale, Vector2(0,1), 0.3,
+				Tween.TRANS_QUAD, Tween.EASE_IN)
+		$Tween.interpolate_property(to_invisible,'rect_position',
+				to_invisible.rect_position, Vector2(
+				to_invisible.rect_size.x/2,0), 0.3,
+				Tween.TRANS_QUAD, Tween.EASE_IN)
+		$Tween.interpolate_property($Control/FocusHighlight,'rect_scale',
+				$Control/FocusHighlight.rect_scale, Vector2(0,1), 0.3,
+				Tween.TRANS_QUAD, Tween.EASE_IN)
+		# The highlight is larger than the card size, but also offet a big
+		# so that it's still centered. This way its borders only extend
+		# over the card borders. We need to offest to the right location.
+		$Tween.interpolate_property($Control/FocusHighlight,'rect_position',
+				$Control/FocusHighlight.rect_position, Vector2(
+				($Control/FocusHighlight.rect_size.x-3)/2,0), 0.3,
+				Tween.TRANS_QUAD, Tween.EASE_IN)
+		$Tween.start()
+		yield($Tween, "tween_all_completed")
+		to_visible.visible = true
+		to_invisible.visible = false
+		$Tween.interpolate_property(to_visible,'rect_scale',
+				to_visible.rect_scale, Vector2(1,1), 0.3,
+				Tween.TRANS_QUAD, Tween.EASE_OUT)
+		$Tween.interpolate_property(to_visible,'rect_position',
+				to_visible.rect_position, Vector2(0,0), 0.3,
+				Tween.TRANS_QUAD, Tween.EASE_OUT)
+		$Tween.interpolate_property($Control/FocusHighlight,'rect_scale',
+				$Control/FocusHighlight.rect_scale, Vector2(1,1), 0.3,
+				Tween.TRANS_QUAD, Tween.EASE_OUT)
+		$Tween.interpolate_property($Control/FocusHighlight,'rect_position',
+				$Control/FocusHighlight.rect_position, Vector2(-3,-3), 0.3,
+				Tween.TRANS_QUAD, Tween.EASE_OUT)
+		$Tween.start()
 
 # Draws a curved arrow, from the center of a card, to the mouse pointer
 func _draw_targeting_arrow() -> void:

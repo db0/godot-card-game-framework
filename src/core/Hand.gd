@@ -31,7 +31,7 @@ func _on_Deck_input_event(event) -> void:
 # Function to connect to a card discard signal
 func _on_DiscardRandom_Button_pressed() -> void:
 	var card = get_random_card()
-	card.reHost(cfc.NMAP.discard)
+	card.moveTo(cfc.NMAP.discard)
 
 
 # Visibly shuffles all cards in hand

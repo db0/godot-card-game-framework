@@ -10,6 +10,8 @@
 * Can attach cards to other cards
 * Can target cards with a targetting arrow
 * Made highlights glowing
+* Enabled ability to make cards face-down
+* New button to view face-down cards
 
 ## 0.9
 
