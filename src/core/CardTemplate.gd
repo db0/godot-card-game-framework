@@ -1061,37 +1061,37 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 			$Control/FlipTween.remove(n,'rect_scale')
 			$Control/FlipTween.remove(n,'rect_position')
 		$Control/FlipTween.interpolate_property(to_invisible,'rect_scale',
-				to_invisible.rect_scale, Vector2(0,1), 0.3,
+				to_invisible.rect_scale, Vector2(0,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
 		$Control/FlipTween.interpolate_property(to_invisible,'rect_position',
 				to_invisible.rect_position, Vector2(
-				to_invisible.rect_size.x/2,0), 0.3,
+				to_invisible.rect_size.x/2,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
 		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_scale',
-				$Control/FocusHighlight.rect_scale, Vector2(0,1), 0.3,
+				$Control/FocusHighlight.rect_scale, Vector2(0,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
 		# The highlight is larger than the card size, but also offet a big
 		# so that it's still centered. This way its borders only extend
 		# over the card borders. We need to offest to the right location.
 		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_position',
 				$Control/FocusHighlight.rect_position, Vector2(
-				($Control/FocusHighlight.rect_size.x-3)/2,0), 0.3,
+				($Control/FocusHighlight.rect_size.x-3)/2,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
 		$Control/FlipTween.start()
 		yield($Control/FlipTween, "tween_all_completed")
 		to_visible.visible = true
 		to_invisible.visible = false
 		$Control/FlipTween.interpolate_property(to_visible,'rect_scale',
-				to_visible.rect_scale, Vector2(1,1), 0.3,
+				to_visible.rect_scale, Vector2(1,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
 		$Control/FlipTween.interpolate_property(to_visible,'rect_position',
-				to_visible.rect_position, Vector2(0,0), 0.3,
+				to_visible.rect_position, Vector2(0,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
 		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_scale',
-				$Control/FocusHighlight.rect_scale, Vector2(1,1), 0.3,
+				$Control/FocusHighlight.rect_scale, Vector2(1,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
 		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_position',
-				$Control/FocusHighlight.rect_position, Vector2(-3,-3), 0.3,
+				$Control/FocusHighlight.rect_position, Vector2(-3,-3), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
 		$Control/FlipTween.start()
 
