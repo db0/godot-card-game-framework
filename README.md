@@ -74,6 +74,8 @@ The below instructions will set up your game to use the `Card` class as a framew
 	* Area2D
 	* CollisionShape2D
 	* Control* (Has to always be a Control-type node)
+		* Front
+		* Back
 	* ManipulationButtons
 	* all Tween nodes called "Tween"
 	* TargetLine and all children nodes
@@ -165,6 +167,7 @@ For more fine customization, you'll need to modify manually
 ## Provided features
 
 * Tween animations that look good for card movements.
+* Customizable card highlights
 * Automatic focus-in on cards when moused over in-hand.
 * Automatic re-arranging of hand as cards are added or removed.
 * Drag & Drop
@@ -175,6 +178,7 @@ For more fine customization, you'll need to modify manually
 * Cards can rotate on the table
 * Cards can attach to other cards and move together as a group.
 * Cards can target other cards with a draggable arrow (demo with right-mouse drag & drop)
+* Can flip cards face-down and view them while in that state
 
 ## Credits
 

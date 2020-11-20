@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.10 (Οngoing)
+## 0.10
 
 * Added visible highlight when mousing over a card
 * Can move cards to top/bottom or any index in Card Containers
@@ -11,7 +11,8 @@
 * Can target cards with a targetting arrow
 * Made highlights glowing
 * Enabled ability to make cards face-down
-* New button to view face-down cards
+* New button to view face-down cards that appears only when card is faced-down
+
 
 ## 0.9
 
