@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11
+
+* Added new card back
+* Made the card back glow-pulse 
 ## 0.10
 
 * Added visible highlight when mousing over a card
