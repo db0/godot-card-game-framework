@@ -149,9 +149,9 @@ __meta__ = {
 
 [node name="Tokens" type="Panel" parent="Control"]
 visible = false
-margin_left = 30.0
+margin_left = 50.0
 margin_top = 20.0
-margin_right = 130.0
+margin_right = 150.0
 margin_bottom = 106.0
 mouse_filter = 2
 custom_styles/panel = SubResource( 15 )
