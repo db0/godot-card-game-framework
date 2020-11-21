@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
@@ -85,6 +85,11 @@ font_data = ExtResource( 1 )
 [sub_resource type="DynamicFont" id=12]
 size = 12
 font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=15]
+bg_color = Color( 0.262745, 0.247059, 0.247059, 1 )
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
 
 [sub_resource type="DynamicFont" id=13]
 font_data = ExtResource( 1 )
@@ -282,15 +287,14 @@ margin_top = 20.0
 margin_right = 170.0
 margin_bottom = 70.0
 mouse_filter = 2
+custom_styles/panel = SubResource( 15 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/Tokens/Drawer"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 43.0
-margin_bottom = 43.0
+margin_right = 50.0
+margin_bottom = 50.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false

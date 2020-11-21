@@ -41,8 +41,10 @@ enum _ReturnCode {
 	FAILED,
 }
 
-const tokenScene = preload("res://src/core/Token.tscn")
-
+const token_scene = preload("res://src/core/Token.tscn")
+#const token_names: {
+#
+#}
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 # warning-ignore:unused_class_variable
@@ -290,8 +292,12 @@ func _on_Flip_pressed() -> void:
 	# warning-ignore:return_value_discarded
 	set_is_faceup(not is_faceup)
 
+
 func _on_AddToken_pressed() -> void:
-	add_token()
+	var valid_tokens := ['tech','bio','blood','plasma']
+	randomize()
+	add_token(valid_tokens[randi()%len(valid_tokens)])
+
 
 # Hover button which allows the player to view a facedown card
 func _on_View_pressed() -> void:
@@ -792,12 +798,23 @@ func get_focus() -> bool:
 			focusState = true
 	return(focusState)
 
-func add_token() -> void:
-	var token = tokenScene.instance()
-	var textrect : TextureRect = token.get_node("CenterContainer/TokenIcon")	
-	$Control/Tokens/Drawer/VBoxContainer.add_child(token)
+func add_token(token_name : String) -> void:
+	var token = _get_all_tokens().get(token_name, null)
+	if not token:
+		token = token_scene.instance()
+		token.setup(token_name)
+		$Control/Tokens/Drawer/VBoxContainer.add_child(token)
+	else:
+		token.count += 1
 	if _is_drawer_open:
 		token.get_node("Name").visible = true
+
+func _get_all_tokens() -> Dictionary:
+	var found_tokens := {}
+	for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
+		found_tokens[token.name] = token
+	return found_tokens
+
 
 # Changes card highlight.
 func set_highlight(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) -> void:
@@ -1509,7 +1526,7 @@ func _token_drawer(drawer_state := true) -> void:
 						Vector2($Control.rect_size.x,td.rect_position.y),
 						0.3, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
-					token.get_node("Name").visible = true
+					token.expand()
 				$Control/Tokens/Drawer.self_modulate[3] = 1
 				tween.start()
 				$Control/Tokens.z_index = 99
@@ -1524,7 +1541,7 @@ func _token_drawer(drawer_state := true) -> void:
 				tween.start()
 				yield(tween, "tween_all_completed")
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
-					token.get_node("Name").visible = false
+					token.retract()
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				td.rect_size.x = 120
 				_is_drawer_open = false

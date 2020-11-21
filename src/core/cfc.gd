@@ -65,6 +65,16 @@ const TARGET_HOVER_COLOUR := Color(0, 0.4, 1) * 1.3
 #
 # You can change the colour to something else if  you want however
 const TARGETTING_ARROW_COLOUR := TARGET_HOVER_COLOUR
+const tokens_map := {
+	'tech': 'blue',
+	'plasma': 'blue',
+	'bio': 'green',
+	'industry': 'grey',
+	'magic': 'purple',
+	'blood': 'red',
+	'gold': 'yellow',
+	'void': 'black',
+}
 # The below vars predefine the position in your node structure 
 # to reach the nodes relevant to the cards.
 #

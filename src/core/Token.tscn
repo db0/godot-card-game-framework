@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://assets/tokens/blue.svg" type="Texture" id=2]
+[ext_resource path="res://src/core/Token.gd" type="Script" id=3]
 
 [sub_resource type="DynamicFont" id=1]
 size = 19
@@ -18,6 +19,7 @@ font_data = ExtResource( 1 )
 margin_right = 50.0
 margin_bottom = 50.0
 mouse_filter = 2
+script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -33,6 +35,12 @@ text = "Token Name"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+visible = false
+margin_bottom = 50.0
+mouse_filter = 1
+size_flags_horizontal = 3
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 margin_right = 50.0
@@ -53,6 +61,7 @@ margin_left = 13.0
 margin_top = 5.0
 margin_right = 36.0
 margin_bottom = 44.0
+mouse_filter = 1
 custom_fonts/font = SubResource( 2 )
 text = "1"
 __meta__ = {
