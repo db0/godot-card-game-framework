@@ -1,4 +1,4 @@
-# Godot Card Gaming Framework 0.9
+# Godot Card Gaming Framework 0.10
 
 This framework is meant to provide well-designed, statically-typed, and well-commented classes which you can plug into any potential card game to provide a polished way to handle typical behaviour expected from cards in a game.
 
@@ -73,11 +73,12 @@ The below instructions will set up your game to use the `Card` class as a framew
 4. If you're not using the provided CardTemplate.tcsn, then the following nodes inside CardTemplate.tcsn are mandatory. Place them in the same indentation and with the same name. Nodes with an asterisk next to their name can be modified to a different type but have to retain their name.
 	* Area2D
 	* CollisionShape2D
-	* Control* (Has to always be a Control-type node)
-		* Front
-		* Back
+	* Control # Has to always be a Control-type node
+		* Front # You can modify or remove children and change to another Control-type node
+		* Back # You can modify or remove children (except Viewed) and change to another Control-type node
+		    * CenterContainer/Viewed
 	* ManipulationButtons
-	* all Tween nodes called "Tween"
+	* all Tween nodes called "*Tween"
 	* TargetLine and all children nodes
 
 
