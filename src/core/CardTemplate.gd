@@ -41,6 +41,8 @@ enum _ReturnCode {
 	FAILED,
 }
 
+const tokenScene = preload("res://src/core/Token.tscn")
+
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 # warning-ignore:unused_class_variable
@@ -53,6 +55,8 @@ export var is_attachment := false setget set_is_attachment, get_is_attachment
 export var is_faceup  := true setget set_is_faceup, get_is_faceup
 # Specifies the card rotation in increments of 90 degrees
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
+# Specifies the card rotation in increments of 90 degrees
+var _is_drawer_open := false #setget set_is_viewed, get_is_viewed
 # Specifies the card rotation in increments of 90 degrees
 export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_card_rotation
 
@@ -123,6 +127,8 @@ func _ready() -> void:
 	$Control/ManipulationButtons/Rot180.connect("pressed",self,'_on_Rot180_pressed')
 	# warning-ignore:return_value_discarded
 	$Control/ManipulationButtons/Flip.connect("pressed",self,'_on_Flip_pressed')
+	# warning-ignore:return_value_discarded
+	$Control/ManipulationButtons/AddToken.connect("pressed",self,'_on_AddToken_pressed')
 	# warning-ignore:return_value_discarded
 	$Control/ManipulationButtons/View.connect("pressed",self,'_on_View_pressed')
 	# We want to allow anyone to remove the Pulse node if wanted
@@ -284,6 +290,8 @@ func _on_Flip_pressed() -> void:
 	# warning-ignore:return_value_discarded
 	set_is_faceup(not is_faceup)
 
+func _on_AddToken_pressed() -> void:
+	add_token()
 
 # Hover button which allows the player to view a facedown card
 func _on_View_pressed() -> void:
@@ -396,8 +404,9 @@ func set_is_faceup(value: bool) -> int:
 	if value == is_faceup:
 		retcode = _ReturnCode.OK
 	else:
-		if _is_token_drawer_open():
-			 _token_drawer(false)
+		if _is_drawer_open:
+			print('a')
+			_token_drawer(false)
 		# We make sure to remove other tweens of the same type to avoid a deadlock
 		is_faceup = value
 		# When we change faceup state, we reset the is_viewed to false
@@ -554,8 +563,8 @@ func moveTo(targetHost: Node2D,
 	# We need to store the parent, because we won't be able to know it later
 	var parentHost = get_parent()
 	# We want to keep the token drawer closed during movement
-	if _is_token_drawer_open():
-		 _token_drawer(false)
+	if _is_drawer_open:
+		_token_drawer(false)
 	if targetHost != parentHost:
 		# When changing parent, it resets the position of the child it seems
 		# So we store it to know where the card used to be, before moving it
@@ -769,6 +778,8 @@ func set_focus(requestedFocus: bool) -> void:
 	# We also generally only have tokens on the table
 	if $Control.has_node("Tokens"):
 		_token_drawer(requestedFocus)
+#		if name == "Card" and get_parent() == cfc.NMAP.board:
+#			print(requestedFocus)
 
 
 # Tells us the focus-state of a card
@@ -781,6 +792,11 @@ func get_focus() -> bool:
 			focusState = true
 	return(focusState)
 
+func add_token() -> void:
+	var token = tokenScene.instance()
+	$Control/Tokens/Drawer/VBoxContainer.add_child(token)
+	if _is_drawer_open:
+		token.get_node("Name").visible = true
 
 # Changes card highlight.
 func set_highlight(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) -> void:
@@ -1377,8 +1393,8 @@ func _process_card_state() -> void:
 			global_position = _determine_board_position_from_mouse()# - $Control.rect_size/2 * scale
 			_organize_attachments()
 			# We want to keep the token drawer closed during movement
-			if _is_token_drawer_open():
-				 _token_drawer(false)
+			if _is_drawer_open:
+				_token_drawer(false)
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			set_focus(false)
@@ -1473,49 +1489,42 @@ func _process_card_state() -> void:
 			set_focus(true)
 
 func _token_drawer(drawer_state := true) -> void:
+	#print('bah')
 	# I use these vars to avoid writing it all the time and to improve readability
 	var tween := $Control/Tokens/Tween
-	var ct := $Control/Tokens
-	# We want to keep the drawer closing during the flipping animiation
+	var td := $Control/Tokens/Drawer
+	# We want to keep the drawer closed during the flip and movement
 	if not tween.is_active() and \
 			not $Control/FlipTween.is_active() and \
 			not $Tween.is_active():
 		if drawer_state == true and \
+				$Control/Tokens/Drawer/VBoxContainer.get_child_count() and \
 				(state == ON_PLAY_BOARD or state == FOCUSED_ON_BOARD):
-			ct.visible = true
-			if not _is_token_drawer_open():
+			if not _is_drawer_open:
+				_is_drawer_open = true
 				tween.remove_all()
 				tween.interpolate_property(
-						ct,'rect_position', ct.rect_position,
-						# We offset by -50 becuse otherwise the elastic tween
-						# will make the drawer move outside the card
-						# and it will look bad
-						Vector2($Control.rect_size.x - 50,ct.rect_position.y),
+						td,'rect_position', td.rect_position,
+						Vector2($Control.rect_size.x,td.rect_position.y),
 						0.3, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
+				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
+					token.get_node("Name").visible = true
+				$Control/Tokens/Drawer.self_modulate[3] = 1
 				tween.start()
+				$Control/Tokens.z_index = 99
 		else:
-			if _is_token_drawer_open():
+			if _is_drawer_open:
 				tween.remove_all()
 				tween.interpolate_property(
-						ct,'rect_position', ct.rect_position,
-						Vector2($Control.rect_size.x - ct.rect_size.x,
-						ct.rect_position.y),
+						td,'rect_position', td.rect_position,
+						Vector2($Control.rect_size.x - 25,
+						td.rect_position.y),
 						0.3, Tween.TRANS_ELASTIC, Tween.EASE_IN)
 				tween.start()
-			yield(tween, "tween_all_completed")
-			ct.visible = false
-
-func _is_token_drawer_open() -> bool:
-	# I use these vars to avoid writing it all the time and to improve readability
-	var ct := $Control/Tokens
-	var ret := true
-	# In case the token drawer node has been removed,
-	# We consider this always false
-	if not $Control.has_node("Tokens"):
-		ret = false
-	# We only consider the drawer closed if it's completely retracted
-	# We need to round the floats to make sure we don't miss
-	# due to floating point errors
-	elif int(round(ct.rect_position.x)) == int(round($Control.rect_size.x - ct.rect_size.x)):
-		ret = false
-	return ret
+				yield(tween, "tween_all_completed")
+				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
+					token.get_node("Name").visible = false
+				$Control/Tokens/Drawer.self_modulate[3] = 0
+				td.rect_size.x = 120
+				_is_drawer_open = false
+				$Control/Tokens.z_index = 0
