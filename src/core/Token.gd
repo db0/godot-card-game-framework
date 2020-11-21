@@ -19,7 +19,7 @@ func setup(token_name: String) -> void:
 	name = token_name
 	var textrect : TextureRect = $CenterContainer/TokenIcon
 	var new_texture = ImageTexture.new();
-	var tex = load(cfc.token_assets_path + cfc.tokens_map[token_name])
+	var tex = load(cfc.TOKEN_ASSETS_PATH + cfc.TOKENS_MAP[token_name])
 	var image = tex.get_data()
 	new_texture.create_from_image(image)
 	textrect.texture = new_texture

@@ -414,7 +414,6 @@ func set_is_faceup(value: bool) -> int:
 		retcode = _ReturnCode.OK
 	else:
 		if _is_drawer_open:
-			print('a')
 			_token_drawer(false)
 		# We make sure to remove other tweens of the same type to avoid a deadlock
 		is_faceup = value
@@ -545,6 +544,7 @@ func set_card_rotation(value: int, toggle := false) -> int:
 				$Control.rect_rotation, value, 0.3,
 				Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 		$Tween.start()
+		#$Control/Tokens.rotation_degrees = -value # need to figure this out
 		# When the card actually changes orientation
 		# We report that it changed.
 		retcode = _ReturnCode.CHANGED
@@ -653,6 +653,11 @@ func moveTo(targetHost: Node2D,
 			# If the card was or had attachments and it is removed from the table,
 			# all attachments status is cleared
 			_clear_attachment_status()
+			# If the card has tokens, and TOKENS_ONLY_ON_BOARD is true
+			# we remove all tokens
+			if cfc.TOKENS_ONLY_ON_BOARD:
+				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
+					token.queue_free()
 			# When the card was removed from the board, we need to make sure it
 			# recovers to 0 degress rotation
 			# We make sure to remove other tweens of the same type to avoid a deadlock
@@ -670,9 +675,11 @@ func moveTo(targetHost: Node2D,
 			state = IN_HAND
 			reorganizeSelf()
 		if parentHost == cfc.NMAP.board:
-			# Having this if first, allows us to change hosts by drag & drop
+			# Checking if this is an attachment and we're looking for a new host
 			if len(_potential_cards):
 				attach_to_host(_potential_cards.back())
+			# If we are an attachment and were moved elsewhere
+			# We reset the position.
 			elif current_host_card:
 				var attach_index = current_host_card.attachments.find(self)
 				_target_position = (current_host_card.global_position
@@ -772,7 +779,7 @@ func interruptTweening() ->void:
 		state = IN_HAND
 
 
-# Changes card focus.
+# Changes card focus (highlighted and put on the focus viewport)
 func set_focus(requestedFocus: bool) -> void:
 	 # We use an if to avoid performing constant operations in _process
 	if $Control/FocusHighlight.visible != requestedFocus and \
@@ -801,6 +808,10 @@ func get_focus() -> bool:
 			focusState = true
 	return(focusState)
 
+
+# Adds a token to the card
+#
+# If the token of that name doesn't exist, it creates it according to the config.
 func add_token(token_name : String) -> void:
 	var token = get_tokens().get(token_name, null)
 	if not token:
@@ -812,6 +823,11 @@ func add_token(token_name : String) -> void:
 	if _is_drawer_open:
 		token.get_node("Name").visible = true
 
+
+# Returns a dictionary of card tokens on this card.
+#
+# * Key is the name of the token.
+# * Value is the token scene.
 func get_tokens() -> Dictionary:
 	var found_tokens := {}
 	for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
@@ -819,7 +835,7 @@ func get_tokens() -> Dictionary:
 	return found_tokens
 
 
-# Changes card highlight.
+# Changes card highlight colour.
 func set_highlight(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) -> void:
 	$Control/FocusHighlight.visible = requestedFocus
 	if requestedFocus:
@@ -1540,12 +1556,11 @@ func _token_drawer(drawer_state := true) -> void:
 						td,'rect_position', td.rect_position,
 						Vector2($Control.rect_size.x - 35,
 						td.rect_position.y),
-						0.3, Tween.TRANS_ELASTIC, Tween.EASE_IN)
+						0.2, Tween.TRANS_ELASTIC, Tween.EASE_IN)
 				tween.start()
 				yield(tween, "tween_all_completed")
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 					token.retract()
 				$Control/Tokens/Drawer.self_modulate[3] = 0
-				td.rect_size.x = 120
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0

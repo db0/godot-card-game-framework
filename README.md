@@ -180,6 +180,18 @@ For more fine customization, you'll need to modify manually
 * Cards can attach to other cards and move together as a group.
 * Cards can target other cards with a draggable arrow (demo with right-mouse drag & drop)
 * Can flip cards face-down and view them while in that state
+* Can add tokens on cards
+
+## Demonstration functions
+
+Most of the capabilities of the Framework you can see by natively playing with the cards
+
+Some features, you would normally see in a game that was scripted to call them at the right time. To experience those, I've created some convenient demonstrations to trigger them. Most of them are in the buttons which appear when you hover over the card.
+
+* Card Targetting: Right click and hold on a card to start targettting
+* Tokens: Click on the 'O' Button, to start adding random tokens to the card
+* Card Rotation: Click on either the 'T' or '@' buttons
+* Flip Up/Flip Down: Click on the 'F' button
 
 ## Credits
 

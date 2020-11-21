@@ -86,15 +86,15 @@ font_data = ExtResource( 1 )
 size = 12
 font_data = ExtResource( 1 )
 
-[sub_resource type="StyleBoxFlat" id=15]
-bg_color = Color( 0.262745, 0.247059, 0.247059, 1 )
+[sub_resource type="StyleBoxFlat" id=13]
+bg_color = Color( 0.584314, 0.6, 0.647059, 1 )
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 
-[sub_resource type="DynamicFont" id=13]
+[sub_resource type="DynamicFont" id=14]
 font_data = ExtResource( 1 )
 
-[sub_resource type="Curve" id=14]
+[sub_resource type="Curve" id=15]
 _data = [ Vector2( 0, 0.463636 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 1.4, 0.0, 0, 0 ]
 
 [node name="Card" type="Area2D"]
@@ -287,7 +287,7 @@ margin_top = 20.0
 margin_right = 170.0
 margin_bottom = 70.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 15 )
+custom_styles/panel = SubResource( 13 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -317,7 +317,7 @@ __meta__ = {
 margin_right = 29.0
 margin_bottom = 26.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "T"
 
 [node name="Rot180" type="Button" parent="Control/ManipulationButtons"]
@@ -325,7 +325,7 @@ margin_top = 30.0
 margin_right = 29.0
 margin_bottom = 56.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "@"
 
 [node name="Flip" type="Button" parent="Control/ManipulationButtons"]
@@ -333,7 +333,7 @@ margin_top = 60.0
 margin_right = 29.0
 margin_bottom = 86.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "F"
 
 [node name="AddToken" type="Button" parent="Control/ManipulationButtons"]
@@ -341,7 +341,7 @@ margin_top = 90.0
 margin_right = 29.0
 margin_bottom = 116.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "O"
 
 [node name="View" type="Button" parent="Control/ManipulationButtons"]
@@ -350,7 +350,7 @@ margin_top = 90.0
 margin_right = 40.0
 margin_bottom = 116.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 14 )
 text = "V"
 
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
@@ -363,7 +363,7 @@ text = "V"
 z_index = 50
 points = PoolVector2Array( 384, 112 )
 width = 15.0
-width_curve = SubResource( 14 )
+width_curve = SubResource( 15 )
 default_color = Color( 1, 1, 1, 1 )
 antialiased = true
 
