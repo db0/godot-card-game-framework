@@ -77,7 +77,7 @@ var _fancy_move_second_part := false
 # We use this to track multiple cards when our card is about to drop onto or target them
 var _potential_cards := []
 # Used for looping between brighness scales for the Cardback glow
-# The multipliers have to be small, as even small changes increase 
+# The multipliers have to be small, as even small changes increase
 # brightness a lot
 var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
 
@@ -759,6 +759,9 @@ func set_focus(requestedFocus: bool) -> void:
 			cfc.NMAP.main.focus_card(self)
 		else:
 			cfc.NMAP.main.unfocus(self)
+	# We use an if here, to make it optional
+	if $Control.has_node("Tokens"):
+		_token_drawer(requestedFocus)
 
 
 # Tells us the focus-state of a card
@@ -1458,3 +1461,33 @@ func _process_card_state() -> void:
 		FOCUSED_IN_POPUP:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
+
+func _token_drawer(state := true) -> void:
+	# I use these var to avoid writing it all the time and to improve readability
+	var tween := $Control/Tokens/Tween
+	var tk := $Control/Tokens
+	# 'do' stands for "drawer offset"
+	var do := 50
+	if not tween.is_active():
+		if state == true:
+			tk.visible = true
+			if tk.rect_position != $Control.rect_size \
+					- tk.rect_size - Vector2(do,0):
+				tween.remove_all()
+				tween.interpolate_property(
+						tk,'rect_position', tk.rect_position,
+						Vector2($Control.rect_size.x - do,tk.rect_position.y),
+						0.3, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
+				tween.start()
+		else:
+			if tk.rect_position != $Control.rect_size - Vector2(do,0):
+				tween.remove_all()
+				tween.interpolate_property(
+						tk,'rect_position', tk.rect_position,
+						Vector2($Control.rect_size.x - tk.rect_size.x - do,
+						tk.rect_position.y),
+						0.3, Tween.TRANS_ELASTIC, Tween.EASE_IN)
+				tween.start()
+			yield(tween, "tween_all_completed")
+			tk.visible = false
+
