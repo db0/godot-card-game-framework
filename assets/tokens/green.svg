@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" xmlns:ns1="http://sozi.baierouge.fr" id="svg9493" sodipodi:docname="led_circle_green.svg" inkscape:export-ydpi="90.000000" inkscape:export-filename="/datas/Projs/Cliparts Stocker/led/led_circle_green.png" viewBox="0 0 50 50" sodipodi:version="0.32" inkscape:export-xdpi="90.000000" inkscape:version="0.42" sodipodi:docbase="/datas/Projs/Cliparts Stocker/led">
+  <defs id="defs9495">
+    <linearGradient id="linearGradient7452" y2="42.884" gradientUnits="userSpaceOnUse" y1="44.067" x2="23.39" x1="23.403" inkscape:collect="always">
+      <stop id="stop6508" style="stop-color:#ffffff;stop-opacity:0" offset="0"/>
+      <stop id="stop6510" style="stop-color:#ffffff;stop-opacity:.87451" offset="1"/>
+    </linearGradient>
+    <linearGradient id="linearGradient7450" y2="43.893" gradientUnits="userSpaceOnUse" y1="42.755" x2="23.201" x1="23.214" inkscape:collect="always">
+      <stop id="stop6690" style="stop-color:#0f6900" offset="0"/>
+      <stop id="stop6692" style="stop-color:#a3ff87" offset="1"/>
+    </linearGradient>
+    <linearGradient id="linearGradient7448" y2="43.711" gradientUnits="userSpaceOnUse" y1="42.768" x2="23.441" x1="23.35" inkscape:collect="always">
+      <stop id="stop5758" style="stop-color:#828282" offset="0"/>
+      <stop id="stop5760" style="stop-color:#929292;stop-opacity:.35294" offset="1"/>
+    </linearGradient>
+    <linearGradient id="linearGradient7446" y2="44" gradientUnits="userSpaceOnUse" y1="42.429" x2="23.2" x1="23.193" inkscape:collect="always">
+      <stop id="stop5744" style="stop-color:#adadad" offset="0"/>
+      <stop id="stop5746" style="stop-color:#f0f0f0" offset="1"/>
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview id="base" bordercolor="#666666" inkscape:pageshadow="2" inkscape:window-width="1024" pagecolor="#ffffff" inkscape:zoom="10.480000" inkscape:window-x="0" borderopacity="1.0" inkscape:current-layer="layer1" inkscape:cx="25.000000" inkscape:cy="25.000000" inkscape:window-y="25" inkscape:window-height="693" inkscape:pageopacity="0.0" inkscape:document-units="px"/>
+  <g id="layer1" inkscape:label="Calque 1" inkscape:groupmode="layer">
+    <g id="g9477" transform="matrix(31.25 0 0 31.25 -700 -1400)">
+      <path id="path7424" style="fill:url(#linearGradient7446)" transform="translate(-.0000011944 2.4)" d="m24 43.2c0 0.442-0.358 0.8-0.8 0.8s-0.8-0.358-0.8-0.8 0.358-0.8 0.8-0.8 0.8 0.358 0.8 0.8z"/>
+      <path id="path7426" style="fill:url(#linearGradient7448)" transform="matrix(1.0825 0 0 1.0825 -2.0324 -1.267)" d="m23.906 43.296c0 0.329-0.267 0.597-0.596 0.597s-0.596-0.268-0.596-0.597 0.267-0.596 0.596-0.596 0.596 0.267 0.596 0.596z"/>
+      <path id="path7428" style="fill:url(#linearGradient7450)" transform="matrix(.96907 0 0 .96907 0.611 3.6429)" d="m23.906 43.296c0 0.329-0.267 0.597-0.596 0.597s-0.596-0.268-0.596-0.597 0.267-0.596 0.596-0.596 0.596 0.267 0.596 0.596z"/>
+      <path id="path7430" style="fill:url(#linearGradient7452)" transform="matrix(.77320 0 0 .59794 5.1761 19.519)" d="m23.906 43.296c0 0.329-0.267 0.597-0.596 0.597s-0.596-0.268-0.596-0.597 0.267-0.596 0.596-0.596 0.596 0.267 0.596 0.596z"/>
+    </g>
+  </g>
+  <metadata>
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
+        <dc:publisher>
+          <cc:Agent rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>led circle green</dc:title>
+        <dc:date>2009-06-30T13:00:52</dc:date>
+        <dc:description>Green glossy circle by Jean-Victor Balin. From OCAl 0.18 release.</dc:description>
+        <dc:source>https://openclipart.org/detail/26902/led-circle-green-by-anonymous</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Anonymous</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>button</rdf:li>
+            <rdf:li>glossy</rdf:li>
+            <rdf:li>green</rdf:li>
+            <rdf:li>round</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>
