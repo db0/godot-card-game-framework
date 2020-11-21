@@ -794,6 +794,7 @@ func get_focus() -> bool:
 
 func add_token() -> void:
 	var token = tokenScene.instance()
+	var textrect : TextureRect = token.get_node("CenterContainer/TokenIcon")	
 	$Control/Tokens/Drawer/VBoxContainer.add_child(token)
 	if _is_drawer_open:
 		token.get_node("Name").visible = true
@@ -1517,7 +1518,7 @@ func _token_drawer(drawer_state := true) -> void:
 				tween.remove_all()
 				tween.interpolate_property(
 						td,'rect_position', td.rect_position,
-						Vector2($Control.rect_size.x - 25,
+						Vector2($Control.rect_size.x - 35,
 						td.rect_position.y),
 						0.3, Tween.TRANS_ELASTIC, Tween.EASE_IN)
 				tween.start()
