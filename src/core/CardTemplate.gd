@@ -58,8 +58,6 @@ export var is_faceup  := true setget set_is_faceup, get_is_faceup
 # Specifies the card rotation in increments of 90 degrees
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
 # Specifies the card rotation in increments of 90 degrees
-var _is_drawer_open := false #setget set_is_viewed, get_is_viewed
-# Specifies the card rotation in increments of 90 degrees
 export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_card_rotation
 
 # Used to store a card succesfully targeted.
@@ -71,6 +69,8 @@ var state := IN_PILE
 var attachments := []
 # If this card is set as an attachment to another card, this tracks who its host is
 var current_host_card : Card = null
+# A dictionary holding all the tokens placed on this card
+var tokens := {} setget ,get_tokens
 
 # To track that this card attempting to target another card
 var _is_targetting := false
@@ -86,6 +86,8 @@ var _potential_cards := []
 # The multipliers have to be small, as even small changes increase
 # brightness a lot
 var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
+# A flag on whether the token drawer is currently open
+var _is_drawer_open := false
 
 # Debug for stuck tweens
 var _tween_stuck_time = 0
@@ -293,6 +295,7 @@ func _on_Flip_pressed() -> void:
 	set_is_faceup(not is_faceup)
 
 
+# Demo hover button which adds a selection of random tokens
 func _on_AddToken_pressed() -> void:
 	var valid_tokens := ['tech','bio','blood','plasma']
 	randomize()
@@ -799,7 +802,7 @@ func get_focus() -> bool:
 	return(focusState)
 
 func add_token(token_name : String) -> void:
-	var token = _get_all_tokens().get(token_name, null)
+	var token = get_tokens().get(token_name, null)
 	if not token:
 		token = token_scene.instance()
 		token.setup(token_name)
@@ -809,7 +812,7 @@ func add_token(token_name : String) -> void:
 	if _is_drawer_open:
 		token.get_node("Name").visible = true
 
-func _get_all_tokens() -> Dictionary:
+func get_tokens() -> Dictionary:
 	var found_tokens := {}
 	for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 		found_tokens[token.name] = token

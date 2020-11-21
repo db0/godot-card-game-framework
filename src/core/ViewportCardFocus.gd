@@ -49,10 +49,12 @@ func focus_card(card: Card) -> void:
 		var dupe_focus = card.duplicate()
 		_current_focus_source = card
 		_dupes_dict[dupe_focus] = card
-		# We hide the manipulation buttons if the card was cloned with them visible
+		# We display a "pure" version of the card
+		# This means we hide buttons, tokens etc
 		dupe_focus.get_node('Control/ManipulationButtons').modulate[3] = 0
 		dupe_focus.get_node('Control').rect_rotation = 0
 		dupe_focus.complete_targeting()
+		dupe_focus.get_node('Control/Tokens').visible = false
 		# If the card has already been been viewed while down,
 		# we allow the player hovering over it to see it
 		if not dupe_focus.is_faceup:

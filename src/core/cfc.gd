@@ -65,16 +65,25 @@ const TARGET_HOVER_COLOUR := Color(0, 0.4, 1) * 1.3
 #
 # You can change the colour to something else if  you want however
 const TARGETTING_ARROW_COLOUR := TARGET_HOVER_COLOUR
+# This dictionary contains your defined tokens for cards
+#
+# The key is the name of the token as it will appear in your scene and labels
+#
+# The value is the filename which contains your token image. The full path will
+# be constructed using the token_assets_path variable
+#
+# This allows us to reuse a token image for more than 1 token type
 const tokens_map := {
-	'tech': 'blue',
-	'plasma': 'blue',
-	'bio': 'green',
-	'industry': 'grey',
-	'magic': 'purple',
-	'blood': 'red',
-	'gold': 'yellow',
-	'void': 'black',
+	'tech': 'blue.svg',
+	'plasma': 'blue.svg',
+	'bio': 'green.svg',
+	'industry': 'grey.svg',
+	'magic': 'purple.svg',
+	'blood': 'red.svg',
+	'gold': 'yellow.svg',
+	'void': 'black.svg',
 }
+const token_assets_path = "res://assets/tokens/"
 # The below vars predefine the position in your node structure 
 # to reach the nodes relevant to the cards.
 #

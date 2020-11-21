@@ -25,10 +25,9 @@ __meta__ = {
 }
 
 [node name="Name" type="Label" parent="."]
-visible = false
-margin_top = 14.0
-margin_right = 110.0
-margin_bottom = 35.0
+margin_top = 13.0
+margin_right = 125.0
+margin_bottom = 37.0
 mouse_filter = 1
 custom_fonts/font = SubResource( 1 )
 text = "Token Name"
@@ -37,13 +36,15 @@ __meta__ = {
 }
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-visible = false
+margin_left = 129.0
+margin_right = 129.0
 margin_bottom = 50.0
 mouse_filter = 1
 size_flags_horizontal = 3
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
-margin_right = 50.0
+margin_left = 133.0
+margin_right = 183.0
 margin_bottom = 50.0
 mouse_filter = 1
 
