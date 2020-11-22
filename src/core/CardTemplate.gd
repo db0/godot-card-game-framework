@@ -1158,7 +1158,7 @@ func _are_buttons_hovered() -> bool:
 #
 # We need to detect this extra, for the same reasons as the targetting buttons
 # If we do not, the buttons continuously try to open and close.
-# 
+#
 # Returns true if the mouse is hovering over the token drawer, else false
 func _is_drawer_hovered() -> bool:
 	var ret = false
@@ -1180,7 +1180,7 @@ func _is_drawer_hovered() -> bool:
 #
 # We need to detect this extra, for the same reasons as the targetting buttons
 # In case the mouse was hovering over the tokens area and just exited
-# 
+#
 # Returns true if the mouse is hovering over the card, else false
 func _is_card_hovered() -> bool:
 	var ret = false
@@ -1602,6 +1602,11 @@ func _process_card_state() -> void:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
 
+
+# Reveals or Hides the token drawer
+#
+# The drawer will not appear while another animation is ongoing
+# and it will appear only while the card is on the board.
 func _token_drawer(drawer_state := true) -> void:
 	# I use these vars to avoid writing it all the time and to improve readability
 	var tween := $Control/Tokens/Tween
@@ -1610,20 +1615,25 @@ func _token_drawer(drawer_state := true) -> void:
 	if not tween.is_active() and \
 			not $Control/FlipTween.is_active() and \
 			not $Tween.is_active():
+		# We don't open the drawer if we don't have any tokens at all
 		if drawer_state == true and \
 				$Control/Tokens/Drawer/VBoxContainer.get_child_count() and \
 				(state == ON_PLAY_BOARD or state == FOCUSED_ON_BOARD):
 			if not _is_drawer_open:
 				_is_drawer_open = true
+				# To avoid tween deadlocks
 				tween.remove_all()
 				tween.interpolate_property(
 						td,'rect_position', td.rect_position,
 						Vector2($Control.rect_size.x,td.rect_position.y),
 						0.3, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
+				# We make all tokens display names
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 					token.expand()
+				# Normally the drawer is invisible. We make it visible now
 				$Control/Tokens/Drawer.self_modulate[3] = 1
 				tween.start()
+				# We need to make our tokens appear on top of other cards on the table
 				$Control/Tokens.z_index = 99
 		else:
 			if _is_drawer_open:
@@ -1634,7 +1644,11 @@ func _token_drawer(drawer_state := true) -> void:
 						td.rect_position.y),
 						0.2, Tween.TRANS_ELASTIC, Tween.EASE_IN)
 				tween.start()
+				# We want to consider the drawer closed
+				# only when the animation finished
+				# Otherwise it might start to open immediately again
 				yield(tween, "tween_all_completed")
+				# When it's closed, we hide token names
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 					token.retract()
 				$Control/Tokens/Drawer.self_modulate[3] = 0

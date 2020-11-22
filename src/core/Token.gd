@@ -13,6 +13,18 @@ func _ready():
 	set_count(count) # Replace with function body.
 
 
+# Button to increment token counter by 1
+func _on_Add_pressed() -> void:
+	set_count(count + 1)
+
+
+# Button to decrement token counter by 1
+func _on_Remove_pressed() -> void:
+	set_count(count - 1)
+	if count == 0:
+		queue_free()
+
+
 # Initializes the token with the right texture and name 
 # based on the values in the configuration
 func setup(token_name: String) -> void:
@@ -59,16 +71,4 @@ func retract() -> void:
 	$MarginContainer.visible = false
 	$Buttons.visible = false
 
-
-func adjust_to_rot(degrees: int) -> void:
-	rect_rotation = -degrees
-
-
-func _on_Add_pressed() -> void:
-	set_count(count + 1)
-
-
-func _on_Remove_pressed() -> void:
-	set_count(count - 1)
-	if count == 0:
-		queue_free()
+# 
