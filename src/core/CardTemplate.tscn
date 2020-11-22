@@ -1,4 +1,4 @@
-[gd_scene load_steps=19 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
@@ -85,6 +85,11 @@ font_data = ExtResource( 1 )
 [sub_resource type="DynamicFont" id=12]
 size = 12
 font_data = ExtResource( 1 )
+
+[sub_resource type="StyleBoxFlat" id=13]
+bg_color = Color( 0.584314, 0.6, 0.647059, 1 )
+corner_radius_top_right = 25
+corner_radius_bottom_right = 25
 
 [sub_resource type="DynamicFont" id=14]
 font_data = ExtResource( 1 )
@@ -273,6 +278,30 @@ __meta__ = {
 
 [node name="Pulse" type="Tween" parent="Control/Back"]
 
+[node name="Tokens" type="Node2D" parent="Control"]
+
+[node name="Drawer" type="PanelContainer" parent="Control/Tokens"]
+self_modulate = Color( 1, 1, 1, 0 )
+margin_left = 120.0
+margin_top = 20.0
+margin_right = 170.0
+margin_bottom = 70.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 13 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/Tokens/Drawer"]
+margin_right = 50.0
+margin_bottom = 50.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Tween" type="Tween" parent="Control/Tokens"]
+
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
 modulate = Color( 1, 1, 1, 0 )
 margin_left = 8.0
@@ -306,6 +335,14 @@ margin_bottom = 86.0
 mouse_filter = 1
 custom_fonts/font = SubResource( 14 )
 text = "F"
+
+[node name="AddToken" type="Button" parent="Control/ManipulationButtons"]
+margin_top = 90.0
+margin_right = 29.0
+margin_bottom = 116.0
+mouse_filter = 1
+custom_fonts/font = SubResource( 14 )
+text = "O"
 
 [node name="View" type="Button" parent="Control/ManipulationButtons"]
 visible = false

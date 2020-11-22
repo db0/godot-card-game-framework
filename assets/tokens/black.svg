@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:cc="http://web.resource.org/cc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:sodipodi="http://inkscape.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:svg="http://www.w3.org/2000/svg" xmlns:ns1="http://sozi.baierouge.fr" id="svg9493" sodipodi:docname="led_circle_black.svg" inkscape:export-ydpi="90.000000" inkscape:export-filename="/datas/Projs/Cliparts Stocker/led/led_circle_black.png" viewBox="0 0 50 50" sodipodi:version="0.32" inkscape:export-xdpi="90.000000" inkscape:version="0.42" sodipodi:docbase="/datas/Projs/Cliparts Stocker/led">
+  <defs id="defs9495">
+    <linearGradient id="linearGradient1336" y2="42.884" gradientUnits="userSpaceOnUse" y1="44.067" gradientTransform="matrix(24.162 0 0 18.686 -538.25 -790.04)" x2="23.39" x1="23.403" inkscape:collect="always">
+      <stop id="stop6508" style="stop-color:#ffffff;stop-opacity:0" offset="0"/>
+      <stop id="stop6510" style="stop-color:#ffffff;stop-opacity:.87451" offset="1"/>
+    </linearGradient>
+    <linearGradient id="linearGradient1339" y2="43.893" gradientUnits="userSpaceOnUse" y1="42.755" gradientTransform="matrix(30.284 0 0 30.284 -680.91 -1286.2)" x2="23.201" x1="23.214" inkscape:collect="always">
+      <stop id="stop9165" style="stop-color:#000000" offset="0"/>
+      <stop id="stop9167" style="stop-color:#8c8c8c" offset="1"/>
+    </linearGradient>
+    <linearGradient id="linearGradient1342" y2="43.711" gradientUnits="userSpaceOnUse" y1="42.768" gradientTransform="matrix(33.827 0 0 33.827 -763.51 -1439.6)" x2="23.441" x1="23.35" inkscape:collect="always">
+      <stop id="stop5758" style="stop-color:#828282" offset="0"/>
+      <stop id="stop5760" style="stop-color:#929292;stop-opacity:.35294" offset="1"/>
+    </linearGradient>
+    <linearGradient id="linearGradient1345" y2="44" gradientUnits="userSpaceOnUse" y1="42.429" gradientTransform="matrix(31.25 0 0 31.25 -700 -1325)" x2="23.2" x1="23.193" inkscape:collect="always">
+      <stop id="stop5744" style="stop-color:#adadad" offset="0"/>
+      <stop id="stop5746" style="stop-color:#f0f0f0" offset="1"/>
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview id="base" bordercolor="#666666" inkscape:pageshadow="2" inkscape:window-width="1024" pagecolor="#ffffff" inkscape:zoom="10.480000" inkscape:window-x="0" borderopacity="1.0" inkscape:current-layer="layer1" inkscape:cx="25.000000" inkscape:cy="25.000000" inkscape:window-y="25" inkscape:window-height="693" inkscape:pageopacity="0.0" inkscape:document-units="px"/>
+  <g id="layer1" inkscape:label="Calque 1" inkscape:groupmode="layer">
+    <g id="g1338">
+      <path id="path9171" style="fill:url(#linearGradient1345)" d="m50 25c0 13.8-11.2 25-25 25s-25-11.2-25-25c0.00003125-13.8 11.2-25 25-25 13.8 0.00003125 25 11.2 25 25z"/>
+      <path id="path9173" style="fill:url(#linearGradient1342)" d="m45.176 25c0 11.137-9.039 20.176-20.176 20.176s-20.176-9.039-20.176-20.176c0.0004-11.137 9.039-20.176 20.176-20.176 11.137 0.0005 20.176 9.039 20.176 20.176z"/>
+      <path id="path9175" style="fill:url(#linearGradient1339)" d="m43.062 25c0 9.97-8.092 18.062-18.062 18.062s-18.062-8.092-18.062-18.062c0.0001-9.971 8.092-18.062 18.062-18.062 9.97-0.0004 18.062 8.091 18.062 18.062z"/>
+      <path id="path9177" style="fill:url(#linearGradient1336)" d="m39.388 18.975c0 6.152-6.456 11.144-14.411 11.144s-14.411-4.992-14.411-11.144 6.456-11.145 14.411-11.145c7.955 0.0001 14.411 4.993 14.411 11.145z"/>
+    </g>
+  </g>
+  <metadata>
+    <rdf:RDF>
+      <cc:Work>
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+        <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
+        <dc:publisher>
+          <cc:Agent rdf:about="http://openclipart.org/">
+            <dc:title>Openclipart</dc:title>
+          </cc:Agent>
+        </dc:publisher>
+        <dc:title>led circle black</dc:title>
+        <dc:date>2009-06-30T12:58:38</dc:date>
+        <dc:description>Black glossy circle by Jean-Victor Balin. From OCAL 0.18 release.</dc:description>
+        <dc:source>https://openclipart.org/detail/26900/led-circle-black-by-anonymous</dc:source>
+        <dc:creator>
+          <cc:Agent>
+            <dc:title>Anonymous</dc:title>
+          </cc:Agent>
+        </dc:creator>
+        <dc:subject>
+          <rdf:Bag>
+            <rdf:li>black</rdf:li>
+            <rdf:li>button</rdf:li>
+            <rdf:li>glossy</rdf:li>
+            <rdf:li>round</rdf:li>
+          </rdf:Bag>
+        </dc:subject>
+      </cc:Work>
+      <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+        <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+      </cc:License>
+    </rdf:RDF>
+  </metadata>
+</svg>

@@ -1,4 +1,7 @@
 # Card Gaming Framework global config and control singleton
+#
+# Add it to your autoloads with the name 'cfc'
+class_name CardFrameworkConfiguration
 extends Node
 
 # The focus style used by the engine
@@ -65,6 +68,33 @@ const TARGET_HOVER_COLOUR := Color(0, 0.4, 1) * 1.3
 #
 # You can change the colour to something else if  you want however
 const TARGETTING_ARROW_COLOUR := TARGET_HOVER_COLOUR
+# If this is set to false, tokens on cards 
+# will not be removed when they exit the board
+const TOKENS_ONLY_ON_BOARD := true
+# If true, each token will have a convenient +/- button when expanded
+# to allow the player to add a remove more of the same
+const SHOW_TOKEN_BUTTONS = false
+# This dictionary contains your defined tokens for cards
+#
+# The key is the name of the token as it will appear in your scene and labels
+#
+# The value is the filename which contains your token image. The full path will
+# be constructed using the token_assets_path variable
+#
+# This allows us to reuse a token image for more than 1 token type
+const TOKENS_MAP := {
+	'tech': 'blue.svg',
+	'plasma': 'blue.svg',
+	'bio': 'green.svg',
+	'industry': 'grey.svg',
+	'magic': 'purple.svg',
+	'blood': 'red.svg',
+	'gold': 'yellow.svg',
+	'void': 'black.svg',
+}
+# This specifies the location of your token images. 
+# Tokens are always going to be seeked at this location
+const TOKEN_ASSETS_PATH = "res://assets/tokens/"
 # The below vars predefine the position in your node structure 
 # to reach the nodes relevant to the cards.
 #
@@ -72,7 +102,7 @@ const TARGETTING_ARROW_COLOUR := TARGET_HOVER_COLOUR
 # as this is assumed.
 #
 # Optimally this should be moved to its own reference class and set in the autoloader
-const nodes_map := {
+const NODES_MAP := {
 	'board': "Board",
 	'hand': "Board/Hand",
 	'deck': "Board/Deck",
@@ -120,16 +150,16 @@ func _ready() -> void:
 	# The below code allows us to quickly refer to nodes meant to host cards
 	# (i.e. parents) using an human-readable name
 	if get_tree().get_root().has_node('Main'):
-		for node in nodes_map.keys():
+		for node in NODES_MAP.keys():
 			NMAP[node]  = get_node('/root/Main/ViewportContainer/Viewport/'
-					+ nodes_map[node])
+					+ NODES_MAP[node])
 		NMAP['main'] = get_node('/root/Main')
 		# When Unite Testing, we want to always have both scaling options possible
 		if UT:
 			focus_style = FocusStyle.BOTH
 	else:
-		for node in nodes_map.keys():
-			NMAP[node]  = get_node('/root/' + nodes_map[node])
+		for node in NODES_MAP.keys():
+			NMAP[node]  = get_node('/root/' + NODES_MAP[node])
 		# If we're not using the main viewport scene, we need to fallback
 		# to the basic focus
 		focus_style = FocusStyle.SCALED

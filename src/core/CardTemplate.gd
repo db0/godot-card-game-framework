@@ -41,6 +41,10 @@ enum _ReturnCode {
 	FAILED,
 }
 
+const token_scene = preload("res://src/core/Token.tscn")
+#const token_names: {
+#
+#}
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 # warning-ignore:unused_class_variable
@@ -65,6 +69,8 @@ var state := IN_PILE
 var attachments := []
 # If this card is set as an attachment to another card, this tracks who its host is
 var current_host_card : Card = null
+# A dictionary holding all the tokens placed on this card
+var tokens := {} setget ,get_tokens
 
 # To track that this card attempting to target another card
 var _is_targetting := false
@@ -77,9 +83,11 @@ var _fancy_move_second_part := false
 # We use this to track multiple cards when our card is about to drop onto or target them
 var _potential_cards := []
 # Used for looping between brighness scales for the Cardback glow
-# The multipliers have to be small, as even small changes increase 
+# The multipliers have to be small, as even small changes increase
 # brightness a lot
 var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
+# A flag on whether the token drawer is currently open
+var _is_drawer_open := false
 
 # Debug for stuck tweens
 var _tween_stuck_time = 0
@@ -114,6 +122,8 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
 	# warning-ignore:return_value_discarded
+	$Control/Tokens/Drawer/VBoxContainer.connect("sort_children", self, "_on_VBoxContainer_sort_children")
+	# warning-ignore:return_value_discarded
 	for button in $Control/ManipulationButtons.get_children():
 		if button.name != "Tween":
 			button.connect("mouse_entered",self,"_on_button_mouse_entered")
@@ -124,10 +134,13 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	$Control/ManipulationButtons/Flip.connect("pressed",self,'_on_Flip_pressed')
 	# warning-ignore:return_value_discarded
+	$Control/ManipulationButtons/AddToken.connect("pressed",self,'_on_AddToken_pressed')
+	# warning-ignore:return_value_discarded
 	$Control/ManipulationButtons/View.connect("pressed",self,'_on_View_pressed')
 	# We want to allow anyone to remove the Pulse node if wanted
 	# So we check if it exists before we connect
 	if $Control/Back.has_node('Pulse'):
+# warning-ignore:return_value_discarded
 		$Control/Back/Pulse.connect("tween_all_completed", self, "_on_Pulse_completed")
 
 
@@ -145,15 +158,19 @@ func _process(delta) -> void:
 	if _is_targetting:
 		_draw_targeting_arrow()
 	_process_card_state()
+	# Having to do all these checks due to godotengine/godot#16854
+	if _is_drawer_open and not _is_drawer_hovered() and not _is_card_hovered():
+		_on_Card_mouse_exited()
 
 
 func _on_Card_mouse_entered() -> void:
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_index()) # Debug
-	#print(_get_button_hover()) # debug
+	#print($Control/Tokens/Drawer/VBoxContainer.rect_size) # debug
 	# We use this variable to check if mouse thinks it changed nodes because
 	# it just entered a child node
-	if not _get_button_hover() or (_get_button_hover() and not get_focus()):
+	if not (_are_buttons_hovered() and not _is_drawer_hovered()) or \
+			((_are_buttons_hovered() ) and not get_focus()):
 		match state:
 			IN_HAND, REORGANIZING, PUSHED_ASIDE:
 				if not cfc.card_drag_ongoing:
@@ -228,10 +245,10 @@ func _on_Card_mouse_exited() -> void:
 	# If it did, then that button will immediately set a variable to let us know
 	# not to restart the focus
 	#print(state,":exit:",get_index()) # debug
-	#print(_get_button_hover()) # debug
+	#print(_are_buttons_hovered()) # debug
 	# We use this variable to check if mouse thinks it changed nodes
 	# because it just entered a child node
-	if not _get_button_hover():
+	if not _are_buttons_hovered() and not _is_drawer_hovered():
 		match state:
 			FOCUSED_IN_HAND:
 				#_focus_completed = false
@@ -249,9 +266,17 @@ func _on_Card_mouse_exited() -> void:
 			FOCUSED_IN_POPUP:
 				state = IN_PILE
 
+# Resizes Token Drawer to min size whenever a token is removed completely.
+#
+# Without this, the token drawer would stay at the highest size it reached.
+func _on_VBoxContainer_sort_children() -> void:
+	$Control/Tokens/Drawer/VBoxContainer.rect_size = \
+			$Control/Tokens/Drawer/VBoxContainer.rect_min_size
+	# We need to resize it's parent too
+	$Control/Tokens/Drawer.rect_size = \
+			$Control/Tokens/Drawer.rect_min_size
 
-# Makes the hoverable buttons visible when hovering over them,
-# but only while the card is on the table
+
 func _on_button_mouse_entered() -> void:
 	match state:
 		ON_PLAY_BOARD:
@@ -282,6 +307,14 @@ func _on_Rot180_pressed() -> void:
 func _on_Flip_pressed() -> void:
 	# warning-ignore:return_value_discarded
 	set_is_faceup(not is_faceup)
+
+
+# Demo hover button which adds a selection of random tokens
+func _on_AddToken_pressed() -> void:
+	var valid_tokens := ['tech','bio','blood','plasma']
+	randomize()
+	# warning-ignore:return_value_discarded
+	add_token(valid_tokens[randi()%len(valid_tokens)])
 
 
 # Hover button which allows the player to view a facedown card
@@ -395,6 +428,8 @@ func set_is_faceup(value: bool) -> int:
 	if value == is_faceup:
 		retcode = _ReturnCode.OK
 	else:
+		if _is_drawer_open:
+			_token_drawer(false)
 		# We make sure to remove other tweens of the same type to avoid a deadlock
 		is_faceup = value
 		# When we change faceup state, we reset the is_viewed to false
@@ -524,6 +559,7 @@ func set_card_rotation(value: int, toggle := false) -> int:
 				$Control.rect_rotation, value, 0.3,
 				Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 		$Tween.start()
+		#$Control/Tokens.rotation_degrees = -value # need to figure this out
 		# When the card actually changes orientation
 		# We report that it changed.
 		retcode = _ReturnCode.CHANGED
@@ -550,6 +586,9 @@ func moveTo(targetHost: Node2D,
 #		cfc.NMAP.main.unfocus()
 	# We need to store the parent, because we won't be able to know it later
 	var parentHost = get_parent()
+	# We want to keep the token drawer closed during movement
+	if _is_drawer_open:
+		_token_drawer(false)
 	if targetHost != parentHost:
 		# When changing parent, it resets the position of the child it seems
 		# So we store it to know where the card used to be, before moving it
@@ -629,6 +668,11 @@ func moveTo(targetHost: Node2D,
 			# If the card was or had attachments and it is removed from the table,
 			# all attachments status is cleared
 			_clear_attachment_status()
+			# If the card has tokens, and TOKENS_ONLY_ON_BOARD is true
+			# we remove all tokens
+			if cfc.TOKENS_ONLY_ON_BOARD:
+				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
+					token.queue_free()
 			# When the card was removed from the board, we need to make sure it
 			# recovers to 0 degress rotation
 			# We make sure to remove other tweens of the same type to avoid a deadlock
@@ -646,9 +690,11 @@ func moveTo(targetHost: Node2D,
 			state = IN_HAND
 			reorganizeSelf()
 		if parentHost == cfc.NMAP.board:
-			# Having this if first, allows us to change hosts by drag & drop
+			# Checking if this is an attachment and we're looking for a new host
 			if len(_potential_cards):
 				attach_to_host(_potential_cards.back())
+			# If we are an attachment and were moved elsewhere
+			# We reset the position.
 			elif current_host_card:
 				var attach_index = current_host_card.attachments.find(self)
 				_target_position = (current_host_card.global_position
@@ -748,7 +794,7 @@ func interruptTweening() ->void:
 		state = IN_HAND
 
 
-# Changes card focus.
+# Changes card focus (highlighted and put on the focus viewport)
 func set_focus(requestedFocus: bool) -> void:
 	 # We use an if to avoid performing constant operations in _process
 	if $Control/FocusHighlight.visible != requestedFocus and \
@@ -759,6 +805,12 @@ func set_focus(requestedFocus: bool) -> void:
 			cfc.NMAP.main.focus_card(self)
 		else:
 			cfc.NMAP.main.unfocus(self)
+	# Tokens drawer is an optional node, so we check if it exists
+	# We also generally only have tokens on the table
+	if $Control.has_node("Tokens"):
+		_token_drawer(requestedFocus)
+#		if name == "Card" and get_parent() == cfc.NMAP.board:
+#			print(requestedFocus)
 
 
 # Tells us the focus-state of a card
@@ -772,7 +824,50 @@ func get_focus() -> bool:
 	return(focusState)
 
 
-# Changes card highlight.
+# Adds a token to the card
+#
+# If the token of that name doesn't exist, it creates it according to the config.
+func add_token(token_name : String) -> int:
+	var token : Token = get_tokens().get(token_name, null)
+	if not token:
+		token = token_scene.instance()
+		token.setup(token_name)
+		$Control/Tokens/Drawer/VBoxContainer.add_child(token)
+	else:
+		token.count += 1
+	if _is_drawer_open:
+		token.expand()
+	return(_ReturnCode.CHANGED)
+
+
+# Removes a token from the card
+#
+# If the amount of tokens of that type drops to 0, the token icon is also removed.
+func remove_token(token_name : String) -> int:
+	var retcode : int
+	var token : Token = get_tokens().get(token_name, null)
+	if not token:
+		retcode = _ReturnCode.OK
+	else:
+		token.count -= 1
+		if token.count == 0:
+			token.queue_free()
+		retcode = _ReturnCode.CHANGED
+	return(retcode)
+
+
+# Returns a dictionary of card tokens on this card.
+#
+# * Key is the name of the token.
+# * Value is the token scene.
+func get_tokens() -> Dictionary:
+	var found_tokens := {}
+	for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
+		found_tokens[token.name] = token
+	return found_tokens
+
+
+# Changes card highlight colour.
 func set_highlight(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) -> void:
 	$Control/FocusHighlight.visible = requestedFocus
 	if requestedFocus:
@@ -1043,7 +1138,7 @@ func _determine__target_position_from_mouse() -> void:
 # This is all necessary as a workaround for godotengine/godot#16854
 #
 # Returns true if the mouse is hovering over the buttons, else false
-func _get_button_hover() -> bool:
+func _are_buttons_hovered() -> bool:
 	var ret = false
 	if (get_global_mouse_position().x
 			>= $Control/ManipulationButtons.rect_global_position.x and
@@ -1056,6 +1151,51 @@ func _get_button_hover() -> bool:
 			<= $Control/ManipulationButtons.rect_global_position.y
 			+ $Control/ManipulationButtons.rect_size.y):
 		ret = true
+	return(ret)
+
+
+# Detects when the mouse is still hovering over the tokens area.
+#
+# We need to detect this extra, for the same reasons as the targetting buttons
+# If we do not, the buttons continuously try to open and close.
+#
+# Returns true if the mouse is hovering over the token drawer, else false
+func _is_drawer_hovered() -> bool:
+	var ret = false
+	if (get_global_mouse_position().x
+			>= $Control/Tokens/Drawer.rect_global_position.x and
+			get_global_mouse_position().y
+			>= $Control/Tokens/Drawer.rect_global_position.y and
+			get_global_mouse_position().x
+			<= $Control/Tokens/Drawer.rect_global_position.x
+			+ $Control/Tokens/Drawer.rect_size.x and
+			get_global_mouse_position().y
+			<= $Control/Tokens/Drawer.rect_global_position.y
+			+ $Control/Tokens/Drawer.rect_size.y):
+		ret = true
+	return(ret)
+
+
+# Detects when the mouse is still hovering over the card
+#
+# We need to detect this extra, for the same reasons as the targetting buttons
+# In case the mouse was hovering over the tokens area and just exited
+#
+# Returns true if the mouse is hovering over the card, else false
+func _is_card_hovered() -> bool:
+	var ret = false
+	if (get_global_mouse_position().x
+			>= $Control.rect_global_position.x and
+			get_global_mouse_position().y
+			>= $Control.rect_global_position.y and
+			get_global_mouse_position().x
+			<= $Control.rect_global_position.x
+			+ $Control.rect_size.x and
+			get_global_mouse_position().y
+			<= $Control.rect_global_position.y
+			+ $Control.rect_size.y):
+		ret = true
+	#print(ret)
 	return(ret)
 
 # Flips the visible parts of the card control nodes
@@ -1366,6 +1506,9 @@ func _process_card_state() -> void:
 			# the player to properly understand where it will go once dropped.
 			global_position = _determine_board_position_from_mouse()# - $Control.rect_size/2 * scale
 			_organize_attachments()
+			# We want to keep the token drawer closed during movement
+			if _is_drawer_open:
+				_token_drawer(false)
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			set_focus(false)
@@ -1458,3 +1601,57 @@ func _process_card_state() -> void:
 		FOCUSED_IN_POPUP:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
+
+
+# Reveals or Hides the token drawer
+#
+# The drawer will not appear while another animation is ongoing
+# and it will appear only while the card is on the board.
+func _token_drawer(drawer_state := true) -> void:
+	# I use these vars to avoid writing it all the time and to improve readability
+	var tween := $Control/Tokens/Tween
+	var td := $Control/Tokens/Drawer
+	# We want to keep the drawer closed during the flip and movement
+	if not tween.is_active() and \
+			not $Control/FlipTween.is_active() and \
+			not $Tween.is_active():
+		# We don't open the drawer if we don't have any tokens at all
+		if drawer_state == true and \
+				$Control/Tokens/Drawer/VBoxContainer.get_child_count() and \
+				(state == ON_PLAY_BOARD or state == FOCUSED_ON_BOARD):
+			if not _is_drawer_open:
+				_is_drawer_open = true
+				# To avoid tween deadlocks
+				tween.remove_all()
+				tween.interpolate_property(
+						td,'rect_position', td.rect_position,
+						Vector2($Control.rect_size.x,td.rect_position.y),
+						0.3, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
+				# We make all tokens display names
+				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
+					token.expand()
+				# Normally the drawer is invisible. We make it visible now
+				$Control/Tokens/Drawer.self_modulate[3] = 1
+				tween.start()
+				# We need to make our tokens appear on top of other cards on the table
+				$Control/Tokens.z_index = 99
+		else:
+			if _is_drawer_open:
+				tween.remove_all()
+				tween.interpolate_property(
+						td,'rect_position', td.rect_position,
+						Vector2($Control.rect_size.x - 35,
+						td.rect_position.y),
+						0.2, Tween.TRANS_ELASTIC, Tween.EASE_IN)
+				tween.start()
+				# We want to consider the drawer closed
+				# only when the animation finished
+				# Otherwise it might start to open immediately again
+				yield(tween, "tween_all_completed")
+				# When it's closed, we hide token names
+				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
+					token.retract()
+				$Control/Tokens/Drawer.self_modulate[3] = 0
+				_is_drawer_open = false
+				$Control/Tokens.z_index = 0
+

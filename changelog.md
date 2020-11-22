@@ -1,9 +1,10 @@
 # Changelog
 
-## 0.11
+## 0.11 (Ongoing)
 
 * Added new card back
 * Made the card back glow-pulse 
+* Can add or remove tokens from cards
 
 ## 0.10
 
