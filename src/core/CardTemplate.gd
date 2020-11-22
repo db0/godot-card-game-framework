@@ -119,10 +119,10 @@ func _ready() -> void:
 	$Control.connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_exited", self, "_on_Card_mouse_exited")
-#	# warning-ignore:return_value_discarded
-#	$Control/Tokens/Drawer.connect("mouse_exited", self, "_on_Drawer_mouse_exited")
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
+	# warning-ignore:return_value_discarded
+	$Control/Tokens/Drawer/VBoxContainer.connect("sort_children", self, "_on_VBoxContainer_sort_children")
 	# warning-ignore:return_value_discarded
 	for button in $Control/ManipulationButtons.get_children():
 		if button.name != "Tween":
@@ -158,7 +158,7 @@ func _process(delta) -> void:
 	if _is_targetting:
 		_draw_targeting_arrow()
 	_process_card_state()
-	# Having to do all these checks due to 
+	# Having to do all these checks due to godotengine/godot#16854
 	if _is_drawer_open and not _is_drawer_hovered() and not _is_card_hovered():
 		_on_Card_mouse_exited()
 
@@ -166,7 +166,7 @@ func _process(delta) -> void:
 func _on_Card_mouse_entered() -> void:
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_index()) # Debug
-	#print(_are_buttons_hovered()) # debug
+	#print($Control/Tokens/Drawer/VBoxContainer.rect_size) # debug
 	# We use this variable to check if mouse thinks it changed nodes because
 	# it just entered a child node
 	if not (_are_buttons_hovered() and not _is_drawer_hovered()) or \
@@ -266,15 +266,17 @@ func _on_Card_mouse_exited() -> void:
 			FOCUSED_IN_POPUP:
 				state = IN_PILE
 
-#func _on_Drawer_mouse_exited() -> void:
-#	if not _is_card_hovered():
-#		print('a')
-#		_on_Card_mouse_exited()
-#	else:
-#		print('b')
+# Resizes Token Drawer to min size whenever a token is removed completely.
+#
+# Without this, the token drawer would stay at the highest size it reached.
+func _on_VBoxContainer_sort_children() -> void:
+	$Control/Tokens/Drawer/VBoxContainer.rect_size = \
+			$Control/Tokens/Drawer/VBoxContainer.rect_min_size
+	# We need to resize it's parent too
+	$Control/Tokens/Drawer.rect_size = \
+			$Control/Tokens/Drawer.rect_min_size
 
-# Makes the hoverable buttons visible when hovering over them,
-# but only while the card is on the table
+
 func _on_button_mouse_entered() -> void:
 	match state:
 		ON_PLAY_BOARD:
@@ -1638,3 +1640,4 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
+
