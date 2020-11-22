@@ -48,6 +48,7 @@ func get_count() -> int:
 func expand() -> void:
 	$Name.visible = true
 	$MarginContainer.visible = true
+	$Buttons.visible = true
 
 
 # Hides the Name label.
@@ -56,7 +57,18 @@ func expand() -> void:
 func retract() -> void:
 	$Name.visible = false
 	$MarginContainer.visible = false
+	$Buttons.visible = false
 
 
 func adjust_to_rot(degrees: int) -> void:
 	rect_rotation = -degrees
+
+
+func _on_Add_pressed() -> void:
+	set_count(count + 1)
+
+
+func _on_Remove_pressed() -> void:
+	set_count(count - 1)
+	if count == 0:
+		queue_free()

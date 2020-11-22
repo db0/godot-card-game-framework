@@ -119,6 +119,8 @@ func _ready() -> void:
 	$Control.connect("mouse_entered", self, "_on_Card_mouse_entered")
 	# warning-ignore:return_value_discarded
 	$Control.connect("mouse_exited", self, "_on_Card_mouse_exited")
+#	# warning-ignore:return_value_discarded
+#	$Control/Tokens/Drawer.connect("mouse_exited", self, "_on_Drawer_mouse_exited")
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
 	# warning-ignore:return_value_discarded
@@ -156,15 +158,19 @@ func _process(delta) -> void:
 	if _is_targetting:
 		_draw_targeting_arrow()
 	_process_card_state()
+	# Having to do all these checks due to 
+	if _is_drawer_open and not _is_drawer_hovered() and not _is_card_hovered():
+		_on_Card_mouse_exited()
 
 
 func _on_Card_mouse_entered() -> void:
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_index()) # Debug
-	#print(_get_button_hover()) # debug
+	#print(_are_buttons_hovered()) # debug
 	# We use this variable to check if mouse thinks it changed nodes because
 	# it just entered a child node
-	if not _get_button_hover() or (_get_button_hover() and not get_focus()):
+	if not (_are_buttons_hovered() and not _is_drawer_hovered()) or \
+			((_are_buttons_hovered() ) and not get_focus()):
 		match state:
 			IN_HAND, REORGANIZING, PUSHED_ASIDE:
 				if not cfc.card_drag_ongoing:
@@ -239,10 +245,10 @@ func _on_Card_mouse_exited() -> void:
 	# If it did, then that button will immediately set a variable to let us know
 	# not to restart the focus
 	#print(state,":exit:",get_index()) # debug
-	#print(_get_button_hover()) # debug
+	#print(_are_buttons_hovered()) # debug
 	# We use this variable to check if mouse thinks it changed nodes
 	# because it just entered a child node
-	if not _get_button_hover():
+	if not _are_buttons_hovered() and not _is_drawer_hovered():
 		match state:
 			FOCUSED_IN_HAND:
 				#_focus_completed = false
@@ -260,6 +266,12 @@ func _on_Card_mouse_exited() -> void:
 			FOCUSED_IN_POPUP:
 				state = IN_PILE
 
+#func _on_Drawer_mouse_exited() -> void:
+#	if not _is_card_hovered():
+#		print('a')
+#		_on_Card_mouse_exited()
+#	else:
+#		print('b')
 
 # Makes the hoverable buttons visible when hovering over them,
 # but only while the card is on the table
@@ -299,6 +311,7 @@ func _on_Flip_pressed() -> void:
 func _on_AddToken_pressed() -> void:
 	var valid_tokens := ['tech','bio','blood','plasma']
 	randomize()
+	# warning-ignore:return_value_discarded
 	add_token(valid_tokens[randi()%len(valid_tokens)])
 
 
@@ -812,8 +825,8 @@ func get_focus() -> bool:
 # Adds a token to the card
 #
 # If the token of that name doesn't exist, it creates it according to the config.
-func add_token(token_name : String) -> void:
-	var token = get_tokens().get(token_name, null)
+func add_token(token_name : String) -> int:
+	var token : Token = get_tokens().get(token_name, null)
 	if not token:
 		token = token_scene.instance()
 		token.setup(token_name)
@@ -821,7 +834,24 @@ func add_token(token_name : String) -> void:
 	else:
 		token.count += 1
 	if _is_drawer_open:
-		token.get_node("Name").visible = true
+		token.expand()
+	return(_ReturnCode.CHANGED)
+
+
+# Removes a token from the card
+#
+# If the amount of tokens of that type drops to 0, the token icon is also removed.
+func remove_token(token_name : String) -> int:
+	var retcode : int
+	var token : Token = get_tokens().get(token_name, null)
+	if not token:
+		retcode = _ReturnCode.OK
+	else:
+		token.count -= 1
+		if token.count == 0:
+			token.queue_free()
+		retcode = _ReturnCode.CHANGED
+	return(retcode)
 
 
 # Returns a dictionary of card tokens on this card.
@@ -1106,7 +1136,7 @@ func _determine__target_position_from_mouse() -> void:
 # This is all necessary as a workaround for godotengine/godot#16854
 #
 # Returns true if the mouse is hovering over the buttons, else false
-func _get_button_hover() -> bool:
+func _are_buttons_hovered() -> bool:
 	var ret = false
 	if (get_global_mouse_position().x
 			>= $Control/ManipulationButtons.rect_global_position.x and
@@ -1119,6 +1149,51 @@ func _get_button_hover() -> bool:
 			<= $Control/ManipulationButtons.rect_global_position.y
 			+ $Control/ManipulationButtons.rect_size.y):
 		ret = true
+	return(ret)
+
+
+# Detects when the mouse is still hovering over the tokens area.
+#
+# We need to detect this extra, for the same reasons as the targetting buttons
+# If we do not, the buttons continuously try to open and close.
+# 
+# Returns true if the mouse is hovering over the token drawer, else false
+func _is_drawer_hovered() -> bool:
+	var ret = false
+	if (get_global_mouse_position().x
+			>= $Control/Tokens/Drawer.rect_global_position.x and
+			get_global_mouse_position().y
+			>= $Control/Tokens/Drawer.rect_global_position.y and
+			get_global_mouse_position().x
+			<= $Control/Tokens/Drawer.rect_global_position.x
+			+ $Control/Tokens/Drawer.rect_size.x and
+			get_global_mouse_position().y
+			<= $Control/Tokens/Drawer.rect_global_position.y
+			+ $Control/Tokens/Drawer.rect_size.y):
+		ret = true
+	return(ret)
+
+
+# Detects when the mouse is still hovering over the card
+#
+# We need to detect this extra, for the same reasons as the targetting buttons
+# In case the mouse was hovering over the tokens area and just exited
+# 
+# Returns true if the mouse is hovering over the card, else false
+func _is_card_hovered() -> bool:
+	var ret = false
+	if (get_global_mouse_position().x
+			>= $Control.rect_global_position.x and
+			get_global_mouse_position().y
+			>= $Control.rect_global_position.y and
+			get_global_mouse_position().x
+			<= $Control.rect_global_position.x
+			+ $Control.rect_size.x and
+			get_global_mouse_position().y
+			<= $Control.rect_global_position.y
+			+ $Control.rect_size.y):
+		ret = true
+	#print(ret)
 	return(ret)
 
 # Flips the visible parts of the card control nodes
@@ -1526,7 +1601,6 @@ func _process_card_state() -> void:
 			set_focus(true)
 
 func _token_drawer(drawer_state := true) -> void:
-	#print('bah')
 	# I use these vars to avoid writing it all the time and to improve readability
 	var tween := $Control/Tokens/Tween
 	var td := $Control/Tokens/Drawer
