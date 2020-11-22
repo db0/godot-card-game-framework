@@ -77,6 +77,7 @@ The below instructions will set up your game to use the `Card` class as a framew
 		* Front # You can modify or remove children and change to another Control-type node
 		* Back # You can modify or remove children (except Viewed) and change to another Control-type node
 		    * CenterContainer/Viewed
+		Tokens and all children nodes
 	* ManipulationButtons
 	* all Tween nodes called "*Tween"
 	* TargetLine and all children nodes
