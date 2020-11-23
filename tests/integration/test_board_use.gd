@@ -17,7 +17,7 @@ func before_each():
 func test_card_table_drop_location_and_rotation():
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(300,300),cards[0].position)
 	yield(yield_for(0.6), YIELD)
 	board._UT_interpolate_mouse_move(Vector2(800,200))
@@ -45,7 +45,7 @@ func test_card_table_drop_location_and_rotation():
 func test_card_hand_drop_recovery():
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(100,100),cards[0].position)
 	yield(yield_for(0.4), YIELD)
 	board._UT_interpolate_mouse_move(Vector2(200,620))
@@ -57,7 +57,7 @@ func test_card_hand_drop_recovery():
 func test_card_drag_block_by_board_borders():
 	cards[4]._on_Card_mouse_entered()
 	common.click_card(cards[4])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(-100,100),cards[0].global_position)
 	yield(yield_for(0.4), YIELD)
 	assert_almost_eq(Vector2(0, 100),cards[4].global_position,Vector2(2,2), "Check dragged outside left viewport borders stays inside viewport")
@@ -76,7 +76,7 @@ func test_fast_card_table_drop():
 	# This catches a bug where the card keeps following the mouse after being dropped
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(1000, 300),cards[0].position)
 	yield(yield_for(0.6), YIELD)
 	common.drop_card(cards[0],board._UT_mouse_position)

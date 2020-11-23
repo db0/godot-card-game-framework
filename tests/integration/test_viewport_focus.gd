@@ -27,7 +27,7 @@ func test_single_card_focus():
 func test_for_leftover_focus_objects():
 	cards[2]._on_Card_mouse_entered()
 	common.click_card(cards[2])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[2],board._UT_mouse_position)

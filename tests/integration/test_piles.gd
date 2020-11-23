@@ -16,7 +16,7 @@ func before_each():
 func test_move_to_container():
 	cards[2]._on_Card_mouse_entered()
 	common.click_card(cards[2])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[2],board._UT_mouse_position)
@@ -27,28 +27,28 @@ func test_move_to_container():
 func test_move_to_multiple_container():
 	cards[2]._on_Card_mouse_entered()
 	common.click_card(cards[2])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[2],board._UT_mouse_position)
 	yield(yield_for(0.1), YIELD)
 	cards[4]._on_Card_mouse_entered()
 	common.click_card(cards[4])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.deck.position,cards[4].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[4],board._UT_mouse_position)
 	yield(yield_for(0.1), YIELD)
 	cards[1]._on_Card_mouse_entered()
 	common.click_card(cards[1])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[1].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[1],board._UT_mouse_position)
 	yield(yield_for(0.1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.deck.position,cards[0].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
 	common.drop_card(cards[0],board._UT_mouse_position)

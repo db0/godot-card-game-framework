@@ -17,7 +17,7 @@ func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fas
 		mouse_speed = 3
 	card._on_Card_mouse_entered()
 	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(target_position,card.position,mouse_speed)
 	yield(yield_for(mouse_yield_wait), YIELD)
 	common.drop_card(card,board._UT_mouse_position)
@@ -45,7 +45,7 @@ func test_attaching_and_switching_parent():
 	card = cards[1]
 	card._on_Card_mouse_entered()
 	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(310,310),card.position,10)
 	yield(yield_for(0.3), YIELD)
 	assert_true(cards[0].get_node('Control/FocusHighlight').visible, "Test that a card hovering over another with attachment flag on, highlights it")
@@ -72,7 +72,7 @@ func test_attaching_and_switching_parent():
 	card = cards[0]
 	card._on_Card_mouse_entered()
 	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(700,100),card.position)
 	yield(yield_for(0.2), YIELD)
 	assert_almost_ne(card_prev_pos,cards[3].global_position, Vector2(2,2),"Test that drag also drags attachments")
@@ -86,7 +86,7 @@ func test_attaching_and_switching_parent():
 	assert_almost_eq(cards[3].global_position,card.global_position + Vector2(0,3) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Test that after drag, drop is placed correctly according to parent")
 	card._on_Card_mouse_entered()
 	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(100,100),card.position,10)
 	yield(yield_for(0.3), YIELD)
 	for c in card.attachments:
@@ -97,7 +97,7 @@ func test_attaching_and_switching_parent():
 	assert_null(card.current_host_card,"Test that a card cannot be hosted in its own attachments")
 	card._on_Card_mouse_entered()
 	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(100,400),card.position,10)
 	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
@@ -107,7 +107,7 @@ func test_attaching_and_switching_parent():
 	card_prev_pos = card.global_position
 	card._on_Card_mouse_entered()
 	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(700,100),card.position)
 	yield(yield_for(0.2), YIELD)
 	assert_almost_ne(card_prev_pos,card.global_position, Vector2(2,2),"Test that dragging an attached card is allowed")
@@ -118,7 +118,7 @@ func test_attaching_and_switching_parent():
 	assert_almost_eq(card_prev_pos,card.global_position, Vector2(2,2),"Test that after dropping an attached card, it returns to the parent host")
 	card._on_Card_mouse_entered()
 	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(400,500),card.position,10)
 	yield(yield_for(0.3), YIELD)
 	common.drop_card(card,board._UT_mouse_position)
@@ -177,7 +177,7 @@ func test_multi_host_hover():
 	card = cards[3]
 	card._on_Card_mouse_entered()
 	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(150,100),card.position,10)
 	yield(yield_for(0.3), YIELD)
 	assert_true(cards[2].get_node('Control/FocusHighlight').visible, "Test that a card hovering over two or more with attachment flag on, highlights only the top one")
