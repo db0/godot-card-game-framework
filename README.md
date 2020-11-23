@@ -28,6 +28,20 @@ Right-click and hold on a a card to begin dragging a targeting arrow. Release ri
 
 Click on the "Enable Attachment" toggle to make all cards act as attachments and therefore allow them  to attach to others.
 
+### Card Rotation
+
+Click on either the 'T' or '@' buttons. Click again the same button to revert to  0 degrees.
+
+### Tokens/Counters
+
+Click on the 'O' Button, to start adding random tokens to the card. 
+
+Click on the +/- buttons next to each Token to add/remove that specifically
+
+### Card Flip Face-Up/Face-Down
+
+Click on the 'F' button to exchange between these two states
+
 ## Installation
 
 Copy the src folder to your project
@@ -183,16 +197,6 @@ For more fine customization, you'll need to modify manually
 * Can flip cards face-down and view them while in that state
 * Can add tokens on cards
 
-## Demonstration functions
-
-Most of the capabilities of the Framework you can see by natively playing with the cards
-
-Some features, you would normally see in a game that was scripted to call them at the right time. To experience those, I've created some convenient demonstrations to trigger them. Most of them are in the buttons which appear when you hover over the card.
-
-* Card Targetting: Right click and hold on a card to start targettting
-* Tokens: Click on the 'O' Button, to start adding random tokens to the card
-* Card Rotation: Click on either the 'T' or '@' buttons
-* Flip Up/Flip Down: Click on the 'F' button
 
 ## Credits
 
