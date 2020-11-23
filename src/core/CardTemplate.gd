@@ -651,7 +651,7 @@ func moveTo(targetHost: Node2D,
 				# The developer is allowed to pass a position override to the
 				# card placement
 				if boardPosition == Vector2(-1,-1):
-					_determine__target_position_from_mouse()
+					_determine_target_position_from_mouse()
 				else:
 					_target_position = boardPosition
 				raise()
@@ -702,7 +702,7 @@ func moveTo(targetHost: Node2D,
 						* $Control.rect_size.y
 						* cfc.ATTACHMENT_OFFSET))
 			else:
-				_determine__target_position_from_mouse()
+				_determine_target_position_from_mouse()
 				raise()
 			state = DROPPING_TO_BOARD
 	# Just in case there's any leftover potential host highlights
@@ -1133,7 +1133,7 @@ func _clear_attachment_status() -> void:
 # This function figures out where on the table a card should be placed
 # based on the mouse position
 # It takes extra care not to drop the card outside viewport margins
-func _determine__target_position_from_mouse() -> void:
+func _determine_target_position_from_mouse() -> void:
 	_target_position = _determine_board_position_from_mouse()
 	# The below ensures the card doesn't leave the viewport dimentions
 	if _target_position.x + $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x \
@@ -1163,14 +1163,14 @@ func _determine__target_position_from_mouse() -> void:
 # Returns true if the mouse is hovering over the buttons, else false
 func _are_buttons_hovered() -> bool:
 	var ret = false
-	if (get_global_mouse_position().x
+	if (_determine_global_mouse_pos().x
 			>= $Control/ManipulationButtons.rect_global_position.x and
-			get_global_mouse_position().y
+			_determine_global_mouse_pos().y
 			>= $Control/ManipulationButtons.rect_global_position.y and
-			get_global_mouse_position().x
+			_determine_global_mouse_pos().x
 			<= $Control/ManipulationButtons.rect_global_position.x
 			+ $Control/ManipulationButtons.rect_size.x and
-			get_global_mouse_position().y
+			_determine_global_mouse_pos().y
 			<= $Control/ManipulationButtons.rect_global_position.y
 			+ $Control/ManipulationButtons.rect_size.y):
 		ret = true
@@ -1185,14 +1185,14 @@ func _are_buttons_hovered() -> bool:
 # Returns true if the mouse is hovering over the token drawer, else false
 func _is_drawer_hovered() -> bool:
 	var ret = false
-	if (get_global_mouse_position().x
+	if (_determine_global_mouse_pos().x
 			>= $Control/Tokens/Drawer.rect_global_position.x and
-			get_global_mouse_position().y
+			_determine_global_mouse_pos().y
 			>= $Control/Tokens/Drawer.rect_global_position.y and
-			get_global_mouse_position().x
+			_determine_global_mouse_pos().x
 			<= $Control/Tokens/Drawer.rect_global_position.x
 			+ $Control/Tokens/Drawer.rect_size.x and
-			get_global_mouse_position().y
+			_determine_global_mouse_pos().y
 			<= $Control/Tokens/Drawer.rect_global_position.y
 			+ $Control/Tokens/Drawer.rect_size.y):
 		ret = true
@@ -1207,14 +1207,14 @@ func _is_drawer_hovered() -> bool:
 # Returns true if the mouse is hovering over the card, else false
 func _is_card_hovered() -> bool:
 	var ret = false
-	if (get_global_mouse_position().x
+	if (_determine_global_mouse_pos().x
 			>= $Control.rect_global_position.x and
-			get_global_mouse_position().y
+			_determine_global_mouse_pos().y
 			>= $Control.rect_global_position.y and
-			get_global_mouse_position().x
+			_determine_global_mouse_pos().x
 			<= $Control.rect_global_position.x
 			+ $Control.rect_size.x and
-			get_global_mouse_position().y
+			_determine_global_mouse_pos().y
 			<= $Control.rect_global_position.y
 			+ $Control.rect_size.y):
 		ret = true

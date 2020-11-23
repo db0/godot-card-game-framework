@@ -36,6 +36,7 @@ func test_manipulation_buttons_not_messing_hand_focus():
 	var card : Card
 	card = cards[0]
 	yield(drag_drop(card, Vector2(600,200)), 'completed')
+	board._UT_interpolate_mouse_move(card.position,card.position)
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
 	assert_eq(0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
@@ -65,8 +66,9 @@ func test_manipulation_buttons_not_messing_hand_focus():
 	assert_eq("2",tech_token.get_node("CenterContainer/Count").text,
 			"Token change increases label counter too")
 	pending("get_tokens() returns correct amount of tokens")
+	board._UT_interpolate_mouse_move(card.position,card.position)
 	card._on_Card_mouse_entered()
-	yield(yield_for(0.4), YIELD) # Wait to allow drawer to expand
+	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
 	assert_eq(1, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer appears when card has tokens on mouse hover")
 	assert_almost_eq(Vector2(card.get_node("Control").rect_size.x,20),
@@ -77,8 +79,10 @@ func test_manipulation_buttons_not_messing_hand_focus():
 	yield(yield_for(0.1), YIELD) # Wait to allow drawer to expand
 	assert_lt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
 			"When more tokens drawer size expands")
+	board._UT_interpolate_mouse_move(Vector2(600,600),card.position)
+	yield(yield_for(0.3), YIELD) # Wait to allow drawer to close
 	card._on_Card_mouse_exited()
-	yield(yield_for(0.4), YIELD) # Wait to allow drawer to close
+	yield(yield_for(0.3), YIELD) # Wait to allow drawer to close
 	assert_eq(0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer does not appear card hover when no card has no tokens")
 	assert_almost_eq(Vector2(card.get_node("Control").rect_size.x - 35,20),
@@ -91,17 +95,36 @@ func test_manipulation_buttons_not_messing_hand_focus():
 	assert_eq(1,tech_token.count,"remove_token() buttons decreases amount")
 	assert_eq("1",tech_token.get_node("CenterContainer/Count").text,
 			"Counter label has the reduced number")
+	prev_y = card.get_node("Control/Tokens/Drawer").rect_size.y
 	assert_eq(card._ReturnCode.CHANGED, card.remove_token("tech"),
 			"Removing token to 0 returns a CHANGED result")
-	assert_freed(tech_token, "tech")
-	pending("Reducing counter to 0, removes the token completely")
-	pending("When Tokens are removed, drawer size decreases")
-	pending("Drawer closes on drag")
-	pending("Drawer closes on moveTo")
+	yield(yield_for(0.1), YIELD) # Wait to allow node to be free'd
+	assert_freed(tech_token, "tech token")
+	assert_gt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
+			"When less tokens drawer size decreases")
+	board._UT_interpolate_mouse_move(card.position,Vector2(600,600))
+	card._on_Card_mouse_entered()
+	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
+	common.click_card(card)
+	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+	gut.p("moving")
+	board._UT_interpolate_mouse_move(Vector2(200,300),card.position)
+	yield(yield_for(0.6), YIELD)
+	assert_eq(0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+			"Drawer closes when card is being dragged")
+	common.drop_card(card,board._UT_mouse_position)
+	card._on_Card_mouse_exited()
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	card._on_Card_mouse_entered()
+	yield(yield_for(3), YIELD) # Wait to allow drawer to expand
+	#card.moveTo(cfc.NMAP.discard)
+	#yield(yield_for(0.2), YIELD)
+	assert_eq(0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+			"Drawer closes on moveTo")
 	pending("Drawer closes while Flip is ongoing")
 	pending("Drawer reopens once Flip is completed")
 	pending("Tokens removed when card leaves table")
 	pending("Tokens not removed when card leaves with cfc.TOKENS_ONLY_ON_BOARD == false")
 	pending("Two tokens can use the same texture but different names")
 	pending("Drawer is drawn on top of other cards")
-	pause_before_teardown()
+	#pause_before_teardown()
