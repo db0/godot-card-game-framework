@@ -32,18 +32,22 @@ func before_each():
 	hand = cfc.NMAP.hand
 	yield(yield_for(1), YIELD)
 
-func test_manipulation_buttons_not_messing_hand_focus():
+func test_board_tokens():
 	var card : Card
 	card = cards[0]
 	yield(drag_drop(card, Vector2(600,200)), 'completed')
-	board._UT_interpolate_mouse_move(card.position,card.position)
+	board._UT_mouse_position = card.position
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
-	assert_eq(0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+	assert_false(card._is_drawer_open, "_is_drawer_open flag should be false")
+	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer does not appear card hover when no card has no tokens")
-	assert_eq(Vector2(card.get_node("Control").rect_size.x - 35,20), card.get_node("Control/Tokens/Drawer").rect_position,
+	assert_eq(Vector2(card.get_node("Control").rect_size.x - 35,20), 
+			card.get_node("Control/Tokens/Drawer").rect_position,
 			"Drawer does not extend when card hover when no card has no tokens")
+	board._UT_mouse_position = Vector2(1100,200)
 	card._on_Card_mouse_exited()
+	
 	assert_eq(card._ReturnCode.FAILED,card.add_token("Should Fail"),
 			"Adding non-defined token returns a FAILED")
 	assert_eq(card._ReturnCode.CHANGED, card.add_token("tech"),
@@ -52,11 +56,16 @@ func test_manipulation_buttons_not_messing_hand_focus():
 	assert_eq("tech", tech_token.name, "New token takes the correct name")
 	assert_eq("Tech", tech_token.get_node("Name").text,
 			"Token label is name capitalized")
+	assert_false(tech_token.get_node("Name").visible,
+			"Token label should be invisible when card not hovered")
+	assert_false(tech_token.get_node("MarginContainer").visible,
+			"MarginContainer should be invisible when card not hovered")
+	assert_false(tech_token.get_node("Buttons").visible,
+			"Token Buttons should be invisible when card not hovered")
 	assert_eq(card._ReturnCode.CHANGED, card.add_token("gold coin"),
 			"Can add tokens which include spaces")
 	assert_eq("Gold Coin", card.get_token("gold coin").get_node("Name").text,
 			"Token with space in name label is name capitalized")
-	pending("New token texture uses the correct file")
 	assert_eq(1,tech_token.count,"New token starts at 1 counter")
 	assert_eq("1",tech_token.get_node("CenterContainer/Count").text,
 			"New token 1 counter label has the correct number")
@@ -65,11 +74,26 @@ func test_manipulation_buttons_not_messing_hand_focus():
 	assert_eq(2,tech_token.count,"Increased token at 2 counters")
 	assert_eq("2",tech_token.get_node("CenterContainer/Count").text,
 			"Token change increases label counter too")
-	pending("get_tokens() returns correct amount of tokens")
-	board._UT_interpolate_mouse_move(card.position,card.position)
+	assert_eq(2,card.get_all_tokens().size(),
+			"get_all_tokens() returns correct dict keys")
+	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
+# Below doesn' seem to work. Always returns emptry string
+#	assert_eq(cfc.TOKEN_ASSETS_PATH + cfc.TOKENS_MAP["tech"],
+#			tech_token.get_node("CenterContainer/TokenIcon").texture.resource_path,
+#			"New token texture uses the correct file")
+	
+	board._UT_mouse_position = card.position
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
-	assert_eq(1, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+	assert_true(tech_token.get_node("Name").visible,
+			"Token label should be visible when card hovered")
+	assert_true(tech_token.get_node("MarginContainer").visible,
+			"MarginContainer should be visible when card hovered")
+	assert_true(tech_token.get_node("Buttons").visible,
+			"Token Buttons should be visible when card hovered")
+	assert_eq(99,card.get_node("Control/Tokens").z_index,"Drawer is drawn on top of other cards")
+	assert_true(card._is_drawer_open, "_is_drawer_open flag should be false")
+	assert_eq(1.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer appears when card has tokens on mouse hover")
 	assert_almost_eq(Vector2(card.get_node("Control").rect_size.x,20),
 			card.get_node("Control/Tokens/Drawer").rect_position, Vector2(2,2),
@@ -78,16 +102,15 @@ func test_manipulation_buttons_not_messing_hand_focus():
 	card.add_token("blood")
 	yield(yield_for(0.1), YIELD) # Wait to allow drawer to expand
 	assert_lt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
-			"When more tokens drawer size expands")
-	board._UT_interpolate_mouse_move(Vector2(600,600),card.position)
-	yield(yield_for(0.3), YIELD) # Wait to allow drawer to close
+			"When adding more tokens, visible drawer size expands")
+	board._UT_mouse_position = Vector2(600,600)
 	card._on_Card_mouse_exited()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to close
-	assert_eq(0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
-			"Drawer does not appear card hover when no card has no tokens")
+	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+			"Drawer does not appear without card hover when card has tokens")
 	assert_almost_eq(Vector2(card.get_node("Control").rect_size.x - 35,20),
 			card.get_node("Control/Tokens/Drawer").rect_position, Vector2(2,2),
-			"Drawer does not extend when card hover when no card has no tokens")
+			"Drawer does not extend when without card hover when card has tokens")
 	assert_eq(card._ReturnCode.FAILED,card.remove_token("Should Fail"),
 			"Removing non-defined token returns a fail")
 	assert_eq(card._ReturnCode.CHANGED, card.remove_token("tech"),
@@ -102,29 +125,64 @@ func test_manipulation_buttons_not_messing_hand_focus():
 	assert_freed(tech_token, "tech token")
 	assert_gt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
 			"When less tokens drawer size decreases")
-	board._UT_interpolate_mouse_move(card.position,Vector2(600,600))
+			
+	board._UT_mouse_position = Vector2(600,300)
+	yield(yield_for(0.3), YIELD) 
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
 	common.click_card(card)
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	gut.p("moving")
-	board._UT_interpolate_mouse_move(Vector2(200,300),card.position)
-	yield(yield_for(0.6), YIELD)
-	assert_eq(0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+	board._UT_interpolate_mouse_move(Vector2(200,100),card.position,3)
+	yield(yield_for(0.3), YIELD)
+	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer closes when card is being dragged")
+	yield(yield_for(0.3), YIELD)
 	common.drop_card(card,board._UT_mouse_position)
+	board._UT_mouse_position = Vector2(1000,300)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	board._UT_mouse_position = card.position
 	card._on_Card_mouse_entered()
-	yield(yield_for(3), YIELD) # Wait to allow drawer to expand
-	#card.moveTo(cfc.NMAP.discard)
-	#yield(yield_for(0.2), YIELD)
-	assert_eq(0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+	yield(yield_for(1	), YIELD) # Wait to allow drawer to expand
+	card.is_faceup = false
+	yield(yield_to(card.get_node('Control/Tokens/Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+			"Drawer closes while Flip is ongoing")
+	yield(yield_to(card.get_node('Control/Tokens/Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+			"Drawer reopens once Flip is completed")
+	card.moveTo(cfc.NMAP.discard)
+	yield(yield_for(0.4), YIELD)
+	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer closes on moveTo")
-	pending("Drawer closes while Flip is ongoing")
-	pending("Drawer reopens once Flip is completed")
-	pending("Tokens removed when card leaves table")
-	pending("Tokens not removed when card leaves with cfc.TOKENS_ONLY_ON_BOARD == false")
-	pending("Two tokens can use the same texture but different names")
-	pending("Drawer is drawn on top of other cards")
+	yield(yield_for(0.8), YIELD)
+	assert_eq(0,card.get_all_tokens().size(),"Tokens removed when card leaves table")
 	#pause_before_teardown()
+		
+func test_off_board_tokens():
+	cfc.TOKENS_ONLY_ON_BOARD = false
+	cfc.SHOW_TOKEN_BUTTONS == false
+	var card : Card
+	card = cards[3]
+	yield(drag_drop(card, Vector2(1000,100)), 'completed')
+	card._on_Card_mouse_entered()
+	yield(yield_for(0.1), YIELD)
+	card.add_token("tech")
+	card.add_token("plasma")
+	card.add_token("gold coin")
+	var tech_token = card.get_token("tech")
+	var plasma_token = card.get_token("plasma")
+	assert_eq(tech_token.get_node("CenterContainer/TokenIcon").texture.resource_path,
+			plasma_token.get_node("CenterContainer/TokenIcon").texture.resource_path,
+			"Two tokens can use the same texture but different names")
+	assert_false(tech_token.get_node("Buttons").visible,
+			"Tokens buttons not shown when cfc.SHOW_TOKEN_BUTTONS == false")
+	yield(yield_for(0.2), YIELD)
+	assert_eq(1.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
+			"Drawer appears when card gets tokens while card focused")
+	card.moveTo(cfc.NMAP.discard)
+	yield(yield_for(0.8), YIELD)
+	assert_false(card.get_all_tokens().empty(),
+			"Tokens not removed when card leaves with cfc.TOKENS_ONLY_ON_BOARD == false")
+	cfc.TOKENS_ONLY_ON_BOARD = true
+	cfc.SHOW_TOKEN_BUTTONS == true

@@ -850,7 +850,7 @@ func add_token(token_name : String) -> int:
 		if _is_drawer_open:
 			token.expand()
 		retcode = _ReturnCode.CHANGED
-	return(_ReturnCode.CHANGED)
+	return(retcode)
 
 
 # Removes a token from the card
@@ -1677,4 +1677,3 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
-

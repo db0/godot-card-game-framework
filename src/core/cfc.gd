@@ -68,12 +68,6 @@ const TARGET_HOVER_COLOUR := Color(0, 0.4, 1) * 1.3
 #
 # You can change the colour to something else if  you want however
 const TARGETTING_ARROW_COLOUR := TARGET_HOVER_COLOUR
-# If this is set to false, tokens on cards 
-# will not be removed when they exit the board
-const TOKENS_ONLY_ON_BOARD := true
-# If true, each token will have a convenient +/- button when expanded
-# to allow the player to add a remove more of the same
-const SHOW_TOKEN_BUTTONS = false
 # This dictionary contains your defined tokens for cards
 #
 # The key is the name of the token as it will appear in your scene and labels
@@ -122,6 +116,12 @@ var card_scale_while_dragging := Vector2(0.4,0.4)
 #
 # It will also mean you cannot focus on card on the table.
 var focus_style = FocusStyle.BOTH
+# If this is set to false, tokens on cards 
+# will not be removed when they exit the board
+var TOKENS_ONLY_ON_BOARD := true
+# If true, each token will have a convenient +/- button when expanded
+# to allow the player to add a remove more of the same
+var SHOW_TOKEN_BUTTONS = false
 # Unit Testing flag
 var UT := false
 #-----------------------------------------------------------------------------

@@ -50,21 +50,21 @@ corner_radius_top_right = 10
 
 [sub_resource type="DynamicFont" id=6]
 size = 15
-outline_size = 1
+outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=7]
 size = 10
-outline_size = 1
+outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 use_mipmaps = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=8]
 size = 13
-outline_size = 1
+outline_size = 2
 use_filter = true
 font_data = ExtResource( 1 )
 
@@ -78,8 +78,8 @@ font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=11]
 size = 10
-outline_size = 1
-outline_color = Color( 0.658824, 0.541176, 0, 1 )
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=12]
@@ -224,6 +224,7 @@ margin_top = 227.0
 margin_right = 150.0
 margin_bottom = 240.0
 custom_fonts/font = SubResource( 11 )
+custom_colors/font_color = Color( 0.658824, 0.541176, 0, 1 )
 text = "Cost: 0"
 
 [node name="Back" parent="Control" instance=ExtResource( 4 )]
