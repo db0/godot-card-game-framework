@@ -50,11 +50,7 @@ func test_table_hand_z_index():
 	yield(drag_drop(cards[1],Vector2(300,200)), 'completed')
 	yield(drag_drop(cards[5],Vector2(300,300)), 'completed')
 	yield(drag_drop(cards[7],Vector2(300,400)), 'completed')
-
 	yield(drag_drop(cards[0],Vector2(300,600)), 'completed')
-
-	var card: Card
-
 	cards.append(hand.draw_card())
 	yield(yield_for(0.1), YIELD)
 	cards.append(hand.draw_card())

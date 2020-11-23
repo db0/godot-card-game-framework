@@ -42,9 +42,6 @@ enum _ReturnCode {
 }
 
 const token_scene = preload("res://src/core/Token.tscn")
-#const token_names: {
-#
-#}
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 # warning-ignore:unused_class_variable
