@@ -70,7 +70,7 @@ var attachments := []
 # If this card is set as an attachment to another card, this tracks who its host is
 var current_host_card : Card = null
 # A dictionary holding all the tokens placed on this card
-var tokens := {} setget ,get_tokens
+var tokens := {} setget ,get_all_tokens
 
 # To track that this card attempting to target another card
 var _is_targetting := false
@@ -311,7 +311,7 @@ func _on_Flip_pressed() -> void:
 
 # Demo hover button which adds a selection of random tokens
 func _on_AddToken_pressed() -> void:
-	var valid_tokens := ['tech','bio','blood','plasma']
+	var valid_tokens := ['tech','gold coin','blood','plasma']
 	randomize()
 	# warning-ignore:return_value_discarded
 	add_token(valid_tokens[randi()%len(valid_tokens)])
@@ -828,15 +828,28 @@ func get_focus() -> bool:
 #
 # If the token of that name doesn't exist, it creates it according to the config.
 func add_token(token_name : String) -> int:
-	var token : Token = get_tokens().get(token_name, null)
-	if not token:
-		token = token_scene.instance()
-		token.setup(token_name)
-		$Control/Tokens/Drawer/VBoxContainer.add_child(token)
+	var retcode : int
+	# If the player requested a token name that has not been defined by the game
+	# we return a failure
+	if not cfc.TOKENS_MAP.get(token_name, null):
+		retcode = _ReturnCode.FAILED
 	else:
-		token.count += 1
-	if _is_drawer_open:
-		token.expand()
+		var token : Token = get_all_tokens().get(token_name, null)
+		# If the token does not exist in the card, we add its node
+		# and set it to 1
+		if not token:
+			token = token_scene.instance()
+			token.setup(token_name)
+			$Control/Tokens/Drawer/VBoxContainer.add_child(token)
+		# If the token node of this name has already been added to the card
+		# We just increment it by 1
+		else:
+			token.count += 1
+		# if the drawer has already been opened, we need to make sure
+		# the new token name will also appear
+		if _is_drawer_open:
+			token.expand()
+		retcode = _ReturnCode.CHANGED
 	return(_ReturnCode.CHANGED)
 
 
@@ -845,14 +858,19 @@ func add_token(token_name : String) -> int:
 # If the amount of tokens of that type drops to 0, the token icon is also removed.
 func remove_token(token_name : String) -> int:
 	var retcode : int
-	var token : Token = get_tokens().get(token_name, null)
-	if not token:
-		retcode = _ReturnCode.OK
+	# If the player requested a token name that has not been defined by the game
+	# we return a failure
+	if not cfc.TOKENS_MAP.get(token_name, null):
+		retcode = _ReturnCode.FAILED
 	else:
-		token.count -= 1
-		if token.count == 0:
-			token.queue_free()
-		retcode = _ReturnCode.CHANGED
+		var token : Token = get_all_tokens().get(token_name, null)
+		if not token:
+			retcode = _ReturnCode.OK
+		else:
+			token.count -= 1
+			if token.count == 0:
+				token.queue_free()
+			retcode = _ReturnCode.CHANGED
 	return(retcode)
 
 
@@ -860,11 +878,16 @@ func remove_token(token_name : String) -> int:
 #
 # * Key is the name of the token.
 # * Value is the token scene.
-func get_tokens() -> Dictionary:
+func get_all_tokens() -> Dictionary:
 	var found_tokens := {}
 	for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 		found_tokens[token.name] = token
 	return found_tokens
+
+
+# Returns the token node of the provided name or null if not found.
+func get_token(token_name: String) -> Token:
+	return(get_all_tokens().get(token_name,null))
 
 
 # Changes card highlight colour.

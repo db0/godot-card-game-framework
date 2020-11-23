@@ -89,7 +89,7 @@ const TOKENS_MAP := {
 	'industry': 'grey.svg',
 	'magic': 'purple.svg',
 	'blood': 'red.svg',
-	'gold': 'yellow.svg',
+	'gold coin': 'yellow.svg',
 	'void': 'black.svg',
 }
 # This specifies the location of your token images. 

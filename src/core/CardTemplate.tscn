@@ -282,9 +282,9 @@ __meta__ = {
 
 [node name="Drawer" type="PanelContainer" parent="Control/Tokens"]
 self_modulate = Color( 1, 1, 1, 0 )
-margin_left = 120.0
+margin_left = 115.0
 margin_top = 20.0
-margin_right = 170.0
+margin_right = 165.0
 margin_bottom = 70.0
 mouse_filter = 2
 custom_styles/panel = SubResource( 13 )
