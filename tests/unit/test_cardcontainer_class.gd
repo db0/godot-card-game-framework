@@ -13,7 +13,7 @@ func before_each():
 func test_methods():
 	var container : Pile = cfc.NMAP.deck
 	assert_eq('CardContainer',container.get_class(), 'Check that class name returns correct value')
-	
+
 func test_get_card_methods():
 	var container : Pile = cfc.NMAP.deck
 	assert_eq(container.get_child(2),container.get_all_cards()[0],"Check that get_all_cards() works")

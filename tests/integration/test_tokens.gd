@@ -42,12 +42,12 @@ func test_board_tokens():
 	assert_false(card._is_drawer_open, "_is_drawer_open flag should be false")
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer does not appear card hover when no card has no tokens")
-	assert_eq(Vector2(card.get_node("Control").rect_size.x - 35,20), 
+	assert_eq(Vector2(card.get_node("Control").rect_size.x - 35,20),
 			card.get_node("Control/Tokens/Drawer").rect_position,
 			"Drawer does not extend when card hover when no card has no tokens")
 	board._UT_mouse_position = Vector2(1100,200)
 	card._on_Card_mouse_exited()
-	
+
 	assert_eq(card._ReturnCode.FAILED,card.add_token("Should Fail"),
 			"Adding non-defined token returns a FAILED")
 	assert_eq(card._ReturnCode.CHANGED, card.add_token("tech"),
@@ -81,7 +81,7 @@ func test_board_tokens():
 #	assert_eq(cfc.TOKEN_ASSETS_PATH + cfc.TOKENS_MAP["tech"],
 #			tech_token.get_node("CenterContainer/TokenIcon").texture.resource_path,
 #			"New token texture uses the correct file")
-	
+
 	board._UT_mouse_position = card.position
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
@@ -125,9 +125,9 @@ func test_board_tokens():
 	assert_freed(tech_token, "tech token")
 	assert_gt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
 			"When less tokens drawer size decreases")
-			
+
 	board._UT_mouse_position = Vector2(600,300)
-	yield(yield_for(0.3), YIELD) 
+	yield(yield_for(0.3), YIELD)
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
 	common.click_card(card)
@@ -158,7 +158,7 @@ func test_board_tokens():
 	yield(yield_for(0.8), YIELD)
 	assert_eq(0,card.get_all_tokens().size(),"Tokens removed when card leaves table")
 	#pause_before_teardown()
-		
+
 func test_off_board_tokens():
 	cfc.TOKENS_ONLY_ON_BOARD = false
 	cfc.SHOW_TOKEN_BUTTONS == false

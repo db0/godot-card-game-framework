@@ -41,7 +41,7 @@ func test_card_table_drop_location_and_rotation():
 	assert_eq(2,cards[1].set_card_rotation(180), "Check that changing rotation to a card outside table fails")
 	cards[0]._on_Card_mouse_entered()
 	assert_eq(1,cards[0].set_card_rotation(270), "Check that rotation changed when card is focused")
-		
+
 func test_card_hand_drop_recovery():
 	cards[0]._on_Card_mouse_entered()
 	common.click_card(cards[0])

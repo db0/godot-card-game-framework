@@ -25,7 +25,7 @@ func test_single_card_focus():
 #
 func test_card_focus_neighbour_push():
 	cards[2]._on_Card_mouse_entered()
-	yield(yield_for(1), YIELD)
+	yield(yield_for(0.4), YIELD)
 	assert_almost_eq(Vector2(29, 0),cards[0].position,Vector2(2,2), "Check card dragged in correct global position")
 	assert_almost_eq(Vector2(137.5, 0),cards[1].position,Vector2(2,2), "Check card dragged in correct global position")
 	assert_almost_eq(Vector2(692.5, 0),cards[3].position,Vector2(2,2), "Check card dragged in correct global position")

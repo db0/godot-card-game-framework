@@ -19,7 +19,7 @@ func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fas
 	card._on_Card_mouse_entered()
 	common.click_card(card)
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(target_position,card.position,mouse_speed)
+	board._UT_interpolate_mouse_move(target_position,card.global_position,mouse_speed)
 	yield(yield_for(mouse_yield_wait), YIELD)
 	common.drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
@@ -44,29 +44,29 @@ func test_board_facedown():
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_false(card_front.visible,
 			"Front should be invisible when card is turned face down")
-	assert_almost_eq(card_front.rect_scale.x, 0.0, 0.1, 
+	assert_almost_eq(card_front.rect_scale.x, 0.0, 0.1,
 			"Front should be scaled.x to 0 when card is turned face down")
-	assert_almost_eq(card_front.rect_position.x, card_front.rect_size.x/2, 0.1, 
+	assert_almost_eq(card_front.rect_position.x, card_front.rect_size.x/2, 0.1,
 			"Front rect_position.x == rect_size.x/2 when card is turned face down")
 	assert_true(card_back.visible,
 			"Back should be visible when card is turned face down")
-	assert_almost_eq(card_back.rect_scale.x, 1.0, 0.1, 
+	assert_almost_eq(card_back.rect_scale.x, 1.0, 0.1,
 			"Back should be scaled.x to 1 when card is turned face down")
-	assert_almost_eq(card_back.rect_position.x, 0.0, 0.1, 
+	assert_almost_eq(card_back.rect_position.x, 0.0, 0.1,
 			"Back rect_position.x == 0 when card is turned face down")
 	card.is_faceup = true
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_true(card_front.visible,
 			"Front should be visible when card is turned face up again")
-	assert_almost_eq(card_front.rect_scale.x, 1.0, 0.1, 
+	assert_almost_eq(card_front.rect_scale.x, 1.0, 0.1,
 			"ront should be scaled.x to 0 when card is turned face up again")
-	assert_almost_eq(card_front.rect_position.x, 0.0, 0.1, 
+	assert_almost_eq(card_front.rect_position.x, 0.0, 0.1,
 			"Front rect_position.x == 0 when card is turned face up again")
 	assert_false(card_back.visible,
 			"Back should be invisible when card is turned face up again")
-	assert_almost_eq(card_back.rect_scale.x, 0.0, 0.1, 
+	assert_almost_eq(card_back.rect_scale.x, 0.0, 0.1,
 			"Back should b scaled.x to 0 when card is turned face up again")
-	assert_almost_eq(card_back.rect_position.x, card_front.rect_size.x/2, 0.1, 
+	assert_almost_eq(card_back.rect_position.x, card_front.rect_size.x/2, 0.1,
 			"Back rect_position.x == rect_size.x/2 when card is turned face up again")
 
 	card._on_Card_mouse_entered()
@@ -82,30 +82,30 @@ func test_board_facedown():
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_false(dupe_front.visible,
 			"Dupe Front should be invisible when card is turned face down")
-	assert_almost_eq(dupe_front.rect_scale.x, 0.0, 0.1, 
+	assert_almost_eq(dupe_front.rect_scale.x, 0.0, 0.1,
 			"Dupe Front should be scaled.x to 0 when card is turned face down")
-	assert_almost_eq(dupe_front.rect_position.x, card_front.rect_size.x/2, 0.1, 
+	assert_almost_eq(dupe_front.rect_position.x, card_front.rect_size.x/2, 0.1,
 			"Dupe Front rect_position.x == rect_size.x/2 when card is turned face down")
 	assert_true(dupe_back.visible,
 			"Dupe Back should be visible when card is turned face down")
-	assert_almost_eq(dupe_back.rect_scale.x, 1.0, 0.1, 
+	assert_almost_eq(dupe_back.rect_scale.x, 1.0, 0.1,
 			"Dupe Back should be scaled.x to 1 when card is turned face down")
-	assert_almost_eq(dupe_back.rect_position.x, 0.0, 0.1, 
+	assert_almost_eq(dupe_back.rect_position.x, 0.0, 0.1,
 			"Dupe Back rect_position.x == 0 when card is turned face down")
 	card.is_faceup = true
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_false(view_button.visible,"View button should be invisible while card is face up")
 	assert_true(dupe_front.visible,
 			"Dupe Front should be visible when card is turned face up again")
-	assert_almost_eq(dupe_front.rect_scale.x, 1.0, 0.1, 
+	assert_almost_eq(dupe_front.rect_scale.x, 1.0, 0.1,
 			"Dupe Front should be scaled.x to 0 when card is turned face up again")
-	assert_almost_eq(dupe_front.rect_position.x, 0.0, 0.1, 
+	assert_almost_eq(dupe_front.rect_position.x, 0.0, 0.1,
 			"Dupe Front rect_position.x == 0 when card is turned face up again")
 	assert_false(dupe_back.visible,
 			"Dupe Back should be invisible when card is turned face up again")
-	assert_almost_eq(dupe_back.rect_scale.x, 0.0, 0.1, 
+	assert_almost_eq(dupe_back.rect_scale.x, 0.0, 0.1,
 			"Dupe Back should b scaled.x to 0 when card is turned face up again")
-	assert_almost_eq(dupe_back.rect_position.x, card_front.rect_size.x/2, 0.1, 
+	assert_almost_eq(dupe_back.rect_position.x, card_front.rect_size.x/2, 0.1,
 			"Dupe Back rect_position.x == rect_size.x/2 when card is turned face up again")
 
 	assert_false(viewed_icon.visible,
@@ -154,27 +154,27 @@ func test_off_board_facedown():
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_false(card_front.visible,
 			"Front should be invisible when card is turned face down")
-	assert_almost_eq(card_front.rect_scale.x, 0.0, 0.1, 
+	assert_almost_eq(card_front.rect_scale.x, 0.0, 0.1,
 			"Front should be scaled.x to 0 when card is turned face down")
-	assert_almost_eq(card_front.rect_position.x, card_front.rect_size.x/2, 0.1, 
+	assert_almost_eq(card_front.rect_position.x, card_front.rect_size.x/2, 0.1,
 			"Front rect_position.x == rect_size.x/2 when card is turned face down")
 	assert_true(card_back.visible,
 			"Back should be visible when card is turned face down")
-	assert_almost_eq(card_back.rect_scale.x, 1.0, 0.1, 
+	assert_almost_eq(card_back.rect_scale.x, 1.0, 0.1,
 			"Back should be scaled.x to 1 when card is turned face down")
-	assert_almost_eq(card_back.rect_position.x, 0.0, 0.1, 
+	assert_almost_eq(card_back.rect_position.x, 0.0, 0.1,
 			"Back rect_position.x == 0 when card is turned face down")
 	card.is_faceup = true
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_true(card_front.visible,
 			"Front should be visible when card is turned face up again")
-	assert_almost_eq(card_front.rect_scale.x, 1.0, 0.1, 
+	assert_almost_eq(card_front.rect_scale.x, 1.0, 0.1,
 			"ront should be scaled.x to 0 when card is turned face up again")
-	assert_almost_eq(card_front.rect_position.x, 0.0, 0.1, 
+	assert_almost_eq(card_front.rect_position.x, 0.0, 0.1,
 			"Front rect_position.x == 0 when card is turned face up again")
 	assert_false(card_back.visible,
 			"Back should be invisible when card is turned face up again")
-	assert_almost_eq(card_back.rect_scale.x, 0.0, 0.1, 
+	assert_almost_eq(card_back.rect_scale.x, 0.0, 0.1,
 			"Back should b scaled.x to 0 when card is turned face up again")
-	assert_almost_eq(card_back.rect_position.x, card_front.rect_size.x/2, 0.1, 
+	assert_almost_eq(card_back.rect_position.x, card_front.rect_size.x/2, 0.1,
 			"Back rect_position.x == rect_size.x/2 when card is turned face up again")

@@ -46,7 +46,7 @@ func test_targetting():
 			"test that arrowhead is visible on once active")
 	assert_true(cards[4].get_node('Control/FocusHighlight').visible,
 			"Test that a card hovering over another with attachment flag on, highlights it")
-	assert_eq(cards[4].get_node('Control/FocusHighlight').modulate, cfc.TARGET_HOVER_COLOUR, 
+	assert_eq(cards[4].get_node('Control/FocusHighlight').modulate, cfc.TARGET_HOVER_COLOUR,
 			"Test that a hovered target has the right colour highlight")
 	card.complete_targeting()
 	assert_eq(card.target_card,cards[4],
@@ -70,7 +70,7 @@ func test_targetting():
 	card.complete_targeting()
 	assert_eq(card.target_card,cards[2],
 			"Test that card in hand can target card on board")
-	
+
 	card = cards[2]
 	card.initiate_targeting()
 	board._UT_interpolate_mouse_move(cards[3].global_position,card.global_position,3)

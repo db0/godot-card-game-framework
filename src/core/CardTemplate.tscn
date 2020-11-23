@@ -59,27 +59,35 @@ font_data = ExtResource( 1 )
 size = 10
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
-use_mipmaps = true
+use_filter = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=8]
 size = 13
 outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=9]
 size = 11
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=10]
 size = 12
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=11]
 size = 10
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
 font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=12]
@@ -193,7 +201,7 @@ margin_right = 150.0
 margin_bottom = 57.0
 size_flags_vertical = 1
 custom_fonts/font = SubResource( 8 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color = Color( 1, 0.4, 0, 1 )
 text = "Tag1 - Tag2"
 align = 1
 autowrap = true
