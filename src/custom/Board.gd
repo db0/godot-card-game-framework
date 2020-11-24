@@ -40,7 +40,7 @@ func _on_FancyMovementToggle_toggled(_button_pressed) -> void:
 func _on_ReshuffleAll_pressed() -> void:
 	for c in allCards:
 		if c.get_parent() != cfc.NMAP.deck:
-			c.moveTo(cfc.NMAP.deck)
+			c.move_to(cfc.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
 
 

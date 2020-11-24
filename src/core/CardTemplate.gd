@@ -137,7 +137,7 @@ func _ready() -> void:
 	# We want to allow anyone to remove the Pulse node if wanted
 	# So we check if it exists before we connect
 	if $Control/Back.has_node('Pulse'):
-# warning-ignore:return_value_discarded
+		# warning-ignore:return_value_discarded
 		$Control/Back/Pulse.connect("tween_all_completed", self, "_on_Pulse_completed")
 
 
@@ -226,7 +226,7 @@ func _on_Card_gui_input(event) -> void:
 							#TODO: Need some more player-obvious logic on
 							# what to do if card area overlaps two CardContainers
 							destination = obj
-					moveTo(destination)
+					move_to(destination)
 					_focus_completed = false
 					#emit_signal("card_dropped",self)
 		if event.is_pressed() and event.get_button_index() == 2:
@@ -262,6 +262,7 @@ func _on_Card_mouse_exited() -> void:
 				state = ON_PLAY_BOARD
 			FOCUSED_IN_POPUP:
 				state = IN_PILE
+
 
 # Resizes Token Drawer to min size whenever a token is removed completely.
 #
@@ -384,8 +385,10 @@ func _on_ArrowHead_area_exited(card: Card) -> void:
 		# Finally, we make sure we highlight any other cards we're still hovering
 		highlight_potential_card(cfc.TARGET_HOVER_COLOUR)
 
+
 # Reverses the card back pulse and starts it again
 func _on_Pulse_completed() -> void:
+	# We only pulse the card if it's face-down and on the board
 	if not is_faceup and get_parent() == cfc.NMAP.board:
 		_pulse_values.invert()
 		_start_pulse()
@@ -574,7 +577,7 @@ func get_card_rotation() -> int:
 # If the target container is the board, the card will either be placed at the
 # mouse position, or at the 'boardPosition' variable if it's provided
 # index determines the card's position among other cards.
-func moveTo(targetHost: Node2D,
+func move_to(targetHost: Node2D,
 		index := -1,
 		boardPosition := Vector2(-1,-1)) -> void:
 #	if cfc.focus_style:
@@ -1139,7 +1142,7 @@ func _clear_attachment_status() -> void:
 	for card in attachments:
 		card.current_host_card = null
 		# Attachments typically follow their parents to the same container
-		card.moveTo(get_parent())
+		card.move_to(get_parent())
 		# We do a small wait to make the attachment drag look nicer
 		yield(get_tree().create_timer(0.1), "timeout")
 	attachments.clear()

@@ -31,7 +31,7 @@ func _on_Deck_input_event(event) -> void:
 # Function to connect to a card discard signal
 func _on_DiscardRandom_Button_pressed() -> void:
 	var card = get_random_card()
-	card.moveTo(cfc.NMAP.discard)
+	card.move_to(cfc.NMAP.discard)
 
 
 # Visibly shuffles all cards in hand
@@ -51,5 +51,5 @@ func draw_card(pile : Pile = cfc.NMAP.deck) -> Card:
 	var card: Card = pile.get_top_card()
 	# A basic function to pull a card from out deck into our hand.
 	if get_card_count() < hand_size: # prevent from exceeding our hand size
-		card.moveTo(self)
+		card.move_to(self)
 	return card

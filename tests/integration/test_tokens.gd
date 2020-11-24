@@ -151,7 +151,7 @@ func test_board_tokens():
 	yield(yield_to(card.get_node('Control/Tokens/Tween'), "tween_all_completed", 0.5), YIELD)
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer reopens once Flip is completed")
-	card.moveTo(cfc.NMAP.discard)
+	card.move_to(cfc.NMAP.discard)
 	yield(yield_for(0.4), YIELD)
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer closes on moveTo")
@@ -180,7 +180,7 @@ func test_off_board_tokens():
 	yield(yield_for(0.2), YIELD)
 	assert_eq(1.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer appears when card gets tokens while card focused")
-	card.moveTo(cfc.NMAP.discard)
+	card.move_to(cfc.NMAP.discard)
 	yield(yield_for(0.8), YIELD)
 	assert_false(card.get_all_tokens().empty(),
 			"Tokens not removed when card leaves with cfc.TOKENS_ONLY_ON_BOARD == false")
