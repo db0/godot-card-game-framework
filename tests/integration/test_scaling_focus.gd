@@ -1,16 +1,10 @@
-extends "res://addons/gut/test.gd"
+extends "res://tests/UTcommon.gd"
 
-var board
-var hand
 var cards := []
-var common = UTCommon.new()
 
 func before_each():
-	board = autoqfree(TestVars.new().boardScene.instance())
-	get_tree().get_root().add_child(board)
-	common.setup_board(board)
-	cards = common.draw_test_cards(5)
-	hand = cfc.NMAP.hand
+	setup_board()
+	cards = draw_test_cards(5)
 	yield(yield_for(1), YIELD)
 
 func test_single_card_focus():
@@ -25,7 +19,7 @@ func test_single_card_focus():
 #
 func test_card_focus_neighbour_push():
 	cards[2]._on_Card_mouse_entered()
-	yield(yield_for(0.4), YIELD)
+	yield(yield_for(1), YIELD)
 	assert_almost_eq(Vector2(29, 0),cards[0].position,Vector2(2,2), "Check card dragged in correct global position")
 	assert_almost_eq(Vector2(137.5, 0),cards[1].position,Vector2(2,2), "Check card dragged in correct global position")
 	assert_almost_eq(Vector2(692.5, 0),cards[3].position,Vector2(2,2), "Check card dragged in correct global position")

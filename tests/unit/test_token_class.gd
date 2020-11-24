@@ -1,16 +1,11 @@
-extends "res://addons/gut/test.gd"
+extends "res://tests/UTcommon.gd"
 
-var card: Card
-var board
 var cards := []
-var common = UTCommon.new()
 const token_scene = preload("res://src/core/Token.tscn")
 var token: Token
 
 func before_each():
-	board = autoqfree(TestVars.new().boardScene.instance())
-	get_tree().get_root().add_child(board)
-	common.setup_board(board)
+	setup_board()
 	token = token_scene.instance()
 	token.setup("tech")
 	board.add_child(token)

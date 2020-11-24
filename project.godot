@@ -49,7 +49,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/Token.gd"
 }, {
-"base": "Reference",
+"base": "Node",
 "class": "UTCommon",
 "language": "GDScript",
 "path": "res://tests/UTcommon.gd"

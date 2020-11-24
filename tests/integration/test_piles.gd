@@ -1,57 +1,52 @@
-extends "res://addons/gut/test.gd"
+extends "res://tests/UTcommon.gd"
 
-var board
-var hand
+
 var cards := []
-var common = UTCommon.new()
 
 func before_each():
-	board = autoqfree(TestVars.new().boardScene.instance())
-	get_tree().get_root().add_child(board)
-	common.setup_board(board)
-	cards = common.draw_test_cards(5)
-	hand = cfc.NMAP.hand
+	setup_board()
+	cards = draw_test_cards(5)
 	yield(yield_for(1), YIELD)
 
 func test_move_to_container():
 	cards[2]._on_Card_mouse_entered()
-	common.click_card(cards[2])
+	click_card(cards[2])
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[2],board._UT_mouse_position)
+	drop_card(cards[2],board._UT_mouse_position)
 	yield(yield_for(1), YIELD)
 	assert_almost_eq(cards[2].global_position,cfc.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
 	assert_eq(1,cfc.NMAP.discard.get_card_count(), "Confirm the correct amount of cards are hosted")
 
 func test_move_to_multiple_container():
 	cards[2]._on_Card_mouse_entered()
-	common.click_card(cards[2])
+	click_card(cards[2])
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[2],board._UT_mouse_position)
+	drop_card(cards[2],board._UT_mouse_position)
 	yield(yield_for(0.1), YIELD)
 	cards[4]._on_Card_mouse_entered()
-	common.click_card(cards[4])
+	click_card(cards[4])
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.deck.position,cards[4].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[4],board._UT_mouse_position)
+	drop_card(cards[4],board._UT_mouse_position)
 	yield(yield_for(0.1), YIELD)
 	cards[1]._on_Card_mouse_entered()
-	common.click_card(cards[1])
+	click_card(cards[1])
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[1].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[1],board._UT_mouse_position)
+	drop_card(cards[1],board._UT_mouse_position)
 	yield(yield_for(0.1), YIELD)
 	cards[0]._on_Card_mouse_entered()
-	common.click_card(cards[0])
+	click_card(cards[0])
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(cfc.NMAP.deck.position,cards[0].position)
 	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[0],board._UT_mouse_position)
+	drop_card(cards[0],board._UT_mouse_position)
 	yield(yield_for(1), YIELD)
 	assert_almost_eq(cards[2].global_position,cfc.NMAP.discard.global_position,Vector2(2,2), "Confirm Card 2 final position matches pile's position")
 	assert_almost_eq(cards[1].global_position,cfc.NMAP.discard.global_position,Vector2(2,2), "Confirm Card 1 final position matches pile's position")

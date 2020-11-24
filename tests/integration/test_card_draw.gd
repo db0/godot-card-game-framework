@@ -1,14 +1,7 @@
-extends "res://addons/gut/test.gd"
-
-var board
-var hand
-var common = UTCommon.new()
+extends "res://tests/UTcommon.gd"
 
 func before_each():
-	board = autoqfree(TestVars.new().boardScene.instance())
-	get_tree().get_root().add_child(board)
-	common.setup_board(board)
-	hand = cfc.NMAP.hand
+	setup_board()
 
 func test_single_card_draw():
 	var card0: Card = hand.draw_card()

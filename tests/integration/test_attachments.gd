@@ -1,36 +1,11 @@
-extends "res://addons/gut/test.gd"
+extends "res://tests/UTcommon.gd"
 
-var board
-var hand
 var cards := []
-var common = UTCommon.new()
-
-# Takes care of simple drag&drop requests
-func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fast") -> void:
-	var mouse_yield_wait: float
-	var mouse_speed: int
-	if interpolation_speed == "fast":
-		mouse_yield_wait = 0.3
-		mouse_speed = 10
-	else:
-		mouse_yield_wait = 0.6
-		mouse_speed = 3
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(target_position,card.global_position,mouse_speed)
-	yield(yield_for(mouse_yield_wait), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 
 
 func before_each():
-	board = autoqfree(TestVars.new().boardScene.instance())
-	get_tree().get_root().add_child(board)
-	common.setup_board(board)
-	cards = common.draw_test_cards(5)
-	hand = cfc.NMAP.hand
+	setup_board()
+	cards = draw_test_cards(5)
 	board.get_node("EnableAttach").pressed = true
 	yield(yield_for(1), YIELD)
 
@@ -43,13 +18,13 @@ func test_attaching_and_switching_parent():
 	yield(drag_drop(cards[0],Vector2(300,300)), 'completed')
 	card = cards[1]
 	card._on_Card_mouse_entered()
-	common.click_card(card)
+	click_card(card)
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(310,310),card.global_position,10)
 	yield(yield_for(0.3), YIELD)
 	assert_true(cards[0].get_node('Control/FocusHighlight').visible, "Test that a card hovering over another with attachment flag on, highlights it")
 	assert_eq(cards[0].get_node('Control/FocusHighlight').modulate, cfc.HOST_HOVER_COLOUR, "Test that a hovered host has the right colour highlight")
-	common.drop_card(card,board._UT_mouse_position)
+	drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_almost_eq(card.global_position,cards[0].global_position + Vector2(0,1) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Check card dragged in correct global position")
@@ -70,13 +45,13 @@ func test_attaching_and_switching_parent():
 
 	card = cards[0]
 	card._on_Card_mouse_entered()
-	common.click_card(card)
+	click_card(card)
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(700,100),card.global_position)
 	yield(yield_for(0.2), YIELD)
 	assert_almost_ne(card_prev_pos,cards[3].global_position, Vector2(2,2),"Test that drag also drags attachments")
 	yield(yield_for(0.4), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
+	drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	board._UT_interpolate_mouse_move(Vector2(100,400),card.global_position,10)
@@ -84,43 +59,43 @@ func test_attaching_and_switching_parent():
 	assert_almost_ne(card_prev_pos,cards[3].global_position, Vector2(2,2),"Test that drop also drops attachments in the right position")
 	assert_almost_eq(cards[3].global_position,card.global_position + Vector2(0,3) * card.get_node('Control').rect_size.y * cfc.ATTACHMENT_OFFSET, Vector2(2,2),"Test that after drag, drop is placed correctly according to parent")
 	card._on_Card_mouse_entered()
-	common.click_card(card)
+	click_card(card)
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(100,100),card.global_position,10)
 	yield(yield_for(0.3), YIELD)
 	for c in card.attachments:
 		assert_false(c.get_node('Control/FocusHighlight').visible, "Assert no card has been potential_host highlighted when the parent is moving onto them")
-	common.drop_card(card,board._UT_mouse_position)
+	drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_null(card.current_host_card,"Test that a card cannot be hosted in its own attachments")
 	card._on_Card_mouse_entered()
-	common.click_card(card)
+	click_card(card)
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(100,400),card.global_position,10)
-	common.drop_card(card,board._UT_mouse_position)
+	drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 
 	card = cards[1]
 	card_prev_pos = card.global_position
 	card._on_Card_mouse_entered()
-	common.click_card(card)
+	click_card(card)
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(700,100),card.global_position)
 	yield(yield_for(0.2), YIELD)
 	assert_almost_ne(card_prev_pos,card.global_position, Vector2(2,2),"Test that dragging an attached card is allowed")
 	yield(yield_for(0.4), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
+	drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_almost_eq(card_prev_pos,card.global_position, Vector2(2,2),"Test that after dropping an attached card, it returns to the parent host")
 	card._on_Card_mouse_entered()
-	common.click_card(card)
+	click_card(card)
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(400,500),card.global_position,10)
 	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
+	drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_null(card.current_host_card,"Test that an attachment clears out correctly when removed from table")
@@ -175,7 +150,7 @@ func test_multi_host_hover():
 
 	card = cards[3]
 	card._on_Card_mouse_entered()
-	common.click_card(card)
+	click_card(card)
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(150,100),card.global_position,10)
 	yield(yield_for(0.3), YIELD)
@@ -184,6 +159,6 @@ func test_multi_host_hover():
 	yield(yield_for(0.3), YIELD)
 	assert_false(cards[2].get_node('Control/FocusHighlight').visible, "Test that a card leaving the hovering of a card, turns attach highlights off")
 	assert_true(cards[1].get_node('Control/FocusHighlight').visible, "Test that potential host highlight changes as it changes hover areas")
-	common.drop_card(card,board._UT_mouse_position)
+	drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)

@@ -1,14 +1,9 @@
-extends "res://addons/gut/test.gd"
+extends "res://tests/UTcommon.gd"
 
-var card: Card
-var board
 var cards := []
-var common = UTCommon.new()
 
 func before_each():
-	board = autoqfree(TestVars.new().boardScene.instance())
-	get_tree().get_root().add_child(board)
-	common.setup_board(board)
+	setup_board()
 
 func test_methods():
 	var container : Pile = cfc.NMAP.deck

@@ -1,35 +1,11 @@
-extends "res://addons/gut/test.gd"
+extends "res://tests/UTcommon.gd"
 
-var board
-var hand
 var cards := []
-var common = UTCommon.new()
 
-# Takes care of simple drag&drop requests
-func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fast") -> void:
-	var mouse_yield_wait: float
-	var mouse_speed: int
-	if interpolation_speed == "fast":
-		mouse_yield_wait = 0.3
-		mouse_speed = 10
-	else:
-		mouse_yield_wait = 0.6
-		mouse_speed = 3
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(target_position,card.position,mouse_speed)
-	yield(yield_for(mouse_yield_wait), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 
 func before_each():
-	board = autoqfree(TestVars.new().boardScene.instance())
-	get_tree().get_root().add_child(board)
-	common.setup_board(board)
-	cards = common.draw_test_cards(5)
-	hand = cfc.NMAP.hand
+	setup_board()
+	cards = draw_test_cards(5)
 	yield(yield_for(1), YIELD)
 
 func test_board_tokens():
@@ -130,14 +106,14 @@ func test_board_tokens():
 	yield(yield_for(0.3), YIELD)
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
-	common.click_card(card)
+	click_card(card)
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(200,100),card.position,3)
 	yield(yield_for(0.3), YIELD)
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer closes when card is being dragged")
 	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
+	drop_card(card,board._UT_mouse_position)
 	board._UT_mouse_position = Vector2(1000,300)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)

@@ -15,11 +15,11 @@ enum FocusStyle {
 }
 
 #-----------------------------------------------------------------------------
-# BEGIN Behaviour Constants #
+# BEGIN Behaviour Constants
 # Change the below to change how all cards behave to match your game.
 #-----------------------------------------------------------------------------
 
-const CARD_SIZE_MULTIPLIER := 0.5
+
 # The amount of distance neighboring cards are pushed during card focus
 #
 # It's based on the card width. Bigger percentage means larger push.
@@ -124,9 +124,13 @@ var TOKENS_ONLY_ON_BOARD := true
 var SHOW_TOKEN_BUTTONS = false
 # Unit Testing flag
 var UT := false
+
+
 #-----------------------------------------------------------------------------
-# END Behaviour Constants #
+# END Behaviour Constants
 #-----------------------------------------------------------------------------
+
+
 # A dictionary of all our container nodes for easy access
 var NMAP: Dictionary
 # All our pile nodes
