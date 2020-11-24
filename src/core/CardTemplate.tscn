@@ -65,7 +65,7 @@ font_data = ExtResource( 1 )
 [sub_resource type="DynamicFont" id=8]
 size = 13
 outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
+outline_color = Color( 0.243137, 0.243137, 0.243137, 1 )
 use_filter = true
 font_data = ExtResource( 1 )
 
@@ -180,6 +180,7 @@ margin_bottom = 19.0
 size_flags_vertical = 1
 custom_styles/normal = SubResource( 5 )
 custom_fonts/font = SubResource( 6 )
+custom_colors/font_color = Color( 1, 0.4, 0, 1 )
 text = "Card Name"
 align = 1
 autowrap = true
@@ -201,7 +202,6 @@ margin_right = 150.0
 margin_bottom = 57.0
 size_flags_vertical = 1
 custom_fonts/font = SubResource( 8 )
-custom_colors/font_color = Color( 1, 0.4, 0, 1 )
 text = "Tag1 - Tag2"
 align = 1
 autowrap = true
