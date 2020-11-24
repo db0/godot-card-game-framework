@@ -28,8 +28,10 @@ func test_fancy_reshuffle_all():
 	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	board._on_ReshuffleAll_pressed()
 	yield(yield_for(0.02), YIELD)
-	assert_almost_eq(Vector2(300, 300),cards[0].global_position,Vector2(10,10), "Check that card is not being teleported from where is expect by Tween")
-	assert_almost_eq(Vector2(1000, 10),cards[4].global_position,Vector2(10,10), "Check that card is not being teleported from where is expect by Tween")
+	assert_almost_eq(Vector2(300, 300),cards[0].global_position,Vector2(10,10), 
+			"Card is not being teleported from where is expect by Tween")
+	assert_almost_eq(Vector2(1000, 10),cards[4].global_position,Vector2(10,10), 
+			"Card is not being teleported from where is expect by Tween")
 	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
 
 func test_basic_reshuffle_all():
@@ -50,8 +52,10 @@ func test_basic_reshuffle_all():
 	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	board._on_ReshuffleAll_pressed()
 	yield(yield_for(0.018), YIELD)
-	assert_almost_eq(Vector2(300, 300),cards[0].global_position,Vector2(10,10), "Check that card is not being teleported from where is expect by Tween")
-	assert_almost_eq(Vector2(1000, 10),cards[4].global_position,Vector2(10,10), "Check that card is not being teleported from where is expect by Tween")
+	assert_almost_eq(Vector2(300, 300),cards[0].global_position,Vector2(10,10), 
+			"Card is not being teleported from where is expected by Tween")
+	assert_almost_eq(Vector2(1000, 10),cards[4].global_position,Vector2(10,10), 
+			"Card is not being teleported from where is expected by Tween")
 	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
 
 #func test_card_redraw_order():

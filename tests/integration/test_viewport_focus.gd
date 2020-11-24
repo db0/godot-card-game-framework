@@ -11,10 +11,12 @@ func test_single_card_focus():
 	yield(yield_for(1), YIELD)
 	cards[0]._on_Card_mouse_entered()
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
-	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),"Ensure duplicate card has been added for viewport focus")
+	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),
+			"Duplicate card has been added for viewport focus")
 	cards[0]._on_Card_mouse_exited()
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
-	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),"Ensure duplicate card has been removed from focus")
+	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
+			"Duplicate card has been removed from focus")
 	pending("Test that the focus object is always drawn with 0 rotation")
 
 func test_for_leftover_focus_objects():
@@ -26,4 +28,5 @@ func test_for_leftover_focus_objects():
 	drop_card(cards[2],board._UT_mouse_position)
 	yield(yield_for(1), YIELD)
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
-	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),"Ensure duplicate card has been removed from focus")
+	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
+			"Duplicate card has been removed from focus")

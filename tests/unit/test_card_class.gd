@@ -13,12 +13,16 @@ func test_methods():
 func test_focus_setget():
 	card.set_focus(true)
 	card.state = 1
-	assert_true(card.get_node('Control/FocusHighlight').visible, 'Check that highlight is set correctly to visible')
-	assert_true(card.get_focus(), 'get_focus returns true correct value correctly')
+	assert_true(card.get_node('Control/FocusHighlight').visible, 
+			'Highlight is set correctly to visible')
+	assert_true(card.get_focus(), 
+			'get_focus returns true correct value correctly')
 	card.set_focus(false)
 	card.state = 0
-	assert_false(card.get_node('Control/FocusHighlight').visible, 'Check that highlight is set correctly to invisible')
-	assert_false(card.get_focus(), 'get_focus returns false correct value correctly')
+	assert_false(card.get_node('Control/FocusHighlight').visible, 
+			'Highlight is set correctly to invisible')
+	assert_false(card.get_focus(), 
+			'get_focus returns false correct value correctly')
 
 func test_move_to():
 	var discard : Pile = cfc.NMAP.discard
@@ -29,13 +33,19 @@ func test_move_to():
 	var card6 = cfc.NMAP.deck.get_card(5)
 	card.move_to(discard)
 	card2.move_to(discard)
-	assert_eq(1,discard.get_card_index(card2), 'move_to without arguments puts card at the end')
+	assert_eq(1,discard.get_card_index(card2), 
+			'move_to without arguments puts card at the end')
 	card3.move_to(discard, 0)
-	assert_eq(0,discard.get_card_index(card3), 'move_to can move card to the top')
+	assert_eq(0,discard.get_card_index(card3), 
+			'move_to can move card to the top')
 	card4.move_to(discard, 2)
-	assert_eq(2,discard.get_card_index(card4), 'move_to can move card between others')
+	assert_eq(2,discard.get_card_index(card4), 
+			'move_to can move card between others')
 	card5.move_to(discard,2)
 	card6.move_to(discard,2)
-	assert_eq(2,discard.get_card_index(card6), 'move_to can takeover/push index spots of other cards')
-	assert_eq(3,discard.get_card_index(card5), 'move_to can takeover/push index spots of other cards')
-	assert_eq(4,discard.get_card_index(card4), 'move_to can takeover/push index spots of other cards')
+	assert_eq(2,discard.get_card_index(card6), 
+			'move_to can takeover/push index spots of other cards')
+	assert_eq(3,discard.get_card_index(card5), 
+			'move_to can takeover/push index spots of other cards')
+	assert_eq(4,discard.get_card_index(card4), 
+			'move_to can takeover/push index spots of other cards')

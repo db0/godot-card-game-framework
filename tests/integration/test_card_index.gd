@@ -13,7 +13,7 @@ func test_hand_z_index():
 		yield(yield_for(0.07), YIELD)
 	yield(yield_for(1), YIELD)
 	for card in cards:
-		assert_eq(0,card.z_index,"Check if card in hand at index 0")
+		assert_eq(0,card.z_index,"Card in hand at index 0")
 
 func test_table_hand_z_index():
 	for _iter in range(0,8):
@@ -31,8 +31,8 @@ func test_table_hand_z_index():
 	yield(yield_for(0.7), YIELD)
 	yield(drag_drop(cards[1],Vector2(300,600)), 'completed')
 	yield(yield_for(0.7), YIELD)
-	assert_eq(8,hand.get_card_count(),"Check if we have the correct amount of cards in hand")
+	assert_eq(8,hand.get_card_count(),"Correct amount of cards in hand")
 	for c in cards:
 		if c.get_parent() == cfc.NMAP.hand:
-			assert_eq(0,c.z_index,"Check if card in hand at index 0")
+			assert_eq(0,c.z_index,"Card in hand at index 0")
 

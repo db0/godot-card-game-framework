@@ -57,7 +57,7 @@ func drag_card(card: Card, target_position: Vector2, interpolation_speed := "fas
 	card._on_Card_mouse_entered()
 	click_card(card)
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(target_position,card.position,mouse_speed)
+	board._UT_interpolate_mouse_move(target_position,card.global_position,mouse_speed)
 	yield(yield_for(mouse_yield_wait), YIELD)
 
 
