@@ -3,6 +3,9 @@
 class_name Pile
 extends  CardContainer
 
+# If this is set to true, cards on this stack will be placed face-up.
+# Otherwise they will be placed face-down.
+export var faceup_cards := false
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -70,7 +73,6 @@ func _on_ViewPopup_popup_hide() -> void:
 			# We need to remember that cards in piles should be left invisible
 			# and at default scale
 			card.scale = Vector2(1,1)
-			card.modulate[3] = 0
 			card.is_faceup = false
 
 
@@ -91,6 +93,19 @@ func add_child(node, _legible_unique_name=false) -> void:
 		_slot_card_into_popup(node)
 
 
+# Overrides the built-in remove_child() method,
+# To make sure the leftover cards are restacked correctly
+func remove_child(node, _legible_unique_name=false) -> void:
+	.remove_child(node)
+#	if node as Card:
+#		reorganize_stack()
+
+func reorganize_stack() -> void:
+	for c in get_all_cards():
+		if c.position != Vector2(1 * get_card_index(c),
+				-2 * get_card_index(c)):
+			c.position = Vector2(1 * get_card_index(c),
+					-2 * get_card_index(c))
 # Override the godot builtin move_child() method,
 # to make sure the $Control node is always drawn on top of Card nodes
 func move_child(child_node, to_position) -> void:
@@ -120,7 +135,10 @@ func get_top_card() -> Card:
 	# prevent from trying to retrieve more cards
 	# than are in our deck and crashing godot.
 	if get_card_count():
-		card = get_card(0)
+		# Counter intuitively, the "top" card in the pile
+		# is the last node in the node hierarchy, so
+		# to retrieve the last card placed, we choose the last index
+		card = get_all_cards().back()
 	return card # Returning the card object for unit testing
 
 
@@ -130,14 +148,20 @@ func get_bottom_card() -> Card:
 	# prevent from trying to retrieve more cards
 	# than are in our deck and crashing godot.
 	if get_card_count():
-		card = get_card(get_card_count() - 1)
+		# Counter intuitively, the "bottom" card in the pile
+		# as it appears on screen, is the first node in the node hierarchy, so
+		# to retrieve the last c
+		card = get_card(0)
 	return card # Returning the card object for unit testing
 
+
+func get_stack_position(card: Card) -> Vector2:
+	return Vector2(1 * get_card_index(card), -2 * get_card_index(card))
 
 # Prepares a Card object to be added to the popup grid
 func _slot_card_into_popup(card: Card) -> void:
 	# We need to make the cards visible as they're by default invisible in piles
-	card.modulate[3] = 1
+	#card.modulate[3] = 1
 	# We also scale-down the cards to be able to see more at the same time.
 	# We need to do it before we add the card object to the control temp,
 	# otherwise it will default to the pre-scaled size
@@ -156,3 +180,7 @@ func _slot_card_into_popup(card: Card) -> void:
 	card_slot.add_child(card)
 	card.is_faceup = true
 
+# Randomly rearranges the order of the Card nodes.
+func shuffle_cards() -> void:
+	.shuffle_cards()
+	reorganize_stack()

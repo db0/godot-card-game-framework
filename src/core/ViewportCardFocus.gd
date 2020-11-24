@@ -62,7 +62,7 @@ func focus_card(card: Card) -> void:
 				dupe_focus._flip_card(dupe_focus.get_node("Control/Back"),
 						dupe_focus.get_node("Control/Front"), true)
 			else:
-				# We slightly reduce the intensity of the dupe
+				# We slightly reduce the colour intensity of the dupe
 				# As its enlarged state makes it glow too much
 				var current_colour = dupe_focus.get_node('Control/Back').modulate
 				dupe_focus.get_node('Control/Back').modulate = current_colour * 0.95
