@@ -33,7 +33,8 @@ func test_move_to_multiple_container():
 			cfc.NMAP.discard.global_position,Vector2(2,2),
 			"Card 1 final position matches pile's position")
 	assert_almost_eq(cards[4].global_position,
-			cfc.NMAP.deck.position,Vector2(2,2),
+			cfc.NMAP.deck.position + cfc.NMAP.deck.get_stack_position(cards[4]),
+			Vector2(2,2),
 			"Card 3 final position matches pile's position")
 	assert_almost_eq(cards[0].global_position,
 			cfc.NMAP.deck.to_global(cfc.NMAP.deck.get_stack_position(cards[0])),Vector2(2,2),
@@ -44,8 +45,6 @@ func test_move_to_multiple_container():
 			"Correct amount of cards are hosted in deck")
 	assert_eq(1,cfc.NMAP.hand.get_card_count(),
 			"Correct amount of cards are hosted in hand")
-	pending("Card should be faceup if pile is has faceup cards")
-	pending("Card should be facedown if pile is has facedown cards")
 
 func test_move_from_board_to_deck_to_hand():
 	var card: Card
@@ -62,9 +61,81 @@ func test_move_from_board_to_deck_to_hand():
 func test_pile_functions():
 	pending("Shuffle really does shuffle")
 
-func test_popup_view():
-	pending("All cards all migrated to popup window")
-	pending("get_all_cards(), includes cards in the popup")
+func test_pile_facing():
+	var card: Card = cfc.NMAP.deck.get_top_card()
+	card.move_to(cfc.NMAP.discard)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_true(card.is_faceup, "Card should be faceup in discard")
+	card = cards[0]
+	card.move_to(cfc.NMAP.deck)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_false(card.is_faceup,"Card should be facedown in deck")
+
+
+func test_popup_discard_view():
+	var discard = cfc.NMAP.discard
+	for card in cfc.NMAP.deck.get_all_cards():
+		card.move_to(discard)
+	yield(yield_for(1), YIELD)
+	discard._on_View_Button_pressed()
+	yield(yield_for(1), YIELD)
+	assert_eq(0,len(discard.get_all_cards(false)),
+			"No cards should appear in the pile root after popup")
+	assert_eq(10,discard.get_card_count(),
+			"Cards in popup should be returned with get_all_cards()")
+	assert_eq(10,discard.get_node("ViewPopup/CardView").get_child_count(),
+			"All cards all migrated to popup window")
+	assert_eq(1.0,discard.get_node("ViewPopup").modulate[3],
+			"ViewPopup should be visible")
+	cards[1].move_to(discard)
+	yield(yield_for(1), YIELD)
+	assert_eq(11,discard.get_node("ViewPopup/CardView").get_child_count(),
+			"Hosting a card in the pile, while popup is open, puts it in the popup")
+	assert_eq(Vector2(0.75,0.75),cards[1].scale,
+			"Moving a card into the popup, should scale it")
 	pending("Drawing a card from the pile, picks it from the popup")
-	pending("Hosting a card in the pile, puts it in the popup")
-	pending("Pressing the popupt twice shouldn't just hide it and keep cards in it")
+	assert_false(discard.get_node("Control/ManipulationButtons").visible,
+			"Manipulation Buttons should be hidden while popup is active")
+	discard.get_node("ViewPopup").hide()
+	yield(yield_for(1), YIELD)
+	assert_true(cards[1].is_faceup,
+			"Cards returning from popup should respect piles card facing")
+
+func test_popup_deck_view():
+	var deck = cfc.NMAP.deck
+	var card: Card = deck.get_top_card()
+	deck._on_View_Button_pressed()
+	yield(yield_to(deck.get_node('ViewPopup/Tween'), "tween_all_completed", 0.5), YIELD)
+	card.move_to(deck)
+	yield(yield_for(0.3), YIELD)
+	assert_eq(Vector2(0,0),card.position,
+			"Moving card from popup back to the same pile, should do nothing")
+	assert_eq(Vector2(0.75,0.75),card.scale,
+			"Moving card from popup back to the same pile, should do nothing")
+	assert_true(card.is_faceup,
+			"Moving card from popup back to the same pile, should do nothing")
+	deck.get_node("ViewPopup").hide()
+	yield(yield_for(1), YIELD)
+	assert_false(card.is_faceup,
+			"Cards returning from popup should respect piles card facing")
+
+
+func test_stacking():
+	var deck : Pile = cfc.NMAP.deck
+	var card: Card = cards[4]
+	card.move_to(deck)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_eq(deck.get_stack_position(card),card.position,
+			"Card moved in, placed in stack position")
+	card = cards[2]
+	card.move_to(deck)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_eq(deck.get_stack_position(card),card.position,
+			"Card moved in, placed in stack position")
+	deck.shuffle_cards()
+	assert_eq(deck.get_stack_position(card),card.position,
+			"Reshuffle, restacks cards correctly.")

@@ -60,7 +60,8 @@ func load_test_cards() -> void:
 	for _i in range(15):
 		var card: Card = cardTemplate.instance()
 		$Deck.add_child(card)
-		card.is_faceup = false
+		card.set_is_faceup(false,true)
+		$Deck.reorganize_stack()
 		card._determine_idle_state()
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		#card.modulate.a = 0 # We use this for a nice transition effect

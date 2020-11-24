@@ -12,13 +12,13 @@ func test_card_table_drop_location_and_rotation():
 	cards[0]._on_Card_mouse_entered()
 	click_card(cards[0])
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(300,300),cards[0].position)
+	board._UT_interpolate_mouse_move(Vector2(300,300),cards[0].global_position)
 	yield(yield_for(0.6), YIELD)
 	board._UT_interpolate_mouse_move(Vector2(800,200))
 	yield(yield_for(0.6), YIELD)
 	drop_card(cards[0],board._UT_mouse_position)
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	assert_almost_eq(Vector2(800, 200),cards[0].position,Vector2(2,2), 
+	assert_almost_eq(Vector2(800, 200),cards[0].global_position,Vector2(2,2), 
 			"Card dragged in correct global position")
 	cards[0].card_rotation = 90
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
@@ -48,7 +48,7 @@ func test_card_hand_drop_recovery():
 	cards[0]._on_Card_mouse_entered()
 	click_card(cards[0])
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(100,100),cards[0].position)
+	board._UT_interpolate_mouse_move(Vector2(100,100),cards[0].global_position)
 	yield(yield_for(0.4), YIELD)
 	board._UT_interpolate_mouse_move(Vector2(200,620))
 	yield(yield_for(0.4), YIELD)
@@ -84,13 +84,13 @@ func test_fast_card_table_drop():
 	cards[0]._on_Card_mouse_entered()
 	click_card(cards[0])
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(1000, 300),cards[0].position)
+	board._UT_interpolate_mouse_move(Vector2(1000, 300),cards[0].global_position)
 	yield(yield_for(0.6), YIELD)
 	drop_card(cards[0],board._UT_mouse_position)
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	board._UT_interpolate_mouse_move(Vector2(400,200),cards[0].position)
+	board._UT_interpolate_mouse_move(Vector2(400,200),cards[0].global_position)
 	yield(yield_for(0.6), YIELD)
-	board._UT_interpolate_mouse_move(Vector2(1000,500),cards[0].position)
+	board._UT_interpolate_mouse_move(Vector2(1000,500),cards[0].global_position)
 	yield(yield_for(0.6), YIELD)
-	assert_almost_eq(Vector2(1000, 300),cards[0].position,Vector2(2,2), 
+	assert_almost_eq(Vector2(1000, 300),cards[0].global_position,Vector2(2,2), 
 			"Card not dragged with mouse after dropping on table")
