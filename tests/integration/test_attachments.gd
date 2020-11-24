@@ -105,14 +105,7 @@ func test_attaching_and_switching_parent():
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_almost_eq(card_prev_pos,card.global_position, Vector2(2,2),
 			"After dropping an attached card, it returns to the parent host")
-	card._on_Card_mouse_entered()
-	click_card(card)
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(400,500),card.global_position,10)
-	yield(yield_for(0.3), YIELD)
-	drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(card,Vector2(400,500)), 'completed')
 	assert_null(card.current_host_card,
 			"Attachment clears out correctly when removed from table")
 	assert_eq(2,len(cards[0].attachments),
