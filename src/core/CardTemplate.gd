@@ -143,7 +143,7 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta) -> void:
-	print("调用此部分逻辑")
+	print("call_process")
 	if $Tween.is_active() and not cfc.UT: # Debug code for catch potential Tween deadlocks
 		_tween_stuck_time += delta
 		if _tween_stuck_time > 2 and int(fmod(_tween_stuck_time,3)) == 2 :
@@ -197,7 +197,6 @@ func _on_Card_gui_input(event) -> void:
 				cfc.card_drag_ongoing = self
 				# We need to wait a bit to make sure the other card has a chance
 				# to go through their scripts
-				print("gggggggggggggg")
 				yield(get_tree().create_timer(0.1), "timeout")
 				# If this variable is still set to true,
 				# it means the mouse-button is still pressed
@@ -567,6 +566,8 @@ func set_card_rotation(value: int, toggle := false) -> int:
 		retcode = _ReturnCode.CHANGED
 	return retcode
 
+func _notification(what):
+	print(what)
 
 # Getter for card_rotation
 func get_card_rotation() -> int:
@@ -616,13 +617,10 @@ func move_to(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) -
 			_target_position = _recalculatePosition()
 			state = MOVING_TO_CONTAINER
 			# We reorganize the left over cards in hand.
-			print("kkkkkkkkkkk")
 			for c in targetHost.get_all_cards():
-				print(c)
 				if c != self:
 					c.interruptTweening()
 					c.reorganizeSelf()
-			print("zzzzzzzzzzzzz")
 			if set_is_faceup(true) == _ReturnCode.FAILED:
 				print("ERROR: Something went unexpectedly in set_is_faceup")
 		elif targetHost in cfc.piles:
@@ -1148,7 +1146,6 @@ func _clear_attachment_status() -> void:
 		# Attachments typically follow their parents to the same container
 		card.move_to(get_parent())
 		# We do a small wait to make the attachment drag look nicer
-		print("kkkkkkkkkk")
 		yield(get_tree().create_timer(0.1), "timeout")
 
 	attachments.clear()
@@ -1268,9 +1265,7 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 				($Control/FocusHighlight.rect_size.x-3)/2,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
 		$Control/FlipTween.start()
-		print("wwwwwwwwwww")
 		yield($Control/FlipTween, "tween_all_completed")
-		print("eeeeeeeeeeeeee")
 		to_visible.visible = true
 		to_invisible.visible = false
 		$Control/FlipTween.interpolate_property(to_visible,'rect_scale',
@@ -1472,7 +1467,6 @@ func _process_card_state() -> void:
 							global_position, intermediate_position, 0.5,
 							Tween.TRANS_BACK, Tween.EASE_IN_OUT)
 					$Tween.start()
-					print("zzzzzzzzzzzzz")
 					yield($Tween, "tween_all_completed")
 					_tween_stuck_time = 0
 					_fancy_move_second_part = true
@@ -1483,7 +1477,6 @@ func _process_card_state() -> void:
 							position, _target_position, 0.35,
 							Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					$Tween.start()
-					print("qqqqqqqqqqqqq")
 					yield($Tween, "tween_all_completed")
 					_determine_idle_state()
 				_fancy_move_second_part = false
@@ -1612,7 +1605,6 @@ func _process_card_state() -> void:
 					$Tween.interpolate_property(self,'position',
 							position, intermediate_position, 0.25,
 							Tween.TRANS_CUBIC, Tween.EASE_OUT)
-					print("hhhhhhhhhhhhh")
 					yield($Tween, "tween_all_completed")
 					if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 						$Tween.remove(self,'scale')
@@ -1682,7 +1674,6 @@ func _token_drawer(drawer_state := true) -> void:
 				# We want to consider the drawer closed
 				# only when the animation finished
 				# Otherwise it might start to open immediately again
-				print("iiiiiiiiiii")
 				yield(tween, "tween_all_completed")
 				# When it's closed, we hide token names
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
