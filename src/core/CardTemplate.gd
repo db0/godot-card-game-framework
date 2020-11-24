@@ -25,7 +25,8 @@ enum{
 	FOCUSED_ON_BOARD		#8
 	DROPPING_INTO_PILE 		#9
 	IN_PILE					#10
-	FOCUSED_IN_POPUP		#11
+	IN_POPUP				#11
+	FOCUSED_IN_POPUP		#12
 }
 
 # The possible return codes a function can return
@@ -145,7 +146,7 @@ func _ready() -> void:
 func _process(delta) -> void:
 	if $Tween.is_active() and not cfc.UT: # Debug code for catch potential Tween deadlocks
 		_tween_stuck_time += delta
-		if _tween_stuck_time > 2 and int(fmod(_tween_stuck_time,3)) == 2 :
+		if _tween_stuck_time > 5 and int(fmod(_tween_stuck_time,3)) == 2 :
 			print("Tween Stuck for ",_tween_stuck_time,
 					"seconds. Reports leftover runtime: ",$Tween.get_runtime ( ))
 			$Tween.remove_all()
@@ -158,6 +159,7 @@ func _process(delta) -> void:
 	# Having to do all these checks due to godotengine/godot#16854
 	if _is_drawer_open and not _is_drawer_hovered() and not _is_card_hovered():
 		_on_Card_mouse_exited()
+
 
 
 func _on_Card_mouse_entered() -> void:
@@ -178,7 +180,7 @@ func _on_Card_mouse_entered() -> void:
 					state = FOCUSED_ON_BOARD
 			# The only way to mouse over a card in a pile, is when
 			# it's in a the grid popup
-			IN_PILE:
+			IN_POPUP:
 					state = FOCUSED_IN_POPUP
 
 
@@ -261,7 +263,7 @@ func _on_Card_mouse_exited() -> void:
 			FOCUSED_ON_BOARD:
 				state = ON_PLAY_BOARD
 			FOCUSED_IN_POPUP:
-				state = IN_PILE
+				state = IN_POPUP
 
 
 # Resizes Token Drawer to min size whenever a token is removed completely.
@@ -389,7 +391,7 @@ func _on_ArrowHead_area_exited(card: Card) -> void:
 # Reverses the card back pulse and starts it again
 func _on_Pulse_completed() -> void:
 	# We only pulse the card if it's face-down and on the board
-	if not is_faceup and get_parent() == cfc.NMAP.board:
+	if not is_faceup: #and get_parent() == cfc.NMAP.board:
 		_pulse_values.invert()
 		_start_pulse()
 	else:
@@ -423,7 +425,7 @@ func get_targetcard() -> Card:
 # Returns _ReturnCode.CHANGED if the card actually changed rotation
 #
 # Returns _ReturnCode.OK if the card was already in the correct rotation
-func set_is_faceup(value: bool) -> int:
+func set_is_faceup(value: bool, instant := false) -> int:
 	var retcode: int
 	if value == is_faceup:
 		retcode = _ReturnCode.OK
@@ -436,7 +438,7 @@ func set_is_faceup(value: bool) -> int:
 		if set_is_viewed(false) == _ReturnCode.FAILED:
 			print("ERROR: Something went unexpectedly in set_is_faceup")
 		if value:
-			_flip_card($Control/Back, $Control/Front)
+			_flip_card($Control/Back, $Control/Front,instant)
 			$Control/ManipulationButtons/View.visible = false
 			_stop_pulse()
 			# When we flip face up, we also want to show the dupe card
@@ -454,10 +456,10 @@ func set_is_faceup(value: bool) -> int:
 					var dupe_back = dupe_card.get_node("Control/Back")
 					_flip_card(dupe_back, dupe_front, true)
 		else:
-			_flip_card($Control/Front, $Control/Back)
+			_flip_card($Control/Front, $Control/Back,instant)
 			$Control/ManipulationButtons/View.visible = true
-			if get_parent() == cfc.NMAP.board:
-				_start_pulse()
+#			if get_parent() == cfc.NMAP.board:
+			_start_pulse()
 			# When we flip face down, we also want to hide the dupe card
 			# in the focus viewport
 			# However we also need to protect this call from the dupe itself
@@ -606,7 +608,7 @@ func move_to(targetHost: Node2D,
 		# Ensure card stays where it was before it changed parents
 		global_position = previous_pos
 		if targetHost in cfc.hands:
-			_tween_interpolate_visibility(1,0.3)
+#			_tween_interpolate_visibility(1,0.3)
 			# We need to adjust the start position based on the global position
 			# coordinates as they would be inside the hand control node
 			# So we transform global coordinates to hand rect coordinates.
@@ -623,24 +625,34 @@ func move_to(targetHost: Node2D,
 			if set_is_faceup(true) == _ReturnCode.FAILED:
 				print("ERROR: Something went unexpectedly in set_is_faceup")
 		elif targetHost in cfc.piles:
-			# Added because sometimes it ended up stuck and a card remained
-			# visible on top of deck
-			$Tween.remove_all()
-			# We need to adjust the end position based on the local rect inside
-			# the container control node
-			# So we transform global coordinates to container rect coordinates.
-			previous_pos = targetHost.to_local(global_pos)
-			# The target position is always local coordinates 0,0 of the final container
-			_target_position = Vector2(0,0)
-			state = MOVING_TO_CONTAINER
-			# If we have fancy movement, we need to wait for 2 tweens to finish
-			# before we vanish the card.
-			# One for the fancy move, and then the move to the final position
-			if set_is_faceup(false) == _ReturnCode.FAILED:
-				print("ERROR: Something went unexpectedly in set_is_faceup")
-			if cfc.fancy_movement:
+			# The below checks if the container we're moving is in popup
+			# If the card is also in a popup, we assume we're moving back
+			# to the same container, so we do nothing
+			# The finite state machine  will reset the card to its position
+			if "CardPopUpSlot" in parentHost.name:
+				if targetHost.get_node("ViewPopup").visible == true:
+					pass
+			else:
+				# Added because sometimes it ended up stuck and a card remained
+				# visible on top of deck
+				$Tween.remove_all()
+				# We need to adjust the end position based on the local rect inside
+				# the container control node
+				# So we transform global coordinates to container rect coordinates.
+				previous_pos = targetHost.to_local(global_pos)
+				# The target position is always local coordinates 0,0
+				# of the final container
+				_target_position = targetHost.get_stack_position(self)
+				state = MOVING_TO_CONTAINER
+				if set_is_faceup(targetHost.faceup_cards) == _ReturnCode.FAILED:
+					print("ERROR: Something went unexpectedly in set_is_faceup")
+				# If we have fancy movement, we need to wait for 2 tweens to finish
+				# before we reorganize the stack.
+				# One for the fancy move, and then the move to the final position
 				yield($Tween, "tween_all_completed")
-			_tween_interpolate_visibility(0,0.3)
+				if cfc.fancy_movement:
+					yield($Tween, "tween_all_completed")
+				targetHost.reorganize_stack()
 		else:
 			interruptTweening()
 			if len(_potential_cards):
@@ -943,6 +955,25 @@ func complete_targeting() -> void:
 	$TargetLine/ArrowHead/Area2D.monitoring = false
 
 
+# Changes the hosted Control nodes filters
+#
+# * When set to false, card cannot receive inputs anymore
+#    (this is useful when card is in motion or in a pile)
+# * When set to false, card can receive inputs again
+func set_mouse_filters(value = true) -> void:
+	var control_filter := 0
+	var all_filter := 1
+	if not value:
+		control_filter = 2
+		all_filter = 2
+	# We do a comparison first, to make sure we avoid unnecessary operations
+	if $Control.mouse_filter != control_filter:
+		$Control.mouse_filter = control_filter
+		for n in $Control/ManipulationButtons.get_children():
+			if n as Button:
+				n.mouse_filter = all_filter
+
+
 class CardIndexSorter:
 	# Used with sort_custom to find the highest child index among multiple cards
    static func sort_index_ascending(c1: Card, c2: Card):
@@ -1118,8 +1149,10 @@ func _determine_idle_state() -> void:
 		state = IN_HAND
 	# The extra if is in case the ViewPopup is currently active when the card
 	# is being moved into the container
-	elif get_parent() in cfc.piles or "CardPopUpSlot" in get_parent().name:
+	elif get_parent() in cfc.piles:
 		state = IN_PILE
+	elif "CardPopUpSlot" in get_parent().name:
+		state = IN_POPUP
 	else:
 		state = ON_PLAY_BOARD
 
@@ -1352,9 +1385,11 @@ func _process_card_state() -> void:
 	match state:
 		IN_HAND:
 			set_focus(false)
+			set_mouse_filters(true)
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
 			set_focus(true)
+			set_mouse_filters(true)
 			if not $Tween.is_active() and \
 					not _focus_completed and \
 					cfc.focus_style != cfc.FocusStyle.VIEWPORT:
@@ -1406,8 +1441,14 @@ func _process_card_state() -> void:
 			# Used when moving card between places
 			# (i.e. deck to hand, hand to discard etc)
 			set_focus(false)
+			set_mouse_filters(false)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
+				if not scale.is_equal_approx(Vector2(1,1)):
+					$Tween.remove(self,'scale')
+					$Tween.interpolate_property(self,'scale',
+							scale, Vector2(1,1), 0.4,
+							Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				if cfc.fancy_movement:
 					# The below calculations figure out
 					# the intermediate position as a spot,
@@ -1454,11 +1495,6 @@ func _process_card_state() -> void:
 					# Instead we use directly the viewport coords.
 					else:
 						intermediate_position = get_viewport().size/2
-					if not scale.is_equal_approx(Vector2(1,1)):
-						$Tween.remove(self,'scale')
-						$Tween.interpolate_property(self,'scale',
-								scale, Vector2(1,1), 0.4,
-								Tween.TRANS_CUBIC, Tween.EASE_OUT)
 					$Tween.remove(self,'global_position')
 					$Tween.interpolate_property(self,'global_position',
 							global_position, intermediate_position, 0.5,
@@ -1480,6 +1516,7 @@ func _process_card_state() -> void:
 		REORGANIZING:
 			# Used when reorganizing the cards in the hand
 			set_focus(false)
+			set_mouse_filters(true)
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') #
 				$Tween.interpolate_property(self,'position',
@@ -1490,12 +1527,13 @@ func _process_card_state() -> void:
 					$Tween.interpolate_property(self,'scale',
 							scale, Vector2(1,1), 0.4,
 							Tween.TRANS_CUBIC, Tween.EASE_OUT)
-				_tween_interpolate_visibility(1,0.4)
+#				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
 				state = IN_HAND
 		PUSHED_ASIDE:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
 			set_focus(false)
+			set_mouse_filters(true)
 			if not $Tween.is_active() and \
 					not position.is_equal_approx(_target_position):
 				$Tween.remove(self,'position')
@@ -1512,6 +1550,7 @@ func _process_card_state() -> void:
 				# only when the focus is removed from the neighbour
 		DRAGGED:
 			# Used when the card is dragged around the game with the mouse
+			set_mouse_filters(true)
 			if (not $Tween.is_active() and
 				not scale.is_equal_approx(cfc.card_scale_while_dragging) and
 				get_parent() != cfc.NMAP.board):
@@ -1536,6 +1575,7 @@ func _process_card_state() -> void:
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			set_focus(false)
+			set_mouse_filters(true)
 			if not $Tween.is_active() and \
 					not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 				$Tween.remove(self,'scale')
@@ -1555,6 +1595,7 @@ func _process_card_state() -> void:
 				$Control/ManipulationButtons/Tween.start()
 			_organize_attachments()
 		DROPPING_TO_BOARD:
+			set_mouse_filters(true)
 			# Used when dropping the cards to the table
 			# When dragging the card, the card is slightly behind the mouse cursor
 			# so we tween it to the right location
@@ -1581,6 +1622,7 @@ func _process_card_state() -> void:
 			# Used when card is focused on by the mouse hovering over it while it is on the board.
 			# The below tween shows the container manipulation buttons when you hover over them
 			set_focus(true)
+			set_mouse_filters(true)
 			if not $Control/ManipulationButtons/Tween.is_active() and \
 					$Control/ManipulationButtons.modulate[3] != 1:
 				$Control/ManipulationButtons/Tween.remove_all()
@@ -1593,6 +1635,7 @@ func _process_card_state() -> void:
 		DROPPING_INTO_PILE:
 			# Used when dropping the cards into a container (Deck, Discard etc)
 			set_focus(false)
+			set_mouse_filters(false)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if cfc.fancy_movement:
@@ -1603,7 +1646,7 @@ func _process_card_state() -> void:
 							position, intermediate_position, 0.25,
 							Tween.TRANS_CUBIC, Tween.EASE_OUT)
 					yield($Tween, "tween_all_completed")
-					if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
+					if not scale.is_equal_approx(Vector2(1,1)):
 						$Tween.remove(self,'scale')
 						$Tween.interpolate_property(self,'scale',
 								scale, Vector2(1,1), 0.5,
@@ -1622,6 +1665,20 @@ func _process_card_state() -> void:
 				state = IN_PILE
 		IN_PILE:
 			set_focus(false)
+			set_mouse_filters(false)
+			if scale != Vector2(1,1):
+				scale = Vector2(1,1)
+		IN_POPUP:
+			# We make sure that a card in a popup stays in its position
+			# Unless moved
+			set_focus(false)
+			set_mouse_filters(true)
+			if modulate[3] != 1:
+				modulate[3] = 1
+			if scale != Vector2(0.75,0.75):
+				scale = Vector2(0.75,0.75)
+			if position != Vector2(0,0):
+				position = Vector2(0,0)
 		FOCUSED_IN_POPUP:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
