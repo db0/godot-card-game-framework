@@ -57,12 +57,12 @@ func _on_EnableAttach_toggled(_button_pressed: bool) -> void:
 
 # Loads a sample set of cards to use for testing
 func load_test_cards() -> void:
-	for _i in range(15):
+	for _i in range(2):
 		var card: Card = cardTemplate.instance()
 		$Deck.add_child(card)
+		card.add_to_group($Deck.get_card_group_name())
 		card._determine_idle_state()
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		card.position = Vector2(0,0)
 		card.modulate.a = 0 # We use this for a nice transition effect
 		card.is_faceup = false
-

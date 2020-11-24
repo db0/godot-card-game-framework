@@ -81,13 +81,12 @@ size_flags_horizontal = 3
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 margin_right = 50.0
-margin_bottom = 52.0
+margin_bottom = 50.0
 mouse_filter = 1
 
 [node name="TokenIcon" type="TextureRect" parent="CenterContainer"]
-margin_top = 1.0
 margin_right = 50.0
-margin_bottom = 51.0
+margin_bottom = 50.0
 size_flags_vertical = 3
 texture = ExtResource( 2 )
 __meta__ = {
@@ -96,9 +95,9 @@ __meta__ = {
 
 [node name="Count" type="Label" parent="CenterContainer"]
 margin_left = 13.0
-margin_top = 6.0
+margin_top = 5.0
 margin_right = 36.0
-margin_bottom = 45.0
+margin_bottom = 44.0
 mouse_filter = 1
 custom_fonts/font = SubResource( 3 )
 text = "1"

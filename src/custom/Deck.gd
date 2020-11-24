@@ -7,3 +7,5 @@ func _ready() -> void:
 	$Control.connect("gui_input", cfc.NMAP.hand, "_on_Deck_input_event")
 	#print(get_signal_connection_list("input_event")[0]['target'].name)
 
+func get_area_name():
+	return "deck"

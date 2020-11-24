@@ -3,10 +3,10 @@
 [ext_resource path="res://src/core/Hand.gd" type="Script" id=1]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=1]
 font_data = ExtResource( 2 )
 
-[sub_resource type="RectangleShape2D" id=1]
+[sub_resource type="RectangleShape2D" id=2]
 extents = Vector2( 490, 120 )
 
 [node name="Hand" type="Area2D"]
@@ -30,23 +30,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Shuffle" type="Button" parent="Control/ManipulationButtons"]
+[node name="Shuffle" type="Button" parent="Control/ManipulationButtons" groups=[
+"manipulation_button",
+]]
 margin_right = 24.0
 margin_bottom = 26.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
 text = "S"
 
-[node name="DiscardRandom" type="Button" parent="Control/ManipulationButtons"]
+[node name="DiscardRandom" type="Button" parent="Control/ManipulationButtons" groups=[
+"manipulation_button",
+]]
 margin_left = 28.0
 margin_right = 52.0
 margin_bottom = 26.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
 text = "R"
 
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 490, 120 )
-shape = SubResource( 1 )
+shape = SubResource( 2 )

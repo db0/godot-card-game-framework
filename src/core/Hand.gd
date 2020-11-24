@@ -3,7 +3,6 @@
 class_name Hand
 extends CardContainer
 
-
 # The maximum amount of cards allowed to draw in this hand
 const hand_size := 12
 
@@ -20,7 +19,6 @@ func _ready() -> void:
 func _on_Shuffle_Button_pressed() -> void:
 	shuffle_cards()
 
-
 # Function to connect to a card draw signal
 func _on_Deck_input_event(event) -> void:
 	if event.is_pressed() and event.get_button_index() == 1:
@@ -31,6 +29,9 @@ func _on_Deck_input_event(event) -> void:
 # Function to connect to a card discard signal
 func _on_DiscardRandom_Button_pressed() -> void:
 	var card = get_random_card()
+	for group_name in card.get_groups():
+		card.remove_from_group(group_name)
+	card.add_to_group(cfc.NMAP.discard.get_card_group_name())
 	card.move_to(cfc.NMAP.discard)
 
 
@@ -49,7 +50,15 @@ func shuffle_cards() -> void:
 # Returns a card object drawn
 func draw_card(pile : Pile = cfc.NMAP.deck) -> Card:
 	var card: Card = pile.get_top_card()
+	if not card:
+		return null
 	# A basic function to pull a card from out deck into our hand.
 	if get_card_count() < hand_size: # prevent from exceeding our hand size
+		for group_name in card.get_groups():
+			card.remove_from_group(group_name)
+		card.add_to_group(get_card_group_name())
 		card.move_to(self)
 	return card
+
+func get_area_name():
+	return "hand"
