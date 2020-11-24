@@ -36,7 +36,7 @@ func test_move_to_multiple_container():
 			cfc.NMAP.deck.position,Vector2(2,2),
 			"Card 3 final position matches pile's position")
 	assert_almost_eq(cards[0].global_position,
-			cfc.NMAP.deck.position,Vector2(2,2),
+			cfc.NMAP.deck.to_global(cfc.NMAP.deck.get_stack_position(cards[0])),Vector2(2,2),
 			"Card 0 final position matches pile's position")
 	assert_eq(2,cfc.NMAP.discard.get_card_count(),
 			"Correct amount of cards are hosted in discard")
@@ -44,6 +44,8 @@ func test_move_to_multiple_container():
 			"Correct amount of cards are hosted in deck")
 	assert_eq(1,cfc.NMAP.hand.get_card_count(),
 			"Correct amount of cards are hosted in hand")
+	pending("Card should be faceup if pile is has faceup cards")
+	pending("Card should be facedown if pile is has facedown cards")
 
 func test_move_from_board_to_deck_to_hand():
 	var card: Card

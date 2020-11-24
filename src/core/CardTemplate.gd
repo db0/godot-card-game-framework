@@ -950,6 +950,7 @@ func complete_targeting() -> void:
 # Changes the hosted Control nodes filters
 #
 # * When set to false, card cannot receive inputs anymore
+#    (this is useful when card is in motion or in a pile)
 # * When set to false, card can receive inputs again
 func set_mouse_filters(value = true) -> void:
 	var control_filter := 0
@@ -957,10 +958,12 @@ func set_mouse_filters(value = true) -> void:
 	if not value:
 		control_filter = 2
 		all_filter = 2
-	$Control.mouse_filter = control_filter
-	for n in $Control/ManipulationButtons.get_children():
-		if n as Button:
-			n.mouse_filter = all_filter
+	# We do a comparison first, to make sure we avoid unnecessary operations
+	if $Control.mouse_filter != control_filter:
+		$Control.mouse_filter = control_filter
+		for n in $Control/ManipulationButtons.get_children():
+			if n as Button:
+				n.mouse_filter = all_filter
 
 
 class CardIndexSorter:
