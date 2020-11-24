@@ -1431,6 +1431,11 @@ func _process_card_state() -> void:
 			set_mouse_filters(false)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
+				if not scale.is_equal_approx(Vector2(1,1)):
+					$Tween.remove(self,'scale')
+					$Tween.interpolate_property(self,'scale',
+							scale, Vector2(1,1), 0.4,
+							Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				if cfc.fancy_movement:
 					# The below calculations figure out
 					# the intermediate position as a spot,
@@ -1477,11 +1482,6 @@ func _process_card_state() -> void:
 					# Instead we use directly the viewport coords.
 					else:
 						intermediate_position = get_viewport().size/2
-					if not scale.is_equal_approx(Vector2(1,1)):
-						$Tween.remove(self,'scale')
-						$Tween.interpolate_property(self,'scale',
-								scale, Vector2(1,1), 0.4,
-								Tween.TRANS_CUBIC, Tween.EASE_OUT)
 					$Tween.remove(self,'global_position')
 					$Tween.interpolate_property(self,'global_position',
 							global_position, intermediate_position, 0.5,

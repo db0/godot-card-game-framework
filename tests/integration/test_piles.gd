@@ -65,3 +65,4 @@ func test_popup_view():
 	pending("get_all_cards(), includes cards in the popup")
 	pending("Drawing a card from the pile, picks it from the popup")
 	pending("Hosting a card in the pile, puts it in the popup")
+	pending("Pressing the popupt twice shouldn't just hide it and keep cards in it")
