@@ -39,11 +39,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/Pile.gd"
 }, {
-"base": "Reference",
-"class": "TestVars",
-"language": "GDScript",
-"path": "res://tests/integration/TestVars.gd"
-}, {
 "base": "HBoxContainer",
 "class": "Token",
 "language": "GDScript",
@@ -66,7 +61,6 @@ _global_script_class_icons={
 "CardFrameworkConfiguration": "",
 "Hand": "",
 "Pile": "",
-"TestVars": "",
 "Token": "",
 "UTCommon": "",
 "ViewportCardFocus": ""

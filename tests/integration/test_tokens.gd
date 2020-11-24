@@ -75,6 +75,7 @@ func test_board_tokens():
 			card.get_node("Control/Tokens/Drawer").rect_position, Vector2(2,2),
 			"Drawer extends on card hover card has tokens")
 	var prev_y = card.get_node("Control/Tokens/Drawer").rect_size.y
+# warning-ignore:return_value_discarded
 	card.add_token("blood")
 	yield(yield_for(0.1), YIELD) # Wait to allow drawer to expand
 	assert_lt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
@@ -137,14 +138,17 @@ func test_board_tokens():
 
 func test_off_board_tokens():
 	cfc.TOKENS_ONLY_ON_BOARD = false
-	cfc.SHOW_TOKEN_BUTTONS == false
+	cfc.SHOW_TOKEN_BUTTONS = false
 	var card : Card
 	card = cards[3]
 	yield(drag_drop(card, Vector2(1000,100)), 'completed')
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.1), YIELD)
+	# warning-ignore:return_value_discarded
 	card.add_token("tech")
+	# warning-ignore:return_value_discarded
 	card.add_token("plasma")
+	# warning-ignore:return_value_discarded
 	card.add_token("gold coin")
 	var tech_token = card.get_token("tech")
 	var plasma_token = card.get_token("plasma")
@@ -161,4 +165,5 @@ func test_off_board_tokens():
 	assert_false(card.get_all_tokens().empty(),
 			"Tokens not removed when card leaves with cfc.TOKENS_ONLY_ON_BOARD == false")
 	cfc.TOKENS_ONLY_ON_BOARD = true
-	cfc.SHOW_TOKEN_BUTTONS == true
+	# warning-ignore:standalone_expression
+	cfc.SHOW_TOKEN_BUTTONS = true
