@@ -1018,6 +1018,24 @@ func _determine_board_position_from_mouse() -> Vector2:
 	return targetpos
 
 
+# This function figures out where on the table a card should be placed
+# based on the mouse position
+# It takes extra care not to drop the card outside viewport margins
+func _determine_target_position_from_mouse() -> void:
+	_target_position = _determine_board_position_from_mouse()
+	# The below ensures the card doesn't leave the viewport dimentions
+	if _target_position.x + $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x \
+			> get_viewport().size.x:
+		_target_position.x = get_viewport().size.x \
+				- $Control.rect_size.x \
+				* cfc.PLAY_AREA_SCALE.x
+	if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y \
+			> get_viewport().size.y:
+		_target_position.y = get_viewport().size.y \
+				- $Control.rect_size.y \
+				* cfc.PLAY_AREA_SCALE.y
+
+
 # Instructs the card to move aside for another card enterring focus
 func _pushAside(targetpos: Vector2) -> void:
 	interruptTweening()
@@ -1127,24 +1145,6 @@ func _clear_attachment_status() -> void:
 	attachments.clear()
 
 
-# This function figures out where on the table a card should be placed
-# based on the mouse position
-# It takes extra care not to drop the card outside viewport margins
-func _determine_target_position_from_mouse() -> void:
-	_target_position = _determine_board_position_from_mouse()
-	# The below ensures the card doesn't leave the viewport dimentions
-	if _target_position.x + $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x \
-			> get_viewport().size.x:
-		_target_position.x = get_viewport().size.x \
-				- $Control.rect_size.x \
-				* cfc.PLAY_AREA_SCALE.x
-	if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y \
-			> get_viewport().size.y:
-		_target_position.y = get_viewport().size.y \
-				- $Control.rect_size.y \
-				* cfc.PLAY_AREA_SCALE.y
-
-
 # Detects when the mouse is still hovering over the buttons area.
 #
 # We need to detect this extra, because the buttons restart event propagation.
@@ -1217,6 +1217,7 @@ func _is_card_hovered() -> bool:
 		ret = true
 	#print(ret)
 	return(ret)
+
 
 # Flips the visible parts of the card control nodes
 # so that the correct Panel (Card Back or Card Front) and children is visible
