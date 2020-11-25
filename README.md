@@ -198,6 +198,9 @@ For more fine customization, you'll need to modify manually
 * Can flip cards face-down and view them while in that state
 * Can add tokens on cards
 
+## Contributing
+
+Please see the [Contribution Guide][contributing.md]
 
 ## Credits
 
