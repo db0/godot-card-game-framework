@@ -57,10 +57,10 @@ func _on_EnableAttach_toggled(_button_pressed: bool) -> void:
 
 # Loads a sample set of cards to use for testing
 func load_test_cards() -> void:
-	for _i in range(2):
+	for _i in range(15):
 		var card: Card = cardTemplate.instance()
 		$Deck.add_child(card)
-		card.add_to_group($Deck.get_card_group_name())
+		card.change_group($Deck.get_card_group_name())
 		card._determine_idle_state()
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		card.position = Vector2(0,0)

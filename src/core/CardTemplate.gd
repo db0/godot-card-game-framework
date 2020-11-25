@@ -143,7 +143,6 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta) -> void:
-	print("call_process")
 	if $Tween.is_active() and not cfc.UT: # Debug code for catch potential Tween deadlocks
 		_tween_stuck_time += delta
 		if _tween_stuck_time > 2 and int(fmod(_tween_stuck_time,3)) == 2 :
@@ -565,9 +564,6 @@ func set_card_rotation(value: int, toggle := false) -> int:
 		# We report that it changed.
 		retcode = _ReturnCode.CHANGED
 	return retcode
-
-func _notification(what):
-	print(what)
 
 # Getter for card_rotation
 func get_card_rotation() -> int:
@@ -1681,3 +1677,10 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
+
+func change_group(_group_name):
+	var built_in_group = ["idle_process","idle_process_internal","physics_process","physics_process_internal",]
+	for group_name in get_groups():
+		if not (group_name  in built_in_group):
+			remove_from_group(group_name)
+	add_to_group(_group_name)
