@@ -27,6 +27,7 @@ enum{
 	IN_PILE					#10
 	IN_POPUP				#11
 	FOCUSED_IN_POPUP		#12
+	VIEWPORT_FOCUS			#13
 }
 
 # The possible return codes a function can return
@@ -194,31 +195,32 @@ func _on_Card_mouse_entered() -> void:
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
-		if event.doubleclick:
-			cfc.card_drag_ongoing = null
-			_execute_scripts()
+		if event.get_button_index() == 1:
+			if event.doubleclick:
+				cfc.card_drag_ongoing = null
+				_execute_scripts()
 		# If the player presses the left click, it might be because
 		# they want to drag the card
-		if event.is_pressed() and event.get_button_index() == 1:
-			if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
-					(state == FOCUSED_IN_HAND
-					or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
-				# But first we check if the player does a long-press.
-				# We don't want to start dragging the card immediately.
-				cfc.card_drag_ongoing = self
-				# We need to wait a bit to make sure the other card has a chance
-				# to go through their scripts
-				yield(get_tree().create_timer(0.1), "timeout")
-				# If this variable is still set to true,
-				# it means the mouse-button is still pressed
-				# We also check if another card is already selected for dragging,
-				# to prevent from picking 2 cards at the same time.
-				if cfc.card_drag_ongoing == self:
-					# While the mouse is kept pressed, we tell the engine
-					# that a card is being dragged
-					_start_dragging()
-		# If the mouse button was released we drop the dragged card
-		# This also means a card clicked once won't try to immediately drag
+			elif event.is_pressed() :
+				if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
+						(state == FOCUSED_IN_HAND
+						or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
+					# But first we check if the player does a long-press.
+					# We don't want to start dragging the card immediately.
+					cfc.card_drag_ongoing = self
+					# We need to wait a bit to make sure the other card has a chance
+					# to go through their scripts
+					yield(get_tree().create_timer(0.1), "timeout")
+					# If this variable is still set to true,
+					# it means the mouse-button is still pressed
+					# We also check if another card is already selected for dragging,
+					# to prevent from picking 2 cards at the same time.
+					if cfc.card_drag_ongoing == self:
+						# While the mouse is kept pressed, we tell the engine
+						# that a card is being dragged
+						_start_dragging()
+			# If the mouse button was released we drop the dragged card
+			# This also means a card clicked once won't try to immediately drag
 		if not event.is_pressed() and event.get_button_index() == 1:
 			# Always reveal the mouseon unclick
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
@@ -596,8 +598,8 @@ func get_card_rotation() -> int:
 # mouse position, or at the 'boardPosition' variable if it's provided
 # index determines the card's position among other cards.
 func move_to(targetHost: Node2D,
-	index := -1,
-	boardPosition := Vector2(-1,-1)) -> void:
+		index := -1,
+		boardPosition := Vector2(-1,-1)) -> void:
 #	if cfc.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -1711,7 +1713,26 @@ func _process_card_state() -> void:
 			set_focus(true)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
-
+		VIEWPORT_FOCUS:
+			set_focus(false)
+			set_mouse_filters(false)
+			# warning-ignore:return_value_discarded
+			set_card_rotation(0)
+			$Control/ManipulationButtons.modulate[3] = 0
+			$Control.rect_rotation = 0
+			complete_targeting()
+			$Control/Tokens.visible = false
+			scale = Vector2(1.5,1.5)
+			# If the card has already been been viewed while down,
+			# we allow the player hovering over it to see it
+			if not is_faceup:
+				if is_viewed:
+					_flip_card($Control/Back,$Control/Front, true)
+				else:
+					# We slightly reduce the colour intensity of the dupe
+					# As its enlarged state makes it glow too much
+					var current_colour = $Control/Back.modulate
+					$Control/Back.modulate = current_colour * 0.95
 
 # Reveals or Hides the token drawer
 #

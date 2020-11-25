@@ -51,27 +51,28 @@ func focus_card(card: Card) -> void:
 		_dupes_dict[dupe_focus] = card
 		# We display a "pure" version of the card
 		# This means we hide buttons, tokens etc
-		dupe_focus.get_node('Control/ManipulationButtons').modulate[3] = 0
-		dupe_focus.get_node('Control').rect_rotation = 0
-		dupe_focus.complete_targeting()
-		dupe_focus.get_node('Control/Tokens').visible = false
-		# If the card has already been been viewed while down,
-		# we allow the player hovering over it to see it
-		if not dupe_focus.is_faceup:
-			if dupe_focus.is_viewed:
-				dupe_focus._flip_card(dupe_focus.get_node("Control/Back"),
-						dupe_focus.get_node("Control/Front"), true)
-			else:
-				# We slightly reduce the colour intensity of the dupe
-				# As its enlarged state makes it glow too much
-				var current_colour = dupe_focus.get_node('Control/Back').modulate
-				dupe_focus.get_node('Control/Back').modulate = current_colour * 0.95
+		dupe_focus.state = dupe_focus.VIEWPORT_FOCUS
+#		dupe_focus.get_node('Control/ManipulationButtons').modulate[3] = 0
+#		dupe_focus.get_node('Control').rect_rotation = 0
+#		dupe_focus.complete_targeting()
+#		dupe_focus.get_node('Control/Tokens').visible = false
+#		# If the card has already been been viewed while down,
+#		# we allow the player hovering over it to see it
+#		if not dupe_focus.is_faceup:
+#			if dupe_focus.is_viewed:
+#				dupe_focus._flip_card(dupe_focus.get_node("Control/Back"),
+#						dupe_focus.get_node("Control/Front"), true)
+#			else:
+#				# We slightly reduce the colour intensity of the dupe
+#				# As its enlarged state makes it glow too much
+#				var current_colour = dupe_focus.get_node('Control/Back').modulate
+#				dupe_focus.get_node('Control/Back').modulate = current_colour * 0.95
 		# We store all our previously focused cards in an array, and clean them
 		# up when they're not focused anymore
 		_previously_focused_cards.append(dupe_focus)
 		$Focus/Viewport.add_child(dupe_focus)
 		# We scale it up to allow the player a better viewing experience
-		dupe_focus.scale = Vector2(1.5,1.5)
+#		dupe_focus.scale = Vector2(1.5,1.5)
 		# We make the viewport camera focus on it
 		$Focus/Viewport/Camera2D.position = dupe_focus.global_position
 		# We always make sure to clean tweening conflicts
