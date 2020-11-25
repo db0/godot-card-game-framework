@@ -3,6 +3,7 @@ extends Board
 
 const cardTemplate = preload("res://src/core/CardTemplate.tscn")
 const test1 = preload("res://src/custom/cards/Test1.tscn")
+const test2 = preload("res://src/custom/cards/Test2.tscn")
 
 var allCards := [] # A pseudo-deck array to hold the card objects we want to pull
 
@@ -58,8 +59,10 @@ func _on_EnableAttach_toggled(_button_pressed: bool) -> void:
 
 # Loads a sample set of cards to use for testing
 func load_test_cards() -> void:
+	var test_cards = [test1, test2]
+	randomize()
 	for _i in range(15):
-		var card: Card = test1.instance()
+		var card: Card = test_cards[randi() % len(test_cards)].instance()
 		$Deck.add_child(card)
 		# warning-ignore:return_value_discarded
 		card.set_is_faceup(false,true)

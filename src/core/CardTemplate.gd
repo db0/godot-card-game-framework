@@ -195,6 +195,7 @@ func _on_Card_mouse_entered() -> void:
 func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
 		if event.doubleclick:
+			cfc.card_drag_ongoing = null
 			_execute_scripts()
 		# If the player presses the left click, it might be because
 		# they want to drag the card
@@ -1781,5 +1782,9 @@ func _execute_scripts():
 	match state:
 		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
 			state_scripts = card_scripts.get("board",[])
+		IN_HAND,FOCUSED_IN_HAND:
+			state_scripts = card_scripts.get("hand",[])
+		IN_POPUP,FOCUSED_IN_POPUP:
+			state_scripts = card_scripts.get("pile",[])
 	sceng.running_scripts = state_scripts
 	sceng.run_next_script()
