@@ -42,7 +42,7 @@ enum _ReturnCode {
 	FAILED,
 }
 
-const token_scene = preload("res://src/core/Token.tscn")
+const _token_scene = preload("res://src/core/Token.tscn")
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 # warning-ignore:unused_class_variable
@@ -853,7 +853,7 @@ func add_token(token_name : String) -> int:
 		# If the token does not exist in the card, we add its node
 		# and set it to 1
 		if not token:
-			token = token_scene.instance()
+			token = _token_scene.instance()
 			token.setup(token_name)
 			$Control/Tokens/Drawer/VBoxContainer.add_child(token)
 		# If the token node of this name has already been added to the card
