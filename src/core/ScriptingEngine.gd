@@ -15,7 +15,7 @@ func _ready() -> void:
 
 func _init(owner, target) -> void:
 	card_owner = owner
-	
+
 func run_next_script() -> void:
 	if running_scripts.empty():
 		print('Scripting: All done!') # Debug
@@ -30,7 +30,7 @@ func run_next_script() -> void:
 				move_to_container([Card, CardContainer])
 				move_self_to_board([Card, Vector2])
 				generate_card([str card_path, int amount])
-				rotate_card([Card, int degrees])
+				rotate_self([Card, int degrees])
 			"""
 		else:
 			print("[WARN] Found empty script. Ignoring...")
@@ -44,7 +44,7 @@ func script_succeeded() -> void:
 func rotate_self(args) -> void:
 	var degrees: int = args[1]
 	rotate_card([card_owner,  args[1]])
-	
+
 # warning-ignore:unused_argument
 func rotate_card(args) -> void:
 	var card = args[0]
@@ -52,12 +52,12 @@ func rotate_card(args) -> void:
 	card_owner.card_rotation = degrees
 	yield(card.get_node("Tween"), "tween_all_completed")
 	run_next_script()
-	
+
 # warning-ignore:unused_argument
 func move_self_to_container(args) -> void:
 	var container = args[1]
 	move_card_to_container([card_owner,container])
-	
+
 # warning-ignore:unused_argument
 func move_card_to_container(args) -> void:
 	var card = args[0]

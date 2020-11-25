@@ -47,9 +47,12 @@ enum _ReturnCode {
 const _token_scene = preload("res://src/core/Token.tscn")
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
-# warning-ignore:unused_class_variable
-#export var scripts := [{'name':'','args':['',0]}]
-export var scripts : Array
+#
+# If this variable is set, it takes precedence over scripts
+# found in CardScripts.gd
+#
+# See CardScripts.gd for the proper format of a scripts dictionary
+export var scripts := {}
 # If true, the card can be attached to other cards and will follow
 # their host around the table. The card will always return to its host
 # when dragged away
@@ -60,6 +63,12 @@ export var is_faceup  := true setget set_is_faceup, get_is_faceup
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
 # Specifies the card rotation in increments of 90 degrees
 export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_card_rotation
+# This is **the** authorative name for this node
+#
+# If not set, will be set to the value of the Name label in the front
+# if that is also not set, will be set
+# to the human-readable value of the "name" node property
+export var card_name : String setget set_card_name, get_card_name
 
 # Used to store a card succesfully targeted.
 # It should be cleared from whichever effect requires a target once it has finished
@@ -99,8 +108,8 @@ signal target_selected(card)
 var unique_name = name
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	scripts = [{'name':'rotate_card','args':[self,90]},
-			{'name':'move_to_container','args':[self,cfc.NMAP.deck]}]
+	# The below check ensures out card_name variable is set.
+	_init_card_name()
 	# First we set the card to always pivot from its center.
 	# We only rotate the Control node however, so the collision shape is not rotated
 	# Looking for a better solution, but this is the best I have until now.
@@ -195,12 +204,16 @@ func _on_Card_mouse_entered() -> void:
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
+		# If the player left clicks, we need to see if it's a double-click
+		# or a long click
 		if event.get_button_index() == 1:
+			# If it's a double-click, then it's not a card drag
+			# But rather it's script execution
 			if event.doubleclick:
 				cfc.card_drag_ongoing = null
 				_execute_scripts()
-		# If the player presses the left click, it might be because
-		# they want to drag the card
+			# If it's a long click it might be because
+			# they want to drag the card
 			elif event.is_pressed() :
 				if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
 						(state == FOCUSED_IN_HAND
@@ -534,6 +547,28 @@ func set_is_viewed(value: bool) -> int:
 # Getter for is_faceup
 func get_is_viewed() -> bool:
 	return is_viewed
+
+
+# Setter for card_name
+# Also changes the card label and the node name
+func set_card_name(value : String) -> void:
+	$Control/Front/CardText/Name.text = value
+	name = value
+	card_name = value
+
+
+# Getter for card_name
+func get_card_name() -> String:
+	return card_name
+
+
+# Overwrites the built-in set name, so that it also sets card_name
+#
+# It's preferrable to set card_name instead.
+func set_name(value : String) -> void:
+	.set_name(value)
+	$Control/Front/CardText/Name.text = value
+	card_name = value
 
 
 # Setter for card_rotation.
@@ -1722,6 +1757,7 @@ func _process_card_state() -> void:
 			$Control.rect_rotation = 0
 			complete_targeting()
 			$Control/Tokens.visible = false
+			# We scale the card dupe to allow the player a better viewing experience
 			scale = Vector2(1.5,1.5)
 			# If the card has already been been viewed while down,
 			# we allow the player hovering over it to see it
@@ -1787,25 +1823,51 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens.z_index = 0
 
 func _execute_scripts():
-	# The card names change depeding on how many other cards
-	# with the same name are siblings
-	# We use this regex to discover the actual name
-	var regex = RegEx.new()
-	regex.compile("@{0,1}(\\w+)@{0,1}")
-	var result = regex.search(name)
-	var card_name = result.get_string(1)
 	# The CardScripts is where we keep all card scripting definitions
 	var loaded_scripts = CardScripts.new()
+	var card_scripts
 	# The ScriptingEngine class is where we keep the code for the scripts
 	var sceng = ScriptingEngine.new(self,target_card)
-	var card_scripts = loaded_scripts.get_scripts(card_name)
+	# If scripts have been defined directly in this object
+	# They take precedence over CardScripts.gd
+	#
+	# This allows us to modify a card's scripts during runtime
+	# in isolation from other cards of the same name
+	if not scripts.empty():
+		card_scripts = scripts
+	else:
+		# CardScripts.gd should contain scripts for all defined cards
+		card_scripts = loaded_scripts.get_scripts(card_name)
 	var state_scripts = []
-	match state:
-		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
-			state_scripts = card_scripts.get("board",[])
-		IN_HAND,FOCUSED_IN_HAND:
-			state_scripts = card_scripts.get("hand",[])
-		IN_POPUP,FOCUSED_IN_POPUP:
-			state_scripts = card_scripts.get("pile",[])
-	sceng.running_scripts = state_scripts
-	sceng.run_next_script()
+	# We assume only faceup cards can execute scripts
+	if is_faceup:
+		# We select which scripts to run from the card, based on it state
+		match state:
+			ON_PLAY_BOARD,FOCUSED_ON_BOARD:
+				state_scripts = card_scripts.get("board", [])
+			IN_HAND,FOCUSED_IN_HAND:
+				state_scripts = card_scripts.get("hand", [])
+			IN_POPUP,FOCUSED_IN_POPUP:
+				state_scripts = card_scripts.get("pile", [])
+		sceng.running_scripts = state_scripts
+		sceng.run_next_script()
+
+func _init_card_name():
+	if not card_name:
+		# If the variable has not been set on start
+		# But the Name label has been set, we set our name to that instead
+		if $Control/Front/CardText/Name.text != "":
+			set_card_name($Control/Front/CardText/Name.text)
+		else:
+			# The node name changes depeding on how many other cards
+			# with the same node name are siblings
+			# We use this regex to discover the actual name
+			var regex = RegEx.new()
+			regex.compile("@{0,1}([\\w ]+)@{0,1}")
+			var result = regex.search(name)
+			var node_human_name = result.get_string(1)
+			set_card_name(node_human_name)
+	else:
+		# If the variable has been set, we ensure label and node name
+		# are matching
+		set_card_name(card_name)
