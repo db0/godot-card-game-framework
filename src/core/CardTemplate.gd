@@ -561,6 +561,9 @@ func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 		$Tween.interpolate_property($Control,'rect_rotation',
 				$Control.rect_rotation, value, 0.3,
 				Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+		# We only start the animation if this flag is set to true
+		# This allows us to set the card to rotate on the next
+		# available tween, instead of immediately.
 		if start_tween:
 			$Tween.start()
 		#$Control/Tokens.rotation_degrees = -value # need to figure this out
@@ -1024,8 +1027,8 @@ func _determine_global_mouse_pos() -> Vector2:
 	if get_viewport().has_node("Camera2D"):
 		zoom = get_viewport().get_node("Camera2D").zoom
 	var offset_mouse_position = \
-		get_tree().current_scene.get_global_mouse_position() \
-		- get_viewport_transform().origin
+			get_tree().current_scene.get_global_mouse_position() \
+			- get_viewport_transform().origin
 	offset_mouse_position *= zoom
 	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
 	if cfc.UT: mouse_position = cfc.NMAP.board._UT_mouse_position
@@ -1385,11 +1388,13 @@ func _process_card_state() -> void:
 		IN_HAND:
 			set_focus(false)
 			set_mouse_filters(true)
+			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
 			set_focus(true)
 			set_mouse_filters(true)
+			# warning-ignore:return_value_discarded
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not _focus_completed and \
@@ -1443,6 +1448,7 @@ func _process_card_state() -> void:
 			# (i.e. deck to hand, hand to discard etc)
 			set_focus(false)
 			set_mouse_filters(false)
+			# warning-ignore:return_value_discarded
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
@@ -1498,6 +1504,7 @@ func _process_card_state() -> void:
 					else:
 						intermediate_position = get_viewport().size/2
 					$Tween.remove(self,'global_position')
+					$Tween.remove_all()
 					$Tween.interpolate_property(self,'global_position',
 							global_position, intermediate_position, 0.5,
 							Tween.TRANS_BACK, Tween.EASE_IN_OUT)
@@ -1508,17 +1515,20 @@ func _process_card_state() -> void:
 				# We need to check again, just in case it's been reorganized instead.
 				if state == MOVING_TO_CONTAINER:
 					$Tween.remove(self,'position')
+					$Tween.remove_all()
 					$Tween.interpolate_property(self,'position',
 							position, _target_position, 0.35,
 							Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
+					print(_target_position)
 					_determine_idle_state()
 				_fancy_move_second_part = false
 		REORGANIZING:
 			# Used when reorganizing the cards in the hand
 			set_focus(false)
 			set_mouse_filters(true)
+			# warning-ignore:return_value_discarded
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') #
@@ -1537,6 +1547,7 @@ func _process_card_state() -> void:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
 			set_focus(false)
 			set_mouse_filters(true)
+			# warning-ignore:return_value_discarded
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not position.is_equal_approx(_target_position):
@@ -1670,6 +1681,7 @@ func _process_card_state() -> void:
 		IN_PILE:
 			set_focus(false)
 			set_mouse_filters(false)
+			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
@@ -1678,6 +1690,7 @@ func _process_card_state() -> void:
 			# Unless moved
 			set_focus(false)
 			set_mouse_filters(true)
+			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			if modulate[3] != 1:
 				modulate[3] = 1
@@ -1688,6 +1701,7 @@ func _process_card_state() -> void:
 		FOCUSED_IN_POPUP:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
+			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 
 
