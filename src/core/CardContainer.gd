@@ -2,6 +2,16 @@
 # and arrange their indexing and visibility
 class_name CardContainer
 extends Area2D
+# ManipulationButtons node
+onready var manipulation_buttons = $Control/ManipulationButtons
+# ManipulationButtons tween node
+onready var manipulation_buttons_tween = $Control/ManipulationButtons/Tween
+# Control node
+onready var control = $Control
+# Shuffle button
+onready var shuffle = $Control/ManipulationButtons/Shuffle
+# View button
+onready var view = $Control/ManipulationButtons/View
 
 # Expose internal random seeds,only changes it before _ready function
 var random_seed
@@ -9,17 +19,17 @@ var random_seed
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
-	$Control.connect("mouse_entered",self,"_on_Control_mouse_entered")
+	$Control.connect("mouse_entered", self, "_on_Control_mouse_entered")
 	# warning-ignore:return_value_discarded
-	$Control.connect("mouse_exited",self,"_on_Control_mouse_exited")
+	$Control.connect("mouse_exited", self, "_on_Control_mouse_exited")
 	# warning-ignore:return_value_discarded
-	for button in $Control/ManipulationButtons.get_children():
+	for button in manipulation_buttons.get_children():
 		if button.name != "Tween":
-			button.connect("mouse_entered",self,"_on_button_mouse_entered")
-			button.connect("mouse_exited",self,"_on_button_mouse_exited")
-	$Control/ManipulationButtons/Shuffle.connect(
-				"pressed",self,'_on_Shuffle_Button_pressed')
+			button.connect("mouse_entered", self, "_on_button_mouse_entered")
+			button.connect("mouse_exited", self, "_on_button_mouse_exited")
+	shuffle.connect("pressed", self, '_on_Shuffle_Button_pressed')
 	_init_data()
+
 
 # Initialize some variables in ready,Such as seed.
 func _init_data():
@@ -30,38 +40,48 @@ func _init_data():
 
 # Shows the container manipulation buttons when the player hovers over them
 func _on_Control_mouse_entered() -> void:
-	 # We always make sure to clean tweening conflicts
-	$Control/ManipulationButtons/Tween.remove_all()
-	$Control/ManipulationButtons/Tween.interpolate_property(
-			$Control/ManipulationButtons,'modulate',
-			$Control/ManipulationButtons.modulate, Color(1,1,1,1), 0.25,
-			Tween.TRANS_SINE, Tween.EASE_IN)
-	$Control/ManipulationButtons/Tween.start()
+	# We always make sure to clean tweening conflicts
+	manipulation_buttons_tween.remove_all()
+	manipulation_buttons_tween.interpolate_property(
+		manipulation_buttons,
+		'modulate',
+		manipulation_buttons.modulate,
+		Color(1, 1, 1, 1),
+		0.25,
+		Tween.TRANS_SINE,
+		Tween.EASE_IN
+	)
+	manipulation_buttons_tween.start()
 
 
 # Hides the container manipulation buttons when you stop hovering over them
 func _on_Control_mouse_exited() -> void:
 	# We always make sure to clean tweening conflicts
-	$Control/ManipulationButtons/Tween.remove_all()
-	$Control/ManipulationButtons/Tween.interpolate_property(
-			$Control/ManipulationButtons,'modulate',
-			$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
-			Tween.TRANS_SINE, Tween.EASE_IN)
-	$Control/ManipulationButtons/Tween.start()
+	manipulation_buttons_tween.remove_all()
+	manipulation_buttons_tween.interpolate_property(
+		manipulation_buttons,
+		'modulate',
+		manipulation_buttons.modulate,
+		Color(1, 1, 1, 0),
+		0.25,
+		Tween.TRANS_SINE,
+		Tween.EASE_IN
+	)
+	manipulation_buttons_tween.start()
 
 
 # Ensures the mouse is visible on hover
 # Ensures that button it not trying to  disappear via previous animation
 func _on_button_mouse_entered() -> void:
-	$Control/ManipulationButtons/Tween.remove_all()
-	$Control/ManipulationButtons.modulate[3] = 1
+	manipulation_buttons_tween.remove_all()
+	manipulation_buttons.modulate[3] = 1
 
 
 # Ensures the mouse is invisible on hover
 # Ensures that button it not trying to appear via previous animation
 func _on_button_mouse_exited() -> void:
-	$Control/ManipulationButtons/Tween.remove_all()
-	$Control/ManipulationButtons.modulate[3] = 0
+	manipulation_buttons_tween.remove_all()
+	manipulation_buttons.modulate[3] = 0
 
 
 # Triggers pile shuffling
@@ -71,7 +91,8 @@ func _on_Shuffle_Button_pressed() -> void:
 
 
 # Overrides the built-in get_class to return "CardContainer" instead of "Area2D"
-func get_class(): return "CardContainer"
+func get_class():
+	return "CardContainer"
 
 
 # Returns an array with all children nodes which are of Card class
@@ -105,7 +126,7 @@ func get_random_card() -> Card:
 		return null
 	else:
 		var cardsArray := get_all_cards()
-		return cardsArray[randi()%len(cardsArray)]
+		return cardsArray[randi() % len(cardsArray)]
 
 
 # Randomly rearranges the order of the Card nodes.
@@ -115,7 +136,7 @@ func shuffle_cards() -> void:
 		cardsArray.append(card)
 	cardsArray.shuffle()
 	for card in cardsArray:
-		move_child(card,cardsArray.find(card))
+		move_child(card, cardsArray.find(card))
 
 
 # Translates requested card index to true node index.
@@ -136,4 +157,4 @@ func translate_card_index_to_node_index(index: int) -> int:
 		# its node index
 		var card_at_index = all_cards[index]
 		node_index = card_at_index.get_index()
-	return(node_index)
+	return node_index
