@@ -1765,13 +1765,21 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens.z_index = 0
 
 func _execute_scripts():
+	# The card names change depeding on how many other cards
+	# with the same name are siblings
+	# We use this regex to discover the actual name
 	var regex = RegEx.new()
 	regex.compile("@{0,1}(\\w+)@{0,1}")
 	var result = regex.search(name)
 	var card_name = result.get_string(1)
-	print(card_name)
-	var sceng = ScriptingEngine.new(self,target_card)
+	# The CardScripts is where we keep all card scripting definitions
 	var loaded_scripts = CardScripts.new()
-	print(loaded_scripts.get_scripts(card_name))
-	sceng.running_scripts = loaded_scripts.get_scripts(card_name).duplicate()
+	# The ScriptingEngine class is where we keep the code for the scripts
+	var sceng = ScriptingEngine.new(self,target_card)
+	var card_scripts = loaded_scripts.get_scripts(card_name)
+	var state_scripts = []
+	match state:
+		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
+			state_scripts = card_scripts.get("board",[])
+	sceng.running_scripts = state_scripts
 	sceng.run_next_script()
