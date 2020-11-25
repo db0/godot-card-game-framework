@@ -2,6 +2,8 @@ class_name ScriptingEngine
 extends Reference
 
 var running_scripts: Array
+var card_owner
+var target_card = null
 # Declare member variables here. Examples:
 # var a: int = 2
 # var b: String = "text"
@@ -11,6 +13,9 @@ var running_scripts: Array
 func _ready() -> void:
 	pass # Replace with function body.
 
+func _init(owner, target) -> void:
+	card_owner = owner
+	
 func run_next_script() -> void:
 	if running_scripts.empty():
 		print('Scripting: All done!') # Debug
@@ -36,15 +41,25 @@ func script_succeeded() -> void:
 	run_next_script()
 
 # warning-ignore:unused_argument
+func rotate_self(args) -> void:
+	var degrees: int = args[1]
+	rotate_card([card_owner,  args[1]])
+	
+# warning-ignore:unused_argument
 func rotate_card(args) -> void:
 	var card = args[0]
 	var degrees: int = args[1]
-	card.card_rotation = degrees
+	card_owner.card_rotation = degrees
 	yield(card.get_node("Tween"), "tween_all_completed")
 	run_next_script()
 	
 # warning-ignore:unused_argument
-func move_to_container(args) -> void:
+func move_self_to_container(args) -> void:
+	var container = args[1]
+	move_card_to_container([card_owner,container])
+	
+# warning-ignore:unused_argument
+func move_card_to_container(args) -> void:
 	var card = args[0]
 	var container = args[1]
 	card.move_to(container)

@@ -92,7 +92,10 @@ var _is_drawer_open := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
-onready var sceng = ScriptingEngine.new()
+signal target_selected(card)
+
+
+var unique_name = name
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	scripts = [{'name':'rotate_card','args':[self,90]},
@@ -192,11 +195,10 @@ func _on_Card_mouse_entered() -> void:
 func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
 		if event.doubleclick:
-			sceng.running_scripts = scripts.duplicate()
-			sceng.run_next_script()
+			_execute_scripts()
 		# If the player presses the left click, it might be because
 		# they want to drag the card
-		elif event.is_pressed() and event.get_button_index() == 1:
+		if event.is_pressed() and event.get_button_index() == 1:
 			if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
 					(state == FOCUSED_IN_HAND
 					or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
@@ -962,6 +964,7 @@ func complete_targeting() -> void:
 	$TargetLine.clear_points()
 	$TargetLine/ArrowHead.visible = false
 	$TargetLine/ArrowHead/Area2D.monitoring = false
+	emit_signal("target_selected",target_card)
 
 
 # Changes the hosted Control nodes filters
@@ -1760,3 +1763,15 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
+
+func _execute_scripts():
+	var regex = RegEx.new()
+	regex.compile("@{0,1}(\\w+)@{0,1}")
+	var result = regex.search(name)
+	var card_name = result.get_string(1)
+	print(card_name)
+	var sceng = ScriptingEngine.new(self,target_card)
+	var loaded_scripts = CardScripts.new()
+	print(loaded_scripts.get_scripts(card_name))
+	sceng.running_scripts = loaded_scripts.get_scripts(card_name).duplicate()
+	sceng.run_next_script()
