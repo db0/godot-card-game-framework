@@ -636,7 +636,6 @@ func move_to(targetHost: Node2D, index := -1, boardPosition := Vector2(-1,-1)) -
 			if set_is_faceup(false) == _ReturnCode.FAILED:
 				print("ERROR: Something went unexpectedly in set_is_faceup")
 			if cfc.fancy_movement:
-				print("tween_all_completed")
 				yield($Tween, "tween_all_completed")
 			_tween_interpolate_visibility(0,0.3)
 		else:
@@ -1681,6 +1680,6 @@ func _token_drawer(drawer_state := true) -> void:
 func change_group(_group_name):
 	var built_in_group = ["idle_process","idle_process_internal","physics_process","physics_process_internal",]
 	for group_name in get_groups():
-		if not (group_name  in built_in_group):
+		if not (group_name in built_in_group):
 			remove_from_group(group_name)
 	add_to_group(_group_name)

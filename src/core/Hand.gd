@@ -12,12 +12,13 @@ onready var bottom_margin: float = $Control.rect_size.y * cfc.BOTTOM_MARGIN_MULT
 
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
-	$Control/ManipulationButtons/DiscardRandom.connect("pressed",self,'_on_DiscardRandom_Button_pressed')
+	$Control/ManipulationButtons/DiscardRandom.connect("pressed", self, '_on_DiscardRandom_Button_pressed')
 
 
 # Button which shuffles the children Card objects
 func _on_Shuffle_Button_pressed() -> void:
 	shuffle_cards()
+
 
 # Function to connect to a card draw signal
 func _on_Deck_input_event(event) -> void:
@@ -40,21 +41,22 @@ func shuffle_cards() -> void:
 	.shuffle_cards()
 	for card in get_all_cards():
 		card.reorganizeSelf()
-	move_child($Control,0)
+	move_child($Control, 0)
 
 
 # Takes the top card from the specified CardContainer
 # and adds it to this node
 # Returns a card object drawn
-func draw_card(pile : Pile = cfc.NMAP.deck) -> Card:
+func draw_card(pile: Pile = cfc.NMAP.deck) -> Card:
 	var card: Card = pile.get_top_card()
 	if not card:
 		return null
 	# A basic function to pull a card from out deck into our hand.
-	if get_card_count() < hand_size: # prevent from exceeding our hand size
+	if get_card_count() < hand_size:  # prevent from exceeding our hand size
 		card.change_group(get_card_group_name())
 		card.move_to(self)
 	return card
+
 
 func get_area_name():
 	return "hand"

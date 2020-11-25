@@ -3,11 +3,11 @@ class_name Board
 extends Node2D
 
 # Simulated mouse position for Unit Testing
-var _UT_mouse_position := Vector2(0,0)
+var _UT_mouse_position := Vector2(0, 0)
 # Simulated mouse position for Unit Testing
-var _UT_current_mouse_position := Vector2(0,0)
+var _UT_current_mouse_position := Vector2(0, 0)
 # Simulated mouse position for Unit Testing
-var _UT_target_mouse_position := Vector2(0,0)
+var _UT_target_mouse_position := Vector2(0, 0)
 # Simulated mouse movement speed for Unit Testing.
 # The bigger the number, the faster the mouse moves
 var _UT_mouse_speed := 3
@@ -15,6 +15,7 @@ var _UT_mouse_speed := 3
 var _UT_interpolation_requested := false
 # Used for interpolating
 var _t = 0
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -25,17 +26,15 @@ func _physics_process(delta) -> void:
 	if _UT_interpolation_requested:
 		if _UT_mouse_position != _UT_target_mouse_position:
 			_t += delta * _UT_mouse_speed
-			_UT_mouse_position = _UT_current_mouse_position.linear_interpolate(
-					_UT_target_mouse_position, _t)
+			_UT_mouse_position = _UT_current_mouse_position.linear_interpolate(_UT_target_mouse_position, _t)
 		else:
 			_t = 0
 			_UT_interpolation_requested = false
 
 
 # This function is called by unit testing to simulate mouse movement on the board
-func _UT_interpolate_mouse_move(newpos: Vector2,
-		startpos := Vector2(-1,-1), mouseSpeed := 3) -> void:
-	if startpos == Vector2(-1,-1):
+func _UT_interpolate_mouse_move(newpos: Vector2, startpos := Vector2(-1, -1), mouseSpeed := 3) -> void:
+	if startpos == Vector2(-1, -1):
 		_UT_current_mouse_position = _UT_mouse_position
 	else:
 		_UT_current_mouse_position = startpos
@@ -48,7 +47,8 @@ func _UT_interpolate_mouse_move(newpos: Vector2,
 func get_all_cards() -> Array:
 	var cardsArray := []
 	for obj in get_children():
-		if obj as Card: cardsArray.append(obj)
+		if obj as Card:
+			cardsArray.append(obj)
 	return cardsArray
 
 

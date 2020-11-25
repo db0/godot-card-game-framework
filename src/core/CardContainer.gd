@@ -9,9 +9,10 @@ onready var control = $Control
 onready var shuffle = $Control/ManipulationButtons/Shuffle
 onready var view = $Control/ManipulationButtons/View
 var manipulation_buttons_self = []
-var area_name :String  setget ,get_area_name
+var area_name: String setget , get_area_name
 var shuffle_index = []
 var random_seed
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -19,25 +20,30 @@ func _ready() -> void:
 	_init_signal()
 	_init_data()
 
+
 func _init_data():
 	var cur_seed = random_seed
 	if not cur_seed:
-		cur_seed =  hash("godot")
+		cur_seed = hash("godot")
 	random_seed = rand_seed(cur_seed)[1]
+
 
 func _init_ui() -> void:
 	for button in get_manipulation_buttons():
 		button.modulate[3] = 0
+
+
 func _init_signal() -> void:
 	# warning-ignore:return_value_discarded
-	control.connect("mouse_entered",self,"_on_Control_mouse_entered")
+	control.connect("mouse_entered", self, "_on_Control_mouse_entered")
 	# warning-ignore:return_value_discarded
-	control.connect("mouse_exited",self,"_on_Control_mouse_exited")
+	control.connect("mouse_exited", self, "_on_Control_mouse_exited")
 	# warning-ignore:return_value_discarded
 	for button in get_manipulation_buttons():
-		button.connect("mouse_entered",self,"_on_button_mouse_entered")
+		button.connect("mouse_entered", self, "_on_button_mouse_entered")
 
-	shuffle.connect("pressed",self,'_on_Shuffle_Button_pressed')
+	shuffle.connect("pressed", self, '_on_Shuffle_Button_pressed')
+
 
 func get_manipulation_buttons():
 	if len(manipulation_buttons_self) == 0:
@@ -48,15 +54,15 @@ func get_manipulation_buttons():
 				manipulation_buttons_self.append(button)
 	return manipulation_buttons_self
 
+
 # Shows the container manipulation buttons when the player hovers over them
 func _on_Control_mouse_entered() -> void:
-	 # We always make sure to clean tweening conflicts
+	# We always make sure to clean tweening conflicts
 	manipulation_buttons_tween.remove_all()
 	for button in get_manipulation_buttons():
 		manipulation_buttons_tween.interpolate_property(
-				button,'modulate:a',
-				button.modulate.a, 1, 0.25,
-				Tween.TRANS_SINE, Tween.EASE_IN)
+			button, 'modulate:a', button.modulate.a, 1, 0.25, Tween.TRANS_SINE, Tween.EASE_IN
+		)
 	manipulation_buttons_tween.start()
 
 
@@ -66,10 +72,10 @@ func _on_Control_mouse_exited() -> void:
 	manipulation_buttons_tween.remove_all()
 	for button in get_manipulation_buttons():
 		manipulation_buttons_tween.interpolate_property(
-				button,'modulate:a',
-				button.modulate.a, 0, 0.25,
-				Tween.TRANS_SINE, Tween.EASE_IN)
+			button, 'modulate:a', button.modulate.a, 0, 0.25, Tween.TRANS_SINE, Tween.EASE_IN
+		)
 	manipulation_buttons_tween.start()
+
 
 # Ensures the mouse is visible on hover
 # Ensures that button it not trying to  disappear via previous animation
@@ -78,6 +84,7 @@ func _on_button_mouse_entered() -> void:
 	for button in get_manipulation_buttons():
 		button.modulate[3] = 1
 
+
 # Triggers pile shuffling
 func _on_Shuffle_Button_pressed() -> void:
 	# Reshuffles the cards in container
@@ -85,7 +92,8 @@ func _on_Shuffle_Button_pressed() -> void:
 
 
 # Overrides the built-in get_class to return "CardContainer" instead of "Area2D"
-func get_class(): return "CardContainer"
+func get_class():
+	return "CardContainer"
 
 
 # Returns an array with all children nodes which are of Card class
@@ -111,7 +119,7 @@ func get_card_index(card: Card) -> int:
 # Returns a random card object among the children nodes
 func get_random_card() -> Card:
 	var cardsArray := get_all_cards()
-	return cardsArray[randi()%len(cardsArray)]
+	return cardsArray[randi() % len(cardsArray)]
 
 
 # Randomly rearranges the order of the Card nodes.
@@ -136,13 +144,15 @@ func translate_card_index_to_node_index(index: int) -> int:
 		# If the requester index is not higher than the number of cards
 		# We figure out which card has the index at the moment, and return
 		# its node index
-		if not shuffle_index or len(shuffle_index)==0:
+		if not shuffle_index or len(shuffle_index) == 0:
 			shuffle_cards()
 		node_index = shuffle_index[index]
-	return(node_index)
+	return node_index
+
 
 func get_area_name():
 	return "base_card_container"
+
 
 func get_card_group_name():
 	return "%s_card" % [get_area_name()]
