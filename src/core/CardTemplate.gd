@@ -42,11 +42,13 @@ enum _ReturnCode {
 	FAILED,
 }
 
+# Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 # warning-ignore:unused_class_variable
-export var scripts := [{'name':'','args':['',0]}]
+#export var scripts := [{'name':'','args':['',0]}]
+export var scripts : Array
 # If true, the card can be attached to other cards and will follow
 # their host around the table. The card will always return to its host
 # when dragged away
@@ -90,9 +92,11 @@ var _is_drawer_open := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
-
+onready var sceng = ScriptingEngine.new()
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	scripts = [{'name':'rotate_card','args':[self,90]},
+			{'name':'move_to_container','args':[self,cfc.NMAP.deck]}]
 	# First we set the card to always pivot from its center.
 	# We only rotate the Control node however, so the collision shape is not rotated
 	# Looking for a better solution, but this is the best I have until now.
@@ -187,9 +191,12 @@ func _on_Card_mouse_entered() -> void:
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
+		if event.doubleclick:
+			sceng.running_scripts = scripts.duplicate()
+			sceng.run_next_script()
 		# If the player presses the left click, it might be because
 		# they want to drag the card
-		if event.is_pressed() and event.get_button_index() == 1:
+		elif event.is_pressed() and event.get_button_index() == 1:
 			if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
 					(state == FOCUSED_IN_HAND
 					or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
@@ -550,7 +557,6 @@ func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 	elif value == card_rotation and not toggle:
 		retcode = _ReturnCode.OK
 	else:
-		print('a')
 		# If the toggle was specified then if the card matches the requested
 		# rotation, we reset it to 0 degrees
 		if card_rotation == value and toggle:
