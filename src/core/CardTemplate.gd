@@ -550,6 +550,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 	elif value == card_rotation and not toggle:
 		retcode = _ReturnCode.OK
 	else:
+		print('a')
 		# If the toggle was specified then if the card matches the requested
 		# rotation, we reset it to 0 degrees
 		if card_rotation == value and toggle:
@@ -1504,7 +1505,6 @@ func _process_card_state() -> void:
 					else:
 						intermediate_position = get_viewport().size/2
 					$Tween.remove(self,'global_position')
-					$Tween.remove_all()
 					$Tween.interpolate_property(self,'global_position',
 							global_position, intermediate_position, 0.5,
 							Tween.TRANS_BACK, Tween.EASE_IN_OUT)
@@ -1515,7 +1515,6 @@ func _process_card_state() -> void:
 				# We need to check again, just in case it's been reorganized instead.
 				if state == MOVING_TO_CONTAINER:
 					$Tween.remove(self,'position')
-					$Tween.remove_all()
 					$Tween.interpolate_property(self,'position',
 							position, _target_position, 0.35,
 							Tween.TRANS_SINE, Tween.EASE_IN_OUT)

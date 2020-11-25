@@ -55,7 +55,7 @@ func test_card_table_drop_location_and_rotation():
 	drop_card(cards[0],board._UT_mouse_position)
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 0.5), YIELD)
-	assert_eq(0,cards[0].card_rotation, 
+	assert_eq(0,cards[0].get_node("Control").rect_rotation, 
 			"Rotation reset to 0 when card moved off board")
 
 func test_card_hand_drop_recovery():
