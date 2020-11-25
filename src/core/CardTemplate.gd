@@ -1521,7 +1521,6 @@ func _process_card_state() -> void:
 							Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
-					print(_target_position)
 					_determine_idle_state()
 				_fancy_move_second_part = false
 		REORGANIZING:
