@@ -54,9 +54,6 @@ func _on_ViewPopup_about_to_show() -> void:
 # Puts all card objects to the root node once the popup view window closes
 func _on_ViewPopup_popup_hide() -> void:
 	$ViewPopup/Tween.remove_all()
-#		$Tween.interpolate_property($ViewPopup,'rect_size:x',
-#			0, $ViewPopup.rect_size.x, 0.5,
-#			Tween.TRANS_CUBIC, Tween.EASE_OUT)
 	$ViewPopup/Tween.interpolate_property($ViewPopup,'modulate',
 			Color(1,1,1,1), Color(1,1,1,0), 0.5,
 			Tween.TRANS_EXPO, Tween.EASE_OUT)

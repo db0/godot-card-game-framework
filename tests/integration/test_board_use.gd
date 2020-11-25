@@ -43,6 +43,20 @@ func test_card_table_drop_location_and_rotation():
 	cards[0]._on_Card_mouse_entered()
 	assert_eq(1,cards[0].set_card_rotation(270), 
 			"Rotation changed when card is focused")
+	click_card(cards[0])
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
+	board._UT_interpolate_mouse_move(Vector2(1000,100),cards[0].global_position)
+	yield(yield_for(0.3), YIELD)
+	assert_eq(270,cards[0].card_rotation, 
+			"Rotation remains while card is being dragged")
+	yield(yield_for(0.3), YIELD)
+	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position)
+	yield(yield_for(0.6), YIELD)
+	drop_card(cards[0],board._UT_mouse_position)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_eq(0,cards[0].card_rotation, 
+			"Rotation reset to 0 when card moved off board")
 
 func test_card_hand_drop_recovery():
 	cards[0]._on_Card_mouse_entered()

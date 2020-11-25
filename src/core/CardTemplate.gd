@@ -177,11 +177,11 @@ func _on_Card_mouse_entered() -> void:
 					interruptTweening()
 					state = FOCUSED_IN_HAND
 			ON_PLAY_BOARD:
-					state = FOCUSED_ON_BOARD
+				state = FOCUSED_ON_BOARD
 			# The only way to mouse over a card in a pile, is when
 			# it's in a the grid popup
 			IN_POPUP:
-					state = FOCUSED_IN_POPUP
+				state = FOCUSED_IN_POPUP
 
 
 # A signal for whenever the player clicks on a card
@@ -537,21 +537,22 @@ func get_is_viewed() -> bool:
 # Returns _ReturnCode.OK if the card was already in the correct rotation.
 #
 # Returns _ReturnCode.FAILED if an invalid rotation was specified.
-func set_card_rotation(value: int, toggle := false) -> int:
+func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 	var retcode
 	# For cards we only allow orthogonal degrees of rotation
 	# If it's not, we consider the request failed
-	if not value in [0,90,180,270] or \
-		not (state == ON_PLAY_BOARD or state == FOCUSED_ON_BOARD):
+	if not value in [0,90,180,270]:
+		retcode = _ReturnCode.FAILED
+	elif value != 0 and not (state == ON_PLAY_BOARD or state == FOCUSED_ON_BOARD):
 		retcode = _ReturnCode.FAILED
 	# If the card is already in the specified rotation
 	# and a toggle was not requested, we consider we did nothing
-	elif value == $Control.rect_rotation and not toggle:
+	elif value == card_rotation and not toggle:
 		retcode = _ReturnCode.OK
 	else:
 		# If the toggle was specified then if the card matches the requested
 		# rotation, we reset it to 0 degrees
-		if $Control.rect_rotation == value and toggle:
+		if card_rotation == value and toggle:
 			value = 0
 		# We make sure to remove other tweens of the same type to avoid a deadlock
 		$Tween.remove($Control,'rect_rotation')
@@ -560,11 +561,13 @@ func set_card_rotation(value: int, toggle := false) -> int:
 		$Tween.interpolate_property($Control,'rect_rotation',
 				$Control.rect_rotation, value, 0.3,
 				Tween.TRANS_BACK, Tween.EASE_IN_OUT)
-		$Tween.start()
+		if start_tween:
+			$Tween.start()
 		#$Control/Tokens.rotation_degrees = -value # need to figure this out
 		# When the card actually changes orientation
 		# We report that it changed.
 		retcode = _ReturnCode.CHANGED
+		card_rotation = value
 	return retcode
 
 
@@ -580,8 +583,8 @@ func get_card_rotation() -> int:
 # mouse position, or at the 'boardPosition' variable if it's provided
 # index determines the card's position among other cards.
 func move_to(targetHost: Node2D,
-		index := -1,
-		boardPosition := Vector2(-1,-1)) -> void:
+	index := -1,
+	boardPosition := Vector2(-1,-1)) -> void:
 #	if cfc.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -640,15 +643,18 @@ func move_to(targetHost: Node2D,
 				# the container control node
 				# So we transform global coordinates to container rect coordinates.
 				previous_pos = targetHost.to_local(global_pos)
-				# The target position is always local coordinates 0,0
-				# of the final container
+				# The target position is always the local coordinates
+				# of the stack position the card would have
+				# (this means how far up in the pile the card would appear)
 				_target_position = targetHost.get_stack_position(self)
 				state = MOVING_TO_CONTAINER
 				if set_is_faceup(targetHost.faceup_cards) == _ReturnCode.FAILED:
 					print("ERROR: Something went unexpectedly in set_is_faceup")
 				# If we have fancy movement, we need to wait for 2 tweens to finish
 				# before we reorganize the stack.
-				# One for the fancy move, and then the move to the final position
+				# One for the fancy move, and then the move to the final position.
+				# If we don't then the card will appear to teleport
+				# to the pile before starting animation
 				yield($Tween, "tween_all_completed")
 				if cfc.fancy_movement:
 					yield($Tween, "tween_all_completed")
@@ -685,13 +691,6 @@ func move_to(targetHost: Node2D,
 			if cfc.TOKENS_ONLY_ON_BOARD:
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 					token.queue_free()
-			# When the card was removed from the board, we need to make sure it
-			# recovers to 0 degress rotation
-			# We make sure to remove other tweens of the same type to avoid a deadlock
-			$Tween.remove($Control,'rect_rotation')
-			$Tween.interpolate_property($Control,'rect_rotation',
-					$Control.rect_rotation, 0, 0.2,
-					Tween.TRANS_QUINT, Tween.EASE_OUT)
 			# We also make sure the card buttons don't stay visible or enabled
 			$Control/ManipulationButtons/Tween.remove_all()
 			$Control/ManipulationButtons.modulate[3] = 0
@@ -710,7 +709,7 @@ func move_to(targetHost: Node2D,
 			elif current_host_card:
 				var attach_index = current_host_card.attachments.find(self)
 				_target_position = (current_host_card.global_position
-						 + Vector2(0,(attach_index + 1)
+						+ Vector2(0,(attach_index + 1)
 						* $Control.rect_size.y
 						* cfc.ATTACHMENT_OFFSET))
 			else:
@@ -923,10 +922,10 @@ func get_my_card_index() -> int:
 func highlight_potential_card(colour : Color) -> void:
 	for idx in range(0,len(_potential_cards)):
 			# The last card in the sorted array is always the highest index
-			if idx == len(_potential_cards) - 1:
-				_potential_cards[idx].set_highlight(true,colour)
-			else:
-				_potential_cards[idx].set_highlight(false)
+		if idx == len(_potential_cards) - 1:
+			_potential_cards[idx].set_highlight(true,colour)
+		else:
+			_potential_cards[idx].set_highlight(false)
 
 
 # Will generate a targeting arrow on the card which will follow the mouse cursor.
@@ -976,10 +975,10 @@ func set_mouse_filters(value = true) -> void:
 
 class CardIndexSorter:
 	# Used with sort_custom to find the highest child index among multiple cards
-   static func sort_index_ascending(c1: Card, c2: Card):
-		   if c1.get_my_card_index() < c2.get_my_card_index():
-				   return true
-		   return false
+	static func sort_index_ascending(c1: Card, c2: Card):
+		if c1.get_my_card_index() < c2.get_my_card_index():
+			return true
+		return false
 
 
 # Makes attachments always move with their parent around the board
@@ -1025,8 +1024,8 @@ func _determine_global_mouse_pos() -> Vector2:
 	if get_viewport().has_node("Camera2D"):
 		zoom = get_viewport().get_node("Camera2D").zoom
 	var offset_mouse_position = \
-			get_tree().current_scene.get_global_mouse_position() \
-			- get_viewport_transform().origin
+		get_tree().current_scene.get_global_mouse_position() \
+		- get_viewport_transform().origin
 	offset_mouse_position *= zoom
 	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
 	if cfc.UT: mouse_position = cfc.NMAP.board._UT_mouse_position
@@ -1162,8 +1161,8 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 	# We only want to do something if we're actually doing something
 	if modulate[3] != visibility:
 		$Tween.interpolate_property(self,'modulate',
-			modulate, Color(1, 1, 1, visibility), time,
-			Tween.TRANS_QUAD, Tween.EASE_OUT)
+				modulate, Color(1, 1, 1, visibility), time,
+				Tween.TRANS_QUAD, Tween.EASE_OUT)
 
 
 # Clears all attachment/hosting status.
@@ -1219,15 +1218,15 @@ func _are_buttons_hovered() -> bool:
 func _is_drawer_hovered() -> bool:
 	var ret = false
 	if (_determine_global_mouse_pos().x
-			>= $Control/Tokens/Drawer.rect_global_position.x and
-			_determine_global_mouse_pos().y
-			>= $Control/Tokens/Drawer.rect_global_position.y and
-			_determine_global_mouse_pos().x
-			<= $Control/Tokens/Drawer.rect_global_position.x
-			+ $Control/Tokens/Drawer.rect_size.x and
-			_determine_global_mouse_pos().y
-			<= $Control/Tokens/Drawer.rect_global_position.y
-			+ $Control/Tokens/Drawer.rect_size.y):
+		>= $Control/Tokens/Drawer.rect_global_position.x and
+		_determine_global_mouse_pos().y
+		>= $Control/Tokens/Drawer.rect_global_position.y and
+		_determine_global_mouse_pos().x
+		<= $Control/Tokens/Drawer.rect_global_position.x
+		+ $Control/Tokens/Drawer.rect_size.x and
+		_determine_global_mouse_pos().y
+		<= $Control/Tokens/Drawer.rect_global_position.y
+		+ $Control/Tokens/Drawer.rect_size.y):
 		ret = true
 	return(ret)
 
@@ -1386,10 +1385,12 @@ func _process_card_state() -> void:
 		IN_HAND:
 			set_focus(false)
 			set_mouse_filters(true)
+			set_card_rotation(0)
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
 			set_focus(true)
 			set_mouse_filters(true)
+			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not _focus_completed and \
 					cfc.focus_style != cfc.FocusStyle.VIEWPORT:
@@ -1442,6 +1443,7 @@ func _process_card_state() -> void:
 			# (i.e. deck to hand, hand to discard etc)
 			set_focus(false)
 			set_mouse_filters(false)
+			set_card_rotation(0,false,false)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if not scale.is_equal_approx(Vector2(1,1)):
@@ -1517,6 +1519,7 @@ func _process_card_state() -> void:
 			# Used when reorganizing the cards in the hand
 			set_focus(false)
 			set_mouse_filters(true)
+			set_card_rotation(0,false,false)
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') #
 				$Tween.interpolate_property(self,'position',
@@ -1534,6 +1537,7 @@ func _process_card_state() -> void:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
 			set_focus(false)
 			set_mouse_filters(true)
+			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not position.is_equal_approx(_target_position):
 				$Tween.remove(self,'position')
@@ -1632,40 +1636,41 @@ func _process_card_state() -> void:
 						Tween.TRANS_SINE, Tween.EASE_IN)
 				$Control/ManipulationButtons/Tween.start()
 			# We don't change state yet, only when the focus is removed from this card
-		DROPPING_INTO_PILE:
-			# Used when dropping the cards into a container (Deck, Discard etc)
-			set_focus(false)
-			set_mouse_filters(false)
-			if not $Tween.is_active():
-				var intermediate_position: Vector2
-				if cfc.fancy_movement:
-					intermediate_position = get_parent().position - \
-							Vector2(0,$Control.rect_size.y*1.1)
-					$Tween.remove(self,'position')
-					$Tween.interpolate_property(self,'position',
-							position, intermediate_position, 0.25,
-							Tween.TRANS_CUBIC, Tween.EASE_OUT)
-					yield($Tween, "tween_all_completed")
-					if not scale.is_equal_approx(Vector2(1,1)):
-						$Tween.remove(self,'scale')
-						$Tween.interpolate_property(self,'scale',
-								scale, Vector2(1,1), 0.5,
-								Tween.TRANS_BOUNCE, Tween.EASE_OUT)
-					$Tween.start()
-					_fancy_move_second_part = true
-				else:
-					intermediate_position = get_parent().position
-				$Tween.remove(self,'position')
-				$Tween.interpolate_property(self,'position',
-						intermediate_position, get_parent().position, 0.35,
-						Tween.TRANS_SINE, Tween.EASE_IN_OUT)
-				$Tween.start()
-				_determine_idle_state()
-				_fancy_move_second_part = false
-				state = IN_PILE
+#		DROPPING_INTO_PILE:
+#			# Used when dropping the cards into a container (Deck, Discard etc)
+#			set_focus(false)
+#			set_mouse_filters(false)
+#			if not $Tween.is_active():
+#				var intermediate_position: Vector2
+#				if cfc.fancy_movement:
+#					intermediate_position = get_parent().position - \
+#							Vector2(0,$Control.rect_size.y*1.1)
+#					$Tween.remove(self,'position')
+#					$Tween.interpolate_property(self,'position',
+#							position, intermediate_position, 0.25,
+#							Tween.TRANS_CUBIC, Tween.EASE_OUT)
+#					yield($Tween, "tween_all_completed")
+#					if not scale.is_equal_approx(Vector2(1,1)):
+#						$Tween.remove(self,'scale')
+#						$Tween.interpolate_property(self,'scale',
+#								scale, Vector2(1,1), 0.5,
+#								Tween.TRANS_BOUNCE, Tween.EASE_OUT)
+#					$Tween.start()
+#					_fancy_move_second_part = true
+#				else:
+#					intermediate_position = get_parent().position
+#				$Tween.remove(self,'position')
+#				$Tween.interpolate_property(self,'position',
+#						intermediate_position, get_parent().position, 0.35,
+#						Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+#				$Tween.start()
+#				_determine_idle_state()
+#				_fancy_move_second_part = false
+#				state = IN_PILE
 		IN_PILE:
 			set_focus(false)
 			set_mouse_filters(false)
+			set_card_rotation(0)
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
 		IN_POPUP:
@@ -1673,6 +1678,7 @@ func _process_card_state() -> void:
 			# Unless moved
 			set_focus(false)
 			set_mouse_filters(true)
+			set_card_rotation(0)
 			if modulate[3] != 1:
 				modulate[3] = 1
 			if scale != Vector2(0.75,0.75):
@@ -1682,6 +1688,7 @@ func _process_card_state() -> void:
 		FOCUSED_IN_POPUP:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
+			set_card_rotation(0)
 
 
 # Reveals or Hides the token drawer
