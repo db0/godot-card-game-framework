@@ -3,6 +3,8 @@
 class_name CardContainer
 extends Area2D
 
+# Expose internal random seeds,only changes it before _ready function
+var random_seed
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -17,7 +19,14 @@ func _ready() -> void:
 			button.connect("mouse_exited",self,"_on_button_mouse_exited")
 	$Control/ManipulationButtons/Shuffle.connect(
 				"pressed",self,'_on_Shuffle_Button_pressed')
+	_init_data()
 
+# Initialize some variables in ready,Such as seed.
+func _init_data():
+	var cur_seed = random_seed
+	if not cur_seed:
+		cur_seed = hash("godot")
+	seed(cur_seed)
 
 # Shows the container manipulation buttons when the player hovers over them
 func _on_Control_mouse_entered() -> void:
@@ -96,7 +105,6 @@ func get_random_card() -> Card:
 		return null
 	else:
 		var cardsArray := get_all_cards()
-		randomize()
 		return cardsArray[randi()%len(cardsArray)]
 
 
@@ -105,7 +113,6 @@ func shuffle_cards() -> void:
 	var cardsArray := []
 	for card in get_all_cards():
 		cardsArray.append(card)
-	randomize()
 	cardsArray.shuffle()
 	for card in cardsArray:
 		move_child(card,cardsArray.find(card))
