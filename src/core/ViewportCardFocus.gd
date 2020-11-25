@@ -47,6 +47,7 @@ func focus_card(card: Card) -> void:
 		# This way we can standardize its scale and look and not worry about
 		# what happens on the table.
 		var dupe_focus = card.duplicate()
+		dupe_focus.change_group()
 		_current_focus_source = card
 		_dupes_dict[dupe_focus] = card
 		# We display a "pure" version of the card

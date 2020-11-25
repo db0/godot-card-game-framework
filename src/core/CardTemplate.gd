@@ -1734,9 +1734,10 @@ func _token_drawer(drawer_state := true) -> void:
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
 
-func change_group(_group_name):
+func change_group(_group_name=null):
 	var built_in_group = ["idle_process","idle_process_internal","physics_process","physics_process_internal",]
 	for group_name in get_groups():
 		if not (group_name in built_in_group):
 			remove_from_group(group_name)
-	add_to_group(_group_name)
+	if _group_name:
+		add_to_group(_group_name)
