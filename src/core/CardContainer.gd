@@ -118,9 +118,10 @@ func get_card_index(card: Card) -> int:
 
 # Returns a random card object among the children nodes
 func get_random_card() -> Card:
-	var cardsArray := get_all_cards()
+	if get_card_count() == 0:
+		return null
+  var cardsArray := get_all_cards()
 	return cardsArray[randi() % len(cardsArray)]
-
 
 # Randomly rearranges the order of the Card nodes.
 func shuffle_cards() -> void:

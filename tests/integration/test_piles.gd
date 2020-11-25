@@ -1,71 +1,141 @@
-extends "res://addons/gut/test.gd"
+extends "res://tests/UTcommon.gd"
 
-var board
-var hand
+
 var cards := []
-var common = UTCommon.new()
 
 func before_each():
-	board = autoqfree(TestVars.new().boardScene.instance())
-	get_tree().get_root().add_child(board)
-	common.setup_board(board)
-	cards = common.draw_test_cards(5)
-	hand = cfc.NMAP.hand
+	setup_board()
+	cards = draw_test_cards(5)
 	yield(yield_for(1), YIELD)
 
 func test_move_to_container():
-	cards[2]._on_Card_mouse_entered()
-	common.click_card(cards[2])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
-	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[2],board._UT_mouse_position)
-	yield(yield_for(1), YIELD)
-	assert_almost_eq(cards[2].global_position,cfc.NMAP.discard.position,Vector2(2,2), "Confirm Card's final position matches pile's position")
-	assert_eq(1,cfc.NMAP.discard.get_card_count(), "Confirm the correct amount of cards are hosted")
+	var card: Card
+	card = cards[2]
+	yield(drag_drop(card, cfc.NMAP.discard.position), 'completed')
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_almost_eq(card.global_position,cfc.NMAP.discard.position,Vector2(2,2),
+			"Card's final position matches pile's position")
+	assert_eq(1,cfc.NMAP.discard.get_card_count(),
+			"The correct amount of cards are hosted")
 
 func test_move_to_multiple_container():
-	cards[2]._on_Card_mouse_entered()
-	common.click_card(cards[2])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
-	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[2],board._UT_mouse_position)
-	yield(yield_for(0.1), YIELD)
-	cards[4]._on_Card_mouse_entered()
-	common.click_card(cards[4])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(cfc.NMAP.deck.position,cards[4].position)
-	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[4],board._UT_mouse_position)
-	yield(yield_for(0.1), YIELD)
-	cards[1]._on_Card_mouse_entered()
-	common.click_card(cards[1])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[1].position)
-	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[1],board._UT_mouse_position)
-	yield(yield_for(0.1), YIELD)
-	cards[0]._on_Card_mouse_entered()
-	common.click_card(cards[0])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(cfc.NMAP.deck.position,cards[0].position)
-	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	common.drop_card(cards[0],board._UT_mouse_position)
+	yield(drag_drop(cards[2], cfc.NMAP.discard.position), 'completed')
+	yield(drag_drop(cards[4], cfc.NMAP.deck.position), 'completed')
+	yield(drag_drop(cards[1], cfc.NMAP.discard.position), 'completed')
+	yield(drag_drop(cards[0], cfc.NMAP.deck.position), 'completed')
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_almost_eq(cards[2].global_position,
+			cfc.NMAP.discard.global_position,Vector2(2,2),
+			"Card 2 final position matches pile's position")
+	assert_almost_eq(cards[1].global_position,
+			cfc.NMAP.discard.global_position,Vector2(2,2),
+			"Card 1 final position matches pile's position")
+	assert_almost_eq(cards[4].global_position,
+			cfc.NMAP.deck.position + cfc.NMAP.deck.get_stack_position(cards[4]),
+			Vector2(2,2),
+			"Card 3 final position matches pile's position")
+	assert_almost_eq(cards[0].global_position,
+			cfc.NMAP.deck.to_global(cfc.NMAP.deck.get_stack_position(cards[0])),Vector2(2,2),
+			"Card 0 final position matches pile's position")
+	assert_eq(2,cfc.NMAP.discard.get_card_count(),
+			"Correct amount of cards are hosted in discard")
+	assert_eq(12,cfc.NMAP.deck.get_card_count(),
+			"Correct amount of cards are hosted in deck")
+	assert_eq(1,cfc.NMAP.hand.get_card_count(),
+			"Correct amount of cards are hosted in hand")
+
+func test_move_from_board_to_deck_to_hand():
+	var card: Card
+	card = cards[2]
+	yield(drag_drop(card, Vector2(1000,100)), 'completed')
+	yield(drag_drop(card, cfc.NMAP.deck.position), 'completed')
+	hand.draw_card()
 	yield(yield_for(1), YIELD)
-	assert_almost_eq(cards[2].global_position,cfc.NMAP.discard.global_position,Vector2(2,2), "Confirm Card 2 final position matches pile's position")
-	assert_almost_eq(cards[1].global_position,cfc.NMAP.discard.global_position,Vector2(2,2), "Confirm Card 1 final position matches pile's position")
-	assert_almost_eq(cards[4].global_position,cfc.NMAP.deck.position,Vector2(2,2), "Confirm Card 3 final position matches pile's position")
-	assert_almost_eq(cards[0].global_position,cfc.NMAP.deck.position,Vector2(2,2), "Confirm Card 0 final position matches pile's position")
-	assert_eq(2,cfc.NMAP.discard.get_card_count(), "Confirm the correct amount of cards are hosted in discard")
-	assert_eq(12,cfc.NMAP.deck.get_card_count(), "Confirm the correct amount of cards are hosted in deck")
-	assert_eq(1,cfc.NMAP.hand.get_card_count(), "Confirm the correct amount of cards are hosted in hand")
+	assert_almost_eq(hand.to_global(card._recalculatePosition()),
+			card.global_position,Vector2(2,2),
+			"Card finished move to hand from deck from board")
+
 
 func test_pile_functions():
-	pending("Check that shuffle really does shuffle")
+	pending("Shuffle really does shuffle")
 
-func test_popup_view():
-	pending("Check that all cards all migrated to popup window")
-	pending("Check that requesting all cards, includes cards in then popup")
-	pending("Check that drawing a card from the pile, picks it from the popup")
-	pending("Check that hosting a card in the pile, puts it in the popup")
+func test_pile_facing():
+	var card: Card = cfc.NMAP.deck.get_top_card()
+	card.move_to(cfc.NMAP.discard)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_true(card.is_faceup, "Card should be faceup in discard")
+	card = cards[0]
+	card.move_to(cfc.NMAP.deck)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_false(card.is_faceup,"Card should be facedown in deck")
+
+
+func test_popup_discard_view():
+	var discard = cfc.NMAP.discard
+	for card in cfc.NMAP.deck.get_all_cards():
+		card.move_to(discard)
+	yield(yield_for(1), YIELD)
+	discard._on_View_Button_pressed()
+	yield(yield_for(1), YIELD)
+	assert_eq(0,len(discard.get_all_cards(false)),
+			"No cards should appear in the pile root after popup")
+	assert_eq(10,discard.get_card_count(),
+			"Cards in popup should be returned with get_all_cards()")
+	assert_eq(10,discard.get_node("ViewPopup/CardView").get_child_count(),
+			"All cards all migrated to popup window")
+	assert_eq(1.0,discard.get_node("ViewPopup").modulate[3],
+			"ViewPopup should be visible")
+	cards[1].move_to(discard)
+	yield(yield_for(1), YIELD)
+	assert_eq(11,discard.get_node("ViewPopup/CardView").get_child_count(),
+			"Hosting a card in the pile, while popup is open, puts it in the popup")
+	assert_eq(Vector2(0.75,0.75),cards[1].scale,
+			"Moving a card into the popup, should scale it")
+	pending("Drawing a card from the pile, picks it from the popup")
+	assert_false(discard.get_node("Control/ManipulationButtons").visible,
+			"Manipulation Buttons should be hidden while popup is active")
+	discard.get_node("ViewPopup").hide()
+	yield(yield_for(1), YIELD)
+	assert_true(cards[1].is_faceup,
+			"Cards returning from popup should respect piles card facing")
+
+func test_popup_deck_view():
+	var deck = cfc.NMAP.deck
+	var card: Card = deck.get_top_card()
+	deck._on_View_Button_pressed()
+	yield(yield_to(deck.get_node('ViewPopup/Tween'), "tween_all_completed", 0.5), YIELD)
+	card.move_to(deck)
+	yield(yield_for(0.3), YIELD)
+	assert_eq(Vector2(0,0),card.position,
+			"Moving card from popup back to the same pile, should do nothing")
+	assert_eq(Vector2(0.75,0.75),card.scale,
+			"Moving card from popup back to the same pile, should do nothing")
+	assert_true(card.is_faceup,
+			"Moving card from popup back to the same pile, should do nothing")
+	deck.get_node("ViewPopup").hide()
+	yield(yield_for(1), YIELD)
+	assert_false(card.is_faceup,
+			"Cards returning from popup should respect piles card facing")
+
+
+func test_stacking():
+	var deck : Pile = cfc.NMAP.deck
+	var card: Card = cards[4]
+	card.move_to(deck)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_eq(deck.get_stack_position(card),card.position,
+			"Card moved in, placed in stack position")
+	card = cards[2]
+	card.move_to(deck)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	assert_eq(deck.get_stack_position(card),card.position,
+			"Card moved in, placed in stack position")
+	deck.shuffle_cards()
+	assert_eq(deck.get_stack_position(card),card.position,
+			"Reshuffle, restacks cards correctly.")

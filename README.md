@@ -188,6 +188,7 @@ For more fine customization, you'll need to modify manually
 * Automatic re-arranging of hand as cards are added or removed.
 * Drag & Drop
 * Option for multiple hands and piles
+* Piles of cards represent their size visually.
 * Larger image of card when moving mouse cursor over it
 * Pop-up buttons for predefined functions on cards and card containers
 * Option to look inside the piles and choose cards to move out

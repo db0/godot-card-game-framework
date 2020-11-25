@@ -20,6 +20,7 @@ extents = Vector2( 78, 123 )
 script = ExtResource( 2 )
 
 [node name="Control" type="Panel" parent="."]
+self_modulate = Color( 1, 1, 1, 0 )
 margin_right = 156.0
 margin_bottom = 246.0
 mouse_filter = 1
@@ -29,6 +30,7 @@ __meta__ = {
 }
 
 [node name="CenterContainer" type="CenterContainer" parent="Control"]
+visible = false
 margin_right = 150.0
 margin_bottom = 40.0
 mouse_filter = 2

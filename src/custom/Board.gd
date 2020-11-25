@@ -13,7 +13,7 @@ func _ready() -> void:
 	# This way any they will work with any size of viewport in a game.
 	# Discard pile goes bottom right
 	$DiscardPile.position = Vector2(get_viewport().size.x
-			- $DiscardPile/Control.rect_size.x,get_viewport().size.y
+			- $DiscardPile/Control.rect_size.x - 10,get_viewport().size.y
 			- $DiscardPile/Control.rect_size.y)
 	# Deck goes bottom left
 	$Deck.position = Vector2(0,get_viewport().size.y
@@ -60,9 +60,10 @@ func load_test_cards() -> void:
 	for _i in range(15):
 		var card: Card = cardTemplate.instance()
 		$Deck.add_child(card)
-		card.change_group($Deck.get_card_group_name())
+    card.change_group($Deck.get_card_group_name())
+    card.set_is_faceup(false,true)
+		$Deck.reorganize_stack()
 		card._determine_idle_state()
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
-		card.position = Vector2(0,0)
-		card.modulate.a = 0 # We use this for a nice transition effect
-		card.is_faceup = false
+		#card.modulate.a = 0 # We use this for a nice transition effect
+	$Deck.reorganize_stack()

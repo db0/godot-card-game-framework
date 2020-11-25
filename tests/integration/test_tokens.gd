@@ -1,35 +1,11 @@
-extends "res://addons/gut/test.gd"
+extends "res://tests/UTcommon.gd"
 
-var board
-var hand
 var cards := []
-var common = UTCommon.new()
 
-# Takes care of simple drag&drop requests
-func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fast") -> void:
-	var mouse_yield_wait: float
-	var mouse_speed: int
-	if interpolation_speed == "fast":
-		mouse_yield_wait = 0.3
-		mouse_speed = 10
-	else:
-		mouse_yield_wait = 0.6
-		mouse_speed = 3
-	card._on_Card_mouse_entered()
-	common.click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(target_position,card.position,mouse_speed)
-	yield(yield_for(mouse_yield_wait), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 
 func before_each():
-	board = autoqfree(TestVars.new().boardScene.instance())
-	get_tree().get_root().add_child(board)
-	common.setup_board(board)
-	cards = common.draw_test_cards(5)
-	hand = cfc.NMAP.hand
+	setup_board()
+	cards = draw_test_cards(5)
 	yield(yield_for(1), YIELD)
 
 func test_board_tokens():
@@ -99,6 +75,7 @@ func test_board_tokens():
 			card.get_node("Control/Tokens/Drawer").rect_position, Vector2(2,2),
 			"Drawer extends on card hover card has tokens")
 	var prev_y = card.get_node("Control/Tokens/Drawer").rect_size.y
+# warning-ignore:return_value_discarded
 	card.add_token("blood")
 	yield(yield_for(0.1), YIELD) # Wait to allow drawer to expand
 	assert_lt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
@@ -130,14 +107,14 @@ func test_board_tokens():
 	yield(yield_for(0.3), YIELD)
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
-	common.click_card(card)
+	click_card(card)
 	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(Vector2(200,100),card.position,3)
 	yield(yield_for(0.3), YIELD)
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer closes when card is being dragged")
 	yield(yield_for(0.3), YIELD)
-	common.drop_card(card,board._UT_mouse_position)
+	drop_card(card,board._UT_mouse_position)
 	board._UT_mouse_position = Vector2(1000,300)
 	card._on_Card_mouse_exited()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
@@ -161,14 +138,17 @@ func test_board_tokens():
 
 func test_off_board_tokens():
 	cfc.TOKENS_ONLY_ON_BOARD = false
-	cfc.SHOW_TOKEN_BUTTONS == false
+	cfc.SHOW_TOKEN_BUTTONS = false
 	var card : Card
 	card = cards[3]
 	yield(drag_drop(card, Vector2(1000,100)), 'completed')
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.1), YIELD)
+	# warning-ignore:return_value_discarded
 	card.add_token("tech")
+	# warning-ignore:return_value_discarded
 	card.add_token("plasma")
+	# warning-ignore:return_value_discarded
 	card.add_token("gold coin")
 	var tech_token = card.get_token("tech")
 	var plasma_token = card.get_token("plasma")
@@ -185,4 +165,5 @@ func test_off_board_tokens():
 	assert_false(card.get_all_tokens().empty(),
 			"Tokens not removed when card leaves with cfc.TOKENS_ONLY_ON_BOARD == false")
 	cfc.TOKENS_ONLY_ON_BOARD = true
-	cfc.SHOW_TOKEN_BUTTONS == true
+	# warning-ignore:standalone_expression
+	cfc.SHOW_TOKEN_BUTTONS = true
