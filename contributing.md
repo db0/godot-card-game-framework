@@ -22,7 +22,7 @@ This means that we can review the changes you did for each scope in isolation. T
 
 We expect it goes without saying that you started Godot and you at least made sure it runs. But even then, a project such as this has a lot of moving parts and seemingly unrelated changes you do, can easily break other parts of the game you did not expect
 
-This is where Unit and Integration tests come in. This Framework comes with GUT preincluded. Before considering sending asking us to pull your code, you need to ensure all existing GUT tests work!
+This is where Unit and Integration tests come in. This Framework comes with [GUT](https://github.com/bitwes/Gut) preincluded. Before considering sending asking us to pull your code, you need to ensure all existing GUT tests work!
 
 To do this, run the scene res://tests/tests.tcsn and press the play button. You should get no failures. If you do, your changes have changed some functionality unexpectedly and introduced a bug. You need to fix it before you sent to us, because we're going to check using the same process!
 
