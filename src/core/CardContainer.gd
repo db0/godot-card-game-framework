@@ -120,7 +120,7 @@ func get_card_index(card: Card) -> int:
 func get_random_card() -> Card:
 	if get_card_count() == 0:
 		return null
-  var cardsArray := get_all_cards()
+	var cardsArray := get_all_cards()
 	return cardsArray[randi() % len(cardsArray)]
 
 # Randomly rearranges the order of the Card nodes.
