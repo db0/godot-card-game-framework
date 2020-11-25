@@ -200,7 +200,9 @@ For more fine customization, you'll need to modify manually
 
 ## Contributing
 
-Please see the [Contribution Guide][contributing.md]
+Please see the [Contribution Guide](contributing.md)
+
+You can also join us on Discord with this invite code: https://discord.gg/AjZMFY7jD4
 
 ## Credits
 
