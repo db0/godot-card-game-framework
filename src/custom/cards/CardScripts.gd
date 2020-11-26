@@ -39,8 +39,8 @@ func get_scripts(card_name) -> Dictionary:
 			],
 			"hand": [
 				{
-					'name': 'move_self_to_container',
-					'args': [cfc.NMAP.deck],
+					'name': 'flip_target',
+					'args':  [false,false],
 				}
 			]
 		},

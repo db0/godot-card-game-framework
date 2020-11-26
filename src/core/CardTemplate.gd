@@ -104,6 +104,15 @@ var _is_drawer_open := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
+# The ScriptingEngine class is where we execute the scripts
+onready var scripting_engine = ScriptingEngine.new(self)
+
+onready var _tween = $Tween
+onready var _flip_tween = $Control/FlipTween
+onready var _buttons_tween = $Control/ManipulationButtons/Tween
+onready var _pulse_tween = $Control/Back/Pulse
+onready var _tokens_tween = $Control/Tokens/Tween
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# The below check ensures out card_name variable is set.
@@ -154,7 +163,7 @@ func _ready() -> void:
 	# So we check if it exists before we connect
 	if $Control/Back.has_node('Pulse'):
 		# warning-ignore:return_value_discarded
-		$Control/Back/Pulse.connect("tween_all_completed", self, "_on_Pulse_completed")
+		_pulse_tween.connect("tween_all_completed", self, "_on_Pulse_completed")
 
 
 func _init_card_name():
@@ -338,14 +347,14 @@ func _on_VBoxContainer_sort_children() -> void:
 func _on_button_mouse_entered() -> void:
 	match state:
 		ON_PLAY_BOARD:
-			$Control/ManipulationButtons/Tween.remove_all()
+			_buttons_tween.remove_all()
 			$Control/ManipulationButtons.modulate[3] = 1
 
 
 # Makes the hoverable buttons invisible when mouse is not hovering over the card
 func _on_button_mouse_exited() -> void:
 	if not get_focus():
-		$Control/ManipulationButtons/Tween.remove_all()
+		_buttons_tween.remove_all()
 		$Control/ManipulationButtons.modulate[3] = 0
 
 
@@ -774,7 +783,7 @@ func move_to(targetHost: Node2D,
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 					token.queue_free()
 			# We also make sure the card buttons don't stay visible or enabled
-			$Control/ManipulationButtons/Tween.remove_all()
+			_buttons_tween.remove_all()
 			$Control/ManipulationButtons.modulate[3] = 0
 	else:
 		# Here we check what to do if the player just moved the card back
@@ -1357,42 +1366,42 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 	else:
 		# We clear existing tweens to avoid a deadlocks
 		for n in [$Control/Front, $Control/Back, $Control/FocusHighlight]:
-			$Control/FlipTween.remove(n,'rect_scale')
-			$Control/FlipTween.remove(n,'rect_position')
-		$Control/FlipTween.interpolate_property(to_invisible,'rect_scale',
+			_flip_tween.remove(n,'rect_scale')
+			_flip_tween.remove(n,'rect_position')
+		_flip_tween.interpolate_property(to_invisible,'rect_scale',
 				to_invisible.rect_scale, Vector2(0,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
-		$Control/FlipTween.interpolate_property(to_invisible,'rect_position',
+		_flip_tween.interpolate_property(to_invisible,'rect_position',
 				to_invisible.rect_position, Vector2(
 				to_invisible.rect_size.x/2,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
-		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_scale',
+		_flip_tween.interpolate_property($Control/FocusHighlight,'rect_scale',
 				$Control/FocusHighlight.rect_scale, Vector2(0,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
 		# The highlight is larger than the card size, but also offet a big
 		# so that it's still centered. This way its borders only extend
 		# over the card borders. We need to offest to the right location.
-		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_position',
+		_flip_tween.interpolate_property($Control/FocusHighlight,'rect_position',
 				$Control/FocusHighlight.rect_position, Vector2(
 				($Control/FocusHighlight.rect_size.x-3)/2,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
-		$Control/FlipTween.start()
-		yield($Control/FlipTween, "tween_all_completed")
+		_flip_tween.start()
+		yield(_flip_tween, "tween_all_completed")
 		to_visible.visible = true
 		to_invisible.visible = false
-		$Control/FlipTween.interpolate_property(to_visible,'rect_scale',
+		_flip_tween.interpolate_property(to_visible,'rect_scale',
 				to_visible.rect_scale, Vector2(1,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		$Control/FlipTween.interpolate_property(to_visible,'rect_position',
+		_flip_tween.interpolate_property(to_visible,'rect_position',
 				to_visible.rect_position, Vector2(0,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_scale',
+		_flip_tween.interpolate_property($Control/FocusHighlight,'rect_scale',
 				$Control/FocusHighlight.rect_scale, Vector2(1,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		$Control/FlipTween.interpolate_property($Control/FocusHighlight,'rect_position',
+		_flip_tween.interpolate_property($Control/FocusHighlight,'rect_position',
 				$Control/FocusHighlight.rect_position, Vector2(-3,-3), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		$Control/FlipTween.start()
+		_flip_tween.start()
 
 # Draws a curved arrow, from the center of a card, to the mouse pointer
 func _draw_targeting_arrow() -> void:
@@ -1444,6 +1453,9 @@ func _start_pulse():
 	# We want to allow anyone to remove the Pulse node if wanted
 	# So we check if it exists
 	if $Control/Back.has_node('Pulse'):
+		#** CAREFUL **#
+		# This fails integration test when I replace it with _pulse_tween
+		# I need to investigate why.
 		$Control/Back/Pulse.interpolate_property($Control/Back,'modulate',
 				_pulse_values[0], _pulse_values[1], 2,
 				Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
@@ -1676,15 +1688,15 @@ func _process_card_state() -> void:
 						Tween.TRANS_SINE, Tween.EASE_OUT)
 				$Tween.start()
 			# This tween hides the container manipulation buttons
-			if not $Control/ManipulationButtons/Tween.is_active() and \
+			if not _buttons_tween.is_active() and \
 					$Control/ManipulationButtons.modulate[3] != 0:
 				# We always make sure to clean tweening conflicts
-				$Control/ManipulationButtons/Tween.remove_all()
-				$Control/ManipulationButtons/Tween.interpolate_property(
+				_buttons_tween.remove_all()
+				_buttons_tween.interpolate_property(
 						$Control/ManipulationButtons,'modulate',
 						$Control/ManipulationButtons.modulate, Color(1,1,1,0), 0.25,
 						Tween.TRANS_SINE, Tween.EASE_IN)
-				$Control/ManipulationButtons/Tween.start()
+				_buttons_tween.start()
 			_organize_attachments()
 		DROPPING_TO_BOARD:
 			set_mouse_filters(true)
@@ -1715,14 +1727,14 @@ func _process_card_state() -> void:
 			# The below tween shows the container manipulation buttons when you hover over them
 			set_focus(true)
 			set_mouse_filters(true)
-			if not $Control/ManipulationButtons/Tween.is_active() and \
+			if not _buttons_tween.is_active() and \
 					$Control/ManipulationButtons.modulate[3] != 1:
-				$Control/ManipulationButtons/Tween.remove_all()
-				$Control/ManipulationButtons/Tween.interpolate_property(
+				_buttons_tween.remove_all()
+				_buttons_tween.interpolate_property(
 						$Control/ManipulationButtons,'modulate',
 						$Control/ManipulationButtons.modulate, Color(1,1,1,1), 0.25,
 						Tween.TRANS_SINE, Tween.EASE_IN)
-				$Control/ManipulationButtons/Tween.start()
+				_buttons_tween.start()
 			# We don't change state yet, only when the focus is removed from this card
 #		DROPPING_INTO_PILE:
 #			# Used when dropping the cards into a container (Deck, Discard etc)
@@ -1808,11 +1820,11 @@ func _process_card_state() -> void:
 # and it will appear only while the card is on the board.
 func _token_drawer(drawer_state := true) -> void:
 	# I use these vars to avoid writing it all the time and to improve readability
-	var tween := $Control/Tokens/Tween
+	var tween : Tween = _tokens_tween
 	var td := $Control/Tokens/Drawer
 	# We want to keep the drawer closed during the flip and movement
 	if not tween.is_active() and \
-			not $Control/FlipTween.is_active() and \
+			not _flip_tween.is_active() and \
 			not $Tween.is_active():
 		# We don't open the drawer if we don't have any tokens at all
 		if drawer_state == true and \
@@ -1854,12 +1866,10 @@ func _token_drawer(drawer_state := true) -> void:
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
 
-func _execute_scripts():
+func _execute_scripts() -> void:
 	# The CardScripts is where we keep all card scripting definitions
 	var loaded_scripts = CardScripts.new()
 	var card_scripts
-	# The ScriptingEngine class is where we keep the code for the scripts
-	var sceng = ScriptingEngine.new(self,target_card)
 	# If scripts have been defined directly in this object
 	# They take precedence over CardScripts.gd
 	#
@@ -1881,5 +1891,5 @@ func _execute_scripts():
 				state_scripts = card_scripts.get("hand", [])
 			IN_POPUP,FOCUSED_IN_POPUP:
 				state_scripts = card_scripts.get("pile", [])
-		sceng.running_scripts = state_scripts
-		sceng.run_next_script()
+		scripting_engine.running_scripts = state_scripts
+		scripting_engine.run_next_script()

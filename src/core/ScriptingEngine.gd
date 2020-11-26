@@ -9,6 +9,9 @@
 class_name ScriptingEngine
 extends Reference
 
+# Emitted when all scripts have finished running
+signal scripts_completed
+
 # Contains a list of all the scripts still left to run for this card
 var running_scripts: Array
 # The card which owns this Scripting Engine.
@@ -23,7 +26,7 @@ func _ready() -> void:
 
 
 # Sets the owner of this Scripting Engine
-func _init(owner, target) -> void:
+func _init(owner) -> void:
 	card_owner = owner
 
 
@@ -34,6 +37,7 @@ func run_next_script() -> void:
 	if running_scripts.empty():
 		#print('Scripting: All done!') # Debug
 		_common_target = false
+		emit_signal("scripts_completed")
 	else:
 		var script = running_scripts.pop_front()
 		#print("Scripting: " + str(script)) # Debug
