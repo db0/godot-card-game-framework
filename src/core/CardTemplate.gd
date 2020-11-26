@@ -43,6 +43,9 @@ enum _ReturnCode {
 	FAILED,
 }
 
+# Emitted whenever the card has selected a target.
+signal target_selected(card)
+
 # Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
 # We export this variable to the editor to allow us to add scripts to each card
@@ -98,14 +101,9 @@ var _potential_cards := []
 var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
 # A flag on whether the token drawer is currently open
 var _is_drawer_open := false
-
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
-signal target_selected(card)
-
-
-var unique_name = name
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# The below check ensures out card_name variable is set.
