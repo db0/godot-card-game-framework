@@ -40,6 +40,10 @@ You will notice that our existing code is fairly well commented. At the minimum,
 
 This is important because our comments are used to generate our documentation in the wiki. Not only do you help your fellow framework developers understand what you're adding, but you're making sure that users of the framework understand how to use it properly.
 
+## Syntax
+
+Make sure you follow the [Official Godot syntax guidelines](https://docs.godotengine.org/en/stable/getting_started/scripting/gdscript/gdscript_styleguide.html)
+
 ## Git and pull requests
 
 When you want to submit code, you should send a pull request from the branch you've modified. Do not send us pull requests from your main branch.

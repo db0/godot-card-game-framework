@@ -27,6 +27,7 @@ enum{
 	IN_PILE					#10
 	IN_POPUP				#11
 	FOCUSED_IN_POPUP		#12
+	VIEWPORT_FOCUS			#13
 }
 
 # The possible return codes a function can return
@@ -42,11 +43,19 @@ enum _ReturnCode {
 	FAILED,
 }
 
-const token_scene = preload("res://src/core/Token.tscn")
+# Emitted whenever the card has selected a target.
+signal target_selected(card)
+
+# Used to add new token instances to cards
+const _token_scene = preload("res://src/core/Token.tscn")
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
-# warning-ignore:unused_class_variable
-export var scripts := [{'name':'','args':['',0]}]
+#
+# If this variable is set, it takes precedence over scripts
+# found in CardScripts.gd
+#
+# See CardScripts.gd for the proper format of a scripts dictionary
+export var scripts := {}
 # If true, the card can be attached to other cards and will follow
 # their host around the table. The card will always return to its host
 # when dragged away
@@ -57,6 +66,12 @@ export var is_faceup  := true setget set_is_faceup, get_is_faceup
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
 # Specifies the card rotation in increments of 90 degrees
 export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_card_rotation
+# This is **the** authorative name for this node
+#
+# If not set, will be set to the value of the Name label in the front
+# if that is also not set, will be set
+# to the human-readable value of the "name" node property
+export var card_name : String setget set_card_name, get_card_name
 
 # Used to store a card succesfully targeted.
 # It should be cleared from whichever effect requires a target once it has finished
@@ -86,13 +101,13 @@ var _potential_cards := []
 var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
 # A flag on whether the token drawer is currently open
 var _is_drawer_open := false
-
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
-
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# The below check ensures out card_name variable is set.
+	_init_card_name()
 	# First we set the card to always pivot from its center.
 	# We only rotate the Control node however, so the collision shape is not rotated
 	# Looking for a better solution, but this is the best I have until now.
@@ -184,36 +199,56 @@ func _on_Card_mouse_entered() -> void:
 				state = FOCUSED_IN_POPUP
 
 
+func _input(event) -> void:
+	if event is InputEventMouseButton and \
+			event.get_button_index() == 1 and \
+			not event.is_pressed():
+		if _is_targetting:
+			complete_targeting()
+		# On depressed left mouse click anywhere on the board
+		# We stop all attempts at dragging this card
+		# We cannot do this in gui_input, because some thing
+		# like the targetting arrow, will trigger dragging
+		# because the click depress will not trigger on the card for some reason
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		$Control.set_default_cursor_shape(Input.CURSOR_ARROW)
+		cfc.card_drag_ongoing = null
+
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
-		# If the player presses the left click, it might be because
-		# they want to drag the card
-		if event.is_pressed() and event.get_button_index() == 1:
-			if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
-					(state == FOCUSED_IN_HAND
-					or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
-				# But first we check if the player does a long-press.
-				# We don't want to start dragging the card immediately.
-				cfc.card_drag_ongoing = self
-				# We need to wait a bit to make sure the other card has a chance
-				# to go through their scripts
-				yield(get_tree().create_timer(0.1), "timeout")
-				# If this variable is still set to true,
-				# it means the mouse-button is still pressed
-				# We also check if another card is already selected for dragging,
-				# to prevent from picking 2 cards at the same time.
-				if cfc.card_drag_ongoing == self:
-					# While the mouse is kept pressed, we tell the engine
-					# that a card is being dragged
-					_start_dragging()
-		# If the mouse button was released we drop the dragged card
-		# This also means a card clicked once won't try to immediately drag
+		# If the player left clicks, we need to see if it's a double-click
+		# or a long click
+		if event.get_button_index() == 1:
+			# If it's a double-click, then it's not a card drag
+			# But rather it's script execution
+			if event.doubleclick:
+				cfc.card_drag_ongoing = null
+				_execute_scripts()
+			# If it's a long click it might be because
+			# they want to drag the card
+			elif event.is_pressed() :
+				if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
+						(state == FOCUSED_IN_HAND
+						or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
+					# But first we check if the player does a long-press.
+					# We don't want to start dragging the card immediately.
+					cfc.card_drag_ongoing = self
+					# We need to wait a bit to make sure the other card has a chance
+					# to go through their scripts
+					yield(get_tree().create_timer(0.1), "timeout")
+					# If this variable is still set to true,
+					# it means the mouse-button is still pressed
+					# We also check if another card is already selected for dragging,
+					# to prevent from picking 2 cards at the same time.
+					if cfc.card_drag_ongoing == self:
+						print("why")
+						# While the mouse is kept pressed, we tell the engine
+						# that a card is being dragged
+						_start_dragging()
+			# If the mouse button was released we drop the dragged card
+			# This also means a card clicked once won't try to immediately drag
 		if not event.is_pressed() and event.get_button_index() == 1:
-			# Always reveal the mouseon unclick
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			$Control.set_default_cursor_shape(Input.CURSOR_ARROW)
-			cfc.card_drag_ongoing = null
 			match state:
 				DRAGGED:
 					# if the card was being dragged, it's index is very high
@@ -524,6 +559,28 @@ func get_is_viewed() -> bool:
 	return is_viewed
 
 
+# Setter for card_name
+# Also changes the card label and the node name
+func set_card_name(value : String) -> void:
+	$Control/Front/CardText/Name.text = value
+	name = value
+	card_name = value
+
+
+# Getter for card_name
+func get_card_name() -> String:
+	return card_name
+
+
+# Overwrites the built-in set name, so that it also sets card_name
+#
+# It's preferrable to set card_name instead.
+func set_name(value : String) -> void:
+	.set_name(value)
+	$Control/Front/CardText/Name.text = value
+	card_name = value
+
+
 # Setter for card_rotation.
 #
 # Rotates the card the specified number of degrees.
@@ -550,7 +607,6 @@ func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 	elif value == card_rotation and not toggle:
 		retcode = _ReturnCode.OK
 	else:
-		print('a')
 		# If the toggle was specified then if the card matches the requested
 		# rotation, we reset it to 0 degrees
 		if card_rotation == value and toggle:
@@ -587,8 +643,8 @@ func get_card_rotation() -> int:
 # mouse position, or at the 'boardPosition' variable if it's provided
 # index determines the card's position among other cards.
 func move_to(targetHost: Node2D,
-	index := -1,
-	boardPosition := Vector2(-1,-1)) -> void:
+		index := -1,
+		boardPosition := Vector2(-1,-1)) -> void:
 #	if cfc.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -853,7 +909,7 @@ func add_token(token_name : String) -> int:
 		# If the token does not exist in the card, we add its node
 		# and set it to 1
 		if not token:
-			token = token_scene.instance()
+			token = _token_scene.instance()
 			token.setup(token_name)
 			$Control/Tokens/Drawer/VBoxContainer.add_child(token)
 		# If the token node of this name has already been added to the card
@@ -948,14 +1004,15 @@ func initiate_targeting() -> void:
 func complete_targeting() -> void:
 	if len(_potential_cards) and _is_targetting:
 		target_card = _potential_cards.back()
-		print("Targeting Demo: ",
-				self.name," targeted ",
-				target_card.name, " in ",
-				target_card.get_parent().name)
+#		print("Targeting Demo: ",
+#				self.name," targeted ",
+#				target_card.name, " in ",
+#				target_card.get_parent().name)
 	_is_targetting = false
 	$TargetLine.clear_points()
 	$TargetLine/ArrowHead.visible = false
 	$TargetLine/ArrowHead/Area2D.monitoring = false
+	emit_signal("target_selected",target_card)
 
 
 # Changes the hosted Control nodes filters
@@ -1701,7 +1758,27 @@ func _process_card_state() -> void:
 			set_focus(true)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
-
+		VIEWPORT_FOCUS:
+			set_focus(false)
+			set_mouse_filters(false)
+			# warning-ignore:return_value_discarded
+			set_card_rotation(0)
+			$Control/ManipulationButtons.modulate[3] = 0
+			$Control.rect_rotation = 0
+			complete_targeting()
+			$Control/Tokens.visible = false
+			# We scale the card dupe to allow the player a better viewing experience
+			scale = Vector2(1.5,1.5)
+			# If the card has already been been viewed while down,
+			# we allow the player hovering over it to see it
+			if not is_faceup:
+				if is_viewed:
+					_flip_card($Control/Back,$Control/Front, true)
+				else:
+					# We slightly reduce the colour intensity of the dupe
+					# As its enlarged state makes it glow too much
+					var current_colour = $Control/Back.modulate
+					$Control/Back.modulate = current_colour * 0.95
 
 # Reveals or Hides the token drawer
 #
@@ -1754,3 +1831,53 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
+
+func _execute_scripts():
+	# The CardScripts is where we keep all card scripting definitions
+	var loaded_scripts = CardScripts.new()
+	var card_scripts
+	# The ScriptingEngine class is where we keep the code for the scripts
+	var sceng = ScriptingEngine.new(self,target_card)
+	# If scripts have been defined directly in this object
+	# They take precedence over CardScripts.gd
+	#
+	# This allows us to modify a card's scripts during runtime
+	# in isolation from other cards of the same name
+	if not scripts.empty():
+		card_scripts = scripts
+	else:
+		# CardScripts.gd should contain scripts for all defined cards
+		card_scripts = loaded_scripts.get_scripts(card_name)
+	var state_scripts = []
+	# We assume only faceup cards can execute scripts
+	if is_faceup:
+		# We select which scripts to run from the card, based on it state
+		match state:
+			ON_PLAY_BOARD,FOCUSED_ON_BOARD:
+				state_scripts = card_scripts.get("board", [])
+			IN_HAND,FOCUSED_IN_HAND:
+				state_scripts = card_scripts.get("hand", [])
+			IN_POPUP,FOCUSED_IN_POPUP:
+				state_scripts = card_scripts.get("pile", [])
+		sceng.running_scripts = state_scripts
+		sceng.run_next_script()
+
+func _init_card_name():
+	if not card_name:
+		# If the variable has not been set on start
+		# But the Name label has been set, we set our name to that instead
+		if $Control/Front/CardText/Name.text != "":
+			set_card_name($Control/Front/CardText/Name.text)
+		else:
+			# The node name changes depeding on how many other cards
+			# with the same node name are siblings
+			# We use this regex to discover the actual name
+			var regex = RegEx.new()
+			regex.compile("@{0,1}([\\w ]+)@{0,1}")
+			var result = regex.search(name)
+			var node_human_name = result.get_string(1)
+			set_card_name(node_human_name)
+	else:
+		# If the variable has been set, we ensure label and node name
+		# are matching
+		set_card_name(card_name)
