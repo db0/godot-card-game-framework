@@ -197,6 +197,7 @@ For more fine customization, you'll need to modify manually
 * Cards can target other cards with a draggable arrow (demo with right-mouse drag & drop)
 * Can flip cards face-down and view them while in that state
 * Can add tokens on cards
+* Complete Card Text Scripting Capability
 
 ## Contributing
 
