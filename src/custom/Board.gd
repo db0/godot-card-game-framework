@@ -2,6 +2,9 @@
 extends Board
 
 const cardTemplate = preload("res://src/core/CardTemplate.tscn")
+const test1 = preload("res://src/custom/cards/Test1.tscn")
+const test2 = preload("res://src/custom/cards/Test2.tscn")
+const test3 = preload("res://src/custom/cards/Test3.tscn")
 
 var allCards := [] # A pseudo-deck array to hold the card objects we want to pull
 
@@ -57,8 +60,15 @@ func _on_EnableAttach_toggled(_button_pressed: bool) -> void:
 
 # Loads a sample set of cards to use for testing
 func load_test_cards() -> void:
-	for _i in range(15):
-		var card: Card = cardTemplate.instance()
+	var test_cards = [test1, test2, test3]
+	var test_card_array := []
+	randomize()
+	for _i in range(12):
+		test_card_array.append(test_cards[randi() % len(test_cards)].instance())
+	# I ensure there's of each test card, for use in GUT
+	for c in test_cards:
+		test_card_array.append(c.instance())
+	for card in test_card_array:
 		$Deck.add_child(card)
 		# warning-ignore:return_value_discarded
 		card.set_is_faceup(false,true)

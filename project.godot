@@ -29,6 +29,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/cfc.gd"
 }, {
+"base": "Reference",
+"class": "CardScripts",
+"language": "GDScript",
+"path": "res://src/custom/cards/CardScripts.gd"
+}, {
 "base": "CardContainer",
 "class": "Hand",
 "language": "GDScript",
@@ -38,6 +43,11 @@ _global_script_classes=[ {
 "class": "Pile",
 "language": "GDScript",
 "path": "res://src/core/Pile.gd"
+}, {
+"base": "Reference",
+"class": "ScriptingEngine",
+"language": "GDScript",
+"path": "res://src/core/ScriptingEngine.gd"
 }, {
 "base": "HBoxContainer",
 "class": "Token",
@@ -59,8 +69,10 @@ _global_script_class_icons={
 "Card": "",
 "CardContainer": "",
 "CardFrameworkConfiguration": "",
+"CardScripts": "",
 "Hand": "",
 "Pile": "",
+"ScriptingEngine": "",
 "Token": "",
 "UTCommon": "",
 "ViewportCardFocus": ""

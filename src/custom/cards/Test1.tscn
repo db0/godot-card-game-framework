@@ -1,0 +1,23 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/core/CardTemplate.tscn" type="PackedScene" id=1]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.0431373, 0.0313726, 0.364706, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[node name="Test1111" instance=ExtResource( 1 )]
+
+[node name="Front" parent="Control" index="1"]
+custom_styles/panel = SubResource( 1 )
+
+[node name="Name" parent="Control/Front/CardText" index="0"]
+text = "Test Card 1"
+
+[node name="Abilities" parent="Control/Front/CardText" index="4"]
+text = "While on board, this will rotate itself.
+
+While in hand, this card will go back in the deck."
