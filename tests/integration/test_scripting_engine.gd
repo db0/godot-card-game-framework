@@ -33,6 +33,7 @@ func test_basics():
 			"Script should not work from a different state")
 	assert_signal_emitted(card.scripting_engine,"scripts_completed")
 
+
 	# The below tests _common_target == false
 	card.scripts = {"board": 
 			[{'name': 'rotate_target','args': [270,false]},
@@ -55,7 +56,6 @@ func test_basics():
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	assert_false(card.is_faceup, 
 			"Scripts should not fire while card is face-down")
-	
 
 
 # Checks that scripts from the CardScripts have been loaded correctly
@@ -121,3 +121,21 @@ func test_flip_target():
 	assert_true(target.is_faceup, 
 			"Target should be face-up again")
 
+
+func test_move_self_to_container():
+	card.scripts = {"hand": [{'name': 'move_self_to_container',
+			'args':  [cfc.NMAP.discard]}]}
+	card._execute_scripts()
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(cfc.NMAP.discard,card.get_parent(),
+			"Card should have moved to different container")
+
+
+func test_move_target_to_container():
+	card.scripts = {"hand": [{'name': 'move_target_to_container',
+			'args': [cfc.NMAP.deck,false]}]}
+	card._execute_scripts()
+	yield(target_card(card,target), 'completed')
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(cfc.NMAP.deck,target.get_parent(),
+			"Target should have moved to different container")
