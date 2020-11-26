@@ -151,17 +151,27 @@ func get_random_card() -> Card:
 		return null
 	else:
 		var cardsArray := get_all_cards()
-		randomize()
-		return cardsArray[randi() % len(cardsArray)]
+		return cardsArray[cfc.game_rng.randi() % len(cardsArray)]
 
+# Random array, Global shuffle is not used because we need to randomize through our own random seed
+func shuffle_array(array:Array) -> void:
+	var n = array.size()
+	if n<2:
+		return
+	var j
+	var tmp
+	for i in range(n-1,1,-1):
+		j = cfc.game_rng.randi()%(i+1)
+		tmp = array[j]
+		array[j] = array[i]
+		array[i] = tmp
 
 # Randomly rearranges the order of the Card nodes.
 func shuffle_cards() -> void:
 	var cardsArray := []
 	for card in get_all_cards():
 		cardsArray.append(card)
-	randomize()
-	cardsArray.shuffle()
+	shuffle_array(cardsArray)
 	for card in cardsArray:
 		move_child(card, cardsArray.find(card))
 
