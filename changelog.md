@@ -7,6 +7,7 @@
 * Can add or remove tokens from cards
 * Piles now display the size of the card stack
 * Cards in Piles are now places face-up or facedown depending on the pile config
+* Added Scripting Engine!
 
 
 ## 0.10

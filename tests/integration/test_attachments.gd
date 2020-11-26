@@ -15,7 +15,8 @@ func test_attaching_and_switching_parent():
 	var card_prev_pos : Vector2
 	var exhost_attachments: Array
 
-	yield(drag_drop(cards[0],Vector2(300,300)), 'completed')
+	card = cards[0]
+	yield(drag_drop(card,Vector2(300,300)), 'completed')
 	card = cards[1]
 	yield(drag_card(card, Vector2(310,310)), "completed")
 	assert_true(cards[0].get_node('Control/FocusHighlight').visible,

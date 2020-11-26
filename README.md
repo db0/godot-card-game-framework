@@ -179,6 +179,14 @@ The classes provide some easy customization options, such as how the card move, 
 Check the "Behaviour Constants" header at the start of the cfc singleton.
 For more fine customization, you'll need to modify manually
 
+## Scripting Engine
+
+One of the most powerful features of this framework, is the possibility to easily script each individual card's abilities from start to finish, so that a player only needs to double-click on a card and your code will handle the proper execution. This allows games to very easily create complete rules enforcement of all card abilities, from the simplest to the most tricky ones.
+
+The scripting engine relies on two gdscipt files, `ScriptingEngine.gd`, which contains all the scripting APIs for manipulating cards and `CardScripts.gd` which contains a dictionary of all the scripts you've defined for your cards. Not only that, but if needed you can customize an individual card's script during runtime, which can make it behave different than other cards of the same name.
+
+The game comes with some sample scripted cards which can be found under `res://src/custom/cards`. You can peruse the CardScripts to understand how they work.
+
 
 ## Provided features
 
@@ -197,6 +205,7 @@ For more fine customization, you'll need to modify manually
 * Cards can target other cards with a draggable arrow (demo with right-mouse drag & drop)
 * Can flip cards face-down and view them while in that state
 * Can add tokens on cards
+* Complete Card Text Scripting Capability
 
 ## Contributing
 
