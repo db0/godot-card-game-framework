@@ -18,4 +18,4 @@ custom_styles/panel = SubResource( 1 )
 text = ""
 
 [node name="Abilities" parent="Control/Front/CardText" index="4"]
-text = "This card has scripted rotation"
+text = "While on board, this card will flip face-down and rotate 180 degrees a target"
