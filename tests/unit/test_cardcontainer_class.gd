@@ -5,10 +5,12 @@ var cards := []
 func before_each():
 	setup_board()
 
+
 func test_methods():
 	var container : Pile = cfc.NMAP.deck
-	assert_eq('CardContainer',container.get_class(), 
+	assert_eq('CardContainer',container.get_class(),
 			'Class name returns correct value')
+
 
 func test_get_card_methods():
 	var container : Pile = cfc.NMAP.deck
@@ -27,4 +29,39 @@ func test_get_card_methods():
 		if container.get_random_card() == container.get_random_card():
 			sameget += 1
 	assert_lt(sameget,5, 'get_random_card() works')
+
+
+func test_manipulation_buttons():
+	var deck : Pile = cfc.NMAP.deck
+	assert_eq(1.0,deck.manipulation_buttons.modulate.a,
+			"Buttons container should be visible")
+	for button in deck.all_manipulation_buttons:
+		assert_eq(0.0,button.modulate.a,
+				"Buttons should start invisible")
+	deck.show_buttons()
+	yield(yield_to(deck.manipulation_buttons_tween, "tween_all_completed", 1), YIELD)
+	for button in deck.all_manipulation_buttons:
+		assert_eq(1.0,button.modulate.a,
+				"Buttons are visible after shown")
+	deck.hide_buttons()
+	yield(yield_to(deck.manipulation_buttons_tween, "tween_all_completed", 1), YIELD)
+	for button in deck.all_manipulation_buttons:
+		assert_eq(0.0,button.modulate.a,
+				"Buttons are invisible after hide")
+
+
+func test_init_signal():
+	var deck : Pile = cfc.NMAP.deck
+	assert_connected(deck.control, deck, "mouse_entered")
+	assert_connected(deck.control, deck, "mouse_exited")
+	assert_connected(deck.shuffle_button, deck, "pressed")
+	for button in deck.all_manipulation_buttons:
+		assert_connected(button, deck, "mouse_entered")
+
+
+func test_update_manipulation_buttons():
+	var deck : Pile = cfc.NMAP.deck
+	assert_eq(2,deck.all_manipulation_buttons.size(),
+				"Expected number of manipulation buttons are there")
+
 

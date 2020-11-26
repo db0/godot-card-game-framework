@@ -3,92 +3,116 @@
 class_name CardContainer
 extends Area2D
 # ManipulationButtons node
-onready var manipulation_buttons = $Control/ManipulationButtons
+onready var manipulation_buttons := $Control/ManipulationButtons
 # ManipulationButtons tween node
-onready var manipulation_buttons_tween = $Control/ManipulationButtons/Tween
+onready var manipulation_buttons_tween := $Control/ManipulationButtons/Tween
 # Control node
-onready var control = $Control
+onready var control := $Control
 # Shuffle button
-onready var shuffle = $Control/ManipulationButtons/Shuffle
-# View button
-onready var view = $Control/ManipulationButtons/View
+onready var shuffle_button := $Control/ManipulationButtons/Shuffle
 # Cache control button
-var manipulation_buttons_self = []
+var all_manipulation_buttons := [] setget ,get_all_manipulation_buttons
+
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	_init_data()
 	_init_ui()
 	_init_signal()
 
-# Cache some data,Initialize some data
-func _init_data() -> void:
-	update_manipulation_buttons()
 
-# Initialize part of the control to ensure that the initial state of the control is the expected state
+# Initialize some of the controls to ensure
+# that they are in the expected state
 func _init_ui() -> void:
-	for button in manipulation_buttons_self:
+	for button in get_all_manipulation_buttons():
 		button.modulate[3] = 0
 
-# Register some signals
+
+# Registers signals for this node
 func _init_signal() -> void:
 	# warning-ignore:return_value_discarded
 	control.connect("mouse_entered", self, "_on_Control_mouse_entered")
 	# warning-ignore:return_value_discarded
 	control.connect("mouse_exited", self, "_on_Control_mouse_exited")
 	# warning-ignore:return_value_discarded
-	for button in manipulation_buttons_self:
+	for button in all_manipulation_buttons:
 		button.connect("mouse_entered", self, "_on_button_mouse_entered")
-		# button.connect("mouse_exited", self, "_on_button_mouse_exited")
-	shuffle.connect("pressed", self, '_on_Shuffle_Button_pressed')
-
-# update manipulation_button group nodes, By using group, different tree structures are allowed
-	var buttons = get_tree().get_nodes_in_group("manipulation_button")
-	manipulation_buttons_self = []
-	for button in buttons:
-	return manipulation_buttons_self
-
-
-# Shows the container manipulation buttons when the player hovers over them
-func _on_Control_mouse_entered() -> void:
-	# We always make sure to clean tweening conflicts
-	manipulation_buttons_tween.remove_all()
-	for button in manipulation_buttons_self:
-		manipulation_buttons_tween.interpolate_property(
-			button, 'modulate:a', button.modulate.a, 1, 0.25, Tween.TRANS_SINE, Tween.EASE_IN
-		)
-	manipulation_buttons_tween.start()
+		#button.connect("mouse_exited", self, "_on_button_mouse_exited")
+	shuffle_button.connect("pressed", self, '_on_Shuffle_Button_pressed')
 
 
 # Hides the container manipulation buttons when you stop hovering over them
 func _on_Control_mouse_exited() -> void:
 	# We always make sure to clean tweening conflicts
-	manipulation_buttons_tween.remove_all()
-	for button in manipulation_buttons_self:
-		manipulation_buttons_tween.interpolate_property(
-			button, 'modulate:a', button.modulate.a, 0, 0.25, Tween.TRANS_SINE, Tween.EASE_IN
-		)
-	manipulation_buttons_tween.start()
+	hide_buttons()
 
 
-# Ensures the mouse is visible on hover
-# Ensures that button it not trying to  disappear via previous animation
+# Shows the container manipulation buttons when the player hovers over them
+func _on_Control_mouse_entered() -> void:
+	# We always make sure to clean tweening conflicts
+	show_buttons()
+
+
+# Ensures the buttons are visible on hover
+# Ensures that buttons are not trying to disappear via previous animation
 func _on_button_mouse_entered() -> void:
+	# We stop ongoing animations to avoid conflicts.
 	manipulation_buttons_tween.remove_all()
-	for button in manipulation_buttons_self:
+	for button in all_manipulation_buttons:
 		button.modulate[3] = 1
 
 
-# Ensures the mouse is invisible on hover
-# Ensures that button it not trying to appear via previous animation
-# func _on_button_mouse_exited() -> void:
-# 	manipulation_buttons_tween.remove_all()
-# 	manipulation_buttons.modulate[3] = 0
+### Ugh, I will need to implement the same _are_buttons_hovered nosense
+### That I'm doing in Card to avoid the buttons sometimes staying visible
+#
+## Ensures the mouse is invisible on hover
+## Ensures that button it not trying to appear via previous animation
+##
+## This is necessary because sometimes the buttons stay visible
+## When the mouse exits the whole control area from their location
+#func _on_button_mouse_exited() -> void:
+#	manipulation_buttons_tween.remove_all()
+#	for button in all_manipulation_buttons:
+#		button.modulate[3] = 1
 
 
 # Triggers pile shuffling
 func _on_Shuffle_Button_pressed() -> void:
 	# Reshuffles the cards in container
 	shuffle_cards()
+
+
+# Hides manipulation buttons
+func hide_buttons() -> void:
+	# We stop existing tweens to avoid deadlocks
+	manipulation_buttons_tween.remove_all()
+	for button in all_manipulation_buttons:
+		manipulation_buttons_tween.interpolate_property(button, 'modulate:a',
+				button.modulate.a, 0, 0.25,
+				Tween.TRANS_SINE, Tween.EASE_IN)
+	manipulation_buttons_tween.start()
+
+
+# Shows manipulation buttons
+func show_buttons() -> void:
+	manipulation_buttons_tween.remove_all()
+	for button in all_manipulation_buttons:
+		manipulation_buttons_tween.interpolate_property(button, 'modulate:a',
+				button.modulate.a, 1, 0.25,
+				Tween.TRANS_SINE, Tween.EASE_IN)
+	manipulation_buttons_tween.start()
+
+
+# Getter for all_manipulation_buttons
+#
+# Updates Array with all manipulation_button group nodes,
+# By using group, different tree structures are allowed
+func get_all_manipulation_buttons() -> Array:
+	var buttons = get_tree().get_nodes_in_group("manipulation_button")
+	all_manipulation_buttons.clear()
+	for button in buttons:
+		if is_a_parent_of(button):
+			all_manipulation_buttons.append(button)
+	return all_manipulation_buttons
 
 
 # Overrides the built-in get_class to return "CardContainer" instead of "Area2D"
