@@ -44,88 +44,60 @@ func run_next_script() -> void:
 		if script['name'] == 'custom':
 			call('custom_script')
 		elif script['name']:
-			call(script['name'], script['args']) # Args should be an array of arguments to pass
-			""" Available scripts:
-				move_self_to_container([CardContainer])
-				move_target_to_container([CardContainer, bool common_target])
-				move_self_to_board([Card, Vector2])
-				generate_card([str card_path, int amount])
-				rotate_self([int degrees])
-				rotate_self([int degrees, bool common_target])
-				flip_self([])
-				flip_target([bool common_target])
-			"""
+			_find_subject(script)
 		else:
 			print("[WARN] Found empty script. Ignoring...")
 			 # If card has a script but it's null, it probably not coded yet. Just go on...
 			run_next_script()
 
 
-# Rotates the owner of this Scripting Engine the specified degrees
-func rotate_self(args) -> void:
-	var degrees: int = args[0]
-	_rotate_card(card_owner, degrees)
-
-
-# Targets a card to rotate the specified degrees
-func rotate_target(args) -> void:
-	var degrees: int = args[0]
-	var common_target_request = args[1]
-	# I don't understand why, but if I put this check inside
-	# the _initiate_card_targeting() function, it breaks the second yield
-	yield(_initiate_card_targeting(common_target_request), "completed")
-	_rotate_card(card_owner.target_card, degrees)
-
-
-# Flips face-up or -down the owner of this Scripting Engine
-func flip_self(args) -> void:
-	var is_faceup: bool = args[0]
-	_flip_card(card_owner,  is_faceup)
-
-
-# Targets a card to Flip face-up or -down
-func flip_target(args) -> void:
-	var is_faceup: bool = args[0]
-	var common_target_request = args[1]
-	yield(_initiate_card_targeting(common_target_request), "completed")
-	_flip_card(card_owner.target_card, is_faceup)
-
-
-# Moves the owner of this Scripting Engine to a different container
-func move_self_to_container(args) -> void:
-	var container = args[0]
-	_move_card_to_container(card_owner,container)
-
-
-# Targets a card to move to a different container
-func move_target_to_container(args) -> void:
-	var container = args[0]
-	var common_target_request = args[1]
-	yield(_initiate_card_targeting(common_target_request), "completed")
-	_move_card_to_container(card_owner.target_card, container)
-
-
-# Core script for moving to other containers
-func _move_card_to_container(card, container) -> void:
-	card.move_to(container)
-#	yield(card.get_node("Tween"), "tween_all_completed")
-#	if cfc.fancy_movement:
-#		yield(card.get_node("Tween"), "tween_all_completed")
-	run_next_script()
-
-
 # Core script for rotating cards
-func _rotate_card(card, degrees) -> void:
-	card.card_rotation = degrees
-	#yield(card.get_node("Tween"), "tween_all_completed")
+# Requires the script to have a "degrees" key with int value
+func rotate_card(card, script: Dictionary) -> void:
+	card.card_rotation = script["degrees"]
 	run_next_script()
 
 
 # Core script for flipping cards
-func _flip_card(card,is_faceup) -> void:
-	card.is_faceup = is_faceup
-	#yield(card.get_node("Tween"), "tween_all_completed")
+# Requires the script to have a "set_faceup" key with bool value
+func flip_card(card, script: Dictionary) -> void:
+	card.is_faceup = script["set_faceup"]
 	run_next_script()
+
+
+# Core script for moving to other containers
+# Requires the script to have a "container" key with Pile value
+func move_card_to_container(card, script: Dictionary) -> void:
+	card.move_to(script["container"])
+	run_next_script()
+
+
+# TODO
+# func generate_card(card, script: Dictionary) -> void:
+# func move_card_to_board(card, script: Dictionary) -> void:
+
+
+# Scripts pass through this function to find their expected subject card.
+# The "subject" key in the dictionary specifies what card we're looking for.
+func _find_subject(script: Dictionary) -> void:
+	var card
+	# If set to true, only one target will be looked for with the arrow
+	# If one is selected, then no other will be sought, until the next
+	# until the next common_target_request == false
+	# If common_target_request == false, then we look for a new target
+	# If no common_target_request has been specified, we default to true
+	var common_target_request : bool = script.get("common_target_request", true)
+	# Subject can be either "self" or "target"
+	# If the subject is "target", we start the targetting
+	# to make the player to find one
+	if script["subject"] == "target":
+		yield(_initiate_card_targeting(common_target_request), "completed")
+		card = card_owner.target_card
+	# Otherwise we assume they mean the caller card
+	else:
+		card = card_owner
+	# Args should be an array of arguments to pass
+	call(script['name'], card, script)
 
 
 # Handles initiation of target seeking.

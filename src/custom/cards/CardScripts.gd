@@ -1,8 +1,8 @@
 # This class contains the definitions of all card scripts
 # defined in your game.
 #
-# Everything is defined in the 'scripts' dictionary where the key is each
-# card's name. This means that cards with the same name have the same scripts!
+# Everything is defined in the "scripts" dictionary where the key is each
+# card"s name. This means that cards with the same name have the same scripts!
 #
 # Not only that, but the cards can handle different scripts, depending on
 # where the are when the scripts are triggered (hand, board, pile etc)
@@ -24,7 +24,6 @@
 class_name CardScripts
 extends Reference
 
-
 # This fuction returns all the scripts of the specified card name.
 #
 # if no scripts have been defined, an empty dictionary is returned instead.
@@ -33,14 +32,16 @@ func get_scripts(card_name) -> Dictionary:
 		"Test Card 1": {
 			"board": [
 				{
-					'name': 'rotate_self',
-					'args': [90],
+					"name": "rotate_card",
+					"subject": "self",
+					"degrees": 90,
 				}
 			],
 			"hand": [
 				{
-					'name': 'flip_target',
-					'args':  [false,false],
+					"name": "flip_card",
+					"subject": "target",
+					"set_faceup": false,
 				}
 			]
 		},
@@ -48,18 +49,21 @@ func get_scripts(card_name) -> Dictionary:
 		"Test Card 2": {
 			"board": [
 				{
-					'name': 'move_target_to_container',
-					'args': [cfc.NMAP.discard, false],
+					"name": "move_card_to_container",
+					"subject": "target",
+					"container": cfc.NMAP.discard,
 				},
 				{
-					'name': 'move_self_to_container',
-					'args': [cfc.NMAP.discard],
+					"name": "move_card_to_container",
+					"subject": "self",
+					"container": cfc.NMAP.discard,
 				}
 			],
 			"pile": [
 				{
-					'name': 'move_self_to_container',
-					'args': [cfc.NMAP.discard],
+					"name": "move_card_to_container",
+					"subject": "self",
+					"container": cfc.NMAP.discard,
 				}
 			]
 		},
@@ -67,18 +71,21 @@ func get_scripts(card_name) -> Dictionary:
 		"Test Card 3": {
 			"board": [
 				{
-					'name': 'flip_target',
-					'args': [false,true],
+					"name": "flip_card",
+					"subject": "target",
+					"set_faceup": false,
 				},
 				{
-					'name': 'rotate_target',
-					'args': [180, true],
+					"name": "rotate_card",
+					"subject": "target",
+					"degrees": 180,
 				}
 			],
 			"hand": [
 				{
-					'name': 'move_self_to_container',
-					'args': [cfc.NMAP.discard],
+					"name": "move_card_to_container",
+					"subject": "self",
+					"container": cfc.NMAP.discard,
 				}
 			]
 		},
