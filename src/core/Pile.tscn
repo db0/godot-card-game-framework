@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://src/core/CardContainer.gd" type="Script" id=2]
+[ext_resource path="res://src/core/Pile.gd" type="Script" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 1, 1, 1, 1 )
@@ -16,7 +16,7 @@ font_data = ExtResource( 1 )
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 78, 123 )
 
-[node name="Cards" type="Area2D"]
+[node name="Pile" type="Area2D"]
 script = ExtResource( 2 )
 
 [node name="Control" type="Panel" parent="."]
@@ -51,7 +51,6 @@ __meta__ = {
 }
 
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
-modulate = Color( 1, 1, 1, 0 )
 margin_left = 2.0
 margin_top = 20.0
 margin_right = 20.0

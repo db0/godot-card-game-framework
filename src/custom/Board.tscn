@@ -3,8 +3,9 @@
 [ext_resource path="res://src/custom/Board.gd" type="Script" id=1]
 [ext_resource path="res://src/custom/Deck.gd" type="Script" id=2]
 [ext_resource path="res://src/custom/Discard.gd" type="Script" id=3]
-[ext_resource path="res://src/core/CardContainer.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/core/Hand.tscn" type="PackedScene" id=5]
+
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.0392157, 0.0392157, 0.0392157, 1 )

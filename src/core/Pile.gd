@@ -7,10 +7,13 @@ extends  CardContainer
 # Otherwise they will be placed face-down.
 export var faceup_cards := false
 
+# Popup View button for Piles
+onready var view_button := $Control/ManipulationButtons/View
+
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# warning-ignore:return_value_discarded
-	$Control/ManipulationButtons/View.connect("pressed",self,'_on_View_Button_pressed')
+	view_button.connect("pressed",self,'_on_View_Button_pressed')
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("popup_hide",self,'_on_ViewPopup_popup_hide')
 	# warning-ignore:return_value_discarded
