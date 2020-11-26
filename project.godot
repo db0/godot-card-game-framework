@@ -29,6 +29,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/cfc.gd"
 }, {
+"base": "Node",
+"class": "CardFrameworkUtils",
+"language": "GDScript",
+"path": "res://src/core/Utils.gd"
+}, {
 "base": "Reference",
 "class": "CardScripts",
 "language": "GDScript",
@@ -69,6 +74,7 @@ _global_script_class_icons={
 "Card": "",
 "CardContainer": "",
 "CardFrameworkConfiguration": "",
+"CardFrameworkUtils": "",
 "CardScripts": "",
 "Hand": "",
 "Pile": "",
@@ -87,6 +93,7 @@ config/icon="res://icon.png"
 [autoload]
 
 cfc="*res://src/core/cfc.gd"
+cfu="*res://src/core/Utils.gd"
 
 [display]
 
