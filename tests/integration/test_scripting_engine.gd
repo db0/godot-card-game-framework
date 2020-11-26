@@ -46,6 +46,16 @@ func test_basics():
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 90, 
 			"Second rotation should also happen")
+	card.is_faceup = false
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	card.scripts = {"hand": [{'name': 'flip_self','args': [true]}]}
+	card._execute_scripts()
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	assert_false(card.is_faceup, 
+			"Scripts should not fire while card is face-down")
+	
 
 
 # Checks that scripts from the CardScripts have been loaded correctly
@@ -84,3 +94,30 @@ func test_rotate_target():
 	yield(yield_to(target.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(target.card_rotation, 270, 
 			"Target Rotated 270 degrees")
+
+
+func test_flip_self():
+	card.scripts = {"hand": [{'name': 'flip_self','args': [false]}]}
+	card._execute_scripts()
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	assert_false(card.is_faceup, 
+			"Card should be face-down")
+
+
+func test_flip_target():
+	card.scripts = {"hand": [{'name': 'flip_target','args': [false,false]}]}
+	card._execute_scripts()
+	yield(target_card(card,target), 'completed')
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	assert_false(target.is_faceup, 
+			"Target should be face-down")
+	card.scripts = {"hand": [{'name': 'flip_target','args': [true,false]}]}
+	card._execute_scripts()
+	yield(target_card(card,target), 'completed')
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+	assert_true(target.is_faceup, 
+			"Target should be face-up again")
+
