@@ -157,6 +157,27 @@ func _ready() -> void:
 		$Control/Back/Pulse.connect("tween_all_completed", self, "_on_Pulse_completed")
 
 
+func _init_card_name():
+	if not card_name:
+		# If the variable has not been set on start
+		# But the Name label has been set, we set our name to that instead
+		if $Control/Front/CardText/Name.text != "":
+			set_card_name($Control/Front/CardText/Name.text)
+		else:
+			# The node name changes depeding on how many other cards
+			# with the same node name are siblings
+			# We use this regex to discover the actual name
+			var regex = RegEx.new()
+			regex.compile("@{0,1}([\\w ]+)@{0,1}")
+			var result = regex.search(name)
+			var node_human_name = result.get_string(1)
+			set_card_name(node_human_name)
+	else:
+		# If the variable has been set, we ensure label and node name
+		# are matching
+		set_card_name(card_name)
+
+
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta) -> void:
 	if $Tween.is_active() and not cfc.UT: # Debug code for catch potential Tween deadlocks
@@ -1863,23 +1884,3 @@ func _execute_scripts():
 				state_scripts = card_scripts.get("pile", [])
 		sceng.running_scripts = state_scripts
 		sceng.run_next_script()
-
-func _init_card_name():
-	if not card_name:
-		# If the variable has not been set on start
-		# But the Name label has been set, we set our name to that instead
-		if $Control/Front/CardText/Name.text != "":
-			set_card_name($Control/Front/CardText/Name.text)
-		else:
-			# The node name changes depeding on how many other cards
-			# with the same node name are siblings
-			# We use this regex to discover the actual name
-			var regex = RegEx.new()
-			regex.compile("@{0,1}([\\w ]+)@{0,1}")
-			var result = regex.search(name)
-			var node_human_name = result.get_string(1)
-			set_card_name(node_human_name)
-	else:
-		# If the variable has been set, we ensure label and node name
-		# are matching
-		set_card_name(card_name)
