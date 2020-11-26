@@ -370,9 +370,8 @@ func _on_Flip_pressed() -> void:
 # Demo hover button which adds a selection of random tokens
 func _on_AddToken_pressed() -> void:
 	var valid_tokens := ['tech','gold coin','blood','plasma']
-	randomize()
 	# warning-ignore:return_value_discarded
-	add_token(valid_tokens[randi()%len(valid_tokens)])
+	add_token(valid_tokens[cfc.game_rng.randi() % len(valid_tokens)])
 
 
 # Hover button which allows the player to view a facedown card
