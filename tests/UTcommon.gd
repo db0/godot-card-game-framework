@@ -30,7 +30,7 @@ func setup_main() -> void:
 	board = cfc.NMAP.board
 	board.load_test_cards()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
-	
+
 
 func setup_board() -> void:
 	board = autoqfree(BOARD_SCENE.instance())
@@ -50,6 +50,15 @@ func click_card(card: Card) -> void:
 	var fc:= fake_click(true, card.global_position)
 	card._on_Card_gui_input(fc)
 
+func unclick_card(card: Card) -> void:
+	var fc:= fake_click(false, card.global_position)
+	card._on_Card_gui_input(fc)
+
+# We need this for targetting arrows which don't release back on the card gui
+func unclick_card_anywhere(card: Card) -> void:
+	var fc:= fake_click(false, card.global_position)
+	card._input(fc)
+
 
 func drag_card(card: Card, target_position: Vector2, interpolation_speed := "fast") -> void:
 	var mouse_speed = MOUSE_SPEED[interpolation_speed][0]
@@ -64,7 +73,7 @@ func drag_card(card: Card, target_position: Vector2, interpolation_speed := "fas
 func drop_card(card: Card, drop_location: Vector2) -> void:
 	var fc:= fake_click(false, drop_location)
 	card._on_Card_gui_input(fc)
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)	
+	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 
 
 # Takes care of simple drag&drop requests
@@ -73,3 +82,14 @@ func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fas
 	yield(drop_card(card,board._UT_mouse_position), 'completed')
 	yield(yield_for(0.1), YIELD) # Wait to allow dragging to start
 	card._on_Card_mouse_exited()
+
+# Interpolates the virtual mouse so that it correctly targets a card
+func target_card(source, target, interpolation_speed := "fast") -> void:
+	var mouse_speed = MOUSE_SPEED[interpolation_speed][0]
+	var mouse_yield_wait = MOUSE_SPEED[interpolation_speed][1]
+	# We need to offset a bit towards the card rect, to ensure the arrow
+	# Area2D collides
+	board._UT_interpolate_mouse_move(target.global_position + Vector2(10,10),
+			source.global_position,mouse_speed)
+	yield(yield_for(mouse_yield_wait), YIELD)
+	unclick_card_anywhere(source)

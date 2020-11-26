@@ -104,6 +104,9 @@ var _is_drawer_open := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
+# The ScriptingEngine class is where we execute the scripts
+onready var scripting_engine = ScriptingEngine.new(self)
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	# The below check ensures out card_name variable is set.
@@ -1854,12 +1857,10 @@ func _token_drawer(drawer_state := true) -> void:
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
 
-func _execute_scripts():
+func _execute_scripts() -> void:
 	# The CardScripts is where we keep all card scripting definitions
 	var loaded_scripts = CardScripts.new()
 	var card_scripts
-	# The ScriptingEngine class is where we keep the code for the scripts
-	var sceng = ScriptingEngine.new(self,target_card)
 	# If scripts have been defined directly in this object
 	# They take precedence over CardScripts.gd
 	#
@@ -1881,5 +1882,5 @@ func _execute_scripts():
 				state_scripts = card_scripts.get("hand", [])
 			IN_POPUP,FOCUSED_IN_POPUP:
 				state_scripts = card_scripts.get("pile", [])
-		sceng.running_scripts = state_scripts
-		sceng.run_next_script()
+		scripting_engine.running_scripts = state_scripts
+		scripting_engine.run_next_script()
