@@ -61,7 +61,9 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="View" type="Button" parent="Control/ManipulationButtons"]
+[node name="View" type="Button" parent="Control/ManipulationButtons" groups=[
+"manipulation_button",
+]]
 margin_right = 20.0
 margin_bottom = 20.0
 mouse_filter = 1
@@ -70,7 +72,9 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Shuffle" type="Button" parent="Control/ManipulationButtons"]
+[node name="Shuffle" type="Button" parent="Control/ManipulationButtons" groups=[
+"manipulation_button",
+]]
 margin_top = 24.0
 margin_right = 20.0
 margin_bottom = 44.0
