@@ -12,35 +12,54 @@ onready var control = $Control
 onready var shuffle = $Control/ManipulationButtons/Shuffle
 # View button
 onready var view = $Control/ManipulationButtons/View
-
+# Cache control button
+var manipulation_buttons_self = []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	_init_data()
+	_init_ui()
+	_init_signal()
+
+# Cache some data,Initialize some data
+func _init_data() -> void:
+	update_manipulation_buttons()
+
+# Initialize part of the control to ensure that the initial state of the control is the expected state
+func _init_ui() -> void:
+	for button in manipulation_buttons_self:
+		button.modulate[3] = 0
+
+# Register some signals
+func _init_signal() -> void:
 	# warning-ignore:return_value_discarded
-	$Control.connect("mouse_entered", self, "_on_Control_mouse_entered")
+	control.connect("mouse_entered", self, "_on_Control_mouse_entered")
 	# warning-ignore:return_value_discarded
-	$Control.connect("mouse_exited", self, "_on_Control_mouse_exited")
+	control.connect("mouse_exited", self, "_on_Control_mouse_exited")
 	# warning-ignore:return_value_discarded
-	for button in manipulation_buttons.get_children():
-		if button.name != "Tween":
-			button.connect("mouse_entered", self, "_on_button_mouse_entered")
-			button.connect("mouse_exited", self, "_on_button_mouse_exited")
+	for button in manipulation_buttons_self:
+		button.connect("mouse_entered", self, "_on_button_mouse_entered")
+		# button.connect("mouse_exited", self, "_on_button_mouse_exited")
 	shuffle.connect("pressed", self, '_on_Shuffle_Button_pressed')
+
+# update manipulation_button group nodes, By using group, different tree structures are allowed
+func update_manipulation_buttons():
+	var buttons = get_tree().get_nodes_in_group("manipulation_button")
+	manipulation_buttons_self = []
+	for button in buttons:
+		if is_a_parent_of(button):
+			manipulation_buttons_self.append(button)
+	return manipulation_buttons_self
 
 
 # Shows the container manipulation buttons when the player hovers over them
 func _on_Control_mouse_entered() -> void:
 	# We always make sure to clean tweening conflicts
 	manipulation_buttons_tween.remove_all()
-	manipulation_buttons_tween.interpolate_property(
-		manipulation_buttons,
-		'modulate',
-		manipulation_buttons.modulate,
-		Color(1, 1, 1, 1),
-		0.25,
-		Tween.TRANS_SINE,
-		Tween.EASE_IN
-	)
+	for button in manipulation_buttons_self:
+		manipulation_buttons_tween.interpolate_property(
+			button, 'modulate:a', button.modulate.a, 1, 0.25, Tween.TRANS_SINE, Tween.EASE_IN
+		)
 	manipulation_buttons_tween.start()
 
 
@@ -48,15 +67,10 @@ func _on_Control_mouse_entered() -> void:
 func _on_Control_mouse_exited() -> void:
 	# We always make sure to clean tweening conflicts
 	manipulation_buttons_tween.remove_all()
-	manipulation_buttons_tween.interpolate_property(
-		manipulation_buttons,
-		'modulate',
-		manipulation_buttons.modulate,
-		Color(1, 1, 1, 0),
-		0.25,
-		Tween.TRANS_SINE,
-		Tween.EASE_IN
-	)
+	for button in manipulation_buttons_self:
+		manipulation_buttons_tween.interpolate_property(
+			button, 'modulate:a', button.modulate.a, 0, 0.25, Tween.TRANS_SINE, Tween.EASE_IN
+		)
 	manipulation_buttons_tween.start()
 
 
@@ -64,14 +78,15 @@ func _on_Control_mouse_exited() -> void:
 # Ensures that button it not trying to  disappear via previous animation
 func _on_button_mouse_entered() -> void:
 	manipulation_buttons_tween.remove_all()
-	manipulation_buttons.modulate[3] = 1
+	for button in manipulation_buttons_self:
+		button.modulate[3] = 1
 
 
 # Ensures the mouse is invisible on hover
 # Ensures that button it not trying to appear via previous animation
-func _on_button_mouse_exited() -> void:
-	manipulation_buttons_tween.remove_all()
-	manipulation_buttons.modulate[3] = 0
+# func _on_button_mouse_exited() -> void:
+# 	manipulation_buttons_tween.remove_all()
+# 	manipulation_buttons.modulate[3] = 0
 
 
 # Triggers pile shuffling
