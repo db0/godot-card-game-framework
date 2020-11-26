@@ -201,6 +201,21 @@ func _on_Card_mouse_entered() -> void:
 				state = FOCUSED_IN_POPUP
 
 
+func _input(event) -> void:
+	if event is InputEventMouseButton and \
+			event.get_button_index() == 1 and \
+			not event.is_pressed():
+		if _is_targetting:
+			complete_targeting()
+		# On depressed left mouse click anywhere on the board
+		# We stop all attempts at dragging this card
+		# We cannot do this in gui_input, because some thing
+		# like the targetting arrow, will trigger dragging
+		# because the click depress will not trigger on the card for some reason
+		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		$Control.set_default_cursor_shape(Input.CURSOR_ARROW)
+		cfc.card_drag_ongoing = null
+
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
@@ -229,16 +244,13 @@ func _on_Card_gui_input(event) -> void:
 					# We also check if another card is already selected for dragging,
 					# to prevent from picking 2 cards at the same time.
 					if cfc.card_drag_ongoing == self:
+						print("why")
 						# While the mouse is kept pressed, we tell the engine
 						# that a card is being dragged
 						_start_dragging()
 			# If the mouse button was released we drop the dragged card
 			# This also means a card clicked once won't try to immediately drag
 		if not event.is_pressed() and event.get_button_index() == 1:
-			# Always reveal the mouseon unclick
-			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-			$Control.set_default_cursor_shape(Input.CURSOR_ARROW)
-			cfc.card_drag_ongoing = null
 			match state:
 				DRAGGED:
 					# if the card was being dragged, it's index is very high
@@ -994,10 +1006,10 @@ func initiate_targeting() -> void:
 func complete_targeting() -> void:
 	if len(_potential_cards) and _is_targetting:
 		target_card = _potential_cards.back()
-		print("Targeting Demo: ",
-				self.name," targeted ",
-				target_card.name, " in ",
-				target_card.get_parent().name)
+#		print("Targeting Demo: ",
+#				self.name," targeted ",
+#				target_card.name, " in ",
+#				target_card.get_parent().name)
 	_is_targetting = false
 	$TargetLine.clear_points()
 	$TargetLine/ArrowHead.visible = false

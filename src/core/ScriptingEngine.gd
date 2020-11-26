@@ -4,6 +4,9 @@ extends Reference
 var running_scripts: Array
 var card_owner
 var target_card = null
+# Set when a card script wants to use a common target for all effects
+# To avoid multiple targetting arrows
+var _common_target := false
 # Declare member variables here. Examples:
 # var a: int = 2
 # var b: String = "text"
@@ -13,12 +16,15 @@ var target_card = null
 func _ready() -> void:
 	pass # Replace with function body.
 
+
 func _init(owner, target) -> void:
 	card_owner = owner
+
 
 func run_next_script() -> void:
 	if running_scripts.empty():
 		print('Scripting: All done!') # Debug
+		_common_target = false
 	else:
 		var script = running_scripts.pop_front()
 		print("Scripting: " + str(script)) # Debug
@@ -27,43 +33,102 @@ func run_next_script() -> void:
 		elif script['name']:
 			call(script['name'], script['args']) # Args should be an array of arguments to pass
 			""" Available scripts:
-				move_to_container([Card, CardContainer])
+				move_self_to_container([CardContainer])
+				move_target_to_container([CardContainer, bool common_target])
 				move_self_to_board([Card, Vector2])
 				generate_card([str card_path, int amount])
-				rotate_self([Card, int degrees])
+				rotate_self([int degrees])
+				rotate_self([int degrees, bool common_target])
+				flip_self([])
+				flip_target([bool common_target])
 			"""
 		else:
 			print("[WARN] Found empty script. Ignoring...")
 			script_succeeded() # If card has a script but it's null, it probably not coded yet. Just go on...
 
+
 func script_succeeded() -> void:
 	# Monitors if one of the card effect scripts has succeeded and if it has, checks if there's more to do in the stack
 	run_next_script()
 
-# warning-ignore:unused_argument
-func rotate_self(args) -> void:
-	var degrees: int = args[1]
-	rotate_card([card_owner,  args[1]])
 
 # warning-ignore:unused_argument
-func rotate_card(args) -> void:
-	var card = args[0]
-	var degrees: int = args[1]
-	card_owner.card_rotation = degrees
-	yield(card.get_node("Tween"), "tween_all_completed")
-	run_next_script()
+func rotate_self(args) -> void:
+	var degrees: int = args[0]
+	_rotate_card(card_owner, degrees)
+
+
+func rotate_target(args) -> void:
+	var degrees: int = args[0]
+	var common_target_request = args[1]
+	# I don't understand why, but if I put this check inside
+	# the _initiate_card_targeting() function, it breaks the second yield
+	yield(_initiate_card_targeting(common_target_request), "completed")
+	_rotate_card(card_owner.target_card, degrees)
+
+
+# warning-ignore:unused_argument
+func flip_self(args) -> void:
+	var is_faceup: bool = args[0]
+	_flip_card(card_owner,  is_faceup)
+
+
+func flip_target(args) -> void:
+	var is_faceup: bool = args[0]
+	var common_target_request = args[1]
+	yield(_initiate_card_targeting(common_target_request), "completed")
+	_flip_card(card_owner.target_card, is_faceup)
+
 
 # warning-ignore:unused_argument
 func move_self_to_container(args) -> void:
-	var container = args[1]
-	move_card_to_container([card_owner,container])
+	var container = args[0]
+	_move_card_to_container(card_owner,container)
+
+
+func move_target_to_container(args) -> void:
+	var container = args[0]
+	var common_target_request = args[1]
+
+	# We wait a centisecond, to prevent the card's _input function from seeing
+	# The double-click which started the script and immediately triggerring
+	# the target completion
+	yield(_initiate_card_targeting(common_target_request), "completed")
+	_move_card_to_container(card_owner.target_card, container)
+
 
 # warning-ignore:unused_argument
-func move_card_to_container(args) -> void:
-	var card = args[0]
-	var container = args[1]
+func _move_card_to_container(card, container) -> void:
 	card.move_to(container)
-	yield(card.get_node("Tween"), "tween_all_completed")
-	if cfc.fancy_movement:
-		yield(card.get_node("Tween"), "tween_all_completed")
+#	yield(card.get_node("Tween"), "tween_all_completed")
+#	if cfc.fancy_movement:
+#		yield(card.get_node("Tween"), "tween_all_completed")
 	run_next_script()
+
+
+# warning-ignore:unused_argument
+func _rotate_card(card, degrees) -> void:
+	card.card_rotation = degrees
+	#yield(card.get_node("Tween"), "tween_all_completed")
+	run_next_script()
+
+# warning-ignore:unused_argument
+func _flip_card(card,is_faceup) -> void:
+	card.is_faceup = is_faceup
+	#yield(card.get_node("Tween"), "tween_all_completed")
+	run_next_script()
+
+func _initiate_card_targeting(common_target_req):
+	# We wait a centisecond, to prevent the card's _input function from seeing
+	# The double-click which started the script and immediately triggerring
+	# the target completion
+	if not _common_target:
+		yield(card_owner.get_tree().create_timer(0.1), "timeout")
+		card_owner.initiate_targeting()
+		yield(card_owner,"target_selected")
+		_common_target = common_target_req
+	else:
+		# I don't understand it, but if I remove this timer
+		# it breaks the yield
+		# Replacing it with a pass or something simple doesn't work either
+		yield(card_owner.get_tree().create_timer(0.1), "timeout")
