@@ -227,7 +227,7 @@ func _on_Card_gui_input(event) -> void:
 				_execute_scripts()
 			# If it's a long click it might be because
 			# they want to drag the card
-			elif event.is_pressed() :
+			elif event.is_pressed():
 				if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
 						(state == FOCUSED_IN_HAND
 						or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
@@ -242,13 +242,15 @@ func _on_Card_gui_input(event) -> void:
 					# We also check if another card is already selected for dragging,
 					# to prevent from picking 2 cards at the same time.
 					if cfc.card_drag_ongoing == self:
-						print("why")
 						# While the mouse is kept pressed, we tell the engine
 						# that a card is being dragged
 						_start_dragging()
 			# If the mouse button was released we drop the dragged card
 			# This also means a card clicked once won't try to immediately drag
 		if not event.is_pressed() and event.get_button_index() == 1:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			$Control.set_default_cursor_shape(Input.CURSOR_ARROW)
+			cfc.card_drag_ongoing = null
 			match state:
 				DRAGGED:
 					# if the card was being dragged, it's index is very high
