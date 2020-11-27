@@ -1,11 +1,11 @@
-
-# Card Gaming Framework Utils func
-# Add it to your autoloads with the name'cfu'
+# Card Gaming Framework Utilities
+#
+# This is a library of static functions.
 class_name CardFrameworkUtils
-extends Resource
+extends Reference
 
-# Random array, Global shuffle is not used because we need to randomize through our own random seed
-static func shuffle_array(array:Array) -> void:
+# Randomize array through our own seed
+static func shuffle_array(array: Array) -> void:
 	var n = array.size()
 	if n<2:
 		return
