@@ -29,7 +29,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/cfc.gd"
 }, {
-"base": "Node",
+"base": "Resource",
 "class": "CardFrameworkUtils",
 "language": "GDScript",
 "path": "res://src/core/Utils.gd"
@@ -93,7 +93,6 @@ config/icon="res://icon.png"
 [autoload]
 
 cfc="*res://src/core/cfc.gd"
-cfu="*res://src/core/Utils.gd"
 
 [display]
 

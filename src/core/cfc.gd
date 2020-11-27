@@ -140,6 +140,10 @@ var hands: Array
 # The card actively being dragged
 var card_drag_ongoing: Card = null
 
+# Game random number generator
+var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+# Game random seed
+var game_rng_seed: int = hash("godot") setget seed
 
 func _ready() -> void:
 	# We reset our node mapping variables every time
@@ -177,3 +181,11 @@ func _ready() -> void:
 		piles.append(NMAP[name])
 	for name in hand_names:
 		hands.append(NMAP[name])
+
+	# Initialize the game random seed
+	self.seed(hash("godot"))
+
+# Initialize the game random seed
+func seed(_seed: int):
+	game_rng_seed = _seed
+	game_rng.set_seed(game_rng_seed)

@@ -63,7 +63,7 @@ func load_test_cards() -> void:
 	var test_cards = [test1, test2, test3]
 	var test_card_array := []
 	for _i in range(12):
-		test_card_array.append(test_cards[cfu.randi() % len(test_cards)].instance())
+		test_card_array.append(test_cards[CardFrameworkUtils.randi() % len(test_cards)].instance())
 	# I ensure there's of each test card, for use in GUT
 	for c in test_cards:
 		test_card_array.append(c.instance())

@@ -151,7 +151,7 @@ func get_random_card() -> Card:
 		return null
 	else:
 		var cardsArray := get_all_cards()
-		return cardsArray[cfu.randi() % len(cardsArray)]
+		return cardsArray[CardFrameworkUtils.randi() % len(cardsArray)]
 
 
 # Randomly rearranges the order of the Card nodes.
@@ -159,7 +159,7 @@ func shuffle_cards() -> void:
 	var cardsArray := []
 	for card in get_all_cards():
 		cardsArray.append(card)
-	cfu.shuffle_array(cardsArray)
+	CardFrameworkUtils.shuffle_array(cardsArray)
 	for card in cardsArray:
 		move_child(card, cardsArray.find(card))
 
