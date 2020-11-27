@@ -13,9 +13,9 @@ func before_each():
 
 func test_count_setget():
 	var count_label = token.get_node("CenterContainer/Count")
-	assert_eq(1,token.count,"Initial count should be 1")
-	assert_eq("1",count_label.text,"Label should be '1'")
-	token.count += 1
+	assert_eq(0,token.count,"Initial count should be 0")
+	assert_eq("0",count_label.text,"Label should be '0'")
+	token.count += 2
 	assert_eq(2,token.count,"Count should be 2")
 	assert_eq("2",count_label.text,"Label should be '2'")
 	token.count += 5
@@ -49,12 +49,11 @@ func test_expand_retract():
 
 func test_buttons():
 	token._on_Add_pressed()
-	assert_eq(2,token.count,"count should be 2")
+	assert_eq(1,token.count,"count should be 1")
 	token._on_Add_pressed()
-	assert_eq(3,token.count,"count should be 3")
-	token._on_Remove_pressed()
 	assert_eq(2,token.count,"count should be 2")
 	token._on_Remove_pressed()
+	assert_eq(1,token.count,"count should be 1")
 	token._on_Remove_pressed()
 	yield(yield_for(0.01), YIELD) # Wait for queue free
 	assert_freed(token, "Token")
