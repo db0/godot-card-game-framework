@@ -25,7 +25,7 @@ func test_basics():
 			"degrees": 270}]}
 	watch_signals(card.scripting_engine) 
 	card._execute_scripts()
-	assert_eq(card.scripting_engine.card_owner, card,
+	assert_eq(card.scripting_engine._card_owner, card,
 			"Scripting Engine owner card is self")
 	assert_false(card.scripting_engine._common_target, 
 			"_common_target should start false unless defined")

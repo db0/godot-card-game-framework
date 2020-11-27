@@ -13,9 +13,9 @@ extends Reference
 signal scripts_completed
 
 # Contains a list of all the scripts still left to run for this card
-var running_scripts: Array
+var _running_scripts: Array
 # The card which owns this Scripting Engine.
-var card_owner
+var _card_owner
 # Set when a card script wants to use a common target for all effects
 # To avoid multiple targetting arrows
 var _common_target := false
@@ -28,19 +28,22 @@ func _ready() -> void:
 
 # Sets the owner of this Scripting Engine
 func _init(owner) -> void:
-	card_owner = owner
+	_card_owner = owner
 
 
 # The main engine starts here. It populates an array with all the scripts
 # to execute, then goes one by one and sends them to the appropriate
 # functions
 func run_next_script() -> void:
-	if running_scripts.empty():
+	if _running_scripts.empty():
 		#print('Scripting: All done!') # Debug
 		_common_target = false
+		# Once the target card has been used, we clear it to avoid
+		# any bugs
+		_card_owner.target_card = null
 		emit_signal("scripts_completed")
 	else:
-		var script = running_scripts.pop_front()
+		var script = _running_scripts.pop_front()
 		#print("Scripting: " + str(script)) # Debug
 		if script['name'] == 'custom':
 			call('custom_script')
@@ -104,11 +107,11 @@ func _find_subject(script: Dictionary) -> void:
 	# to make the player to find one
 	if script["subject"] == "target":
 		yield(_initiate_card_targeting(common_target_request), "completed")
-		subject = card_owner.target_card
-	# If the subject is "self", we return the card_owner
+		subject = _card_owner.target_card
+	# If the subject is "self", we return the _card_owner
 	# of this ScriptingEngine
 	elif script["subject"] == "self":
-		subject = card_owner
+		subject = _card_owner
 	# Otherwise we pass null, assuming there's no subject needed
 	else:
 		subject = null
@@ -124,13 +127,13 @@ func _initiate_card_targeting(common_target_req):
 		# We wait a centisecond, to prevent the card's _input function from seeing
 		# The double-click which started the script and immediately triggerring
 		# the target completion
-		yield(card_owner.get_tree().create_timer(0.1), "timeout")
-		card_owner.initiate_targeting()
+		yield(_card_owner.get_tree().create_timer(0.1), "timeout")
+		_card_owner.initiate_targeting()
 		# We wait until the targetting has been completed to continue
-		yield(card_owner,"target_selected")
+		yield(_card_owner,"target_selected")
 		_common_target = common_target_req
 	else:
 		# I don't understand it, but if I remove this timer
 		# it breaks the yield from the caller
 		# Replacing it with a pass or something simple doesn't work either
-		yield(card_owner.get_tree().create_timer(0.1), "timeout")
+		yield(_card_owner.get_tree().create_timer(0.1), "timeout")
