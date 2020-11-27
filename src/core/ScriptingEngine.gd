@@ -17,7 +17,7 @@ signal scripts_completed
 # Contains a list of all the scripts still left to run for this card
 var _running_scripts: Array
 # The card which owns this Scripting Engine.
-var _card_owner
+var _card_owner: Card
 # Set when a card script wants to use a common target for all effects
 # To avoid multiple targetting arrows
 var _common_target := false
@@ -61,7 +61,7 @@ func run_next_script() -> void:
 #
 # Requires the following keys:
 # * "degrees": int
-func rotate_card(card, script: Dictionary) -> void:
+func rotate_card(card: Card, script: Dictionary) -> void:
 	card.card_rotation = script["degrees"]
 	run_next_script()
 
@@ -70,7 +70,7 @@ func rotate_card(card, script: Dictionary) -> void:
 #
 # Requires the following keys:
 # * "set_faceup": bool
-func flip_card(card, script: Dictionary) -> void:
+func flip_card(card: Card, script: Dictionary) -> void:
 	card.is_faceup = script["set_faceup"]
 	run_next_script()
 
@@ -80,7 +80,7 @@ func flip_card(card, script: Dictionary) -> void:
 # Requires the following keys:
 # * "container": CardContainer
 # * (Optional) "dest_index": int
-func move_card_to_container(card, script: Dictionary) -> void:
+func move_card_to_container(card: Card, script: Dictionary) -> void:
 	var dest_index: int = script.get("dest_index", -1)
 	card.move_to(script["container"], dest_index)
 	run_next_script()
@@ -90,7 +90,7 @@ func move_card_to_container(card, script: Dictionary) -> void:
 #
 # Requires the following keys:
 # * "container": CardContainer
-func move_card_to_board(card, script: Dictionary) -> void:
+func move_card_to_board(card: Card, script: Dictionary) -> void:
 	card.move_to(cfc.NMAP.board, -1, script["vector2"])
 	run_next_script()
 
@@ -101,11 +101,11 @@ func move_card_to_board(card, script: Dictionary) -> void:
 # * "src_container": CardContainer
 # * "dest_container": CardContainer
 # * (Optional) "dest_index": int
-func move_card_cont_to_cont(card, script: Dictionary) -> void:
-	var card_index = script["card_index"]
-	var src_container = script["src_container"]
-	var target = src_container.get_card(card_index)
-	var dest_container = script["dest_container"]
+func move_card_cont_to_cont(card: Card, script: Dictionary) -> void:
+	var card_index: int = script["card_index"]
+	var src_container: CardContainer = script["src_container"]
+	var target: Card = src_container.get_card(card_index)
+	var dest_container: CardContainer = script["dest_container"]
 	var dest_index: int = script.get("dest_index", -1)
 	target.move_to(dest_container,card_index)
 
@@ -150,7 +150,7 @@ func _find_subject(script: Dictionary) -> void:
 
 
 # Handles initiation of target seeking.
-func _initiate_card_targeting(common_target_req):
+func _initiate_card_targeting(common_target_req: bool):
 	# If we're using a common target for all the scripts
 	# Then we don't trigger new arrows
 	if not _common_target:

@@ -104,8 +104,10 @@ var _is_drawer_open := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
-# The ScriptingEngine class is where we execute the scripts
-onready var scripting_engine = ScriptingEngine.new(self)
+# The ScriptingEngine is where we execute the scripts
+# We cannot use its class reference,
+# as it causes a cyclic reference error when parsing
+onready var scripting_engine = load("res://src/core/ScriptingEngine.gd").new(self)
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
