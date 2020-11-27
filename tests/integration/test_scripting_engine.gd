@@ -27,8 +27,6 @@ func test_basics():
 	card._execute_scripts()
 	assert_eq(card.scripting_engine._card_owner, card,
 			"Scripting Engine owner card is self")
-	assert_false(card.scripting_engine._common_target,
-			"_common_target should start false unless defined")
 	assert_signal_emitted(card.scripting_engine,"scripts_completed")
 	yield(drag_drop(card, Vector2(100,200)), "completed")
 	card._execute_scripts()
@@ -159,7 +157,7 @@ func test_move_card_to_board():
 	card.scripts = {"hand": [
 			{"name": "move_card_to_board",
 			"subject": "self",
-			"vector2":  Vector2(100,100)}]}
+			"board_position":  Vector2(100,100)}]}
 	card._execute_scripts()
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(cfc.NMAP.board,card.get_parent(),
@@ -172,7 +170,7 @@ func test_move_card_cont_to_cont():
 	target = cfc.NMAP.deck.get_card(5)
 	card.scripts = {"hand": [
 			{"name": "move_card_cont_to_cont",
-			"card_index": 5,
+			"pile_index": 5,
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard}]}
 	card._execute_scripts()
@@ -182,7 +180,7 @@ func test_move_card_cont_to_cont():
 	target = cfc.NMAP.deck.get_card(3)
 	card.scripts = {"hand": [
 			{"name": "move_card_cont_to_cont",
-			"card_index": 3,
+			"pile_index": 3,
 			"dest_index": 1,
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard}]}

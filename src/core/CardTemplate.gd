@@ -1870,7 +1870,7 @@ func _token_drawer(drawer_state := true) -> void:
 
 func _execute_scripts() -> void:
 	# The CardScripts is where we keep all card scripting definitions
-	var loaded_scripts = CardScripts.new()
+	var loaded_scripts = CardScriptDefinitions.new()
 	var card_scripts
 	# If scripts have been defined directly in this object
 	# They take precedence over CardScripts.gd

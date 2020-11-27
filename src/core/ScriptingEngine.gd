@@ -20,7 +20,6 @@ var _running_scripts: Array
 var _card_owner: Card
 # Set when a card script wants to use a common target for all effects
 # To avoid multiple targetting arrows
-var _common_target := false
 
 var custom: CustomScripts
 
@@ -41,16 +40,20 @@ func _init(owner) -> void:
 func run_next_script() -> void:
 	if _running_scripts.empty():
 		#print('Scripting: All done!') # Debug
-		_common_target = false
-		# Once the target card has been used, we clear it to avoid
-		# any bugs
 		_card_owner.target_card = null
 		emit_signal("scripts_completed")
 	else:
-		var script = _running_scripts.pop_front()
+		var script := CardScript.new(_card_owner,_running_scripts.pop_front())
 		#print("Scripting: " + str(script)) # Debug
-		if script['name']:
-			_find_subject(script)
+		# In case the script involves targetting, we need to wait on further
+		# execution until targetting has completed
+		if not script.has_init_completed:
+			yield(script,"completed_init")
+		if script.function_name == "custom_script":
+			custom.custom_script(script)
+			run_next_script()
+		elif script.function_name:
+			call(script.function_name, script)
 		else:
 			print("[WARN] Found empty script. Ignoring...")
 			 # If card has a script but it's null, it probably not coded yet. Just go on...
@@ -61,8 +64,9 @@ func run_next_script() -> void:
 #
 # Requires the following keys:
 # * "degrees": int
-func rotate_card(card: Card, script: Dictionary) -> void:
-	card.card_rotation = script["degrees"]
+func rotate_card(script: CardScript) -> void:
+	var card = script.subject
+	card.card_rotation = script.get("degrees")
 	run_next_script()
 
 
@@ -70,8 +74,9 @@ func rotate_card(card: Card, script: Dictionary) -> void:
 #
 # Requires the following keys:
 # * "set_faceup": bool
-func flip_card(card: Card, script: Dictionary) -> void:
-	card.is_faceup = script["set_faceup"]
+func flip_card(script: CardScript) -> void:
+	var card = script.subject
+	card.is_faceup = script.get("set_faceup")
 	run_next_script()
 
 
@@ -80,9 +85,10 @@ func flip_card(card: Card, script: Dictionary) -> void:
 # Requires the following keys:
 # * "container": CardContainer
 # * (Optional) "dest_index": int
-func move_card_to_container(card: Card, script: Dictionary) -> void:
-	var dest_index: int = script.get("dest_index", -1)
-	card.move_to(script["container"], dest_index)
+func move_card_to_container(script: CardScript) -> void:
+	var dest_index: int = script.get("dest_index")
+	var card = script.subject
+	card.move_to(script.get("container"), dest_index)
 	run_next_script()
 
 
@@ -90,8 +96,9 @@ func move_card_to_container(card: Card, script: Dictionary) -> void:
 #
 # Requires the following keys:
 # * "container": CardContainer
-func move_card_to_board(card: Card, script: Dictionary) -> void:
-	card.move_to(cfc.NMAP.board, -1, script["vector2"])
+func move_card_to_board(script: CardScript) -> void:
+	var card = script.subject
+	card.move_to(cfc.NMAP.board, -1, script.get("board_position"))
 	run_next_script()
 
 # Task for moving card from one container to another
@@ -101,69 +108,17 @@ func move_card_to_board(card: Card, script: Dictionary) -> void:
 # * "src_container": CardContainer
 # * "dest_container": CardContainer
 # * (Optional) "dest_index": int
-func move_card_cont_to_cont(card: Card, script: Dictionary) -> void:
-	var card_index: int = script["card_index"]
-	var src_container: CardContainer = script["src_container"]
-	var target: Card = src_container.get_card(card_index)
-	var dest_container: CardContainer = script["dest_container"]
-	var dest_index: int = script.get("dest_index", -1)
-	target.move_to(dest_container,card_index)
+func move_card_cont_to_cont(script: CardScript) -> void:
+	var card_index: int = script.get("pile_index")
+	var src_container: CardContainer = script.get("src_container")
+	var card = src_container.get_card(card_index)
+	var dest_container: CardContainer = script.get("dest_container")
+	var dest_index: int = script.get("dest_index")
+	card.move_to(dest_container,card_index)
 
 
 # TODO
 # func generate_card(card, script: Dictionary) -> void:
 # func move_card_from_container_to_board(script: Dictionary) -> void:
 # func shuffle_container(container, script: Dictionary) -> void:
-# func mod_card_tokens(card, script: Dictionary) -> void:
-
-
-
-# Scripts pass through this function to find their expected subject card.
-# The "subject" key in the dictionary specifies what card we're looking for.
-func _find_subject(script: Dictionary) -> void:
-	var subject
-	# If set to true, only one target will be looked for with the arrow
-	# If one is selected, then no other will be sought, until the next
-	# until the next common_target_request == false
-	# If common_target_request == false, then we look for a new target
-	# If no common_target_request has been specified, we default to true
-	var common_target_request : bool = script.get("common_target_request", true)
-	# Subject can be "self", "target" or a node
-	# If the subject is "target", we start the targetting
-	# to make the player to find one
-	if script.get("subject") == "target":
-		yield(_initiate_card_targeting(common_target_request), "completed")
-		subject = _card_owner.target_card
-	# If the subject is "self", we return the _card_owner
-	# of this ScriptingEngine
-	elif script.get("subject") == "self":
-		subject = _card_owner
-	# Otherwise we pass null, assuming there's no subject needed
-	else:
-		subject = null
-	# Args should be an array of arguments to pass
-	if script['name'] == "custom_script":
-		custom.custom_script(_card_owner, subject)
-		run_next_script()
-	else:
-		call(script['name'], subject, script)
-
-
-# Handles initiation of target seeking.
-func _initiate_card_targeting(common_target_req: bool):
-	# If we're using a common target for all the scripts
-	# Then we don't trigger new arrows
-	if not _common_target:
-		# We wait a centisecond, to prevent the card's _input function from seeing
-		# The double-click which started the script and immediately triggerring
-		# the target completion
-		yield(_card_owner.get_tree().create_timer(0.1), "timeout")
-		_card_owner.initiate_targeting()
-		# We wait until the targetting has been completed to continue
-		yield(_card_owner,"target_selected")
-		_common_target = common_target_req
-	else:
-		# I don't understand it, but if I remove this timer
-		# it breaks the yield from the caller
-		# Replacing it with a pass or something simple doesn't work either
-		yield(_card_owner.get_tree().create_timer(0.1), "timeout")
+# func mod_card_tokens(card, script: Dictionary) -> void:s

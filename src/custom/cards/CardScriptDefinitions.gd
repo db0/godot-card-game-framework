@@ -33,7 +33,7 @@
 # And exception to the above is when the name is "custom_script". 
 # In that case you don't need any other keys. The complete definition should
 # be in CustomScripts.gd
-class_name CardScripts
+class_name CardScriptDefinitions
 extends Reference
 
 # This fuction returns all the scripts of the specified card name.
