@@ -382,7 +382,7 @@ func _on_Flip_pressed() -> void:
 func _on_AddToken_pressed() -> void:
 	var valid_tokens := ['tech','gold coin','blood','plasma']
 	# warning-ignore:return_value_discarded
-	add_token(valid_tokens[CardFrameworkUtils.randi() % len(valid_tokens)])
+	mod_token(valid_tokens[CardFrameworkUtils.randi() % len(valid_tokens)], 1)
 
 
 # Hover button which allows the player to view a facedown card
@@ -931,7 +931,10 @@ func get_focus() -> bool:
 # Adds a token to the card
 #
 # If the token of that name doesn't exist, it creates it according to the config.
-func add_token(token_name : String) -> int:
+#
+# If the amount of existing tokens of that type drops to 0 or lower, 
+# the token node is also removed.
+func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 	var retcode : int
 	# If the player requested a token name that has not been defined by the game
 	# we return a failure
@@ -941,39 +944,26 @@ func add_token(token_name : String) -> int:
 		var token : Token = get_all_tokens().get(token_name, null)
 		# If the token does not exist in the card, we add its node
 		# and set it to 1
-		if not token:
+		if not token and mod > 0:
 			token = _token_scene.instance()
 			token.setup(token_name)
 			$Control/Tokens/Drawer/VBoxContainer.add_child(token)
 		# If the token node of this name has already been added to the card
 		# We just increment it by 1
-		else:
-			token.count += 1
-		# if the drawer has already been opened, we need to make sure
-		# the new token name will also appear
-		if _is_drawer_open:
-			token.expand()
-		retcode = _ReturnCode.CHANGED
-	return(retcode)
-
-
-# Removes a token from the card
-#
-# If the amount of tokens of that type drops to 0, the token icon is also removed.
-func remove_token(token_name : String) -> int:
-	var retcode : int
-	# If the player requested a token name that has not been defined by the game
-	# we return a failure
-	if not cfc.TOKENS_MAP.get(token_name, null):
-		retcode = _ReturnCode.FAILED
-	else:
-		var token : Token = get_all_tokens().get(token_name, null)
-		if not token:
+		if not token and mod == 0:
 			retcode = _ReturnCode.OK
 		else:
-			token.count -= 1
+			if set_to_mod:
+				token.count = mod
+				print(token.count)
+			else:
+				token.count += mod
 			if token.count == 0:
 				token.queue_free()
+		# if the drawer has already been opened, we need to make sure
+		# the new token name will also appear
+			elif _is_drawer_open:
+				token.expand()
 			retcode = _ReturnCode.CHANGED
 	return(retcode)
 

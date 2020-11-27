@@ -202,11 +202,30 @@ func test_move_card_cont_to_board():
 			{"name": "move_card_cont_to_board",
 			"pile_index": 5,
 			"src_container":  cfc.NMAP.deck,
-			"board_position":  Vector2(200,200)}]}
+			"board_position":  Vector2(1000,200)}]}
 	card._execute_scripts()
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(cfc.NMAP.board,target.get_parent(),
 			"Card should have moved to board")
-	assert_eq(Vector2(200,200),target.global_position,
+	assert_eq(Vector2(1000,200),target.global_position,
 			"Card should have moved to specified position")
 
+
+func test_mod_tokens():
+	target.scripts = {"hand": [
+			{"name": "mod_tokens",
+			"subject": "self",
+			"modification": 5,
+			"token_name":  "industry"}]}
+	target._execute_scripts()
+	var industry_token: Token = target.get_token("industry")
+	assert_eq(5,industry_token.count,"Token increased by specified amount")
+	card.scripts = {"hand": [
+			{"name": "mod_tokens",
+			"subject": "target",
+			"modification": 2,
+			"set_to_count": true,
+			"token_name":  "industry"}]}
+	card._execute_scripts()
+	yield(target_card(card,target), "completed")
+	assert_eq(2,industry_token.count,"Token set to specified amount")

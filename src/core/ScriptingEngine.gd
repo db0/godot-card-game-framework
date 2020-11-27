@@ -50,13 +50,12 @@ func run_next_script() -> void:
 			yield(script,"completed_init")
 		if script.function_name == "custom_script":
 			custom.custom_script(script)
-			run_next_script()
 		elif script.function_name:
 			call(script.function_name, script)
 		else:
-			print("[WARN] Found empty script. Ignoring...")
 			 # If card has a script but it's null, it probably not coded yet. Just go on...
-			run_next_script()
+			print("[WARN] Found empty script. Ignoring...")
+		run_next_script()
 
 
 # Task for rotating cards
@@ -66,7 +65,6 @@ func run_next_script() -> void:
 func rotate_card(script: CardScript) -> void:
 	var card = script.subject
 	card.card_rotation = script.get("degrees")
-	run_next_script()
 
 
 # Task for flipping cards
@@ -76,7 +74,6 @@ func rotate_card(script: CardScript) -> void:
 func flip_card(script: CardScript) -> void:
 	var card = script.subject
 	card.is_faceup = script.get("set_faceup")
-	run_next_script()
 
 
 # Task for moving cards to other containers
@@ -93,7 +90,6 @@ func move_card_to_container(script: CardScript) -> void:
 	var dest_index: int = script.get("dest_index")
 	var card = script.subject
 	card.move_to(script.get("container"), dest_index)
-	run_next_script()
 
 
 # Task for moving card to the board
@@ -103,7 +99,6 @@ func move_card_to_container(script: CardScript) -> void:
 func move_card_to_board(script: CardScript) -> void:
 	var card = script.subject
 	card.move_to(cfc.NMAP.board, -1, script.get("board_position"))
-	run_next_script()
 
 # Task for moving card from one container to another
 #
@@ -124,7 +119,6 @@ func move_card_cont_to_cont(script: CardScript) -> void:
 	var dest_container: CardContainer = script.get("dest_container")
 	var dest_index: int = script.get("dest_index")
 	card.move_to(dest_container,card_index)
-	run_next_script()
 
 # Task from playing a card to the board from a container directly.
 #
@@ -134,13 +128,19 @@ func move_card_cont_to_cont(script: CardScript) -> void:
 func move_card_cont_to_board(script: CardScript) -> void:
 	var card_index: int = script.get("pile_index")
 	var src_container: CardContainer = script.get("src_container")
-	var card = src_container.get_card(card_index)
+	var card := src_container.get_card(card_index)
 	var board_position = script.get("board_position")
 	card.move_to(cfc.NMAP.board, -1, board_position)
-	run_next_script()
+
+
+func mod_tokens(script: CardScript) -> void:
+	var card := script.subject
+	var token_name: String = script.get("token_name")
+	var modification: int = script.get("modification")
+	var set_to_count: bool = script.get("set_to_count")
+	card.mod_token(token_name,modification,set_to_count)
 	
 # TODO
 # func generate_card(card, script: Dictionary) -> void:
-# func move_card_from_container_to_board(script: Dictionary) -> void:
 # func shuffle_container(container, script: Dictionary) -> void:
 # func mod_card_tokens(card, script: Dictionary) -> void:s

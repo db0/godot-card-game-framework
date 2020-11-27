@@ -58,6 +58,16 @@ func get(property: String):
 		# which obviously not good for scripts
 		"board_position":
 			default = Vector2(-1,-1)
+		# Used when placing/modifying a token on a card
+		# to specify if we're modifying the existing amount
+		# or setting it to the exact one
+		"set_to_count":
+			default = false
+		# Used when placing/modifying a token on a card
+		# to specify the amount we're setting/modifying by
+		# or setting it to the exact one
+		"modification":
+			default = 1
 		_:
 			default = null
 	return(properties.get(property,default))
