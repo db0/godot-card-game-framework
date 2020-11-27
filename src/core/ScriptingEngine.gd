@@ -40,7 +40,6 @@ func _init(owner) -> void:
 func run_next_script() -> void:
 	if _running_scripts.empty():
 		#print('Scripting: All done!') # Debug
-		_card_owner.target_card = null
 		emit_signal("scripts_completed")
 	else:
 		var script := CardScript.new(_card_owner,_running_scripts.pop_front())
@@ -85,6 +84,11 @@ func flip_card(script: CardScript) -> void:
 # Requires the following keys:
 # * "container": CardContainer
 # * (Optional) "dest_index": int
+#
+# The index position the card can be placed in, are:
+# * index ==  -1 means last card in the CardContainer
+# * index == 0 means the the first card in the CardContainer
+# * index > 0 means the specific index among other cards.
 func move_card_to_container(script: CardScript) -> void:
 	var dest_index: int = script.get("dest_index")
 	var card = script.subject
@@ -108,6 +112,11 @@ func move_card_to_board(script: CardScript) -> void:
 # * "src_container": CardContainer
 # * "dest_container": CardContainer
 # * (Optional) "dest_index": int
+#
+# The index position the card can be placed in, are:
+# * index ==  -1 means last card in the CardContainer
+# * index == 0 means the the first card in the CardContainer
+# * index > 0 means the specific index among other cards.
 func move_card_cont_to_cont(script: CardScript) -> void:
 	var card_index: int = script.get("pile_index")
 	var src_container: CardContainer = script.get("src_container")
@@ -115,8 +124,21 @@ func move_card_cont_to_cont(script: CardScript) -> void:
 	var dest_container: CardContainer = script.get("dest_container")
 	var dest_index: int = script.get("dest_index")
 	card.move_to(dest_container,card_index)
+	run_next_script()
 
-
+# Task from playing a card to the board from a container directly.
+#
+# Requires the following keys:
+# * "card_index": int
+# * "src_container": CardContainer
+func move_card_cont_to_board(script: CardScript) -> void:
+	var card_index: int = script.get("pile_index")
+	var src_container: CardContainer = script.get("src_container")
+	var card = src_container.get_card(card_index)
+	var board_position = script.get("board_position")
+	card.move_to(cfc.NMAP.board, -1, board_position)
+	run_next_script()
+	
 # TODO
 # func generate_card(card, script: Dictionary) -> void:
 # func move_card_from_container_to_board(script: Dictionary) -> void:

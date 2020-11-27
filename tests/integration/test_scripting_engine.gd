@@ -53,6 +53,10 @@ func test_basics():
 	yield(yield_to(card.get_node("Tween"), "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 90,
 			"Second rotation should also happen")
+	card.scripts = {"hand": [{}]}
+	card._execute_scripts()
+	assert_signal_emitted(card.scripting_engine,"scripts_completed", 
+			"Empty scripts are skipped")
 	card.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
@@ -62,7 +66,7 @@ func test_basics():
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	assert_false(card.is_faceup,
 			"Scripts should not fire while card is face-down")
-
+	card.scripts = {"hand": [{}]}
 
 # Checks that scripts from the CardScripts have been loaded correctly
 func test_CardScripts():
@@ -190,3 +194,19 @@ func test_move_card_cont_to_cont():
 			"Card should have moved to discard")
 	assert_eq(1,target.get_my_card_index(),
 			"Card should have moved to index 1")
+
+
+func test_move_card_cont_to_board():
+	target = cfc.NMAP.deck.get_card(5)
+	card.scripts = {"hand": [
+			{"name": "move_card_cont_to_board",
+			"pile_index": 5,
+			"src_container":  cfc.NMAP.deck,
+			"board_position":  Vector2(200,200)}]}
+	card._execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(cfc.NMAP.board,target.get_parent(),
+			"Card should have moved to board")
+	assert_eq(Vector2(200,200),target.global_position,
+			"Card should have moved to specified position")
+
