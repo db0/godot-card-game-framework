@@ -75,22 +75,43 @@ func flip_card(card, script: Dictionary) -> void:
 	run_next_script()
 
 
-# Task for moving to other containers
+# Task for moving cards to other containers
 #
 # Requires the following keys:
 # * "container": CardContainer
+# * (Optional) "dest_index": int
 func move_card_to_container(card, script: Dictionary) -> void:
-	card.move_to(script["container"])
+	var dest_index: int = script.get("dest_index", -1)
+	card.move_to(script["container"], dest_index)
 	run_next_script()
 
 
+# Task for moving card to the board
+#
+# Requires the following keys:
+# * "container": CardContainer
 func move_card_to_board(card, script: Dictionary) -> void:
 	card.move_to(cfc.NMAP.board, -1, script["vector2"])
 	run_next_script()
 
+# Task for moving card from one container to another
+#
+# Requires the following keys:
+# * "card_index": int
+# * "src_container": CardContainer
+# * "dest_container": CardContainer
+# * (Optional) "dest_index": int
+func move_card_cont_to_cont(card, script: Dictionary) -> void:
+	var card_index = script["card_index"]
+	var src_container = script["src_container"]
+	var target = src_container.get_card(card_index)
+	var dest_container = script["dest_container"]
+	var dest_index: int = script.get("dest_index", -1)
+	target.move_to(dest_container,card_index)
+
+
 # TODO
 # func generate_card(card, script: Dictionary) -> void:
-# func move_card_from_container_to_container(container, script: Dictionary) -> void:
 # func move_card_from_container_to_board(script: Dictionary) -> void:
 # func shuffle_container(container, script: Dictionary) -> void:
 # func mod_card_tokens(card, script: Dictionary) -> void:
