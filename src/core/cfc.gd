@@ -122,15 +122,16 @@ var TOKENS_ONLY_ON_BOARD := true
 # If true, each token will have a convenient +/- button when expanded
 # to allow the player to add a remove more of the same
 var SHOW_TOKEN_BUTTONS = false
-# Unit Testing flag
-var UT := false
-
+# The games initial Random Number Generator seed.
+# When this stays the same, the game randomness will always play the predictable.
+var game_rng_seed := "CFC Random Seed" setget set_seed
 
 #-----------------------------------------------------------------------------
 # END Behaviour Constants
 #-----------------------------------------------------------------------------
 
-
+# Unit Testing flag
+var UT := false
 # A dictionary of all our container nodes for easy access
 var NMAP: Dictionary
 # All our pile nodes
@@ -143,7 +144,6 @@ var card_drag_ongoing: Card = null
 # Game random number generator
 var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 # Game random seed
-var game_rng_seed: int = hash("godot") setget seed
 
 func _ready() -> void:
 	# We reset our node mapping variables every time
@@ -181,11 +181,10 @@ func _ready() -> void:
 		piles.append(NMAP[name])
 	for name in hand_names:
 		hands.append(NMAP[name])
-
 	# Initialize the game random seed
-	self.seed(hash("godot"))
+	set_seed(game_rng_seed)
 
-# Initialize the game random seed
-func seed(_seed: int):
+# Setter for seed.
+func set_seed(_seed: String) -> void:
 	game_rng_seed = _seed
-	game_rng.set_seed(game_rng_seed)
+	game_rng.set_seed(hash(game_rng_seed))
