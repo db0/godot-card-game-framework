@@ -22,6 +22,7 @@ var _card_owner
 # To avoid multiple targetting arrows
 var _common_target := false
 
+var custom: CustomScripts
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -31,6 +32,7 @@ func _ready() -> void:
 # Sets the owner of this Scripting Engine
 func _init(owner) -> void:
 	_card_owner = owner
+	custom = CustomScripts.new()
 
 
 # The main engine starts here. It populates an array with all the scripts
@@ -47,9 +49,7 @@ func run_next_script() -> void:
 	else:
 		var script = _running_scripts.pop_front()
 		#print("Scripting: " + str(script)) # Debug
-		if script['name'] == 'custom':
-			call('custom_script')
-		elif script['name']:
+		if script['name']:
 			_find_subject(script)
 		else:
 			print("[WARN] Found empty script. Ignoring...")
@@ -110,18 +110,22 @@ func _find_subject(script: Dictionary) -> void:
 	# Subject can be "self", "target" or a node
 	# If the subject is "target", we start the targetting
 	# to make the player to find one
-	if script["subject"] == "target":
+	if script.get("subject") == "target":
 		yield(_initiate_card_targeting(common_target_request), "completed")
 		subject = _card_owner.target_card
 	# If the subject is "self", we return the _card_owner
 	# of this ScriptingEngine
-	elif script["subject"] == "self":
+	elif script.get("subject") == "self":
 		subject = _card_owner
 	# Otherwise we pass null, assuming there's no subject needed
 	else:
 		subject = null
 	# Args should be an array of arguments to pass
-	call(script['name'], subject, script)
+	if script['name'] == "custom_script":
+		custom.custom_script(_card_owner, subject)
+		run_next_script()
+	else:
+		call(script['name'], subject, script)
 
 
 # Handles initiation of target seeking.
