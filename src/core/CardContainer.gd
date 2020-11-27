@@ -1,3 +1,4 @@
+
 # The CardContainer is meant to have Card objects as children
 # and arrange their indexing and visibility
 class_name CardContainer
@@ -38,7 +39,6 @@ func _init_signal() -> void:
 		button.connect("mouse_entered", self, "_on_button_mouse_entered")
 		#button.connect("mouse_exited", self, "_on_button_mouse_exited")
 	shuffle_button.connect("pressed", self, '_on_Shuffle_Button_pressed')
-
 
 # Hides the container manipulation buttons when you stop hovering over them
 func _on_Control_mouse_exited() -> void:
@@ -151,27 +151,15 @@ func get_random_card() -> Card:
 		return null
 	else:
 		var cardsArray := get_all_cards()
-		return cardsArray[cfc.game_rng.randi() % len(cardsArray)]
+		return cardsArray[CardFrameworkUtils.randi() % len(cardsArray)]
 
-# Random array, Global shuffle is not used because we need to randomize through our own random seed
-func shuffle_array(array:Array) -> void:
-	var n = array.size()
-	if n<2:
-		return
-	var j
-	var tmp
-	for i in range(n-1,1,-1):
-		j = cfc.game_rng.randi()%(i+1)
-		tmp = array[j]
-		array[j] = array[i]
-		array[i] = tmp
 
 # Randomly rearranges the order of the Card nodes.
 func shuffle_cards() -> void:
 	var cardsArray := []
 	for card in get_all_cards():
 		cardsArray.append(card)
-	shuffle_array(cardsArray)
+	CardFrameworkUtils.shuffle_array(cardsArray)
 	for card in cardsArray:
 		move_child(card, cardsArray.find(card))
 
