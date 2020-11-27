@@ -19,7 +19,8 @@ func before_each():
 
 
 func test_basics():
-	card.scripts = {"hand": [{"name": "rotate_card",
+	card.scripts = {"hand": [
+			{"name": "rotate_card",
 			"subject": "self",
 			"degrees": 270}]}
 	watch_signals(card.scripting_engine) 
@@ -91,7 +92,8 @@ func test_rotate_card():
 	card._execute_scripts()
 	yield(yield_to(card.get_node("Tween"), "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 90, 
-			"Test1 script rotates 90 degrees")
+			"Card should be rotated 90 degrees")
+
 
 func test_flip_card():
 	card.scripts = {"hand": [
@@ -116,7 +118,7 @@ func test_flip_card():
 			"Target should be face-up again")
 
 
-func test_move_self_to_container():
+func test_move_card_to_container():
 	card.scripts = {"hand": [
 			{"name": "move_card_to_container",
 			"subject": "self",

@@ -9,18 +9,26 @@
 #
 # The format for each card is as follows
 # * Key is card name in plaintext. At it would appear
-#   in the card_name variable of each card
+#	in the card_name variable of each card
 # * Inside is a dictionary based on card states, where each key is the area from
-#   which the scripts will execute. So if the key is "board", then
-#   the scripts defined in that dictionary, will be executed only while
-#   the card in on the board (based on its state)
-# * Inside the state dictionary, is a list which contains the individual
-#   calls to the various scripts.
-#   The scripts execute in the order they are defined in that list.
-# * Each script in that list is a dictionary with two possible keys
-#   * name is the name of the function which to call inside the ScriptingEngine
-#   * args is an array, which contains all the arguments that function
-#     requires to function. The array args have to be in the same order!
+#	which the scripts will execute. So if the key is "board", then
+#	the scripts defined in that dictionary, will be executed only while
+#	the card in on the board (based on its state)
+# * Inside the state dictionary, is a list which contains one dictionary 
+#	per script. The scripts will execute in the order they are defined in that list.
+# * Each script in that list is a dictionary with many possible keys, but a few
+#	mandatory ones.
+# * * (Mandatory) "name" (String value) is the name of the function which 
+#	to call inside the ScriptingEngine
+# * * (Mandatory) "subject" is the thing that will be affected by this script.
+# * * * "self"
+# * * * "target"
+# * * * a CardContainer node
+# * * (Optional) "common_target_request" (bool value) is used then subject 
+#		is "target" to tell the script whether to target each script 
+#		individually. Defaults to true
+# * * (Mandatory) Script arguments are put in the form of their individual names
+#		as per their definition in the ScriptingEngine.gd
 class_name CardScripts
 extends Reference
 

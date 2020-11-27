@@ -20,6 +20,7 @@ var card_owner
 # To avoid multiple targetting arrows
 var _common_target := false
 
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	pass # Replace with function body.
@@ -52,21 +53,27 @@ func run_next_script() -> void:
 
 
 # Core script for rotating cards
-# Requires the script to have a "degrees" key with int value
+#
+# Requires the following keys:
+# * "degrees": int
 func rotate_card(card, script: Dictionary) -> void:
 	card.card_rotation = script["degrees"]
 	run_next_script()
 
 
 # Core script for flipping cards
-# Requires the script to have a "set_faceup" key with bool value
+#
+# Requires the following keys:
+# * "set_faceup": bool
 func flip_card(card, script: Dictionary) -> void:
 	card.is_faceup = script["set_faceup"]
 	run_next_script()
 
 
 # Core script for moving to other containers
-# Requires the script to have a "container" key with Pile value
+#
+# Requires the following keys:
+# * "container": CardContainer
 func move_card_to_container(card, script: Dictionary) -> void:
 	card.move_to(script["container"])
 	run_next_script()
@@ -75,29 +82,38 @@ func move_card_to_container(card, script: Dictionary) -> void:
 # TODO
 # func generate_card(card, script: Dictionary) -> void:
 # func move_card_to_board(card, script: Dictionary) -> void:
+# func move_card_from_container_to_container(container, script: Dictionary) -> void:
+# func move_card_from_container_to_board(script: Dictionary) -> void:
+# func shuffle_container(container, script: Dictionary) -> void:
+# func mod_card_tokens(card, script: Dictionary) -> void:
+
 
 
 # Scripts pass through this function to find their expected subject card.
 # The "subject" key in the dictionary specifies what card we're looking for.
 func _find_subject(script: Dictionary) -> void:
-	var card
+	var subject
 	# If set to true, only one target will be looked for with the arrow
 	# If one is selected, then no other will be sought, until the next
 	# until the next common_target_request == false
 	# If common_target_request == false, then we look for a new target
 	# If no common_target_request has been specified, we default to true
 	var common_target_request : bool = script.get("common_target_request", true)
-	# Subject can be either "self" or "target"
+	# Subject can be "self", "target" or a node
 	# If the subject is "target", we start the targetting
 	# to make the player to find one
 	if script["subject"] == "target":
 		yield(_initiate_card_targeting(common_target_request), "completed")
-		card = card_owner.target_card
-	# Otherwise we assume they mean the caller card
+		subject = card_owner.target_card
+	# If the subject is "self", we return the card_owner
+	# of this ScriptingEngine
+	elif script["subject"] == "self":
+		subject = card_owner
+	# Otherwise we pass null, assuming there's no subject needed
 	else:
-		card = card_owner
+		subject = null
 	# Args should be an array of arguments to pass
-	call(script['name'], card, script)
+	call(script['name'], subject, script)
 
 
 # Handles initiation of target seeking.
