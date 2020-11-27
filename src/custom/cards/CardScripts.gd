@@ -29,6 +29,10 @@
 #		individually. Defaults to true
 # * * (Mandatory) Script arguments are put in the form of their individual names
 #		as per their definition in the ScriptingEngine.gd
+#
+# And exception to the above is when the name is "custom_script". 
+# In that case you don't need any other keys. The complete definition should
+# be in CustomScripts.gd
 class_name CardScripts
 extends Reference
 
@@ -67,11 +71,9 @@ func get_scripts(card_name) -> Dictionary:
 					"container": cfc.NMAP.discard,
 				}
 			],
-			"pile": [
+			"hand": [
 				{
-					"name": "move_card_to_container",
-					"subject": "self",
-					"container": cfc.NMAP.discard,
+					"name": "custom_script",
 				}
 			]
 		},
@@ -91,9 +93,8 @@ func get_scripts(card_name) -> Dictionary:
 			],
 			"hand": [
 				{
-					"name": "move_card_to_container",
-					"subject": "self",
-					"container": cfc.NMAP.discard,
+					"name": "custom_script",
+					"subject": "target",
 				}
 			]
 		},

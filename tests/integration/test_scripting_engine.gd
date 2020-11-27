@@ -74,13 +74,27 @@ func test_CardScripts():
 	yield(drag_drop(card, Vector2(100,200)), "completed")
 	card._execute_scripts()
 	yield(target_card(card,target,"slow"), "completed")
-	#yield(yield_for(1), YIELD)
 	yield(yield_to(target.get_node("Tween"), "tween_all_completed", 1), YIELD)
 	# This also tests the _common_target set
 	assert_false(target.is_faceup, 
 			"Test1 script leaves target facedown")
 	assert_eq(target.card_rotation, 180, 
 			"Test1 script rotates 180 degrees")
+
+# Checks that custom scripts fire correctly
+func test_custom_script():
+	card = cards[1]
+	# Custom scripts have to be predefined in code
+	# So not possible to specify them as runtime scripts
+	card._execute_scripts()
+	yield(yield_for(0.1), YIELD)
+	assert_freed(card, "Test Card 2")
+	card = cards[0]
+	target = cards[2]
+	card._execute_scripts()
+	yield(target_card(card,target), "completed")
+	yield(yield_for(0.1), YIELD)
+	assert_freed(target, "Test Card 1")
 
 
 func test_rotate_card():
@@ -127,4 +141,17 @@ func test_move_card_to_container():
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(cfc.NMAP.discard,card.get_parent(),
 			"Card should have moved to different container")
+
+
+func test_move_card_to_board():
+	card.scripts = {"hand": [
+			{"name": "move_card_to_board",
+			"subject": "self",
+			"vector2":  Vector2(100,100)}]}
+	card._execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(cfc.NMAP.board,card.get_parent(),
+			"Card should have moved to board")
+	assert_eq(Vector2(100,100),card.global_position,
+			"Card should have moved to specified position")
 

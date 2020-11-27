@@ -1,8 +1,10 @@
-# This class contains all the functions required to perform
-# full rules enforcement on any card
+# This class contains all the functionality required to perform
+# full rules enforcement on any card.
 #
-# Each function is effectively an API to call the various card functions
-# through a text-based definition
+# The automation is based on Tasks. Each "task" performs a very specific
+# manipulation of the board state, based on using existing functions
+# in the object manipulated.
+# Therefore each task function provides effectively a text-based API
 #
 # This class is loaded by each card invidually, and contains a link
 # back to the card object itself
@@ -20,6 +22,7 @@ var _card_owner
 # To avoid multiple targetting arrows
 var _common_target := false
 
+var custom: CustomScripts
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -29,6 +32,7 @@ func _ready() -> void:
 # Sets the owner of this Scripting Engine
 func _init(owner) -> void:
 	_card_owner = owner
+	custom = CustomScripts.new()
 
 
 # The main engine starts here. It populates an array with all the scripts
@@ -45,9 +49,7 @@ func run_next_script() -> void:
 	else:
 		var script = _running_scripts.pop_front()
 		#print("Scripting: " + str(script)) # Debug
-		if script['name'] == 'custom':
-			call('custom_script')
-		elif script['name']:
+		if script['name']:
 			_find_subject(script)
 		else:
 			print("[WARN] Found empty script. Ignoring...")
@@ -55,7 +57,7 @@ func run_next_script() -> void:
 			run_next_script()
 
 
-# Core script for rotating cards
+# Task for rotating cards
 #
 # Requires the following keys:
 # * "degrees": int
@@ -64,7 +66,7 @@ func rotate_card(card, script: Dictionary) -> void:
 	run_next_script()
 
 
-# Core script for flipping cards
+# Task for flipping cards
 #
 # Requires the following keys:
 # * "set_faceup": bool
@@ -73,7 +75,7 @@ func flip_card(card, script: Dictionary) -> void:
 	run_next_script()
 
 
-# Core script for moving to other containers
+# Task for moving to other containers
 #
 # Requires the following keys:
 # * "container": CardContainer
@@ -82,9 +84,12 @@ func move_card_to_container(card, script: Dictionary) -> void:
 	run_next_script()
 
 
+func move_card_to_board(card, script: Dictionary) -> void:
+	card.move_to(cfc.NMAP.board, -1, script["vector2"])
+	run_next_script()
+
 # TODO
 # func generate_card(card, script: Dictionary) -> void:
-# func move_card_to_board(card, script: Dictionary) -> void:
 # func move_card_from_container_to_container(container, script: Dictionary) -> void:
 # func move_card_from_container_to_board(script: Dictionary) -> void:
 # func shuffle_container(container, script: Dictionary) -> void:
@@ -105,18 +110,22 @@ func _find_subject(script: Dictionary) -> void:
 	# Subject can be "self", "target" or a node
 	# If the subject is "target", we start the targetting
 	# to make the player to find one
-	if script["subject"] == "target":
+	if script.get("subject") == "target":
 		yield(_initiate_card_targeting(common_target_request), "completed")
 		subject = _card_owner.target_card
 	# If the subject is "self", we return the _card_owner
 	# of this ScriptingEngine
-	elif script["subject"] == "self":
+	elif script.get("subject") == "self":
 		subject = _card_owner
 	# Otherwise we pass null, assuming there's no subject needed
 	else:
 		subject = null
 	# Args should be an array of arguments to pass
-	call(script['name'], subject, script)
+	if script['name'] == "custom_script":
+		custom.custom_script(_card_owner, subject)
+		run_next_script()
+	else:
+		call(script['name'], subject, script)
 
 
 # Handles initiation of target seeking.
