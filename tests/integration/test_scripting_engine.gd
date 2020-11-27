@@ -128,3 +128,15 @@ func test_move_card_to_container():
 	assert_eq(cfc.NMAP.discard,card.get_parent(),
 			"Card should have moved to different container")
 
+func test_move_card_to_board():
+	card.scripts = {"hand": [
+			{"name": "move_card_to_board",
+			"subject": "self",
+			"vector2":  Vector2(100,100)}]}
+	card._execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(cfc.NMAP.board,card.get_parent(),
+			"Card should have moved to board")
+	assert_eq(Vector2(100,100),card.global_position,
+			"Card should have moved to specified position")
+

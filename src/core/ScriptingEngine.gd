@@ -84,9 +84,12 @@ func move_card_to_container(card, script: Dictionary) -> void:
 	run_next_script()
 
 
+func move_card_to_board(card, script: Dictionary) -> void:
+	card.move_to(cfc.NMAP.board, -1, script["vector2"])
+	run_next_script()
+
 # TODO
 # func generate_card(card, script: Dictionary) -> void:
-# func move_card_to_board(card, script: Dictionary) -> void:
 # func move_card_from_container_to_container(container, script: Dictionary) -> void:
 # func move_card_from_container_to_board(script: Dictionary) -> void:
 # func shuffle_container(container, script: Dictionary) -> void:
