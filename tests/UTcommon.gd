@@ -12,6 +12,8 @@ const MOUSE_SPEED := {
 var main
 var board
 var hand
+var deck
+var discard
 
 func fake_click(pressed,position, flags=0) -> InputEvent:
 	var ev := InputEventMouseButton.new()
@@ -39,6 +41,8 @@ func setup_board() -> void:
 	board.load_test_cards()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 	hand = cfc.NMAP.hand
+	deck = cfc.NMAP.deck
+	discard = cfc.NMAP.discard
 
 func draw_test_cards(count: int) -> Array:
 	var cards = []

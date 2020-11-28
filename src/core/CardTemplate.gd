@@ -54,6 +54,7 @@ signal card_flipped(card,trigger,args)
 signal card_viewed(card,trigger,args)
 signal card_moved_to_board(card,trigger,args)
 signal card_moved_to_pile(card,trigger,args)
+signal card_moved_to_hand(card,trigger,args)
 signal card_token_modified(card,trigger,args)
 signal card_attached(card,trigger,args)
 signal card_unattached(card,trigger,args)
@@ -740,6 +741,10 @@ func move_to(targetHost: Node2D,
 			# inside the hand
 			_target_position = _recalculatePosition()
 			state = MOVING_TO_CONTAINER
+			emit_signal("card_moved_to_hand",
+					self,
+					"card_moved_to_hand",
+					[targetHost,parentHost])
 			# We reorganize the left over cards in hand.
 			for c in targetHost.get_all_cards():
 				if c != self:
@@ -768,6 +773,10 @@ func move_to(targetHost: Node2D,
 				# (this means how far up in the pile the card would appear)
 				_target_position = targetHost.get_stack_position(self)
 				state = MOVING_TO_CONTAINER
+				emit_signal("card_moved_to_pile",
+						self,
+						"card_moved_to_pile",
+						[targetHost,parentHost])
 				if set_is_faceup(targetHost.faceup_cards) == _ReturnCode.FAILED:
 					print("ERROR: Something went unexpectedly in set_is_faceup")
 				# If we have fancy movement, we need to wait for 2 tweens to finish
@@ -794,6 +803,10 @@ func move_to(targetHost: Node2D,
 					_target_position = boardPosition
 				raise()
 			state = DROPPING_TO_BOARD
+			emit_signal("card_moved_to_board",
+					self,
+					"card_moved_to_board",
+					[targetHost,parentHost])
 		if parentHost in cfc.hands:
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():

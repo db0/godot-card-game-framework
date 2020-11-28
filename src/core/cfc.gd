@@ -201,6 +201,7 @@ class SignalPropagator:
 		"card_viewed",
 		"card_moved_to_board",
 		"card_moved_to_pile",
+		"card_moved_to_hand",
 		"card_token_modified",
 		"card_attached",
 		"card_unattached",
