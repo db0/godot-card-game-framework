@@ -32,11 +32,9 @@ enum{
 
 # The possible return codes a function can return
 #
-# OK is returned when the function did not end up doing any changes
-#
-# CHANGE is returned when the function modified the card properties in some way
-#
-# FAILED is returned when the function failed to modify the card for some reason
+# * OK is returned when the function did not end up doing any changes
+# * CHANGE is returned when the function modified the card properties in some way
+# * FAILED is returned when the function failed to modify the card for some reason
 enum _ReturnCode {
 	OK,
 	CHANGED,
@@ -62,38 +60,43 @@ export var scripts := {}
 export var is_attachment := false setget set_is_attachment, get_is_attachment
 # If true, the card will be displayed faceup. If false, it will be facedown
 export var is_faceup  := true setget set_is_faceup, get_is_faceup
-# Specifies the card rotation in increments of 90 degrees
+# If true, the card front will be displayed when mouse hovers over the card
+# while it's face-down
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
 # Specifies the card rotation in increments of 90 degrees
 export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_card_rotation
 # This is **the** authorative name for this node
 #
-# If not set, will be set to the value of the Name label in the front
-# if that is also not set, will be set
-# to the human-readable value of the "name" node property
+# If not set, will be set to the value of the Name label in the front.
+# if that is also not set, will be set.
+# to the human-readable value of the "name" node property.
 export var card_name : String setget set_card_name, get_card_name
 
 # Used to store a card succesfully targeted.
-# It should be cleared from whichever effect requires a target once it has finished
+# It should be cleared from whichever effect requires a target.
+# once it is used
 var target_card : Card = null setget set_targetcard, get_targetcard
 # Starting state for each card
 var state := IN_PILE
-# If this card is hosting other card, this list retains links to their objects in order
+# If this card is hosting other cards,
+# this list retains links to their objects in order.
 var attachments := []
-# If this card is set as an attachment to another card, this tracks who its host is
+# If this card is set as an attachment to another card,
+# this tracks who its host is.
 var current_host_card : Card = null
-# A dictionary holding all the tokens placed on this card
+# A dictionary holding all the tokens placed on this card.
 var tokens := {} setget ,get_all_tokens
 
-# To track that this card attempting to target another card
+# To track that this card attempting to target another card.
 var _is_targetting := false
-# Used for animating the card
+# Used for animating the card.
 var _target_position: Vector2
 # Used to avoid the focus animation repeating once it's completed.
 var _focus_completed: bool = false
 # We use this to know at which stage of fancy movement this is.
 var _fancy_move_second_part := false
-# We use this to track multiple cards when our card is about to drop onto or target them
+# We use this to track multiple cards
+# when our card is about to drop onto or target them
 var _potential_cards := []
 # Used for looping between brighness scales for the Cardback glow
 # The multipliers have to be small, as even small changes increase
