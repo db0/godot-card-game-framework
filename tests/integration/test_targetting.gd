@@ -2,6 +2,12 @@ extends "res://tests/UTcommon.gd"
 
 var cards := []
 
+func before_all():
+	cfc.fancy_movement = false
+
+func after_all():
+	cfc.fancy_movement = true
+
 func before_each():
 	setup_board()
 	cards = draw_test_cards(5)
@@ -32,8 +38,8 @@ func test_targetting():
 	assert_false(cards[4].get_node('Control/FocusHighlight').visible,
 			"Test that a highlights disappears once targetting ends")
 
-	yield(drag_drop(cards[3],Vector2(300,300)), 'completed')
-	yield(drag_drop(cards[2],Vector2(350,400)), 'completed')
+	yield(table_move(cards[3],Vector2(300,300)), 'completed')
+	yield(table_move(cards[2],Vector2(350,400)), 'completed')
 	card.initiate_targeting()
 	board._UT_interpolate_mouse_move(cards[2].global_position,card.global_position,3)
 	yield(yield_for(0.6), YIELD)

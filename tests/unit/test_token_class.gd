@@ -4,6 +4,12 @@ var cards := []
 const token_scene = preload("res://src/core/Token.tscn")
 var token: Token
 
+func before_all():
+	cfc.fancy_movement = false
+
+func after_all():
+	cfc.fancy_movement = true
+
 func before_each():
 	setup_board()
 	token = token_scene.instance()
