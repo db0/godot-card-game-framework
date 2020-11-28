@@ -51,9 +51,9 @@ func get_scripts(card_name) -> Dictionary:
 			],
 			"hand": [
 				{
-					"name": "flip_card",
-					"subject": "target",
-					"set_faceup": false,
+					"name": "spawn_card",
+					"card_scene": "res://src/core/CardTemplate.tscn",
+					"board_position": Vector2(500,200),
 				}
 			]
 		},

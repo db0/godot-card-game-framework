@@ -120,7 +120,7 @@ func move_card_cont_to_cont(script: CardScript) -> void:
 	var dest_index: int = script.get("dest_index")
 	card.move_to(dest_container,card_index)
 
-# Task from playing a card to the board from a container directly.
+# Task for playing a card to the board from a container directly.
 #
 # Requires the following keys:
 # * "card_index": int
@@ -132,15 +132,32 @@ func move_card_cont_to_board(script: CardScript) -> void:
 	var board_position = script.get("board_position")
 	card.move_to(cfc.NMAP.board, -1, board_position)
 
-
+# Task from modifying tokens on a card
+#
+# Requires the following keys:
+# * "token_name": String
+# * "modification": int
+# * (Optional) "set_to_mod": bool
 func mod_tokens(script: CardScript) -> void:
 	var card := script.subject
 	var token_name: String = script.get("token_name")
 	var modification: int = script.get("modification")
-	var set_to_count: bool = script.get("set_to_count")
-	card.mod_token(token_name,modification,set_to_count)
+	var set_to_mod: bool = script.get("set_to_mod")
+	card.mod_token(token_name,modification,set_to_mod)
+
+
+# Task from creating a new card instance on the board
+#
+# Requires the following keys:
+# * "card_scene": path to .tscn file
+# * "board_position": Vector2
+func spawn_card(script: CardScript) -> void:
+	var card_scene: String = script.get("card_scene")
+	var board_position: Vector2 = script.get("board_position")
+	var card: Card = load(card_scene).instance()
+	cfc.NMAP.board.add_child(card)
+	card.position = board_position
+	card.state = card.ON_PLAY_BOARD
 	
 # TODO
-# func generate_card(card, script: Dictionary) -> void:
-# func shuffle_container(container, script: Dictionary) -> void:
-# func mod_card_tokens(card, script: Dictionary) -> void:s
+# func shuffle_container(script: CardScript) -> void:

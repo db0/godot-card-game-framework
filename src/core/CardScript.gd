@@ -1,6 +1,6 @@
 # This contains information about one specific task requested by the card
 # automation
-# 
+#
 # It also contains methods to return properties of the task and to find
 # the required objects in the game
 class_name CardScript
@@ -61,7 +61,7 @@ func get(property: String):
 		# Used when placing/modifying a token on a card
 		# to specify if we're modifying the existing amount
 		# or setting it to the exact one
-		"set_to_count":
+		"set_to_mod":
 			default = false
 		# Used when placing/modifying a token on a card
 		# to specify the amount we're setting/modifying by

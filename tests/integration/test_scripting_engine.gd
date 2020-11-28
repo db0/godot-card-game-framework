@@ -55,7 +55,7 @@ func test_basics():
 			"Second rotation should also happen")
 	card.scripts = {"hand": [{}]}
 	card._execute_scripts()
-	assert_signal_emitted(card.scripting_engine,"scripts_completed", 
+	assert_signal_emitted(card.scripting_engine,"scripts_completed",
 			"Empty scripts are skipped")
 	card.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
@@ -224,8 +224,23 @@ func test_mod_tokens():
 			{"name": "mod_tokens",
 			"subject": "target",
 			"modification": 2,
-			"set_to_count": true,
+			"set_to_mod": true,
 			"token_name":  "industry"}]}
 	card._execute_scripts()
 	yield(target_card(card,target), "completed")
 	assert_eq(2,industry_token.count,"Token set to specified amount")
+
+
+func test_spawn_card():
+	target.scripts = {"hand": [
+			{"name": "spawn_card",
+			"card_scene": "res://src/core/CardTemplate.tscn",
+			"board_position":  Vector2(500,200)}]}
+	target._execute_scripts()
+	assert_eq(1,cfc.NMAP.board.get_card_count(),
+		"Card spawned on board")
+	card = cfc.NMAP.board.get_card(0)
+	assert_eq("res://src/core/CardTemplate.tscn",card.filename,
+		"Card of the correct scene spawned")
+	assert_eq(card.ON_PLAY_BOARD,card.state,
+		"Spawned card left in correct state")
