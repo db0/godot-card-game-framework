@@ -93,3 +93,11 @@ func target_card(source, target, interpolation_speed := "fast") -> void:
 			source.global_position,mouse_speed)
 	yield(yield_for(mouse_yield_wait), YIELD)
 	unclick_card_anywhere(source)
+
+func table_move(card: Card, pos: Vector2) -> void:
+	card.move_to(board, -1, pos)
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	if cfc.fancy_movement:
+		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	
+	

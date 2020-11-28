@@ -43,6 +43,13 @@ enum _ReturnCode {
 
 # Emitted whenever the card has selected a target.
 signal target_selected(card)
+# Emitted whenever the card is rotated
+# The signal must send its name as well (in the trigger var)
+# Because it's sent by the SignalPropagator to all cards and they use it
+# To filter.
+signal card_rotated(card,trigger,args)
+# Emitted whenever the card flips up/down
+signal card_flipped(card,trigger,args)
 
 # Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
@@ -169,6 +176,7 @@ func _ready() -> void:
 	if $Control/Back.has_node('Pulse'):
 		# warning-ignore:return_value_discarded
 		_pulse_tween.connect("tween_all_completed", self, "_on_Pulse_completed")
+	cfc.signal_propagator.connect_new_card(self)
 
 
 func _init_card_name():
@@ -259,7 +267,7 @@ func _on_Card_gui_input(event) -> void:
 			# But rather it's script execution
 			if event.doubleclick:
 				cfc.card_drag_ongoing = null
-				_execute_scripts()
+				execute_scripts()
 			# If it's a long click it might be because
 			# they want to drag the card
 			elif event.is_pressed():
@@ -544,6 +552,7 @@ func set_is_faceup(value: bool, instant := false) -> int:
 					var dupe_back = dupe_card.get_node("Control/Back")
 					_flip_card(dupe_front, dupe_back, true)
 		retcode = _ReturnCode.CHANGED
+		emit_signal("card_flipped", self, "card_flipped", [value])
 	return retcode
 
 
@@ -664,6 +673,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 		# We report that it changed.
 		retcode = _ReturnCode.CHANGED
 		card_rotation = value
+		emit_signal("card_rotated", self, "card_rotated", [value])
 	return retcode
 
 
@@ -817,6 +827,38 @@ func move_to(targetHost: Node2D,
 		for card in _potential_cards:
 			card.set_highlight(false)
 		_potential_cards.clear()
+
+
+func execute_scripts(
+		trigger_card: Card = self,
+		trigger: String = "manual") -> void:
+	# The CardScripts is where we keep all card scripting definitions
+	var loaded_scripts = CardScriptDefinitions.new()
+	var card_scripts
+	# If scripts have been defined directly in this object
+	# They take precedence over CardScripts.gd
+	#
+	# This allows us to modify a card's scripts during runtime
+	# in isolation from other cards of the same name
+	if not scripts.empty():
+		card_scripts = scripts.get(trigger,{})
+	else:
+		# CardScripts.gd should contain scripts for all defined cards
+		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
+	var state_scripts = []
+	# We select which scripts to run from the card, based on it state
+	match state:
+		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
+			# We assume only faceup cards can execute scripts on the board
+			if is_faceup:
+				state_scripts = card_scripts.get("board", [])
+		IN_HAND,FOCUSED_IN_HAND:
+			state_scripts = card_scripts.get("hand", [])
+		IN_POPUP,FOCUSED_IN_POPUP:
+			state_scripts = card_scripts.get("pile", [])
+	scripting_engine.trigger_card = trigger_card
+	scripting_engine._running_scripts = state_scripts.duplicate()
+	scripting_engine.run_next_script()
 
 
 # Handles the card becoming an attachment for a specified host Card object
@@ -1866,31 +1908,3 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
-
-func _execute_scripts() -> void:
-	# The CardScripts is where we keep all card scripting definitions
-	var loaded_scripts = CardScriptDefinitions.new()
-	var card_scripts
-	# If scripts have been defined directly in this object
-	# They take precedence over CardScripts.gd
-	#
-	# This allows us to modify a card's scripts during runtime
-	# in isolation from other cards of the same name
-	if not scripts.empty():
-		card_scripts = scripts
-	else:
-		# CardScripts.gd should contain scripts for all defined cards
-		card_scripts = loaded_scripts.get_scripts(card_name)
-	var state_scripts = []
-	# We assume only faceup cards can execute scripts
-	if is_faceup:
-		# We select which scripts to run from the card, based on it state
-		match state:
-			ON_PLAY_BOARD,FOCUSED_ON_BOARD:
-				state_scripts = card_scripts.get("board", [])
-			IN_HAND,FOCUSED_IN_HAND:
-				state_scripts = card_scripts.get("hand", [])
-			IN_POPUP,FOCUSED_IN_POPUP:
-				state_scripts = card_scripts.get("pile", [])
-		scripting_engine._running_scripts = state_scripts.duplicate()
-		scripting_engine.run_next_script()

@@ -16,6 +16,8 @@ signal scripts_completed
 
 # Contains a list of all the scripts still left to run for this card
 var _running_scripts: Array
+# Contains the card which triggered this execution
+var trigger_card: Card
 # The card which owns this Scripting Engine.
 var _card_owner: Card
 # Set when a card script wants to use a common target for all effects
@@ -42,7 +44,10 @@ func run_next_script() -> void:
 		#print('Scripting: All done!') # Debug
 		emit_signal("scripts_completed")
 	else:
-		var script := CardScript.new(_card_owner,_running_scripts.pop_front())
+		var script := CardScript.new(
+				_card_owner,
+				trigger_card,
+				_running_scripts.pop_front())
 		#print("Scripting: " + str(script)) # Debug
 		# In case the script involves targetting, we need to wait on further
 		# execution until targetting has completed
@@ -51,7 +56,17 @@ func run_next_script() -> void:
 		if script.function_name == "custom_script":
 			custom.custom_script(script)
 		elif script.function_name:
-			call(script.function_name, script)
+			# Here we check that the trigger matches the _request_ for trigger
+			# A trigger which requires "another" card, should not trigger
+			# when itself causes the effect.
+			# For example, a card which rotates itself whenever another card
+			# is rotated, should not automatically rotate when itself rotates.
+			if (script.get("trigger") == "self"
+						and script.trigger == script.owner) \
+					or (script.get("trigger") == "another"
+						and script.trigger != script.owner) \
+					or script.get("trigger") == "any":
+				call(script.function_name, script)
 		else:
 			 # If card has a script but it's null, it probably not coded yet. Just go on...
 			print("[WARN] Found empty script. Ignoring...")

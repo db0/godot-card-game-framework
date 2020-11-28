@@ -2,6 +2,11 @@ extends "res://tests/UTcommon.gd"
 
 var cards := []
 
+func before_all():
+	cfc.fancy_movement = false
+
+func after_all():
+	cfc.fancy_movement = true
 
 func before_each():
 	setup_main()
@@ -14,7 +19,7 @@ func test_board_facedown():
 	card = cards[3]
 	var card_front = card.get_node("Control/Front")
 	var card_back = card.get_node("Control/Back")
-	yield(drag_drop(card, Vector2(600,200)), 'completed')
+	yield(table_move(card, Vector2(600,200)), 'completed')
 	card.is_faceup = false
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_false(card_front.visible,

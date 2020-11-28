@@ -130,6 +130,7 @@ var game_rng_seed := "CFC Random Seed" setget set_seed
 # END Behaviour Constants
 #-----------------------------------------------------------------------------
 
+var signal_propagator = SignalPropagator.new()
 # Unit Testing flag
 var UT := false
 # A dictionary of all our container nodes for easy access
@@ -188,3 +189,35 @@ func _ready() -> void:
 func set_seed(_seed: String) -> void:
 	game_rng_seed = _seed
 	game_rng.set_seed(hash(game_rng_seed))
+
+# The SignalPropagator is responsible for collecting all card signals
+# and asking all cards to check if there's any Automation they need to perform
+class SignalPropagator:
+
+	# The working signals cards might send depending on their status changes
+	const known_card_signals := [
+		"card_rotated",
+		"card_flipped",
+		]
+
+
+	# When a new card is instanced, it connects all its known signals
+	# to the SignalPropagator
+	func connect_new_card(card):
+		for sgn in known_card_signals:
+			card.connect(sgn, self, "_on_Card_signal_received")
+
+
+	# When a known signal is received, it asks all existing cards to check
+	# If this triggers an automation for them
+	#
+	# This method requires that each signal also passes its own name in the
+	# trigger variable, is this is the key sought in the CardScriptDefinitions
+	func _on_Card_signal_received(
+			trigger_card: Card, trigger: String, args: Array):
+		# We use Godot groups to ask every card to check if they
+		# have ScriptingEngine triggers for this signal
+		cfc.get_tree().call_group("cards",
+				"execute_scripts",trigger_card,trigger)
+
+

@@ -8,8 +8,12 @@
 # where the are when the scripts are triggered (hand, board, pile etc)
 #
 # The format for each card is as follows
-# * Key is card name in plaintext. At it would appear
+# * First key is the card name in plaintext. At it would appear
 #	in the card_name variable of each card
+# * Inside that is a dictionary based on triggers. Each trigger specified
+#   what causes the script to fire. The default one is "manual"
+#   which triggers when the player double-clicks the card.
+#   You can see the list of triggers in cfc.SignalPropagator.known_card_signals
 # * Inside is a dictionary based on card states, where each key is the area from
 #	which the scripts will execute. So if the key is "board", then
 #	the scripts defined in that dictionary, will be executed only while
@@ -29,6 +33,14 @@
 #		individually. Defaults to true
 # * * (Mandatory) Script arguments are put in the form of their individual names
 #		as per their definition in the ScriptingEngine.gd
+# * * (Optional) trigger (String value) is used with signal triggers to specify
+#		further limitation to the trigger. You should generally always try
+#		to specify the trigger, during anything other than manual execution
+#		to keep things more understandable
+# * * * (Default) means that this effect will run regardless of who the trigger is
+# * * * "another" means that this effect will run only if the trigger card
+#		is someone other than self
+# * * * "self" means that this effect will run only if the trigger card is self
 #
 # And exception to the above is when the name is "custom_script". 
 # In that case you don't need any other keys. The complete definition should
@@ -39,64 +51,81 @@ extends Reference
 # This fuction returns all the scripts of the specified card name.
 #
 # if no scripts have been defined, an empty dictionary is returned instead.
-func get_scripts(card_name) -> Dictionary:
+func get_scripts(card_name: String, trigger: String) -> Dictionary:
 	var scripts := {
 		"Test Card 1": {
-			"board": [
-				{
-					"name": "rotate_card",
-					"subject": "self",
-					"degrees": 90,
-				}
-			],
-			"hand": [
-				{
-					"name": "spawn_card",
-					"card_scene": "res://src/core/CardTemplate.tscn",
-					"board_position": Vector2(500,200),
-				}
-			]
+			"manual": {
+				"board": [
+					{
+						"name": "rotate_card",
+						"subject": "self",
+						"degrees": 90,
+					}
+				],
+				"hand": [
+					{
+						"name": "spawn_card",
+						"card_scene": "res://src/core/CardTemplate.tscn",
+						"board_position": Vector2(500,200),
+					}
+				]
+			},
 		},
 
 		"Test Card 2": {
-			"board": [
-				{
-					"name": "move_card_to_container",
-					"subject": "target",
-					"container": cfc.NMAP.discard,
-				},
-				{
-					"name": "move_card_to_container",
-					"subject": "self",
-					"container": cfc.NMAP.discard,
-				}
-			],
-			"hand": [
-				{
-					"name": "custom_script",
-				}
-			]
+			"manual": {
+				"board": [
+					{
+						"name": "move_card_to_container",
+						"subject": "target",
+						"container": cfc.NMAP.discard,
+					},
+					{
+						"name": "move_card_to_container",
+						"subject": "self",
+						"container": cfc.NMAP.discard,
+					}
+				],
+				"hand": [
+					{
+						"name": "custom_script",
+					}
+				]
+			},
 		},
 
 		"Test Card 3": {
-			"board": [
-				{
-					"name": "flip_card",
-					"subject": "target",
-					"set_faceup": false,
-				},
-				{
-					"name": "rotate_card",
-					"subject": "target",
-					"degrees": 180,
-				}
-			],
-			"hand": [
-				{
-					"name": "custom_script",
-					"subject": "target",
-				}
-			]
+			"manual": {
+				"board": [
+					{
+						"name": "flip_card",
+						"subject": "target",
+						"set_faceup": false,
+					},
+					{
+						"name": "rotate_card",
+						"subject": "target",
+						"degrees": 180,
+					}
+				],
+				"hand": [
+					{
+						"name": "custom_script",
+						"subject": "target",
+					}
+				]
+			},
+			"card_rotated": {
+				"board": [
+					{
+						"name": "rotate_card",
+						"subject": "self",
+						"degrees": 270,
+						"trigger": "another",
+					},
+				]
+			},
 		},
 	}
-	return(scripts.get(card_name,{}))
+	# We return only the scripts that match the card name and trigger
+	return(scripts.get(card_name,{}).get(trigger,{}))

@@ -3,16 +3,21 @@
 ## 0.11 (Ongoing)
 
 * Added new card back
-* Made the card back glow-pulse 
+* Made the card back glow-pulse
 * Can add or remove tokens from cards
 * Piles now display the size of the card stack
 * Cards in Piles are now places face-up or facedown depending on the pile config
 * Added Scripting Engine!
-  * Rotate Card
-  * Flip card face-up/down
-  * Move card to a CardContainer
-  * Move card to board
-  * Move card from Container to Container
+  * Tasks supported:
+    * Rotate Card
+    * Flip card face-up/down
+    * Move card to a CardContainer
+    * Move card to board
+    * Move card from Container to Container
+  * Trigger-based execution supported:
+    * card_rotated
+	* card_flipped
+
 
 In case you're wondering why the FocusHighlight node has two children panel nodes, instead of making it itself a Panel node.
 
