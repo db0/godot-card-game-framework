@@ -829,6 +829,38 @@ func move_to(targetHost: Node2D,
 		_potential_cards.clear()
 
 
+func execute_scripts(
+		trigger_card: Card = self,
+		trigger: String = "manual") -> void:
+	# The CardScripts is where we keep all card scripting definitions
+	var loaded_scripts = CardScriptDefinitions.new()
+	var card_scripts
+	# If scripts have been defined directly in this object
+	# They take precedence over CardScripts.gd
+	#
+	# This allows us to modify a card's scripts during runtime
+	# in isolation from other cards of the same name
+	if not scripts.empty():
+		card_scripts = scripts.get(trigger,{})
+	else:
+		# CardScripts.gd should contain scripts for all defined cards
+		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
+	var state_scripts = []
+	# We select which scripts to run from the card, based on it state
+	match state:
+		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
+			# We assume only faceup cards can execute scripts on the board
+			if is_faceup:
+				state_scripts = card_scripts.get("board", [])
+		IN_HAND,FOCUSED_IN_HAND:
+			state_scripts = card_scripts.get("hand", [])
+		IN_POPUP,FOCUSED_IN_POPUP:
+			state_scripts = card_scripts.get("pile", [])
+	scripting_engine.trigger_card = trigger_card
+	scripting_engine._running_scripts = state_scripts.duplicate()
+	scripting_engine.run_next_script()
+
+
 # Handles the card becoming an attachment for a specified host Card object
 func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 	# First we check if the selected host is not the current host anyway.
@@ -1876,34 +1908,3 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
-
-func execute_scripts(
-		trigger_card: Card = self,
-		trigger: String = "manual") -> void:
-	# The CardScripts is where we keep all card scripting definitions
-	var loaded_scripts = CardScriptDefinitions.new()
-	var card_scripts
-	# If scripts have been defined directly in this object
-	# They take precedence over CardScripts.gd
-	#
-	# This allows us to modify a card's scripts during runtime
-	# in isolation from other cards of the same name
-	if not scripts.empty():
-		card_scripts = scripts.get(trigger,{})
-	else:
-		# CardScripts.gd should contain scripts for all defined cards
-		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
-	var state_scripts = []
-	# We select which scripts to run from the card, based on it state
-	match state:
-		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
-			# We assume only faceup cards can execute scripts on the board
-			if is_faceup:
-				state_scripts = card_scripts.get("board", [])
-		IN_HAND,FOCUSED_IN_HAND:
-			state_scripts = card_scripts.get("hand", [])
-		IN_POPUP,FOCUSED_IN_POPUP:
-			state_scripts = card_scripts.get("pile", [])
-	scripting_engine.trigger_card = trigger_card
-	scripting_engine._running_scripts = state_scripts.duplicate()
-	scripting_engine.run_next_script()
