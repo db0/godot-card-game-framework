@@ -16,6 +16,7 @@ signal scripts_completed
 
 # Contains a list of all the scripts still left to run for this card
 var _running_scripts: Array
+var trigger_card: Card
 # The card which owns this Scripting Engine.
 var _card_owner: Card
 # Set when a card script wants to use a common target for all effects
@@ -42,7 +43,10 @@ func run_next_script() -> void:
 		#print('Scripting: All done!') # Debug
 		emit_signal("scripts_completed")
 	else:
-		var script := CardScript.new(_card_owner,_running_scripts.pop_front())
+		var script := CardScript.new(
+				_card_owner,
+				trigger_card,
+				_running_scripts.pop_front())
 		#print("Scripting: " + str(script)) # Debug
 		# In case the script involves targetting, we need to wait on further
 		# execution until targetting has completed

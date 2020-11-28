@@ -11,6 +11,7 @@ signal completed_init
 
 # The card which owns this CardScript
 var owner: Card
+var trigger: Card
 # The subject is typically a Card object
 # in the future might be other things
 var subject: Card
@@ -23,10 +24,11 @@ var properties := {}
 var has_init_completed := false
 
 # prepares the properties needed by the script to function.
-func _init(card: Card, script: Dictionary) -> void:
+func _init(card: Card, trigger_card: Card, script: Dictionary) -> void:
 	var subject_seek
 	# We store the card which executes this script
 	owner = card
+	trigger = trigger_card
 	# We store all the script properties in our own dictionary
 	properties = script
 	# We discover which other this script will affect, if any

@@ -1867,7 +1867,9 @@ func _token_drawer(drawer_state := true) -> void:
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
 
-func _execute_scripts(trigger: String = "manual execution") -> void:
+func _execute_scripts(
+		trigger: String = "manual execution",
+		trigger_card: Card = self) -> void:
 	# The CardScripts is where we keep all card scripting definitions
 	var loaded_scripts = CardScriptDefinitions.new()
 	var card_scripts
@@ -1882,15 +1884,16 @@ func _execute_scripts(trigger: String = "manual execution") -> void:
 		# CardScripts.gd should contain scripts for all defined cards
 		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
 	var state_scripts = []
-	# We assume only faceup cards can execute scripts
-	if is_faceup:
-		# We select which scripts to run from the card, based on it state
-		match state:
-			ON_PLAY_BOARD,FOCUSED_ON_BOARD:
+	# We select which scripts to run from the card, based on it state
+	match state:
+		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
+			# We assume only faceup cards can execute scripts on the board
+			if is_faceup:
 				state_scripts = card_scripts.get("board", [])
-			IN_HAND,FOCUSED_IN_HAND:
-				state_scripts = card_scripts.get("hand", [])
-			IN_POPUP,FOCUSED_IN_POPUP:
-				state_scripts = card_scripts.get("pile", [])
-		scripting_engine._running_scripts = state_scripts.duplicate()
-		scripting_engine.run_next_script()
+		IN_HAND,FOCUSED_IN_HAND:
+			state_scripts = card_scripts.get("hand", [])
+		IN_POPUP,FOCUSED_IN_POPUP:
+			state_scripts = card_scripts.get("pile", [])
+	scripting_engine.trigger_card = trigger_card
+	scripting_engine._running_scripts = state_scripts.duplicate()
+	scripting_engine.run_next_script()
