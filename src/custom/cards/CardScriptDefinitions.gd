@@ -39,64 +39,71 @@ extends Reference
 # This fuction returns all the scripts of the specified card name.
 #
 # if no scripts have been defined, an empty dictionary is returned instead.
-func get_scripts(card_name) -> Dictionary:
+func get_scripts(card_name: String, trigger: String) -> Dictionary:
 	var scripts := {
 		"Test Card 1": {
-			"board": [
-				{
-					"name": "rotate_card",
-					"subject": "self",
-					"degrees": 90,
-				}
-			],
-			"hand": [
-				{
-					"name": "spawn_card",
-					"card_scene": "res://src/core/CardTemplate.tscn",
-					"board_position": Vector2(500,200),
-				}
-			]
+			"manual execution": {
+				"board": [
+					{
+						"name": "rotate_card",
+						"subject": "self",
+						"degrees": 90,
+					}
+				],
+				"hand": [
+					{
+						"name": "spawn_card",
+						"card_scene": "res://src/core/CardTemplate.tscn",
+						"board_position": Vector2(500,200),
+					}
+				]
+			},
 		},
 
 		"Test Card 2": {
-			"board": [
-				{
-					"name": "move_card_to_container",
-					"subject": "target",
-					"container": cfc.NMAP.discard,
-				},
-				{
-					"name": "move_card_to_container",
-					"subject": "self",
-					"container": cfc.NMAP.discard,
-				}
-			],
-			"hand": [
-				{
-					"name": "custom_script",
-				}
-			]
+			"manual execution": {
+				"board": [
+					{
+						"name": "move_card_to_container",
+						"subject": "target",
+						"container": cfc.NMAP.discard,
+					},
+					{
+						"name": "move_card_to_container",
+						"subject": "self",
+						"container": cfc.NMAP.discard,
+					}
+				],
+				"hand": [
+					{
+						"name": "custom_script",
+					}
+				]
+			},
 		},
 
 		"Test Card 3": {
-			"board": [
-				{
-					"name": "flip_card",
-					"subject": "target",
-					"set_faceup": false,
-				},
-				{
-					"name": "rotate_card",
-					"subject": "target",
-					"degrees": 180,
-				}
-			],
-			"hand": [
-				{
-					"name": "custom_script",
-					"subject": "target",
-				}
-			]
+			"manual execution": {
+				"board": [
+					{
+						"name": "flip_card",
+						"subject": "target",
+						"set_faceup": false,
+					},
+					{
+						"name": "rotate_card",
+						"subject": "target",
+						"degrees": 180,
+					}
+				],
+				"hand": [
+					{
+						"name": "custom_script",
+						"subject": "target",
+					}
+				]
+			},
 		},
 	}
-	return(scripts.get(card_name,{}))
+	# We return only the scripts that match the card name and trigger
+	return(scripts.get(card_name,{}).get(trigger,{}))

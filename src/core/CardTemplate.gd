@@ -259,7 +259,7 @@ func _on_Card_gui_input(event) -> void:
 			# But rather it's script execution
 			if event.doubleclick:
 				cfc.card_drag_ongoing = null
-				_execute_scripts()
+				_execute_scripts("manual execution")
 			# If it's a long click it might be because
 			# they want to drag the card
 			elif event.is_pressed():
@@ -1867,7 +1867,7 @@ func _token_drawer(drawer_state := true) -> void:
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
 
-func _execute_scripts() -> void:
+func _execute_scripts(trigger: String = "manual execution") -> void:
 	# The CardScripts is where we keep all card scripting definitions
 	var loaded_scripts = CardScriptDefinitions.new()
 	var card_scripts
@@ -1880,7 +1880,7 @@ func _execute_scripts() -> void:
 		card_scripts = scripts
 	else:
 		# CardScripts.gd should contain scripts for all defined cards
-		card_scripts = loaded_scripts.get_scripts(card_name)
+		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
 	var state_scripts = []
 	# We assume only faceup cards can execute scripts
 	if is_faceup:
