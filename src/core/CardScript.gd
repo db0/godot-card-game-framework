@@ -11,6 +11,9 @@ signal completed_init
 
 # The card which owns this CardScript
 var owner: Card
+# The card which triggered this CardScript
+# It is typically self during manual execution
+# But is another card during signal-based execution
 var trigger: Card
 # The subject is typically a Card object
 # in the future might be other things
@@ -48,6 +51,8 @@ func _init(card: Card, trigger_card: Card, script: Dictionary) -> void:
 func get(property: String):
 	var default
 	match property:
+		"trigger":
+			default = "any"
 		# Used when we're seeking a card inside a CardContainer
 		# Default is to seek card at index 0
 		"pile_index":

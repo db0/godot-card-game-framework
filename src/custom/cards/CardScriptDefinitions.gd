@@ -8,8 +8,12 @@
 # where the are when the scripts are triggered (hand, board, pile etc)
 #
 # The format for each card is as follows
-# * Key is card name in plaintext. At it would appear
+# * First key is the card name in plaintext. At it would appear
 #	in the card_name variable of each card
+# * Inside that is a dictionary based on triggers. Each trigger specified
+#   what causes the script to fire. The default one is "manual"
+#   which triggers when the player double-clicks the card.
+#   You can see the list of triggers in cfc.SignalPropagator.known_card_signals
 # * Inside is a dictionary based on card states, where each key is the area from
 #	which the scripts will execute. So if the key is "board", then
 #	the scripts defined in that dictionary, will be executed only while
@@ -29,6 +33,14 @@
 #		individually. Defaults to true
 # * * (Mandatory) Script arguments are put in the form of their individual names
 #		as per their definition in the ScriptingEngine.gd
+# * * (Optional) trigger (String value) is used with signal triggers to specify
+#		further limitation to the trigger. You should generally always try
+#		to specify the trigger, during anything other than manual execution
+#		to keep things more understandable
+# * * * (Default) means that this effect will run regardless of who the trigger is
+# * * * "another" means that this effect will run only if the trigger card
+#		is someone other than self
+# * * * "self" means that this effect will run only if the trigger card is self
 #
 # And exception to the above is when the name is "custom_script". 
 # In that case you don't need any other keys. The complete definition should
@@ -42,7 +54,7 @@ extends Reference
 func get_scripts(card_name: String, trigger: String) -> Dictionary:
 	var scripts := {
 		"Test Card 1": {
-			"manual execution": {
+			"manual": {
 				"board": [
 					{
 						"name": "rotate_card",
@@ -61,7 +73,7 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 		},
 
 		"Test Card 2": {
-			"manual execution": {
+			"manual": {
 				"board": [
 					{
 						"name": "move_card_to_container",
@@ -83,7 +95,7 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 		},
 
 		"Test Card 3": {
-			"manual execution": {
+			"manual": {
 				"board": [
 					{
 						"name": "flip_card",
@@ -101,6 +113,16 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 						"name": "custom_script",
 						"subject": "target",
 					}
+				]
+			},
+			"card_rotated": {
+				"board": [
+					{
+						"name": "rotate_card",
+						"subject": "self",
+						"degrees": 270,
+						"trigger": "another",
+					},
 				]
 			},
 		},
