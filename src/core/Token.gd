@@ -4,7 +4,7 @@ class_name Token
 extends HBoxContainer
 
 
-export var count := 1 setget set_count, get_count
+export var count := 0 setget set_count, get_count
 
 onready var count_label = $CenterContainer/Count
 

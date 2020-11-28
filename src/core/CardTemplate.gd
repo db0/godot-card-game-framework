@@ -104,8 +104,10 @@ var _is_drawer_open := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
-# The ScriptingEngine class is where we execute the scripts
-onready var scripting_engine = ScriptingEngine.new(self)
+# The ScriptingEngine is where we execute the scripts
+# We cannot use its class reference,
+# as it causes a cyclic reference error when parsing
+onready var scripting_engine = load("res://src/core/ScriptingEngine.gd").new(self)
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
@@ -380,7 +382,7 @@ func _on_Flip_pressed() -> void:
 func _on_AddToken_pressed() -> void:
 	var valid_tokens := ['tech','gold coin','blood','plasma']
 	# warning-ignore:return_value_discarded
-	add_token(valid_tokens[CardFrameworkUtils.randi() % len(valid_tokens)])
+	mod_token(valid_tokens[CardFrameworkUtils.randi() % len(valid_tokens)], 1)
 
 
 # Hover button which allows the player to view a facedown card
@@ -815,14 +817,20 @@ func move_to(targetHost: Node2D,
 
 
 # Handles the card becoming an attachment for a specified host Card object
-func attach_to_host(host: Card, follows_previous_host = false) -> void:
+func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 	# First we check if the selected host is not the current host anyway.
 	# If it is, we do nothing else
 	if host != current_host_card:
+		# If the card is not yet on the board, we move it there
+		if get_parent() != cfc.NMAP.board:
+			move_to(cfc.NMAP.board, -1, host.position)
 		# If we already had a host, we clear our state with it
-		# I don't know why, but logic breaks if I don't use the follows_previous_host flag
+		# I don't know why, but logic breaks if I don't use the is_following_previous_host flag
 		# It should work without it, but it doesn't
-		if current_host_card and not follows_previous_host:
+		# The is_following_previous_host var signifies that this card
+		# is being attached to this host, because its previous host
+		# also became an attachment here.
+		if current_host_card and not is_following_previous_host:
 			current_host_card.attachments.erase(self)
 		current_host_card = host
 		# Once we selected the host, we don't need anything in the array anymore
@@ -929,7 +937,10 @@ func get_focus() -> bool:
 # Adds a token to the card
 #
 # If the token of that name doesn't exist, it creates it according to the config.
-func add_token(token_name : String) -> int:
+#
+# If the amount of existing tokens of that type drops to 0 or lower,
+# the token node is also removed.
+func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 	var retcode : int
 	# If the player requested a token name that has not been defined by the game
 	# we return a failure
@@ -939,39 +950,26 @@ func add_token(token_name : String) -> int:
 		var token : Token = get_all_tokens().get(token_name, null)
 		# If the token does not exist in the card, we add its node
 		# and set it to 1
-		if not token:
+		if not token and mod > 0:
 			token = _token_scene.instance()
 			token.setup(token_name)
 			$Control/Tokens/Drawer/VBoxContainer.add_child(token)
 		# If the token node of this name has already been added to the card
 		# We just increment it by 1
-		else:
-			token.count += 1
-		# if the drawer has already been opened, we need to make sure
-		# the new token name will also appear
-		if _is_drawer_open:
-			token.expand()
-		retcode = _ReturnCode.CHANGED
-	return(retcode)
-
-
-# Removes a token from the card
-#
-# If the amount of tokens of that type drops to 0, the token icon is also removed.
-func remove_token(token_name : String) -> int:
-	var retcode : int
-	# If the player requested a token name that has not been defined by the game
-	# we return a failure
-	if not cfc.TOKENS_MAP.get(token_name, null):
-		retcode = _ReturnCode.FAILED
-	else:
-		var token : Token = get_all_tokens().get(token_name, null)
-		if not token:
+		if not token and mod == 0:
 			retcode = _ReturnCode.OK
 		else:
-			token.count -= 1
+			if set_to_mod:
+				token.count = mod
+				print(token.count)
+			else:
+				token.count += mod
 			if token.count == 0:
 				token.queue_free()
+		# if the drawer has already been opened, we need to make sure
+		# the new token name will also appear
+			elif _is_drawer_open:
+				token.expand()
 			retcode = _ReturnCode.CHANGED
 	return(retcode)
 
@@ -1868,7 +1866,7 @@ func _token_drawer(drawer_state := true) -> void:
 
 func _execute_scripts() -> void:
 	# The CardScripts is where we keep all card scripting definitions
-	var loaded_scripts = CardScripts.new()
+	var loaded_scripts = CardScriptDefinitions.new()
 	var card_scripts
 	# If scripts have been defined directly in this object
 	# They take precedence over CardScripts.gd
@@ -1891,5 +1889,5 @@ func _execute_scripts() -> void:
 				state_scripts = card_scripts.get("hand", [])
 			IN_POPUP,FOCUSED_IN_POPUP:
 				state_scripts = card_scripts.get("pile", [])
-		scripting_engine._running_scripts = state_scripts
+		scripting_engine._running_scripts = state_scripts.duplicate()
 		scripting_engine.run_next_script()

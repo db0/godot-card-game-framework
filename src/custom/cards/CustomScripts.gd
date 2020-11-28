@@ -12,19 +12,20 @@ extends Reference
 # And to have a self-reference in case it affects itself
 #
 # You can pass a predefined subject, but it's optional.
-func custom_script(object, subject = null) -> void:
+func custom_script(script: CardScript) -> void:
+	var card: Card = script.owner
+	var subject: Card = script.subject
 	# I don't like the extra indent caused by this if, 
 	# But not all object will be Card
 	# So I can't be certain the "card_name" var will exist
-	if object.get_class() == "Card":
-		match object.card_name:
-			"Test Card 2":
-				print("This is a custom script execution.")
-				print("Look! I am going to destroy myself now!")
-				object.queue_free()
-				print("You can do whatever you want here.")
-			"Test Card 3":
-				print("This custom script uses the _find_subject()"
-						+ " to find a convenient target")
-				print("Destroying: " + subject.card_name)
-				subject.queue_free()
+	match script.owner.card_name:
+		"Test Card 2":
+			print("This is a custom script execution.")
+			print("Look! I am going to destroy myself now!")
+			card.queue_free()
+			print("You can do whatever you want here.")
+		"Test Card 3":
+			print("This custom script uses the _find_subject()"
+					+ " to find a convenient target")
+			print("Destroying: " + subject.card_name)
+			subject.queue_free()
