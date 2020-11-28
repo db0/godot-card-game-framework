@@ -274,3 +274,27 @@ func test_shuffle_container():
 	prev_index = card.get_my_card_index()
 	assert_gt(3,rng_threshold,
 		"Card should not fall in he same spot too many times")
+
+func test_attach_to_card():
+	yield(drag_drop(target, Vector2(500,400)), "completed")
+	card.scripts = {"hand": [
+			{"name": "attach_to_card",
+			"subject": "target"}]}
+	card._execute_scripts()
+	yield(target_card(card,target), "completed")
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(card.current_host_card,target,
+			"Card has been hosted on the target")
+
+func test_host_card():
+	yield(drag_drop(card, Vector2(500,400)), "completed")
+	card.scripts = {"board": [
+			{"name": "host_card",
+			"subject": "target"}]}
+	card._execute_scripts()
+	yield(target_card(card,target), "completed")
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(target.current_host_card,card,
+			"target has been hosted on the card")

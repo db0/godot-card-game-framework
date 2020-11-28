@@ -817,14 +817,20 @@ func move_to(targetHost: Node2D,
 
 
 # Handles the card becoming an attachment for a specified host Card object
-func attach_to_host(host: Card, follows_previous_host = false) -> void:
+func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 	# First we check if the selected host is not the current host anyway.
 	# If it is, we do nothing else
 	if host != current_host_card:
+		# If the card is not yet on the board, we move it there
+		if get_parent() != cfc.NMAP.board:
+			move_to(cfc.NMAP.board, -1, host.position)
 		# If we already had a host, we clear our state with it
-		# I don't know why, but logic breaks if I don't use the follows_previous_host flag
+		# I don't know why, but logic breaks if I don't use the is_following_previous_host flag
 		# It should work without it, but it doesn't
-		if current_host_card and not follows_previous_host:
+		# The is_following_previous_host var signifies that this card
+		# is being attached to this host, because its previous host
+		# also became an attachment here.
+		if current_host_card and not is_following_previous_host:
 			current_host_card.attachments.erase(self)
 		current_host_card = host
 		# Once we selected the host, we don't need anything in the array anymore
@@ -932,7 +938,7 @@ func get_focus() -> bool:
 #
 # If the token of that name doesn't exist, it creates it according to the config.
 #
-# If the amount of existing tokens of that type drops to 0 or lower, 
+# If the amount of existing tokens of that type drops to 0 or lower,
 # the token node is also removed.
 func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 	var retcode : int

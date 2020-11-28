@@ -171,3 +171,15 @@ func spawn_card(script: CardScript) -> void:
 func shuffle_container(script: CardScript) -> void:
 	var container: CardContainer = script.get("container")
 	container.shuffle_cards()
+
+
+# Task from making the owner card an attachment to another card
+func attach_to_card(script: CardScript) -> void:
+	var card := script.subject
+	script.owner.attach_to_host(card)
+
+
+# Task for attaching another card to the owner
+func host_card(script: CardScript) -> void:
+	var card := script.subject
+	card.attach_to_host(script.owner)

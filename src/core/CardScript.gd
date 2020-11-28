@@ -6,22 +6,23 @@
 class_name CardScript
 extends Reference
 
+# Sent when the _init() method has completed
 signal completed_init
-# The card which owns this Scripting Engine.
+
+# The card which owns this CardScript
 var owner: Card
 # The subject is typically a Card object
 # in the future might be other things
 var subject: Card
-# Set when a card script wants to use a common target for all effects
-# To avoid multiple targetting arrows
+# The name of the function to call in the ScriptingEngine
 var function_name: String
-# We store all the details of the script as well
+# Storage for all details of the script definition
 var properties := {}
-# Used by the ScriptingEngine to know if the script has finished
-# processing targetting
+# Used by the ScriptingEngine to know if the script
+# has finished processing targetting
 var has_init_completed := false
 
-# prepares the properties needed by the script to function
+# prepares the properties needed by the script to function.
 func _init(card: Card, script: Dictionary) -> void:
 	var subject_seek
 	# We store the card which executes this script
@@ -40,8 +41,8 @@ func _init(card: Card, script: Dictionary) -> void:
 	emit_signal("completed_init")
 	has_init_completed = true
 
-# Returns the specified property of the string
-# Also sets appropriate defaults when then property has not beend defined
+# Returns the specified property of the string.
+# Also sets appropriate defaults when then property has not beend defined.
 func get(property: String):
 	var default
 	match property:
@@ -72,8 +73,9 @@ func get(property: String):
 			default = null
 	return(properties.get(property,default))
 
-# Figures out what the subject of this script is supposed to be
-# If no subject is defined, it returns null
+# Figures out what the subject of this script is supposed to be.
+#
+# Returns a Card object if subject is defined, else returns null.
 func _find_subject(script: Dictionary) -> Card:
 	var subject_seek
 	# If set to true, only one target will be seeked using with the arrow
@@ -99,6 +101,9 @@ func _find_subject(script: Dictionary) -> Card:
 
 
 # Handles initiation of target seeking.
+# and yields until it's found.
+#
+# Returns a Card object.
 func _initiate_card_targeting(common_target_request: bool) -> Card:
 	var target := owner.target_card
 	# If we're using a common target for all the scripts
