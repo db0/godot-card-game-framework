@@ -57,7 +57,7 @@ func test_card_rotated():
 	yield(table_move(card, Vector2(100,100)), "completed")
 	yield(table_move(target, Vector2(500,100)), "completed")
 	target.card_rotation = 90
-	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(target,"card_rotated",[target,"card_rotated",[90]])
 	assert_signal_emitted_with_parameters(card,"card_rotated",[card,"card_rotated",[270]])
 
@@ -73,4 +73,20 @@ func test_card_flipped():
 	target.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(target,"card_flipped",[target,"card_flipped",[false]])
+	assert_signal_emitted_with_parameters(card,"card_flipped",[card,"card_flipped",[false]])
+
+func test_card_viewed():
+	watch_signals(card)
+	watch_signals(target)
+	card.scripts = {"card_viewed": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"set_faceup": false}]}}
+	yield(table_move(target, Vector2(600,100)), "completed")
+	target.is_faceup = false
+	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
+	target.is_viewed = true
+	yield(yield_for(0.5), YIELD)
+	assert_signal_emitted_with_parameters(target,"card_viewed",[target,"card_viewed",[true]])
 	assert_signal_emitted_with_parameters(card,"card_flipped",[card,"card_flipped",[false]])

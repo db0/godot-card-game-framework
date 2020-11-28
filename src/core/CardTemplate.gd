@@ -50,6 +50,17 @@ signal target_selected(card)
 signal card_rotated(card,trigger,args)
 # Emitted whenever the card flips up/down
 signal card_flipped(card,trigger,args)
+# Emitted whenever the card is viewed while face-down
+signal card_viewed(card,trigger,args)
+signal card_moved_to_board(card,trigger,args)
+signal card_moved_to_pile(card,trigger,args)
+signal card_token_modified(card,trigger,args)
+signal card_attached(card,trigger,args)
+signal card_unattached(card,trigger,args)
+signal card_attachments_modified(card,trigger,args)
+signal card_targeted(card,trigger,args)
+
+
 
 # Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
@@ -580,12 +591,15 @@ func set_is_viewed(value: bool) -> int:
 			retcode = _ReturnCode.OK
 		else:
 			is_viewed = true
-			if get_parent() != null:
+			if get_parent() != null and get_tree().get_root().has_node('Main'):
 				var dupe_front = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Front")
 				var dupe_back = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Back")
 				_flip_card(dupe_back, dupe_front, true)
 			$Control/Back/VBoxContainer/CenterContainer/Viewed.visible = true
 			retcode = _ReturnCode.CHANGED
+			# We only emit a signal when we view the card
+			# not when we unview it as that happens naturally
+			emit_signal("card_viewed", self, "card_viewed", [value])
 	else:
 		if value == is_viewed:
 			retcode = _ReturnCode.OK

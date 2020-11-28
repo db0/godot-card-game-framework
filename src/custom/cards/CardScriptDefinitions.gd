@@ -37,7 +37,7 @@
 #		further limitation to the trigger. You should generally always try
 #		to specify the trigger, during anything other than manual execution
 #		to keep things more understandable
-# * * * (Default) means that this effect will run regardless of who the trigger is
+# * * * "any" (Default) means that this effect will run regardless of who the trigger is
 # * * * "another" means that this effect will run only if the trigger card
 #		is someone other than self
 # * * * "self" means that this effect will run only if the trigger card is self

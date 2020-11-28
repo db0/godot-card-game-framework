@@ -198,6 +198,14 @@ class SignalPropagator:
 	const known_card_signals := [
 		"card_rotated",
 		"card_flipped",
+		"card_viewed",
+		"card_moved_to_board",
+		"card_moved_to_pile",
+		"card_token_modified",
+		"card_attached",
+		"card_unattached",
+		"card_attachments_modified",
+		"card_targeted",
 		]
 
 
