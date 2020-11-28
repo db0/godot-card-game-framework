@@ -28,7 +28,7 @@ func test_basics():
 	assert_eq(card.scripting_engine._card_owner, card,
 			"Scripting Engine owner card is self")
 	assert_signal_emitted(card.scripting_engine,"scripts_completed")
-	yield(drag_drop(card, Vector2(100,200)), "completed")
+	yield(table_move(card, Vector2(100,200)), "completed")
 	card.execute_scripts()
 	assert_eq(target.card_rotation, 0,
 			"Script should not work from a different state")
@@ -46,11 +46,11 @@ func test_basics():
 			"degrees": 90}]}}
 	card.execute_scripts()
 	yield(target_card(card,card), "completed")
-	yield(yield_to(card.get_node("Tween"), "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 270,
 			"First rotation should happen before targetting second time")
 	yield(target_card(card,card), "completed")
-	yield(yield_to(card.get_node("Tween"), "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 90,
 			"Second rotation should also happen")
 	card.scripts = {"hand": [{}]}
@@ -72,8 +72,8 @@ func test_basics():
 func test_CardScripts():
 	card = cards[0]
 	target = cards[2]
-	yield(drag_drop(target, Vector2(800,200)), "completed")
-	yield(drag_drop(card, Vector2(100,200)), "completed")
+	yield(table_move(target, Vector2(800,200)), "completed")
+	yield(table_move(card, Vector2(100,200)), "completed")
 	card.execute_scripts()
 	yield(target_card(card,target,"slow"), "completed")
 	yield(yield_to(target.get_node("Tween"), "tween_all_completed", 1), YIELD)
@@ -104,9 +104,9 @@ func test_rotate_card():
 			{"name": "rotate_card",
 			"subject": "self",
 			"degrees": 90}]}}
-	yield(drag_drop(card, Vector2(100,200)), "completed")
+	yield(table_move(card, Vector2(100,200)), "completed")
 	card.execute_scripts()
-	yield(yield_to(card.get_node("Tween"), "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 90,
 			"Card should be rotated 90 degrees")
 
@@ -276,7 +276,7 @@ func test_shuffle_container():
 		"Card should not fall in he same spot too many times")
 
 func test_attach_to_card():
-	yield(drag_drop(target, Vector2(500,400)), "completed")
+	yield(table_move(target, Vector2(500,400)), "completed")
 	card.scripts = {"manual": {"hand": [
 			{"name": "attach_to_card",
 			"subject": "target"}]}}
@@ -288,7 +288,7 @@ func test_attach_to_card():
 			"Card has been hosted on the target")
 
 func test_host_card():
-	yield(drag_drop(card, Vector2(500,400)), "completed")
+	yield(table_move(card, Vector2(500,400)), "completed")
 	card.scripts = {"manual": {"board": [
 			{"name": "host_card",
 			"subject": "target"}]}}

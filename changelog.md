@@ -14,7 +14,7 @@
     * Move card to a CardContainer
     * Move card to board
     * Move card from Container to Container
-  * Signal-based trigger supported:
+  * Trigger-based execution supported:
     * card_rotated
 	* card_flipped
 
