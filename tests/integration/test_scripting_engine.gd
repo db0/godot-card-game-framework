@@ -244,3 +244,33 @@ func test_spawn_card():
 		"Card of the correct scene spawned")
 	assert_eq(card.ON_PLAY_BOARD,card.state,
 		"Spawned card left in correct state")
+
+
+func test_shuffle_container():
+	card.scripts = {"hand": [
+			{"name": "shuffle_container",
+			"container":  cfc.NMAP.hand}]}
+	var rng_threshold: int = 0
+	var prev_index = card.get_my_card_index()
+	card._execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	if prev_index == card.get_my_card_index():
+		rng_threshold += 1
+	prev_index = card.get_my_card_index()
+	card._execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	if prev_index == card.get_my_card_index():
+		rng_threshold += 1
+	prev_index = card.get_my_card_index()
+	card._execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	if prev_index == card.get_my_card_index():
+		rng_threshold += 1
+	prev_index = card.get_my_card_index()
+	card._execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	if prev_index == card.get_my_card_index():
+		rng_threshold += 1
+	prev_index = card.get_my_card_index()
+	assert_gt(3,rng_threshold,
+		"Card should not fall in he same spot too many times")

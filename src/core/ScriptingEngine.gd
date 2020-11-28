@@ -100,6 +100,7 @@ func move_card_to_board(script: CardScript) -> void:
 	var card = script.subject
 	card.move_to(cfc.NMAP.board, -1, script.get("board_position"))
 
+
 # Task for moving card from one container to another
 #
 # Requires the following keys:
@@ -118,7 +119,8 @@ func move_card_cont_to_cont(script: CardScript) -> void:
 	var card = src_container.get_card(card_index)
 	var dest_container: CardContainer = script.get("dest_container")
 	var dest_index: int = script.get("dest_index")
-	card.move_to(dest_container,card_index)
+	card.move_to(dest_container,dest_index)
+
 
 # Task for playing a card to the board from a container directly.
 #
@@ -132,6 +134,7 @@ func move_card_cont_to_board(script: CardScript) -> void:
 	var board_position = script.get("board_position")
 	card.move_to(cfc.NMAP.board, -1, board_position)
 
+
 # Task from modifying tokens on a card
 #
 # Requires the following keys:
@@ -143,6 +146,7 @@ func mod_tokens(script: CardScript) -> void:
 	var token_name: String = script.get("token_name")
 	var modification: int = script.get("modification")
 	var set_to_mod: bool = script.get("set_to_mod")
+	# warning-ignore:return_value_discarded
 	card.mod_token(token_name,modification,set_to_mod)
 
 
@@ -158,6 +162,12 @@ func spawn_card(script: CardScript) -> void:
 	cfc.NMAP.board.add_child(card)
 	card.position = board_position
 	card.state = card.ON_PLAY_BOARD
-	
-# TODO
-# func shuffle_container(script: CardScript) -> void:
+
+
+# Task from shuffling a CardContainer
+#
+# Requires the following keys:
+# * "container": CardContainer
+func shuffle_container(script: CardScript) -> void:
+	var container: CardContainer = script.get("container")
+	container.shuffle_cards()
