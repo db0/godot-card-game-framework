@@ -15,7 +15,7 @@ func before_each():
 	cards = draw_test_cards(8)
 	yield(yield_for(0.5), YIELD)
 	card = cards[0]
-	target = cards[2]
+	target = cards[1]
 
 
 func test_signals():
@@ -60,6 +60,18 @@ func test_card_rotated():
 			"subject": "self",
 			"trigger": "another",
 			"set_faceup": false}]}}
+	cards[2].scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_degrees": 270,
+			"set_faceup": false}]}}
+	cards[3].scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_degrees": 90,
+			"set_faceup": false}]}}
 	yield(table_move(target, Vector2(500,100)), "completed")
 	target.card_rotation = 90
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
@@ -69,6 +81,10 @@ func test_card_rotated():
 				{"degrees": 90}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
+	assert_true(cards[2].is_faceup,
+			"Card stayed face-up since limit_to_degrees is false")
+	assert_false(cards[3].is_faceup,
+			"Card turned face-down since limit_to_degrees is true")
 
 
 func test_card_flipped():
@@ -79,6 +95,18 @@ func test_card_flipped():
 			"subject": "self",
 			"trigger": "another",
 			"set_faceup": false}]}}
+	cards[2].scripts = {"card_flipped": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_faceup": true,
+			"set_faceup": false}]}}
+	cards[3].scripts = {"card_flipped": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_faceup": false,
+			"set_faceup": false}]}}
 	target.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
@@ -87,6 +115,10 @@ func test_card_flipped():
 				{"is_faceup": false}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
+	assert_true(cards[2].is_faceup,
+			"Card stayed face-up since limit_to_facup is true")
+	assert_false(cards[3].is_faceup,
+			"Card turned face-down since limit_to_facup is false")
 
 func test_card_viewed():
 	watch_signals(card)
@@ -153,7 +185,7 @@ func test_card_moved_to_pile():
 			"trigger": "another",
 			"set_faceup": false}]}}
 	# This card should stay face-up since destination limit will be false
-	cards[1].scripts = {"card_moved_to_pile": { "hand": [
+	cards[2].scripts = {"card_moved_to_pile": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
@@ -196,13 +228,13 @@ func test_card_moved_to_pile():
 				{"destination": discard, "source": hand}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
-	assert_true(cards[1].is_faceup,
-			"Card stayed face-up since destination limit is false")
+	assert_true(cards[2].is_faceup,
+			"Card stayed face-up limit_to_destination limit does not match")
 	assert_true(cards[3].is_faceup,
-			"Card stayed face-up since source limit is false")
+			"Card stayed face-up since limit_to_source does not match")
 	assert_false(cards[4].is_faceup,
-			"Card turned face-down since both limits are true")
+			"Card turned face-down since both limits match")
 	assert_true(cards[5].is_faceup,
-			"Card stayed face-up since both limits are false")
+			"Card stayed face-up since both limits do not match")
 	assert_false(cards[6].is_faceup,
-			"Card turned face-down since limit will be true")
+			"Card turned face-down since limit_to_destination matches")

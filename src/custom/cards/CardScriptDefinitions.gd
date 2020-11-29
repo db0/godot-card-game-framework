@@ -18,22 +18,23 @@
 #	which the scripts will execute. So if the key is "board", then
 #	the scripts defined in that dictionary, will be executed only while
 #	the card in on the board (based on its state)
-# * Inside the state dictionary, is a list which contains one dictionary 
+# * Inside the state dictionary, is a list which contains one dictionary
 #	per script. The scripts will execute in the order they are defined in that list.
 # * Each script in that list is a dictionary with many possible keys, but a few
 #	mandatory ones.
-# * * (Mandatory) "name" (String value) is the name of the function which 
+# * * (Mandatory) **String** "name" is the name of the function which
 #	to call inside the ScriptingEngine
 # * * (Mandatory) "subject" is the thing that will be affected by this script.
 # * * * "self"
 # * * * "target"
 # * * * a CardContainer node
-# * * (Optional) "common_target_request" (bool value) is used then subject 
-#		is "target" to tell the script whether to target each script 
+# * * (Optional) **bool** "common_target_request" is used then subject
+#		is "target" to tell the script whether to target each script
 #		individually. Defaults to true
 # * * (Mandatory) Script arguments are put in the form of their individual names
-#		as per their definition in the ScriptingEngine.gd
-# * * (Optional) trigger (String value) is used with signal triggers to specify
+#		and value types as per their definition
+#		in the corresponding `ScriptingEngine.gd` task.
+# * * (Optional) **String** trigger: Used with signal triggers to specify
 #		further limitation to the trigger. You should generally always try
 #		to specify the trigger, during anything other than manual execution
 #		to keep things more understandable
@@ -41,8 +42,14 @@
 # * * * "another" means that this effect will run only if the trigger card
 #		is someone other than self
 # * * * "self" means that this effect will run only if the trigger card is self
+# * * (Optional) limit_to_...: You can specify limits for this script that match
+#		The triggering signal. The following have been defined
+# * * * **int** limit_to_degrees: Use with card_rotated signal
+# * * * **bool** limit_to_faceup: Use with card_flipped signal
+# * * * **CardContainer** limit_to_source: Use with card_moved_to_... signals
+# * * * **CardContainer** limit_to_destination: Use with card_moved_to_... signals
 #
-# And exception to the above is when the name is "custom_script". 
+# And exception to the above is when the name is "custom_script".
 # In that case you don't need any other keys. The complete definition should
 # be in CustomScripts.gd
 class_name CardScriptDefinitions

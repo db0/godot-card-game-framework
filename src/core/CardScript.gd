@@ -176,7 +176,15 @@ func _check_limitations():
 		is_valid = false
 	if get("trigger") == "another" and trigger == owner:
 		is_valid = false
-	# Used when triggerring off of moving between containers
+	# Used when triggering off of rotating cards
+	if get("limit_to_degrees") \
+			and get("limit_to_degrees") != signal_details.get("degrees"):
+		is_valid = false
+	# Used when triggering off of flipping cards
+	if get("limit_to_faceup") \
+			and get("limit_to_faceup") != signal_details.get("is_faceup"):
+		is_valid = false
+	# The two check below, are used when triggerring off of moving between containers
 	# If a limit has been requested, then a source field should also exist
 	if get("limit_to_source") \
 			and get("limit_to_source") != signal_details.get("source"):
