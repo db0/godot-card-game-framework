@@ -27,3 +27,10 @@ static func randi() -> int:
 # Mapping randi_range function
 static func randi_range(from: float, to: float) -> int:
 	return cfc.game_rng.randi_range(from, to)
+
+static func array_join(arr, separator = ""):
+	var output = "";
+	for s in arr:
+		output += str(s) + separator
+	output = output.left( output.length() - separator.length() )
+	return output

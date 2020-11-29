@@ -65,6 +65,8 @@ signal card_targeted(card,trigger,details)
 
 # Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
+
+export var properties :=  {}
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 #
@@ -136,6 +138,8 @@ onready var _flip_tween = $Control/FlipTween
 onready var _buttons_tween = $Control/ManipulationButtons/Tween
 onready var _pulse_tween = $Control/Back/Pulse
 onready var _tokens_tween = $Control/Tokens/Tween
+
+onready var _card_text = $Control/Front/CardText
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -489,6 +493,29 @@ func _on_Pulse_completed() -> void:
 		_stop_pulse()
 
 
+# This function handles filling up the card's labels according to its
+# card definition dictionary entry.
+func setup(card_name: String) -> void:
+	# The properties of the card should be already stored in cfc
+	properties = cfc.card_definitions.get(card_name)
+	for label in properties.keys():
+		# These are standard properties which is simple a String to add to the
+		# label.text field
+		if label in CardConfig.PROPERTIES_STRINGS:
+			$Control/Front/CardText.get_node(label).text = properties[label]
+		# These are int or float properties which need to be converted
+		# to strings before adding to label.text field
+		elif label in CardConfig.PROPERTIES_NUMBERS:
+			$Control/Front/CardText.get_node(label).text = \
+					str(properties[label])
+		# These are arrays of properties which are put in a label with a simple
+		# Join character
+		elif label in CardConfig.PROPERTIES_ARRAYS:
+			$Control/Front/CardText.get_node(label).text = \
+					CardFrameworkUtils.array_join(properties[label],
+					cfc.ARRAY_PROPERTY_JOIN)
+
+
 # Setter for _is_attachment
 func set_is_attachment(value: bool) -> void:
 	is_attachment = value
@@ -639,7 +666,6 @@ func set_name(value : String) -> void:
 	.set_name(value)
 	$Control/Front/CardText/Name.text = value
 	card_name = value
-
 
 # Setter for card_rotation.
 #

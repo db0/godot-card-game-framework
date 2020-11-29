@@ -14,6 +14,9 @@ enum FocusStyle {
 	BOTH					#2
 }
 
+
+
+
 #-----------------------------------------------------------------------------
 # BEGIN Behaviour Constants
 # Change the below to change how all cards behave to match your game.
@@ -68,6 +71,12 @@ const TARGET_HOVER_COLOUR := Color(0, 0.4, 1) * 1.3
 #
 # You can change the colour to something else if  you want however
 const TARGETTING_ARROW_COLOUR := TARGET_HOVER_COLOUR
+# This is used when filling in card property labels in Card.setup()
+# when the property is an array, the label will still display it as a string
+# but will have to join its elements somehow.
+#
+# The below const defines what string to put between these elements.
+const ARRAY_PROPERTY_JOIN := ' - '
 # This dictionary contains your defined tokens for cards
 #
 # The key is the name of the token as it will appear in your scene and labels
@@ -125,6 +134,7 @@ var SHOW_TOKEN_BUTTONS = false
 # The games initial Random Number Generator seed.
 # When this stays the same, the game randomness will always play the predictable.
 var game_rng_seed := "CFC Random Seed" setget set_seed
+var card_definitions := {}
 
 #-----------------------------------------------------------------------------
 # END Behaviour Constants
@@ -184,11 +194,15 @@ func _ready() -> void:
 		hands.append(NMAP[name])
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
+	card_definitions = _load_card_definitions()
 
 # Setter for seed.
 func set_seed(_seed: String) -> void:
 	game_rng_seed = _seed
 	game_rng.set_seed(hash(game_rng_seed))
+
+func _load_card_definitions():
+	return(preload("res://src/custom/cards/CardDefinitions.gd").CARDS)
 
 # The SignalPropagator is responsible for collecting all card signals
 # and asking all cards to check if there's any Automation they need to perform
@@ -228,5 +242,3 @@ class SignalPropagator:
 			# have ScriptingEngine triggers for this signal
 		cfc.get_tree().call_group("cards",
 				"execute_scripts",trigger_card,trigger,details)
-
-

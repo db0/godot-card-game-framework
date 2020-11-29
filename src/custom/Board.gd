@@ -60,13 +60,28 @@ func _on_EnableAttach_toggled(_button_pressed: bool) -> void:
 
 # Loads a sample set of cards to use for testing
 func load_test_cards() -> void:
-	var test_cards = [test1, test2, test3]
+	var test_cards := []
+	for ckey in cfc.card_definitions.keys():
+		test_cards.append(ckey)
 	var test_card_array := []
 	for _i in range(12):
-		test_card_array.append(test_cards[CardFrameworkUtils.randi() % len(test_cards)].instance())
+		var random_card_name = \
+				test_cards[CardFrameworkUtils.randi() % len(test_cards)]
+#		print("res://src/custom/cards/" 
+#				+ cfc.card_definitions[random_card_key]["Template"] + ".tscn")
+		var template = load("res://src/custom/cards/" 
+				+ cfc.card_definitions[random_card_name]["_template"] + ".tscn")
+		var card_name = random_card_name
+		var card = template.instance()
+		test_card_array.append(card)
+		card.setup(card_name)
 	# I ensure there's of each test card, for use in GUT
-	for c in test_cards:
-		test_card_array.append(c.instance())
+	for card_name in test_cards:
+		var template = load("res://src/custom/cards/" 
+				+ cfc.card_definitions[card_name]["_template"] + ".tscn")
+		var card = template.instance()
+		test_card_array.append(card)
+		card.setup(card_name)
 	for card in test_card_array:
 		$Deck.add_child(card)
 		# warning-ignore:return_value_discarded
