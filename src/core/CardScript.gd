@@ -11,48 +11,49 @@ signal completed_init
 
 # The card which owns this CardScript
 var owner: Card
-# The card which triggered this CardScript
-# It is typically self during manual execution
-# But is another card during signal-based execution
+# The card which triggered this CardScript.
+#
+# It is typically `"self"` during manual execution,
+# but is `"another"` card during signal-based execution
 var trigger: Card
-# The subject is typically a Card object
+# The subject is typically a `Card` object
 # in the future might be other things
 var subject: Card
 # The name of the method to call in the ScriptingEngine
-# to implement this script
+# to implement this task
 var task_name: String
-# Storage for all details of the script definition
+# Storage for all details of the task definition
 var properties : Dictionary
 var signal_details : Dictionary
-# Used by the ScriptingEngine to know if the script
+# Used by the ScriptingEngine to know if the task
 # has finished processing targetting
 var has_init_completed := false
-# If true if this script is valid to run.
-# A script is invalid to run if some limitation does not match.
+# If true if this task is valid to run.
+# A task is invalid to run if some limitation does not match.
 var is_valid := true
 
-# prepares the properties needed by the script to function.
+# prepares the properties needed by the task to function.
 func _init(card: Card,
 		trigger_card: Card,
 		details: Dictionary,
 		script: Dictionary) -> void:
 	var subject_seek
-	# We store the card which executes this script
+	# We store the card which executes this task
 	owner = card
-	# We store the card which triggered this script (typically via signal)
+	# We store the card which triggered this task (typically via signal)
 	trigger = trigger_card
-	# We store all the script properties in our own dictionary
+	# We store all the task properties in our own dictionary
 	properties = script
 	# The function name to be called gets its own var
 	signal_details = details
 	# The function name to be called gets its own var
 	task_name = get("name")
-	# We test if this script is valid
+	# We test if this task is valid
 	_check_limitations()
 	print(task_name,is_valid)
-	# We only seek targets if the script is valid
+	# We only seek targets if the task is valid
 	if is_valid:
-		# We discover which other card this script will affect, if any
+		# We discover which other card this task will affect, if any
 		subject_seek =_find_subject()
 		if subject_seek is GDScriptFunctionState: # Still seeking...
 			subject_seek = yield(subject_seek, "completed")
