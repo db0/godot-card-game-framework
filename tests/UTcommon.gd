@@ -32,6 +32,9 @@ func setup_main() -> void:
 	board = cfc.NMAP.board
 	board.load_test_cards()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
+	hand = cfc.NMAP.hand
+	deck = cfc.NMAP.deck
+	discard = cfc.NMAP.discard
 
 
 func setup_board() -> void:

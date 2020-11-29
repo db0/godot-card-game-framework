@@ -285,6 +285,7 @@ func test_attach_to_card():
 	assert_eq(card.current_host_card,target,
 			"Card has been hosted on the target")
 
+
 func test_host_card():
 	yield(table_move(card, Vector2(500,400)), "completed")
 	card.scripts = {"manual": {"board": [
