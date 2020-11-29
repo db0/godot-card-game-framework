@@ -9,9 +9,9 @@ extends Reference
 # Sent when the _init() method has completed
 signal completed_init
 
-# The card which owns this CardScript
+# The card which owns this Task
 var owner: Card
-# The card which triggered this CardScript.
+# The card which triggered this Task.
 #
 # It is typically `"self"` during manual execution,
 # but is `"another"` card during signal-based execution
@@ -130,7 +130,7 @@ func _find_subject() -> Card:
 		if subject_seek is GDScriptFunctionState: # Still working.
 			subject_seek = yield(subject_seek, "completed")
 	# If the subject is "self", we return the _card_owner
-	# of this CardScript
+	# of this Task
 	elif get("subject") == "self":
 		subject_seek = owner
 	# Otherwise we pass null, assuming there's no subject needed

@@ -69,9 +69,9 @@ const _token_scene = preload("res://src/core/Token.tscn")
 # object directly instead of only via code.
 #
 # If this variable is set, it takes precedence over scripts
-# found in CardScripts.gd
+# found in `CardScriptDefinitions.gd`
 #
-# See CardScripts.gd for the proper format of a scripts dictionary
+# See `CardScriptDefinitions.gd` for the proper format of a scripts dictionary
 export var scripts := {}
 # If true, the card can be attached to other cards and will follow
 # their host around the table. The card will always return to its host
@@ -860,18 +860,18 @@ func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
 		details: Dictionary = {}) -> void:
-	# The CardScripts is where we keep all card scripting definitions
+	# The CardScriptDefinitions.gd is where we keep all card scripting definitions
 	var loaded_scripts = CardScriptDefinitions.new()
 	var card_scripts
 	# If scripts have been defined directly in this object
-	# They take precedence over CardScripts.gd
+	# They take precedence over CardScriptDefinitions.gd
 	#
 	# This allows us to modify a card's scripts during runtime
 	# in isolation from other cards of the same name
 	if not scripts.empty():
 		card_scripts = scripts.get(trigger,{})
 	else:
-		# CardScripts.gd should contain scripts for all defined cards
+		# CardScriptDefinitions.gd should contain scripts for all defined cards
 		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state

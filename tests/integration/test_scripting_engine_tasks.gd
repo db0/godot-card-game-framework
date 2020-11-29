@@ -66,7 +66,7 @@ func test_basics():
 			"Scripts should not fire while card is face-down")
 	card.scripts = {"hand": [{}]}
 
-# Checks that scripts from the CardScripts have been loaded correctly
+# Checks that scripts from the CardScriptDefinitions.gd have been loaded correctly
 func test_CardScripts():
 	card = cards[0]
 	target = cards[2]
