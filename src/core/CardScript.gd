@@ -11,31 +11,53 @@ signal completed_init
 
 # The card which owns this CardScript
 var owner: Card
-# The subject is typically a Card object
+# The card which triggered this CardScript.
+#
+# It is typically `"self"` during manual execution,
+# but is `"another"` card during signal-based execution
+var trigger: Card
+# The subject is typically a `Card` object
 # in the future might be other things
 var subject: Card
-# The name of the function to call in the ScriptingEngine
-var function_name: String
-# Storage for all details of the script definition
-var properties := {}
-# Used by the ScriptingEngine to know if the script
+# The name of the method to call in the ScriptingEngine
+# to implement this task
+var task_name: String
+# Storage for all details of the task definition
+var properties : Dictionary
+var signal_details : Dictionary
+# Used by the ScriptingEngine to know if the task
 # has finished processing targetting
 var has_init_completed := false
+# If true if this task is valid to run.
+# A task is invalid to run if some limitation does not match.
+var is_valid := true
 
-# prepares the properties needed by the script to function.
-func _init(card: Card, script: Dictionary) -> void:
+# prepares the properties needed by the task to function.
+func _init(card: Card,
+		trigger_card: Card,
+		details: Dictionary,
+		script: Dictionary) -> void:
 	var subject_seek
-	# We store the card which executes this script
+	# We store the card which executes this task
 	owner = card
-	# We store all the script properties in our own dictionary
+	# We store the card which triggered this task (typically via signal)
+	trigger = trigger_card
+	# We store all the task properties in our own dictionary
 	properties = script
-	# We discover which other this script will affect, if any
-	subject_seek =_find_subject(script)
-	if subject_seek is GDScriptFunctionState: # Still seeking...
-		subject_seek = yield(subject_seek, "completed")
-	subject = subject_seek
 	# The function name to be called gets its own var
-	function_name = properties.get("name",null)
+	signal_details = details
+	# The function name to be called gets its own var
+	task_name = get("name")
+	# We test if this task is valid
+	_check_limitations()
+	print(task_name,is_valid)
+	# We only seek targets if the task is valid
+	if is_valid:
+		# We discover which other card this task will affect, if any
+		subject_seek =_find_subject()
+		if subject_seek is GDScriptFunctionState: # Still seeking...
+			subject_seek = yield(subject_seek, "completed")
+		subject = subject_seek
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
 	emit_signal("completed_init")
@@ -46,6 +68,21 @@ func _init(card: Card, script: Dictionary) -> void:
 func get(property: String):
 	var default
 	match property:
+		# Used when targeting is required for this effect
+		# If set to false, then it will reset the targetting, and any
+		# future scripts which require targetting will have to acquire a new
+		# target
+		# if set to true (default), following scripts
+		# requiring target, will use the previous one.
+		"common_target_request":
+			default = true
+		# Used when a script is triggered by a signal
+		# Limits the execution depending on the triggering card. Options are:
+		# * "self": Triggering card has to be the owner of the script
+		# * "another": Triggering card has to not be the owner of the script
+		# * "any" (default): Will execute regardless of the triggering card.
+		"trigger":
+			default = "any"
 		# Used when we're seeking a card inside a CardContainer
 		# Default is to seek card at index 0
 		"pile_index":
@@ -76,23 +113,22 @@ func get(property: String):
 # Figures out what the subject of this script is supposed to be.
 #
 # Returns a Card object if subject is defined, else returns null.
-func _find_subject(script: Dictionary) -> Card:
+func _find_subject() -> Card:
 	var subject_seek
 	# If set to true, only one target will be seeked using with the arrow
 	# If one is selected, then no other will be sought,
 	# until the next common_target_request == false
-	# If no common_target_request has been specified, we default to true
-	var common_target_request : bool = script.get("common_target_request", true)
+	var common_target_request : bool = get("common_target_request")
 	# Subject can be "self" or "target"
 	# If the subject is "target", we initiate targetting from the owner card
 	# to ask the player to find a appropriate target
-	if script.get("subject") == "target":
+	if get("subject") == "target":
 		subject_seek = _initiate_card_targeting(common_target_request)
 		if subject_seek is GDScriptFunctionState: # Still working.
 			subject_seek = yield(subject_seek, "completed")
 	# If the subject is "self", we return the _card_owner
 	# of this CardScript
-	elif script.get("subject") == "self":
+	elif get("subject") == "self":
 		subject_seek = owner
 	# Otherwise we pass null, assuming there's no subject needed
 	else:
@@ -126,3 +162,36 @@ func _initiate_card_targeting(common_target_request: bool) -> Card:
 		# Replacing it with a pass or something simple doesn't work either
 		yield(owner.get_tree().create_timer(0.1), "timeout")
 	return(target)
+
+
+# Ensures that all limitations requested by the script are respected
+#
+# Will set is_valid to false if any limitation does not match reality
+func _check_limitations():
+	# Here we check that the trigger matches the _request_ for trigger
+	# A trigger which requires "another" card, should not trigger
+	# when itself causes the effect.
+	# For example, a card which rotates itself whenever another card
+	# is rotated, should not automatically rotate when itself rotates.
+	if get("trigger") == "self" and trigger != owner:
+		is_valid = false
+	if get("trigger") == "another" and trigger == owner:
+		is_valid = false
+	# Used when triggering off of rotating cards
+	if get("limit_to_degrees") \
+			and get("limit_to_degrees") != signal_details.get("degrees"):
+		is_valid = false
+	# Used when triggering off of flipping cards
+	if get("limit_to_faceup") \
+			and get("limit_to_faceup") != signal_details.get("is_faceup"):
+		is_valid = false
+	# The two check below, are used when triggerring off of moving between containers
+	# If a limit has been requested, then a source field should also exist
+	if get("limit_to_source") \
+			and get("limit_to_source") != signal_details.get("source"):
+		is_valid = false
+	if get("limit_to_destination") \
+			and get("limit_to_destination") != signal_details.get("destination"):
+		is_valid = false
+
+

@@ -32,11 +32,9 @@ enum{
 
 # The possible return codes a function can return
 #
-# OK is returned when the function did not end up doing any changes
-#
-# CHANGE is returned when the function modified the card properties in some way
-#
-# FAILED is returned when the function failed to modify the card for some reason
+# * OK is returned when the function did not end up doing any changes
+# * CHANGE is returned when the function modified the card properties in some way
+# * FAILED is returned when the function failed to modify the card for some reason
 enum _ReturnCode {
 	OK,
 	CHANGED,
@@ -45,6 +43,25 @@ enum _ReturnCode {
 
 # Emitted whenever the card has selected a target.
 signal target_selected(card)
+# Emitted whenever the card is rotated
+# The signal must send its name as well (in the trigger var)
+# Because it's sent by the SignalPropagator to all cards and they use it
+# To filter.
+signal card_rotated(card,trigger,details)
+# Emitted whenever the card flips up/down
+signal card_flipped(card,trigger,details)
+# Emitted whenever the card is viewed while face-down
+signal card_viewed(card,trigger,details)
+signal card_moved_to_board(card,trigger,details)
+signal card_moved_to_pile(card,trigger,details)
+signal card_moved_to_hand(card,trigger,details)
+signal card_token_modified(card,trigger,details)
+signal card_attached(card,trigger,details)
+signal card_unattached(card,trigger,details)
+signal card_attachments_modified(card,trigger,details)
+signal card_targeted(card,trigger,details)
+
+
 
 # Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
@@ -62,38 +79,43 @@ export var scripts := {}
 export var is_attachment := false setget set_is_attachment, get_is_attachment
 # If true, the card will be displayed faceup. If false, it will be facedown
 export var is_faceup  := true setget set_is_faceup, get_is_faceup
-# Specifies the card rotation in increments of 90 degrees
+# If true, the card front will be displayed when mouse hovers over the card
+# while it's face-down
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
 # Specifies the card rotation in increments of 90 degrees
 export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_card_rotation
 # This is **the** authorative name for this node
 #
-# If not set, will be set to the value of the Name label in the front
-# if that is also not set, will be set
-# to the human-readable value of the "name" node property
+# If not set, will be set to the value of the Name label in the front.
+# if that is also not set, will be set.
+# to the human-readable value of the "name" node property.
 export var card_name : String setget set_card_name, get_card_name
 
 # Used to store a card succesfully targeted.
-# It should be cleared from whichever effect requires a target once it has finished
+# It should be cleared from whichever effect requires a target.
+# once it is used
 var target_card : Card = null setget set_targetcard, get_targetcard
 # Starting state for each card
 var state := IN_PILE
-# If this card is hosting other card, this list retains links to their objects in order
+# If this card is hosting other cards,
+# this list retains links to their objects in order.
 var attachments := []
-# If this card is set as an attachment to another card, this tracks who its host is
+# If this card is set as an attachment to another card,
+# this tracks who its host is.
 var current_host_card : Card = null
-# A dictionary holding all the tokens placed on this card
+# A dictionary holding all the tokens placed on this card.
 var tokens := {} setget ,get_all_tokens
 
-# To track that this card attempting to target another card
+# To track that this card attempting to target another card.
 var _is_targetting := false
-# Used for animating the card
+# Used for animating the card.
 var _target_position: Vector2
 # Used to avoid the focus animation repeating once it's completed.
 var _focus_completed: bool = false
 # We use this to know at which stage of fancy movement this is.
 var _fancy_move_second_part := false
-# We use this to track multiple cards when our card is about to drop onto or target them
+# We use this to track multiple cards
+# when our card is about to drop onto or target them
 var _potential_cards := []
 # Used for looping between brighness scales for the Cardback glow
 # The multipliers have to be small, as even small changes increase
@@ -107,7 +129,7 @@ var _tween_stuck_time = 0
 # The ScriptingEngine is where we execute the scripts
 # We cannot use its class reference,
 # as it causes a cyclic reference error when parsing
-onready var scripting_engine = load("res://src/core/ScriptingEngine.gd").new(self)
+onready var scripting_engine = load("res://src/core/ScriptingEngine.gd").new()
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
@@ -166,6 +188,7 @@ func _ready() -> void:
 	if $Control/Back.has_node('Pulse'):
 		# warning-ignore:return_value_discarded
 		_pulse_tween.connect("tween_all_completed", self, "_on_Pulse_completed")
+	cfc.signal_propagator.connect_new_card(self)
 
 
 func _init_card_name():
@@ -256,7 +279,7 @@ func _on_Card_gui_input(event) -> void:
 			# But rather it's script execution
 			if event.doubleclick:
 				cfc.card_drag_ongoing = null
-				_execute_scripts()
+				execute_scripts()
 			# If it's a long click it might be because
 			# they want to drag the card
 			elif event.is_pressed():
@@ -541,6 +564,7 @@ func set_is_faceup(value: bool, instant := false) -> int:
 					var dupe_back = dupe_card.get_node("Control/Back")
 					_flip_card(dupe_front, dupe_back, true)
 		retcode = _ReturnCode.CHANGED
+		emit_signal("card_flipped", self, "card_flipped", {"is_faceup": value})
 	return retcode
 
 
@@ -568,12 +592,15 @@ func set_is_viewed(value: bool) -> int:
 			retcode = _ReturnCode.OK
 		else:
 			is_viewed = true
-			if get_parent() != null:
+			if get_parent() != null and get_tree().get_root().has_node('Main'):
 				var dupe_front = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Front")
 				var dupe_back = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Back")
 				_flip_card(dupe_back, dupe_front, true)
 			$Control/Back/VBoxContainer/CenterContainer/Viewed.visible = true
 			retcode = _ReturnCode.CHANGED
+			# We only emit a signal when we view the card
+			# not when we unview it as that happens naturally
+			emit_signal("card_viewed", self, "card_viewed",  {"is_viewed": true})
 	else:
 		if value == is_viewed:
 			retcode = _ReturnCode.OK
@@ -661,6 +688,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 		# We report that it changed.
 		retcode = _ReturnCode.CHANGED
 		card_rotation = value
+		emit_signal("card_rotated", self, "card_rotated",  {"degrees": value})
 	return retcode
 
 
@@ -713,6 +741,10 @@ func move_to(targetHost: Node2D,
 			# inside the hand
 			_target_position = _recalculatePosition()
 			state = MOVING_TO_CONTAINER
+			emit_signal("card_moved_to_hand",
+					self,
+					"card_moved_to_hand",
+					 {"destination": targetHost, "source": parentHost})
 			# We reorganize the left over cards in hand.
 			for c in targetHost.get_all_cards():
 				if c != self:
@@ -741,6 +773,10 @@ func move_to(targetHost: Node2D,
 				# (this means how far up in the pile the card would appear)
 				_target_position = targetHost.get_stack_position(self)
 				state = MOVING_TO_CONTAINER
+				emit_signal("card_moved_to_pile",
+						self,
+						"card_moved_to_pile",
+						{"destination": targetHost, "source": parentHost})
 				if set_is_faceup(targetHost.faceup_cards) == _ReturnCode.FAILED:
 					print("ERROR: Something went unexpectedly in set_is_faceup")
 				# If we have fancy movement, we need to wait for 2 tweens to finish
@@ -767,6 +803,10 @@ func move_to(targetHost: Node2D,
 					_target_position = boardPosition
 				raise()
 			state = DROPPING_TO_BOARD
+			emit_signal("card_moved_to_board",
+					self,
+					"card_moved_to_board",
+					{"destination": targetHost, "source": parentHost})
 		if parentHost in cfc.hands:
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
@@ -814,6 +854,40 @@ func move_to(targetHost: Node2D,
 		for card in _potential_cards:
 			card.set_highlight(false)
 		_potential_cards.clear()
+
+
+func execute_scripts(
+		trigger_card: Card = self,
+		trigger: String = "manual",
+		details: Dictionary = {}) -> void:
+	# The CardScripts is where we keep all card scripting definitions
+	var loaded_scripts = CardScriptDefinitions.new()
+	var card_scripts
+	# If scripts have been defined directly in this object
+	# They take precedence over CardScripts.gd
+	#
+	# This allows us to modify a card's scripts during runtime
+	# in isolation from other cards of the same name
+	if not scripts.empty():
+		card_scripts = scripts.get(trigger,{})
+	else:
+		# CardScripts.gd should contain scripts for all defined cards
+		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
+	var state_scripts = []
+	# We select which scripts to run from the card, based on it state
+	match state:
+		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
+			# We assume only faceup cards can execute scripts on the board
+			if is_faceup:
+				state_scripts = card_scripts.get("board", [])
+		IN_HAND,FOCUSED_IN_HAND:
+			state_scripts = card_scripts.get("hand", [])
+		IN_POPUP,FOCUSED_IN_POPUP:
+			state_scripts = card_scripts.get("pile", [])
+	scripting_engine.run_next_script(self,
+			state_scripts.duplicate(),
+			trigger_card,
+			details)
 
 
 # Handles the card becoming an attachment for a specified host Card object
@@ -1863,31 +1937,3 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
-
-func _execute_scripts() -> void:
-	# The CardScripts is where we keep all card scripting definitions
-	var loaded_scripts = CardScriptDefinitions.new()
-	var card_scripts
-	# If scripts have been defined directly in this object
-	# They take precedence over CardScripts.gd
-	#
-	# This allows us to modify a card's scripts during runtime
-	# in isolation from other cards of the same name
-	if not scripts.empty():
-		card_scripts = scripts
-	else:
-		# CardScripts.gd should contain scripts for all defined cards
-		card_scripts = loaded_scripts.get_scripts(card_name)
-	var state_scripts = []
-	# We assume only faceup cards can execute scripts
-	if is_faceup:
-		# We select which scripts to run from the card, based on it state
-		match state:
-			ON_PLAY_BOARD,FOCUSED_ON_BOARD:
-				state_scripts = card_scripts.get("board", [])
-			IN_HAND,FOCUSED_IN_HAND:
-				state_scripts = card_scripts.get("hand", [])
-			IN_POPUP,FOCUSED_IN_POPUP:
-				state_scripts = card_scripts.get("pile", [])
-		scripting_engine._running_scripts = state_scripts.duplicate()
-		scripting_engine.run_next_script()

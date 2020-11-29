@@ -11,7 +11,7 @@ func before_each():
 func test_board_tokens():
 	var card : Card
 	card = cards[0]
-	yield(drag_drop(card, Vector2(600,200)), 'completed')
+	yield(table_move(card, Vector2(600,200)), 'completed')
 	board._UT_mouse_position = card.position
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
@@ -137,7 +137,7 @@ func test_board_tokens():
 
 
 	card = cards[3]
-	yield(drag_drop(card, Vector2(200,300)), 'completed')
+	yield(table_move(card, Vector2(200,300)), 'completed')
 	assert_eq(card._ReturnCode.CHANGED, card.mod_token("magic", 10),
 			"Adding new token with larger amount returns a CHANGED result")
 	var magic_token: Token = card.get_token("magic")
@@ -169,7 +169,7 @@ func test_off_board_tokens():
 	cfc.SHOW_TOKEN_BUTTONS = false
 	var card : Card
 	card = cards[3]
-	yield(drag_drop(card, Vector2(1000,100)), 'completed')
+	yield(table_move(card, Vector2(1000,100)), 'completed')
 	card._on_Card_mouse_entered()
 	yield(yield_for(0.1), YIELD)
 	# warning-ignore:return_value_discarded

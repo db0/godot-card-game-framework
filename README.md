@@ -102,6 +102,8 @@ The below instructions will set up your game to use the `Card` class as a framew
 	* all Tween nodes called "*Tween"
 	* TargetLine and all children nodes
 
+Also, the scene has to be a member of the "cards" group
+
 
 If you want a different setup, you will need to modify the relevant code yourself
 ### Hand Class

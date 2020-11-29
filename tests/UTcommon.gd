@@ -12,6 +12,8 @@ const MOUSE_SPEED := {
 var main
 var board
 var hand
+var deck
+var discard
 
 func fake_click(pressed,position, flags=0) -> InputEvent:
 	var ev := InputEventMouseButton.new()
@@ -39,11 +41,13 @@ func setup_board() -> void:
 	board.load_test_cards()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 	hand = cfc.NMAP.hand
+	deck = cfc.NMAP.deck
+	discard = cfc.NMAP.discard
 
 func draw_test_cards(count: int) -> Array:
 	var cards = []
 	for _iter in range(count):
-		cards.append(cfc.NMAP.hand.draw_card())
+		cards.append(hand.draw_card())
 	return cards
 
 func click_card(card: Card) -> void:
@@ -93,3 +97,11 @@ func target_card(source, target, interpolation_speed := "fast") -> void:
 			source.global_position,mouse_speed)
 	yield(yield_for(mouse_yield_wait), YIELD)
 	unclick_card_anywhere(source)
+
+func table_move(card: Card, pos: Vector2) -> void:
+	card.move_to(board, -1, pos)
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	if cfc.fancy_movement:
+		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	
+	

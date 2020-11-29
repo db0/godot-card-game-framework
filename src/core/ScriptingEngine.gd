@@ -14,12 +14,6 @@ extends Reference
 # Emitted when all scripts have finished running
 signal scripts_completed
 
-# Contains a list of all the scripts still left to run for this card
-var _running_scripts: Array
-# The card which owns this Scripting Engine.
-var _card_owner: Card
-# Set when a card script wants to use a common target for all effects
-# To avoid multiple targetting arrows
 
 var custom: CustomScripts
 
@@ -29,33 +23,41 @@ func _ready() -> void:
 
 
 # Sets the owner of this Scripting Engine
-func _init(owner) -> void:
-	_card_owner = owner
+func _init() -> void:
 	custom = CustomScripts.new()
 
 
-# The main engine starts here. It populates an array with all the scripts
-# to execute, then goes one by one and sends them to the appropriate
-# functions
-func run_next_script() -> void:
-	if _running_scripts.empty():
+# The main engine starts here.
+# It receives array with all the scripts to execute,
+# then turns each array element into a CardScript object and
+# send it to the appropriate tasks.
+func run_next_script(card_owner: Card,
+		scripts_queue: Array,
+		trigger_card: Card,
+		signal_details := {}) -> void:
+	if scripts_queue.empty():
 		#print('Scripting: All done!') # Debug
 		emit_signal("scripts_completed")
 	else:
-		var script := CardScript.new(_card_owner,_running_scripts.pop_front())
+		var script := CardScript.new(
+				card_owner,
+				trigger_card,
+				signal_details,
+				scripts_queue.pop_front())
 		#print("Scripting: " + str(script)) # Debug
 		# In case the script involves targetting, we need to wait on further
 		# execution until targetting has completed
 		if not script.has_init_completed:
 			yield(script,"completed_init")
-		if script.function_name == "custom_script":
+		if script.task_name == "custom_script":
 			custom.custom_script(script)
-		elif script.function_name:
-			call(script.function_name, script)
+		elif script.task_name:
+			if script.is_valid:
+				call(script.task_name, script)
 		else:
 			 # If card has a script but it's null, it probably not coded yet. Just go on...
 			print("[WARN] Found empty script. Ignoring...")
-		run_next_script()
+		run_next_script(card_owner,scripts_queue,trigger_card,signal_details)
 
 
 # Task for rotating cards

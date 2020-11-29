@@ -3,6 +3,12 @@ extends "res://tests/UTcommon.gd"
 var card: Card
 var cards := []
 
+func before_all():
+	cfc.fancy_movement = false
+
+func after_all():
+	cfc.fancy_movement = true
+
 func before_each():
 	setup_board()
 	card = cfc.NMAP.deck.get_card(0)
