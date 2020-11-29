@@ -32,6 +32,7 @@ var has_init_completed := false
 # A task is invalid to run if some limitation does not match.
 var is_valid := true
 
+
 # prepares the properties needed by the task to function.
 func _init(card: Card,
 		trigger_card: Card,
@@ -62,6 +63,7 @@ func _init(card: Card,
 	# knows we're ready to continue
 	emit_signal("completed_init")
 	has_init_completed = true
+
 
 # Returns the specified property of the string.
 # Also sets appropriate defaults when then property has not beend defined.
@@ -109,6 +111,7 @@ func get(property: String):
 		_:
 			default = null
 	return(properties.get(property,default))
+
 
 # Figures out what the subject of this script is supposed to be.
 #
@@ -177,21 +180,42 @@ func _check_limitations():
 		is_valid = false
 	if get("trigger") == "another" and trigger == owner:
 		is_valid = false
-	# Used when triggering off of rotating cards
+
+	# Card Rotation limitation checks
 	if get("limit_to_degrees") \
 			and get("limit_to_degrees") != signal_details.get("degrees"):
 		is_valid = false
-	# Used when triggering off of flipping cards
+
+	# Card Flip limitation checks
 	if get("limit_to_faceup") \
 			and get("limit_to_faceup") != signal_details.get("is_faceup"):
 		is_valid = false
-	# The two check below, are used when triggerring off of moving between containers
-	# If a limit has been requested, then a source field should also exist
+
+	# Card move limitation checks
 	if get("limit_to_source") \
 			and get("limit_to_source") != signal_details.get("source"):
 		is_valid = false
 	if get("limit_to_destination") \
 			and get("limit_to_destination") != signal_details.get("destination"):
+		is_valid = false
+
+	# Card Tokens limitation checks
+	if get("limit_to_token_count") \
+			and get("limit_to_token_count") != signal_details.get("new_token_value"):
+		is_valid = false
+	if get("limit_to_token_difference"):
+		var prev_count = signal_details.get("previous_token_value")
+		var new_count = signal_details.get("new_token_value")
+		# Is true if the amount of tokens decreased
+		if get("limit_to_token_difference") == "increased" \
+				and prev_count > new_count:
+			is_valid = false
+		# Is true if the amount of tokens increased
+		if get("limit_to_token_difference") == "decreased" \
+				and prev_count < new_count:
+			is_valid = false
+	if get("limit_to_token_name") \
+			and get("limit_to_token_name") != signal_details.get("token_name"):
 		is_valid = false
 
 

@@ -1033,11 +1033,15 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 		if not token and mod == 0:
 			retcode = _ReturnCode.OK
 		else:
+			var prev_value = token.count
 			if set_to_mod:
 				token.count = mod
 				print(token.count)
 			else:
 				token.count += mod
+			# We store the count in a new variable, to be able to use it
+			# in the signal even after the token is deinstanced.
+			var new_value = token.count
 			if token.count == 0:
 				token.queue_free()
 		# if the drawer has already been opened, we need to make sure
@@ -1045,6 +1049,10 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 			elif _is_drawer_open:
 				token.expand()
 			retcode = _ReturnCode.CHANGED
+			emit_signal("card_token_modified", self, "card_token_modified",
+					{"token_name": token.get_token_name(),
+					"previous_token_value": prev_value,
+					"new_token_value": token.count})
 	return(retcode)
 
 

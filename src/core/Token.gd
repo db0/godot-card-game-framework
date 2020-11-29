@@ -51,7 +51,7 @@ func set_count(value := 1) -> void:
 
 # Returns the amount of tokens of this type
 func get_count() -> int:
-	return count
+	return(count)
 
 
 # Reveals the Name label.
@@ -71,4 +71,6 @@ func retract() -> void:
 	$MarginContainer.visible = false
 	$Buttons.visible = false
 
-# 
+# Returns the human-readable name of the token
+func get_token_name() -> String:
+	return($Name.text)
