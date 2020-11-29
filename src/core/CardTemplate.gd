@@ -889,7 +889,6 @@ func execute_scripts(
 		trigger: String = "manual",
 		details: Dictionary = {}) -> void:
 	# The CardScriptDefinitions.gd is where we keep all card scripting definitions
-	var loaded_scripts = CardScriptDefinitions.new()
 	var card_scripts
 	# If scripts have been defined directly in this object
 	# They take precedence over CardScriptDefinitions.gd
@@ -900,7 +899,7 @@ func execute_scripts(
 		card_scripts = scripts.get(trigger,{})
 	else:
 		# CardScriptDefinitions.gd should contain scripts for all defined cards
-		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
+		card_scripts = CardFrameworkUtils.find_card_script(card_name, trigger)
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state
 	match state:

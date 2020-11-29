@@ -135,6 +135,7 @@ var SHOW_TOKEN_BUTTONS = false
 # When this stays the same, the game randomness will always play the predictable.
 var game_rng_seed := "CFC Random Seed" setget set_seed
 var card_definitions := {}
+var script_definitions := {}
 
 #-----------------------------------------------------------------------------
 # END Behaviour Constants
@@ -195,7 +196,8 @@ func _ready() -> void:
 		hands.append(NMAP[name])
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
-	card_definitions = _load_card_definitions()
+	card_definitions = CardFrameworkUtils.load_card_definitions()
+
 
 
 # Setter for seed.
@@ -213,10 +215,6 @@ func instance_card(card_name: String) -> Card:
 	var card = template.instance()
 	card.setup(card_name)
 	return(card)
-
-
-func _load_card_definitions():
-	return(preload("res://src/custom/cards/CardDefinitions.gd").CARDS)
 
 # The SignalPropagator is responsible for collecting all card signals
 # and asking all cards to check if there's any Automation they need to perform
