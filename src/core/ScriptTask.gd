@@ -156,8 +156,6 @@ func _initiate_card_targeting(common_target_request: bool) -> Card:
 		# We wait until the targetting has been completed to continue
 		yield(owner,"target_selected")
 		target = owner.target_card
-		if not common_target_request:
-			owner.target_card = null
 	else:
 		# I don't understand it, but if I remove this timer
 		# it breaks the yield from the caller
@@ -165,6 +163,10 @@ func _initiate_card_targeting(common_target_request: bool) -> Card:
 		yield(owner.get_tree().create_timer(0.1), "timeout")
 	return(target)
 
+
+func finalize():
+	if not get("common_target_request"):
+		owner.target_card = null
 
 # Ensures that all limitations requested by the script are respected
 #

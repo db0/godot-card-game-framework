@@ -44,11 +44,11 @@ func run_next_script(card_owner: Card,
 				trigger_card,
 				signal_details,
 				scripts_queue.pop_front())
-		#print("Scripting: " + str(script)) # Debug
 		# In case the script involves targetting, we need to wait on further
 		# execution until targetting has completed
 		if not script.has_init_completed:
 			yield(script,"completed_init")
+		#print("Scripting: " + str(script.properties)) # Debug
 		if script.task_name == "custom_script":
 			custom.custom_script(script)
 		elif script.task_name:
@@ -57,6 +57,7 @@ func run_next_script(card_owner: Card,
 		else:
 			 # If card has a script but it's null, it probably not coded yet. Just go on...
 			print("[WARN] Found empty script. Ignoring...")
+		script.finalize()
 		run_next_script(card_owner,scripts_queue,trigger_card,signal_details)
 
 

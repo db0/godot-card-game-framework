@@ -504,7 +504,7 @@ func setup(card_name: String) -> void:
 		if label in CardConfig.PROPERTIES_STRINGS:
 			$Control/Front/CardText.get_node(label).text = properties[label]
 		# These are int or float properties which need to be converted
-		# to a string with some formatting. 
+		# to a string with some formatting.
 		#
 		# In this demo, the format is defined as: "labelname: value"
 		elif label in CardConfig.PROPERTIES_NUMBERS:
@@ -1146,15 +1146,15 @@ func complete_targeting() -> void:
 #				self.name," targeted ",
 #				target_card.name, " in ",
 #				target_card.get_parent().name)
+		if get_parent() != null and get_parent().name != "Viewport":
+			# We make the targeted card also emit a targeting signal for automation
+			target_card.emit_signal("card_targeted", target_card, "card_targeted",
+					{"targeting_source": self})
+		emit_signal("target_selected",target_card)
 	_is_targetting = false
 	$TargetLine.clear_points()
 	$TargetLine/ArrowHead.visible = false
 	$TargetLine/ArrowHead/Area2D.monitoring = false
-	emit_signal("target_selected",target_card)
-	if get_parent() != null and get_parent().name != "Viewport":
-		# We make the targeted card also emit a targeting signal for automation
-		target_card.emit_signal("card_targeted", target_card, "card_targeted",
-				{"targeting_source": self})
 
 # Changes the hosted Control nodes filters
 #
