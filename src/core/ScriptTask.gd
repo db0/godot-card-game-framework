@@ -51,7 +51,6 @@ func _init(card: Card,
 	task_name = get("name")
 	# We test if this task is valid
 	_check_limitations()
-	print(task_name,is_valid)
 	# We only seek targets if the task is valid
 	if is_valid:
 		# We discover which other card this task will affect, if any
@@ -217,5 +216,5 @@ func _check_limitations():
 	if get("limit_to_token_name") \
 			and get("limit_to_token_name") != signal_details.get("token_name"):
 		is_valid = false
-
-
+#	if get("limit_to_card_property"):
+#			var property_limitation = get("limit_to_card_property")

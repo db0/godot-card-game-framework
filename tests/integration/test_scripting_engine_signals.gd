@@ -313,3 +313,21 @@ func test_card_token_modified():
 			"Card turned face-down since all limits match")
 	assert_true(cards[7].is_faceup,
 			"Card stayed face-up since some limits do not match")
+
+
+func test_card_targeted():
+	watch_signals(target)
+	card.scripts = {"card_targeted": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"set_faceup": false}]}}
+	cards[4].initiate_targeting()
+	yield(target_card(cards[4], target), "completed")
+	yield(yield_for(0.1), YIELD)
+	assert_signal_emitted_with_parameters(
+				target,"card_targeted",
+				[target,"card_targeted",
+				{"targeting_source": cards[4]}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")

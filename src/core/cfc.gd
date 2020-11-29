@@ -225,7 +225,7 @@ class SignalPropagator:
 	func _on_Card_signal_received(
 			trigger_card: Card, trigger: String, details: Dictionary):
 		# We use Godot groups to ask every card to check if they
-		# have ScriptingEngine triggers for this signal
+			# have ScriptingEngine triggers for this signal
 		cfc.get_tree().call_group("cards",
 				"execute_scripts",trigger_card,trigger,details)
 

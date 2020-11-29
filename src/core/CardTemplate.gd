@@ -1036,7 +1036,6 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 			var prev_value = token.count
 			if set_to_mod:
 				token.count = mod
-				print(token.count)
 			else:
 				token.count += mod
 			# We store the count in a new variable, to be able to use it
@@ -1124,7 +1123,10 @@ func complete_targeting() -> void:
 	$TargetLine/ArrowHead.visible = false
 	$TargetLine/ArrowHead/Area2D.monitoring = false
 	emit_signal("target_selected",target_card)
-
+	if get_parent() != null and get_parent().name != "Viewport":
+		# We make the targeted card also emit a targeting signal for automation
+		target_card.emit_signal("card_targeted", target_card, "card_targeted",
+				{"targeting_source": self})
 
 # Changes the hosted Control nodes filters
 #
