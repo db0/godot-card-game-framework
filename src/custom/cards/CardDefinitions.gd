@@ -5,8 +5,7 @@ extends Reference
 const SET = "Demo Set 1"
 const CARDS := {
 	"Test Card 1": {
-		"_template": "Test1",
-		"Type": "Type",
+		"Type": "Blue",
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
 		"Abilities": "While on board, this will rotate itself." \
@@ -15,7 +14,7 @@ const CARDS := {
 	},
 	"Test Card 2": {
 		"_template": "Test2",
-		"Type": "Type",
+		"Type": "Red",
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
 		"Abilities": "While on board, this card will discard itself " \
@@ -24,7 +23,7 @@ const CARDS := {
 	},
 	"Test Card 3": {
 		"_template": "Test3",
-		"Type": "Type",
+		"Type": "Green",
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
 		"Abilities": "While on board, this card will flip face-down " \

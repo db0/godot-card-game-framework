@@ -2,9 +2,6 @@
 extends Board
 
 const cardTemplate = preload("res://src/core/CardTemplate.tscn")
-const test1 = preload("res://src/custom/cards/Test1.tscn")
-const test2 = preload("res://src/custom/cards/Test2.tscn")
-const test3 = preload("res://src/custom/cards/Test3.tscn")
 
 var allCards := [] # A pseudo-deck array to hold the card objects we want to pull
 
@@ -67,21 +64,10 @@ func load_test_cards() -> void:
 	for _i in range(12):
 		var random_card_name = \
 				test_cards[CardFrameworkUtils.randi() % len(test_cards)]
-#		print("res://src/custom/cards/" 
-#				+ cfc.card_definitions[random_card_key]["Template"] + ".tscn")
-		var template = load("res://src/custom/cards/" 
-				+ cfc.card_definitions[random_card_name]["_template"] + ".tscn")
-		var card_name = random_card_name
-		var card = template.instance()
-		test_card_array.append(card)
-		card.setup(card_name)
+		test_card_array.append(cfc.instance_card(random_card_name))
 	# I ensure there's of each test card, for use in GUT
 	for card_name in test_cards:
-		var template = load("res://src/custom/cards/" 
-				+ cfc.card_definitions[card_name]["_template"] + ".tscn")
-		var card = template.instance()
-		test_card_array.append(card)
-		card.setup(card_name)
+		test_card_array.append(cfc.instance_card(card_name))
 	for card in test_card_array:
 		$Deck.add_child(card)
 		# warning-ignore:return_value_discarded

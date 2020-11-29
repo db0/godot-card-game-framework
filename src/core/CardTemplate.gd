@@ -504,10 +504,12 @@ func setup(card_name: String) -> void:
 		if label in CardConfig.PROPERTIES_STRINGS:
 			$Control/Front/CardText.get_node(label).text = properties[label]
 		# These are int or float properties which need to be converted
-		# to strings before adding to label.text field
+		# to a string with some formatting. 
+		#
+		# In this demo, the format is defined as: "labelname: value"
 		elif label in CardConfig.PROPERTIES_NUMBERS:
 			$Control/Front/CardText.get_node(label).text = \
-					str(properties[label])
+					label + ": " + str(properties[label])
 		# These are arrays of properties which are put in a label with a simple
 		# Join character
 		elif label in CardConfig.PROPERTIES_ARRAYS:

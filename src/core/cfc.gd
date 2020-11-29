@@ -156,6 +156,7 @@ var card_drag_ongoing: Card = null
 var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 # Game random seed
 
+
 func _ready() -> void:
 	# We reset our node mapping variables every time
 	# as they repopulate during unit testing many times.
@@ -196,10 +197,23 @@ func _ready() -> void:
 	set_seed(game_rng_seed)
 	card_definitions = _load_card_definitions()
 
+
 # Setter for seed.
 func set_seed(_seed: String) -> void:
 	game_rng_seed = _seed
 	game_rng.set_seed(hash(game_rng_seed))
+
+
+# Instances and returns a Card object, based on its name.
+func instance_card(card_name: String) -> Card:
+	# We discover the template from the "Type"  property defined
+	# in each card. Any property can be used
+	var template = load("res://src/custom/cards/" 
+			+ card_definitions[card_name][CardConfig.SCENE_PROPERTY] + ".tscn")
+	var card = template.instance()
+	card.setup(card_name)
+	return(card)
+
 
 func _load_card_definitions():
 	return(preload("res://src/custom/cards/CardDefinitions.gd").CARDS)
