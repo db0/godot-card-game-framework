@@ -12,7 +12,7 @@ func after_all():
 
 func before_each():
 	setup_board()
-	cards = draw_test_cards(5)
+	cards = draw_test_cards(8)
 	yield(yield_for(0.5), YIELD)
 	card = cards[0]
 	target = cards[2]
@@ -36,9 +36,9 @@ func test_signals():
 	card.card_rotation = 90
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
-				card,"card_flipped",[card,"card_flipped",[false]])
+				card,"card_flipped",[card,"card_flipped",{"is_faceup": false}])
 	assert_signal_emitted_with_parameters(
-				card,"card_rotated",[card,"card_rotated",[90]])
+				card,"card_rotated",[card,"card_rotated",{"degrees": 90}])
 	# Test "any" trigger works
 	target.scripts = {"card_rotated": { "board": [
 			{"name": "flip_card",
@@ -48,26 +48,27 @@ func test_signals():
 	target.card_rotation = 90
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
-				target,"card_flipped",[target,"card_flipped",[false]])
+				target,"card_flipped",[target,"card_flipped",{"is_faceup": false}])
 	assert_signal_emitted_with_parameters(
-				target,"card_rotated",[target,"card_rotated",[90]])
+				target,"card_rotated",[target,"card_rotated",{"degrees": 90}])
 
 func test_card_rotated():
 	watch_signals(card)
 	watch_signals(target)
-	card.scripts = {"card_rotated": { "board": [
-			{"name": "rotate_card",
+	card.scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"degrees": 270}]}}
-	yield(table_move(card, Vector2(100,100)), "completed")
+			"set_faceup": false}]}}
 	yield(table_move(target, Vector2(500,100)), "completed")
 	target.card_rotation = 90
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
-				target,"card_rotated",[target,"card_rotated",[90]])
-	assert_signal_emitted_with_parameters(
-				card,"card_rotated",[card,"card_rotated",[270]])
+				target,"card_rotated",
+				[target,"card_rotated",
+				{"degrees": 90}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")
 
 
 func test_card_flipped():
@@ -81,9 +82,11 @@ func test_card_flipped():
 	target.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
-				target,"card_flipped",[target,"card_flipped",[false]])
-	assert_signal_emitted_with_parameters(
-				card,"card_flipped",[card,"card_flipped",[false]])
+				target,"card_flipped",
+				[target,"card_flipped",
+				{"is_faceup": false}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")
 
 func test_card_viewed():
 	watch_signals(card)
@@ -99,9 +102,11 @@ func test_card_viewed():
 	target.is_viewed = true
 	yield(yield_for(0.5), YIELD)
 	assert_signal_emitted_with_parameters(
-				target,"card_viewed",[target,"card_viewed",[true]])
-	assert_signal_emitted_with_parameters(
-				card,"card_flipped",[card,"card_flipped",[false]])
+				target,"card_viewed",
+				[target,"card_viewed",
+				{"is_viewed": true}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")
 
 func test_card_moved_to_hand():
 	target = cfc.NMAP.deck.get_top_card()
@@ -117,9 +122,9 @@ func test_card_moved_to_hand():
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_hand",
 				[target,"card_moved_to_hand",
-				[hand, deck]])
-	assert_signal_emitted_with_parameters(
-				card,"card_flipped",[card,"card_flipped",[false]])
+				{"destination": hand, "source": deck}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")
 
 func test_card_moved_to_board():
 	watch_signals(card)
@@ -134,23 +139,70 @@ func test_card_moved_to_board():
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_board",
 				[target,"card_moved_to_board",
-				[board, hand]])
-	assert_signal_emitted_with_parameters(
-				card,"card_flipped",[card,"card_flipped",[false]])
+				{"destination": board, "source": hand}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")
 
 func test_card_moved_to_pile():
 	watch_signals(card)
 	watch_signals(target)
+	# This card should turn face-down since there's no limit
 	card.scripts = {"card_moved_to_pile": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
+			"set_faceup": false}]}}
+	# This card should stay face-up since destination limit will be false
+	cards[1].scripts = {"card_moved_to_pile": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_destination": deck,
+			"set_faceup": false}]}}
+	# This card should stay face-up since limit will be false
+	cards[3].scripts = {"card_moved_to_pile": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_source": deck,
+			"set_faceup": false}]}}
+	# This card should turn face-down since both limits will be true
+	cards[4].scripts = {"card_moved_to_pile": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_source": hand,
+			"limit_to_destination": discard,
+			"set_faceup": false}]}}
+	# This card should stay face-up since both limits will be false
+	cards[5].scripts = {"card_moved_to_pile": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_source": discard,
+			"limit_to_destination": deck,
+			"set_faceup": false}]}}
+	cards[6].scripts = {"card_moved_to_pile": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_destination": discard,
 			"set_faceup": false}]}}
 	target.move_to(discard)
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_pile",
 				[target,"card_moved_to_pile",
-				[discard, hand]])
-	assert_signal_emitted_with_parameters(
-				card,"card_flipped",[card,"card_flipped",[false]])
+				{"destination": discard, "source": hand}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")
+	assert_true(cards[1].is_faceup,
+			"Card stayed face-up since destination limit is false")
+	assert_true(cards[3].is_faceup,
+			"Card stayed face-up since source limit is false")
+	assert_false(cards[4].is_faceup,
+			"Card turned face-down since both limits are true")
+	assert_true(cards[5].is_faceup,
+			"Card stayed face-up since both limits are false")
+	assert_false(cards[6].is_faceup,
+			"Card turned face-down since limit will be true")

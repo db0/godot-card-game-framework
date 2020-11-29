@@ -47,7 +47,7 @@ func setup_board() -> void:
 func draw_test_cards(count: int) -> Array:
 	var cards = []
 	for _iter in range(count):
-		cards.append(cfc.NMAP.hand.draw_card())
+		cards.append(hand.draw_card())
 	return cards
 
 func click_card(card: Card) -> void:

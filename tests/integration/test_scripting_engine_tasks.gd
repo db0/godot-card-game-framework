@@ -25,8 +25,6 @@ func test_basics():
 			"degrees": 270}]}}
 	watch_signals(card.scripting_engine)
 	card.execute_scripts()
-	assert_eq(card.scripting_engine._card_owner, card,
-			"Scripting Engine owner card is self")
 	assert_signal_emitted(card.scripting_engine,"scripts_completed")
 	yield(table_move(card, Vector2(100,200)), "completed")
 	card.execute_scripts()

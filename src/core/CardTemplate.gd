@@ -47,19 +47,19 @@ signal target_selected(card)
 # The signal must send its name as well (in the trigger var)
 # Because it's sent by the SignalPropagator to all cards and they use it
 # To filter.
-signal card_rotated(card,trigger,args)
+signal card_rotated(card,trigger,details)
 # Emitted whenever the card flips up/down
-signal card_flipped(card,trigger,args)
+signal card_flipped(card,trigger,details)
 # Emitted whenever the card is viewed while face-down
-signal card_viewed(card,trigger,args)
-signal card_moved_to_board(card,trigger,args)
-signal card_moved_to_pile(card,trigger,args)
-signal card_moved_to_hand(card,trigger,args)
-signal card_token_modified(card,trigger,args)
-signal card_attached(card,trigger,args)
-signal card_unattached(card,trigger,args)
-signal card_attachments_modified(card,trigger,args)
-signal card_targeted(card,trigger,args)
+signal card_viewed(card,trigger,details)
+signal card_moved_to_board(card,trigger,details)
+signal card_moved_to_pile(card,trigger,details)
+signal card_moved_to_hand(card,trigger,details)
+signal card_token_modified(card,trigger,details)
+signal card_attached(card,trigger,details)
+signal card_unattached(card,trigger,details)
+signal card_attachments_modified(card,trigger,details)
+signal card_targeted(card,trigger,details)
 
 
 
@@ -129,7 +129,7 @@ var _tween_stuck_time = 0
 # The ScriptingEngine is where we execute the scripts
 # We cannot use its class reference,
 # as it causes a cyclic reference error when parsing
-onready var scripting_engine = load("res://src/core/ScriptingEngine.gd").new(self)
+onready var scripting_engine = load("res://src/core/ScriptingEngine.gd").new()
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
@@ -564,7 +564,7 @@ func set_is_faceup(value: bool, instant := false) -> int:
 					var dupe_back = dupe_card.get_node("Control/Back")
 					_flip_card(dupe_front, dupe_back, true)
 		retcode = _ReturnCode.CHANGED
-		emit_signal("card_flipped", self, "card_flipped", [value])
+		emit_signal("card_flipped", self, "card_flipped", {"is_faceup": value})
 	return retcode
 
 
@@ -600,7 +600,7 @@ func set_is_viewed(value: bool) -> int:
 			retcode = _ReturnCode.CHANGED
 			# We only emit a signal when we view the card
 			# not when we unview it as that happens naturally
-			emit_signal("card_viewed", self, "card_viewed", [value])
+			emit_signal("card_viewed", self, "card_viewed",  {"is_viewed": true})
 	else:
 		if value == is_viewed:
 			retcode = _ReturnCode.OK
@@ -688,7 +688,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 		# We report that it changed.
 		retcode = _ReturnCode.CHANGED
 		card_rotation = value
-		emit_signal("card_rotated", self, "card_rotated", [value])
+		emit_signal("card_rotated", self, "card_rotated",  {"degrees": value})
 	return retcode
 
 
@@ -744,7 +744,7 @@ func move_to(targetHost: Node2D,
 			emit_signal("card_moved_to_hand",
 					self,
 					"card_moved_to_hand",
-					[targetHost,parentHost])
+					 {"destination": targetHost, "source": parentHost})
 			# We reorganize the left over cards in hand.
 			for c in targetHost.get_all_cards():
 				if c != self:
@@ -776,7 +776,7 @@ func move_to(targetHost: Node2D,
 				emit_signal("card_moved_to_pile",
 						self,
 						"card_moved_to_pile",
-						[targetHost,parentHost])
+						{"destination": targetHost, "source": parentHost})
 				if set_is_faceup(targetHost.faceup_cards) == _ReturnCode.FAILED:
 					print("ERROR: Something went unexpectedly in set_is_faceup")
 				# If we have fancy movement, we need to wait for 2 tweens to finish
@@ -806,7 +806,7 @@ func move_to(targetHost: Node2D,
 			emit_signal("card_moved_to_board",
 					self,
 					"card_moved_to_board",
-					[targetHost,parentHost])
+					{"destination": targetHost, "source": parentHost})
 		if parentHost in cfc.hands:
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
@@ -858,7 +858,8 @@ func move_to(targetHost: Node2D,
 
 func execute_scripts(
 		trigger_card: Card = self,
-		trigger: String = "manual") -> void:
+		trigger: String = "manual",
+		details: Dictionary = {}) -> void:
 	# The CardScripts is where we keep all card scripting definitions
 	var loaded_scripts = CardScriptDefinitions.new()
 	var card_scripts
@@ -883,9 +884,10 @@ func execute_scripts(
 			state_scripts = card_scripts.get("hand", [])
 		IN_POPUP,FOCUSED_IN_POPUP:
 			state_scripts = card_scripts.get("pile", [])
-	scripting_engine.trigger_card = trigger_card
-	scripting_engine._running_scripts = state_scripts.duplicate()
-	scripting_engine.run_next_script()
+	scripting_engine.run_next_script(self,
+			state_scripts.duplicate(),
+			trigger_card,
+			details)
 
 
 # Handles the card becoming an attachment for a specified host Card object
