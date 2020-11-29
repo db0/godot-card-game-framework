@@ -29,7 +29,7 @@ func _init() -> void:
 
 # The main engine starts here.
 # It receives array with all the scripts to execute,
-# then turns each array element into a CardScript object and
+# then turns each array element into a ScriptTask object and
 # send it to the appropriate tasks.
 func run_next_script(card_owner: Card,
 		scripts_queue: Array,
@@ -39,7 +39,7 @@ func run_next_script(card_owner: Card,
 		#print('Scripting: All done!') # Debug
 		emit_signal("scripts_completed")
 	else:
-		var script := CardScript.new(
+		var script := ScriptTask.new(
 				card_owner,
 				trigger_card,
 				signal_details,
@@ -64,7 +64,7 @@ func run_next_script(card_owner: Card,
 #
 # Requires the following keys:
 # * "degrees": int
-func rotate_card(script: CardScript) -> void:
+func rotate_card(script: ScriptTask) -> void:
 	var card = script.subject
 	card.card_rotation = script.get("degrees")
 
@@ -73,7 +73,7 @@ func rotate_card(script: CardScript) -> void:
 #
 # Requires the following keys:
 # * "set_faceup": bool
-func flip_card(script: CardScript) -> void:
+func flip_card(script: ScriptTask) -> void:
 	var card = script.subject
 	card.is_faceup = script.get("set_faceup")
 
@@ -88,7 +88,7 @@ func flip_card(script: CardScript) -> void:
 # * index ==  -1 means last card in the CardContainer
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
-func move_card_to_container(script: CardScript) -> void:
+func move_card_to_container(script: ScriptTask) -> void:
 	var dest_index: int = script.get("dest_index")
 	var card = script.subject
 	card.move_to(script.get("container"), dest_index)
@@ -98,7 +98,7 @@ func move_card_to_container(script: CardScript) -> void:
 #
 # Requires the following keys:
 # * "container": CardContainer
-func move_card_to_board(script: CardScript) -> void:
+func move_card_to_board(script: ScriptTask) -> void:
 	var card = script.subject
 	card.move_to(cfc.NMAP.board, -1, script.get("board_position"))
 
@@ -115,7 +115,7 @@ func move_card_to_board(script: CardScript) -> void:
 # * index ==  -1 means last card in the CardContainer
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
-func move_card_cont_to_cont(script: CardScript) -> void:
+func move_card_cont_to_cont(script: ScriptTask) -> void:
 	var card_index: int = script.get("pile_index")
 	var src_container: CardContainer = script.get("src_container")
 	var card = src_container.get_card(card_index)
@@ -129,7 +129,7 @@ func move_card_cont_to_cont(script: CardScript) -> void:
 # Requires the following keys:
 # * "card_index": int
 # * "src_container": CardContainer
-func move_card_cont_to_board(script: CardScript) -> void:
+func move_card_cont_to_board(script: ScriptTask) -> void:
 	var card_index: int = script.get("pile_index")
 	var src_container: CardContainer = script.get("src_container")
 	var card := src_container.get_card(card_index)
@@ -143,7 +143,7 @@ func move_card_cont_to_board(script: CardScript) -> void:
 # * "token_name": String
 # * "modification": int
 # * (Optional) "set_to_mod": bool
-func mod_tokens(script: CardScript) -> void:
+func mod_tokens(script: ScriptTask) -> void:
 	var card := script.subject
 	var token_name: String = script.get("token_name")
 	var modification: int = script.get("modification")
@@ -157,7 +157,7 @@ func mod_tokens(script: CardScript) -> void:
 # Requires the following keys:
 # * "card_scene": path to .tscn file
 # * "board_position": Vector2
-func spawn_card(script: CardScript) -> void:
+func spawn_card(script: ScriptTask) -> void:
 	var card_scene: String = script.get("card_scene")
 	var board_position: Vector2 = script.get("board_position")
 	var card: Card = load(card_scene).instance()
@@ -170,18 +170,18 @@ func spawn_card(script: CardScript) -> void:
 #
 # Requires the following keys:
 # * "container": CardContainer
-func shuffle_container(script: CardScript) -> void:
+func shuffle_container(script: ScriptTask) -> void:
 	var container: CardContainer = script.get("container")
 	container.shuffle_cards()
 
 
 # Task from making the owner card an attachment to another card
-func attach_to_card(script: CardScript) -> void:
+func attach_to_card(script: ScriptTask) -> void:
 	var card := script.subject
 	script.owner.attach_to_host(card)
 
 
 # Task for attaching another card to the owner
-func host_card(script: CardScript) -> void:
+func host_card(script: ScriptTask) -> void:
 	var card := script.subject
 	card.attach_to_host(script.owner)

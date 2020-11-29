@@ -12,7 +12,7 @@ extends Reference
 # And to have a self-reference in case it affects itself
 #
 # You can pass a predefined subject, but it's optional.
-func custom_script(script: CardScript) -> void:
+func custom_script(script: ScriptTask) -> void:
 	var card: Card = script.owner
 	var subject: Card = script.subject
 	# I don't like the extra indent caused by this if, 

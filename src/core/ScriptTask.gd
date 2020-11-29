@@ -3,7 +3,7 @@
 #
 # It also contains methods to return properties of the task and to find
 # the required objects in the game
-class_name CardScript
+class_name ScriptTask
 extends Reference
 
 # Sent when the _init() method has completed
