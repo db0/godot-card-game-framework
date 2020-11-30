@@ -92,7 +92,7 @@ func flip_card(script: ScriptTask) -> void:
 func move_card_to_container(script: ScriptTask) -> void:
 	var dest_index: int = script.get("dest_index")
 	var card = script.subject
-	card.move_to(script.get("container"), dest_index)
+	card.move_to(script.get("dest_container"), dest_index)
 
 
 # Task for moving card to the board
@@ -172,7 +172,7 @@ func spawn_card(script: ScriptTask) -> void:
 # Requires the following keys:
 # * "container": CardContainer
 func shuffle_container(script: ScriptTask) -> void:
-	var container: CardContainer = script.get("container")
+	var container: CardContainer = script.get("dest_container")
 	container.shuffle_cards()
 
 
