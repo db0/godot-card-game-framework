@@ -90,3 +90,6 @@ func test_card_name_setget():
 	assert_string_contains(card.name, "Testing Name Change 2")
 	assert_eq("Testing Name Change 2",card.get_node("Control/Front/CardText/Name").text,
 			'Name Label text is set correctly')
+
+func test_CardDefinition_properties():
+	pending("Array property should use the separator")

@@ -17,6 +17,11 @@
   * Trigger-based execution supported:
     * card_rotated
 	* card_flipped
+	* card_viewed
+	* card_moved_to_board
+	* card_moved_to_hand
+	* card_moved_to_pile
+	* card_tokens_modified
 
 
 In case you're wondering why the FocusHighlight node has two children panel nodes, instead of making it itself a Panel node.

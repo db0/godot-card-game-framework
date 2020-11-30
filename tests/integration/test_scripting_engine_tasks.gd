@@ -66,7 +66,7 @@ func test_basics():
 			"Scripts should not fire while card is face-down")
 	card.scripts = {"hand": [{}]}
 
-# Checks that scripts from the CardScripts have been loaded correctly
+# Checks that scripts from the CardScriptDefinitions.gd have been loaded correctly
 func test_CardScripts():
 	card = cards[0]
 	target = cards[2]
@@ -284,6 +284,7 @@ func test_attach_to_card():
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(card.current_host_card,target,
 			"Card has been hosted on the target")
+
 
 func test_host_card():
 	yield(table_move(card, Vector2(500,400)), "completed")

@@ -53,7 +53,6 @@ func test_signals():
 				target,"card_rotated",[target,"card_rotated",{"degrees": 90}])
 
 func test_card_rotated():
-	watch_signals(card)
 	watch_signals(target)
 	card.scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
@@ -88,7 +87,6 @@ func test_card_rotated():
 
 
 func test_card_flipped():
-	watch_signals(card)
 	watch_signals(target)
 	card.scripts = {"card_flipped": { "hand": [
 			{"name": "flip_card",
@@ -121,7 +119,6 @@ func test_card_flipped():
 			"Card turned face-down since limit_to_facup is false")
 
 func test_card_viewed():
-	watch_signals(card)
 	watch_signals(target)
 	card.scripts = {"card_viewed": { "hand": [
 			{"name": "flip_card",
@@ -142,7 +139,6 @@ func test_card_viewed():
 
 func test_card_moved_to_hand():
 	target = cfc.NMAP.deck.get_top_card()
-	watch_signals(card)
 	watch_signals(target)
 	card.scripts = {"card_moved_to_hand": { "hand": [
 			{"name": "flip_card",
@@ -159,7 +155,6 @@ func test_card_moved_to_hand():
 			"Card turned face-down after signal trigger")
 
 func test_card_moved_to_board():
-	watch_signals(card)
 	watch_signals(target)
 	card.scripts = {"card_moved_to_board": { "hand": [
 			{"name": "flip_card",
@@ -176,7 +171,6 @@ func test_card_moved_to_board():
 			"Card turned face-down after signal trigger")
 
 func test_card_moved_to_pile():
-	watch_signals(card)
 	watch_signals(target)
 	# This card should turn face-down since there's no limit
 	card.scripts = {"card_moved_to_pile": { "hand": [
@@ -238,3 +232,102 @@ func test_card_moved_to_pile():
 			"Card stayed face-up since both limits do not match")
 	assert_false(cards[6].is_faceup,
 			"Card turned face-down since limit_to_destination matches")
+
+func test_card_token_modified():
+	# warning-ignore:return_value_discarded
+	target.mod_token("void",5)
+	yield(yield_for(0.1), YIELD)
+	watch_signals(target)
+	# This card should turn face-down since there's no limit
+	card.scripts = {"card_token_modified": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"set_faceup": false}]}}
+	# This card should stay face-up since token_name limit will not match
+	cards[2].scripts = {"card_token_modified": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_token_name": "Bio",
+			"set_faceup": false}]}}
+	# This card should stay face-up since token_count will not match
+	cards[3].scripts = {"card_token_modified": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_token_count": 10,
+			"set_faceup": false}]}}
+	# This card should stay face-up since token_difference will not have incr.
+	cards[4].scripts = {"card_token_modified": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_token_difference": "increased",
+			"set_faceup": false}]}}
+	# This card should turn face-down since token_difference will decrease
+	cards[5].scripts = {"card_token_modified": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_token_difference": "decreased",
+			"set_faceup": false}]}}
+	# This card should turn face-down since all limits will match
+	cards[6].scripts = {"card_token_modified": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_token_difference": "decreased",
+			"limit_to_token_count": 0,
+			"limit_to_token_name": "Void",
+			"set_faceup": false}]}}
+	# This card should stay face-up since some limits will not match
+	cards[7].scripts = {"card_token_modified": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_token_difference": "decreased",
+			"limit_to_token_count": 1,
+			"limit_to_token_name": "Tech",
+			"set_faceup": false}]}}
+	# warning-ignore:return_value_discarded
+	target.mod_token("void", -5)
+	yield(yield_for(0.1), YIELD)
+	assert_signal_emitted_with_parameters(
+				target,"card_token_modified",
+				[target,"card_token_modified",
+				{"token_name": "Void",
+				"previous_token_value": 5,
+				"new_token_value": 0}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")
+	assert_true(cards[2].is_faceup,
+			"Card stayed face-up limit_to_token_name does not match")
+	assert_true(cards[3].is_faceup,
+			"Card stayed face-up since limit_to_token_count does not match")
+	assert_true(cards[4].is_faceup,
+			"Card stayed face-up since limit_to_token_difference does not match")
+	assert_false(cards[5].is_faceup,
+			"Card turned face-down since limit_to_token_difference matches")
+	assert_false(cards[6].is_faceup,
+			"Card turned face-down since all limits match")
+	assert_true(cards[7].is_faceup,
+			"Card stayed face-up since some limits do not match")
+
+
+func test_card_targeted():
+	watch_signals(target)
+	card.scripts = {"card_targeted": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"set_faceup": false}]}}
+	cards[4].initiate_targeting()
+	yield(target_card(cards[4], target), "completed")
+	yield(yield_for(0.1), YIELD)
+	assert_signal_emitted_with_parameters(
+				target,"card_targeted",
+				[target,"card_targeted",
+				{"targeting_source": cards[4]}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")

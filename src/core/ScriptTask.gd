@@ -3,15 +3,15 @@
 #
 # It also contains methods to return properties of the task and to find
 # the required objects in the game
-class_name CardScript
+class_name ScriptTask
 extends Reference
 
 # Sent when the _init() method has completed
 signal completed_init
 
-# The card which owns this CardScript
+# The card which owns this Task
 var owner: Card
-# The card which triggered this CardScript.
+# The card which triggered this Task.
 #
 # It is typically `"self"` during manual execution,
 # but is `"another"` card during signal-based execution
@@ -32,6 +32,7 @@ var has_init_completed := false
 # A task is invalid to run if some limitation does not match.
 var is_valid := true
 
+
 # prepares the properties needed by the task to function.
 func _init(card: Card,
 		trigger_card: Card,
@@ -50,7 +51,6 @@ func _init(card: Card,
 	task_name = get("name")
 	# We test if this task is valid
 	_check_limitations()
-	print(task_name,is_valid)
 	# We only seek targets if the task is valid
 	if is_valid:
 		# We discover which other card this task will affect, if any
@@ -62,6 +62,7 @@ func _init(card: Card,
 	# knows we're ready to continue
 	emit_signal("completed_init")
 	has_init_completed = true
+
 
 # Returns the specified property of the string.
 # Also sets appropriate defaults when then property has not beend defined.
@@ -110,6 +111,7 @@ func get(property: String):
 			default = null
 	return(properties.get(property,default))
 
+
 # Figures out what the subject of this script is supposed to be.
 #
 # Returns a Card object if subject is defined, else returns null.
@@ -127,7 +129,7 @@ func _find_subject() -> Card:
 		if subject_seek is GDScriptFunctionState: # Still working.
 			subject_seek = yield(subject_seek, "completed")
 	# If the subject is "self", we return the _card_owner
-	# of this CardScript
+	# of this Task
 	elif get("subject") == "self":
 		subject_seek = owner
 	# Otherwise we pass null, assuming there's no subject needed
@@ -154,8 +156,6 @@ func _initiate_card_targeting(common_target_request: bool) -> Card:
 		# We wait until the targetting has been completed to continue
 		yield(owner,"target_selected")
 		target = owner.target_card
-		if not common_target_request:
-			owner.target_card = null
 	else:
 		# I don't understand it, but if I remove this timer
 		# it breaks the yield from the caller
@@ -163,6 +163,10 @@ func _initiate_card_targeting(common_target_request: bool) -> Card:
 		yield(owner.get_tree().create_timer(0.1), "timeout")
 	return(target)
 
+
+func finalize():
+	if not get("common_target_request"):
+		owner.target_card = null
 
 # Ensures that all limitations requested by the script are respected
 #
@@ -177,16 +181,18 @@ func _check_limitations():
 		is_valid = false
 	if get("trigger") == "another" and trigger == owner:
 		is_valid = false
-	# Used when triggering off of rotating cards
+
+	# Card Rotation limitation checks
 	if get("limit_to_degrees") \
 			and get("limit_to_degrees") != signal_details.get("degrees"):
 		is_valid = false
-	# Used when triggering off of flipping cards
+
+	# Card Flip limitation checks
 	if get("limit_to_faceup") \
 			and get("limit_to_faceup") != signal_details.get("is_faceup"):
 		is_valid = false
-	# The two check below, are used when triggerring off of moving between containers
-	# If a limit has been requested, then a source field should also exist
+
+	# Card move limitation checks
 	if get("limit_to_source") \
 			and get("limit_to_source") != signal_details.get("source"):
 		is_valid = false
@@ -194,4 +200,23 @@ func _check_limitations():
 			and get("limit_to_destination") != signal_details.get("destination"):
 		is_valid = false
 
-
+	# Card Tokens limitation checks
+	if get("limit_to_token_count") \
+			and get("limit_to_token_count") != signal_details.get("new_token_value"):
+		is_valid = false
+	if get("limit_to_token_difference"):
+		var prev_count = signal_details.get("previous_token_value")
+		var new_count = signal_details.get("new_token_value")
+		# Is true if the amount of tokens decreased
+		if get("limit_to_token_difference") == "increased" \
+				and prev_count > new_count:
+			is_valid = false
+		# Is true if the amount of tokens increased
+		if get("limit_to_token_difference") == "decreased" \
+				and prev_count < new_count:
+			is_valid = false
+	if get("limit_to_token_name") \
+			and get("limit_to_token_name") != signal_details.get("token_name"):
+		is_valid = false
+#	if get("limit_to_card_property"):
+#			var property_limitation = get("limit_to_card_property")

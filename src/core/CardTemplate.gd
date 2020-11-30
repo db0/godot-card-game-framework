@@ -52,26 +52,36 @@ signal card_rotated(card,trigger,details)
 signal card_flipped(card,trigger,details)
 # Emitted whenever the card is viewed while face-down
 signal card_viewed(card,trigger,details)
+#Emited whenever the card is moved to the board
 signal card_moved_to_board(card,trigger,details)
+#Emited whenever the card is moved to a pile
 signal card_moved_to_pile(card,trigger,details)
+#Emited whenever the card is moved to a hand
 signal card_moved_to_hand(card,trigger,details)
+#Emited whenever the card's tokens are modified
 signal card_token_modified(card,trigger,details)
+#Emited whenever the card attaches to another
 signal card_attached(card,trigger,details)
+#Emited whenever the card unattaches from another
 signal card_unattached(card,trigger,details)
+#Emited whenever the card's attachments change
 signal card_attachments_modified(card,trigger,details)
+#Emited whenever the card is targeted by another
 signal card_targeted(card,trigger,details)
 
 
 
 # Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
+
+export var properties :=  {}
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 #
 # If this variable is set, it takes precedence over scripts
-# found in CardScripts.gd
+# found in `CardScriptDefinitions.gd`
 #
-# See CardScripts.gd for the proper format of a scripts dictionary
+# See `CardScriptDefinitions.gd` for the proper format of a scripts dictionary
 export var scripts := {}
 # If true, the card can be attached to other cards and will follow
 # their host around the table. The card will always return to its host
@@ -136,6 +146,8 @@ onready var _flip_tween = $Control/FlipTween
 onready var _buttons_tween = $Control/ManipulationButtons/Tween
 onready var _pulse_tween = $Control/Back/Pulse
 onready var _tokens_tween = $Control/Tokens/Tween
+
+onready var _card_text = $Control/Front/CardText
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -489,6 +501,31 @@ func _on_Pulse_completed() -> void:
 		_stop_pulse()
 
 
+# This function handles filling up the card's labels according to its
+# card definition dictionary entry.
+func setup(cname: String) -> void:
+	# The properties of the card should be already stored in cfc
+	properties = cfc.card_definitions.get(cname)
+	for label in properties.keys():
+		# These are standard properties which is simple a String to add to the
+		# label.text field
+		if label in CardConfig.PROPERTIES_STRINGS:
+			$Control/Front/CardText.get_node(label).text = properties[label]
+		# These are int or float properties which need to be converted
+		# to a string with some formatting.
+		#
+		# In this demo, the format is defined as: "labelname: value"
+		elif label in CardConfig.PROPERTIES_NUMBERS:
+			$Control/Front/CardText.get_node(label).text = \
+					label + ": " + str(properties[label])
+		# These are arrays of properties which are put in a label with a simple
+		# Join character
+		elif label in CardConfig.PROPERTIES_ARRAYS:
+			$Control/Front/CardText.get_node(label).text = \
+					CardFrameworkUtils.array_join(properties[label],
+					cfc.ARRAY_PROPERTY_JOIN)
+
+
 # Setter for _is_attachment
 func set_is_attachment(value: bool) -> void:
 	is_attachment = value
@@ -639,7 +676,6 @@ func set_name(value : String) -> void:
 	.set_name(value)
 	$Control/Front/CardText/Name.text = value
 	card_name = value
-
 
 # Setter for card_rotation.
 #
@@ -860,19 +896,18 @@ func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
 		details: Dictionary = {}) -> void:
-	# The CardScripts is where we keep all card scripting definitions
-	var loaded_scripts = CardScriptDefinitions.new()
+	# The CardScriptDefinitions.gd is where we keep all card scripting definitions
 	var card_scripts
 	# If scripts have been defined directly in this object
-	# They take precedence over CardScripts.gd
+	# They take precedence over CardScriptDefinitions.gd
 	#
 	# This allows us to modify a card's scripts during runtime
 	# in isolation from other cards of the same name
 	if not scripts.empty():
 		card_scripts = scripts.get(trigger,{})
 	else:
-		# CardScripts.gd should contain scripts for all defined cards
-		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
+		# CardScriptDefinitions.gd should contain scripts for all defined cards
+		card_scripts = CardFrameworkUtils.find_card_script(card_name, trigger)
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state
 	match state:
@@ -1033,11 +1068,14 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 		if not token and mod == 0:
 			retcode = _ReturnCode.OK
 		else:
+			var prev_value = token.count
 			if set_to_mod:
 				token.count = mod
-				print(token.count)
 			else:
 				token.count += mod
+			# We store the count in a new variable, to be able to use it
+			# in the signal even after the token is deinstanced.
+			var new_value = token.count
 			if token.count == 0:
 				token.queue_free()
 		# if the drawer has already been opened, we need to make sure
@@ -1045,6 +1083,10 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 			elif _is_drawer_open:
 				token.expand()
 			retcode = _ReturnCode.CHANGED
+			emit_signal("card_token_modified", self, "card_token_modified",
+					{"token_name": token.get_token_name(),
+					"previous_token_value": prev_value,
+					"new_token_value": new_value})
 	return(retcode)
 
 
@@ -1111,12 +1153,15 @@ func complete_targeting() -> void:
 #				self.name," targeted ",
 #				target_card.name, " in ",
 #				target_card.get_parent().name)
+		if get_parent() != null and get_parent().name != "Viewport":
+			# We make the targeted card also emit a targeting signal for automation
+			target_card.emit_signal("card_targeted", target_card, "card_targeted",
+					{"targeting_source": self})
+		emit_signal("target_selected",target_card)
 	_is_targetting = false
 	$TargetLine.clear_points()
 	$TargetLine/ArrowHead.visible = false
 	$TargetLine/ArrowHead/Area2D.monitoring = false
-	emit_signal("target_selected",target_card)
-
 
 # Changes the hosted Control nodes filters
 #
@@ -1906,6 +1951,7 @@ func _token_drawer(drawer_state := true) -> void:
 				_is_drawer_open = true
 				# To avoid tween deadlocks
 				tween.remove_all()
+				# warning-ignore:return_value_discarded
 				tween.interpolate_property(
 						td,'rect_position', td.rect_position,
 						Vector2($Control.rect_size.x,td.rect_position.y),
@@ -1915,17 +1961,22 @@ func _token_drawer(drawer_state := true) -> void:
 					token.expand()
 				# Normally the drawer is invisible. We make it visible now
 				$Control/Tokens/Drawer.self_modulate[3] = 1
+#				 warning-ignore:return_value_discarded
+				# warning-ignore:return_value_discarded
 				tween.start()
 				# We need to make our tokens appear on top of other cards on the table
 				$Control/Tokens.z_index = 99
 		else:
 			if _is_drawer_open:
+				# warning-ignore:return_value_discarded
 				tween.remove_all()
+				# warning-ignore:return_value_discarded
 				tween.interpolate_property(
 						td,'rect_position', td.rect_position,
 						Vector2($Control.rect_size.x - 35,
 						td.rect_position.y),
 						0.2, Tween.TRANS_ELASTIC, Tween.EASE_IN)
+				# warning-ignore:return_value_discarded
 				tween.start()
 				# We want to consider the drawer closed
 				# only when the animation finished
