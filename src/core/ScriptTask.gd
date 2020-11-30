@@ -182,6 +182,23 @@ func _check_limitations():
 	if get("trigger") == "another" and trigger == owner:
 		is_valid = false
 
+	# Card properties limitation checks
+	if get("limit_to_properties"):
+		# prop_limits is the variable which will hold the dictionary
+		# detailing which card properties on the subject must match
+		# to satisfy this limit
+		var prop_limits : Dictionary = get("limit_to_properties")
+		for property in prop_limits:
+			if property in CardConfig.PROPERTIES_ARRAYS:
+				# If it's an array, we assume they passed on element
+				# of that array to check against the card properties
+				if not prop_limits[property] in trigger.properties[property]:
+					is_valid = false
+			else:
+				if prop_limits[property] != trigger.properties[property]:
+					is_valid = false
+
+
 	# Card Rotation limitation checks
 	if get("limit_to_degrees") \
 			and get("limit_to_degrees") != signal_details.get("degrees"):

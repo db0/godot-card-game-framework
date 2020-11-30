@@ -52,6 +52,43 @@ func test_signals():
 	assert_signal_emitted_with_parameters(
 				target,"card_rotated",[target,"card_rotated",{"degrees": 90}])
 
+func test_card_properties_limitations():
+	cards[2].scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_properties": {"Type": "Green"},
+			"set_faceup": false}]}}
+	cards[3].scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_properties": {"Type": "Red"},
+			"set_faceup": false}]}}
+	cards[4].scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_properties": {"Type": "Red", "Tags": "Tag 1"},
+			"set_faceup": false}]}}
+	cards[5].scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"limit_to_properties": {"Tags": "Does not exist"},
+			"set_faceup": false}]}}
+	yield(table_move(target, Vector2(500,100)), "completed")
+	target.card_rotation = 90
+	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
+	assert_true(cards[2].is_faceup,
+			"Card stayed face-up since limit_to_properties didn't match")
+	assert_false(cards[3].is_faceup,
+			"Card turned face-down since limit_to_properties matches")
+	assert_false(cards[4].is_faceup,
+			"Card turned face-down since multiple limit_to_properties match")
+	assert_true(cards[5].is_faceup,
+			"Card stayed face-up since limit_to_properties array property did not match")
+
 func test_card_rotated():
 	watch_signals(target)
 	card.scripts = {"card_rotated": { "hand": [
@@ -81,9 +118,9 @@ func test_card_rotated():
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
-			"Card stayed face-up since limit_to_degrees is false")
+			"Card stayed face-up since limit_to_degrees didn't match")
 	assert_false(cards[3].is_faceup,
-			"Card turned face-down since limit_to_degrees is true")
+			"Card turned face-down since limit_to_degrees matches")
 
 
 func test_card_flipped():
@@ -114,9 +151,9 @@ func test_card_flipped():
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
-			"Card stayed face-up since limit_to_facup is true")
+			"Card stayed face-up since limit_to_facup didn't match")
 	assert_false(cards[3].is_faceup,
-			"Card turned face-down since limit_to_facup is false")
+			"Card turned face-down since limit_to_facup matches")
 
 func test_card_viewed():
 	watch_signals(target)
