@@ -94,6 +94,10 @@ func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fas
 func target_card(source, target, interpolation_speed := "fast") -> void:
 	var mouse_speed = MOUSE_SPEED[interpolation_speed][0]
 	var mouse_yield_wait = MOUSE_SPEED[interpolation_speed][1]
+	if source == target:
+		# If the target is the same as the source, we need to wait a bit
+		# because otherwise the _is_targeted might not be set yet.
+		yield(yield_for(0.6), YIELD)
 	# We need to offset a bit towards the card rect, to ensure the arrow
 	# Area2D collides
 	board._UT_interpolate_mouse_move(target.global_position + Vector2(10,10),
@@ -106,5 +110,5 @@ func table_move(card: Card, pos: Vector2) -> void:
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	if cfc.fancy_movement:
 		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	
-	
+
+

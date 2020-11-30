@@ -65,6 +65,8 @@ signal card_targeted(card,trigger,details)
 
 # Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
+
+export var properties :=  {}
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 #
@@ -136,6 +138,8 @@ onready var _flip_tween = $Control/FlipTween
 onready var _buttons_tween = $Control/ManipulationButtons/Tween
 onready var _pulse_tween = $Control/Back/Pulse
 onready var _tokens_tween = $Control/Tokens/Tween
+
+onready var _card_text = $Control/Front/CardText
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -489,6 +493,31 @@ func _on_Pulse_completed() -> void:
 		_stop_pulse()
 
 
+# This function handles filling up the card's labels according to its
+# card definition dictionary entry.
+func setup(card_name: String) -> void:
+	# The properties of the card should be already stored in cfc
+	properties = cfc.card_definitions.get(card_name)
+	for label in properties.keys():
+		# These are standard properties which is simple a String to add to the
+		# label.text field
+		if label in CardConfig.PROPERTIES_STRINGS:
+			$Control/Front/CardText.get_node(label).text = properties[label]
+		# These are int or float properties which need to be converted
+		# to a string with some formatting.
+		#
+		# In this demo, the format is defined as: "labelname: value"
+		elif label in CardConfig.PROPERTIES_NUMBERS:
+			$Control/Front/CardText.get_node(label).text = \
+					label + ": " + str(properties[label])
+		# These are arrays of properties which are put in a label with a simple
+		# Join character
+		elif label in CardConfig.PROPERTIES_ARRAYS:
+			$Control/Front/CardText.get_node(label).text = \
+					CardFrameworkUtils.array_join(properties[label],
+					cfc.ARRAY_PROPERTY_JOIN)
+
+
 # Setter for _is_attachment
 func set_is_attachment(value: bool) -> void:
 	is_attachment = value
@@ -639,7 +668,6 @@ func set_name(value : String) -> void:
 	.set_name(value)
 	$Control/Front/CardText/Name.text = value
 	card_name = value
-
 
 # Setter for card_rotation.
 #
@@ -861,7 +889,6 @@ func execute_scripts(
 		trigger: String = "manual",
 		details: Dictionary = {}) -> void:
 	# The CardScriptDefinitions.gd is where we keep all card scripting definitions
-	var loaded_scripts = CardScriptDefinitions.new()
 	var card_scripts
 	# If scripts have been defined directly in this object
 	# They take precedence over CardScriptDefinitions.gd
@@ -872,7 +899,7 @@ func execute_scripts(
 		card_scripts = scripts.get(trigger,{})
 	else:
 		# CardScriptDefinitions.gd should contain scripts for all defined cards
-		card_scripts = loaded_scripts.get_scripts(card_name, trigger)
+		card_scripts = CardFrameworkUtils.find_card_script(card_name, trigger)
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state
 	match state:
@@ -1118,15 +1145,15 @@ func complete_targeting() -> void:
 #				self.name," targeted ",
 #				target_card.name, " in ",
 #				target_card.get_parent().name)
+		if get_parent() != null and get_parent().name != "Viewport":
+			# We make the targeted card also emit a targeting signal for automation
+			target_card.emit_signal("card_targeted", target_card, "card_targeted",
+					{"targeting_source": self})
+		emit_signal("target_selected",target_card)
 	_is_targetting = false
 	$TargetLine.clear_points()
 	$TargetLine/ArrowHead.visible = false
 	$TargetLine/ArrowHead/Area2D.monitoring = false
-	emit_signal("target_selected",target_card)
-	if get_parent() != null and get_parent().name != "Viewport":
-		# We make the targeted card also emit a targeting signal for automation
-		target_card.emit_signal("card_targeted", target_card, "card_targeted",
-				{"targeting_source": self})
 
 # Changes the hosted Control nodes filters
 #

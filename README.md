@@ -214,6 +214,8 @@ The game comes with some sample scripted cards which can be found under `res://s
 * Can flip cards face-down and view them while in that state
 * Can add tokens on cards
 * Complete Card Text Scripting Capability
+* Ability to define cards in standard json
+* Ability to split card definitions into sets
 
 ## Contributing
 
