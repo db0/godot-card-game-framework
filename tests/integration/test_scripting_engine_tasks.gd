@@ -66,6 +66,7 @@ func test_basics():
 			"Scripts should not fire while card is face-down")
 	card.scripts = {"hand": [{}]}
 
+
 # Checks that scripts from the CardScriptDefinitions.gd have been loaded correctly
 func test_CardScripts():
 	card = cards[0]
@@ -80,6 +81,7 @@ func test_CardScripts():
 			"Test1 script leaves target facedown")
 	assert_eq(target.card_rotation, 180,
 			"Test1 script rotates 180 degrees")
+
 
 # Checks that custom scripts fire correctly
 func test_custom_script():
@@ -272,6 +274,7 @@ func test_shuffle_container():
 	prev_index = card.get_my_card_index()
 	assert_gt(3,rng_threshold,
 		"Card should not fall in he same spot too many times")
+
 
 func test_attach_to_card():
 	yield(table_move(target, Vector2(500,400)), "completed")
