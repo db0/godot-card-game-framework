@@ -1304,8 +1304,9 @@ func get_angle_by_index(index,card_len = get_parent().get_card_count()):
 	half = (card_len-1)/2
 	if index == half:
 		return 90
-	var one_card_angle = card_len*(5-card_len*0.2)
-	return 90+abs(half-index)*one_card_angle
+	var max_hand_size = cfc.NMAP.hand.hand_size
+	var one_card_angle = 6+(max_hand_size-card_len)*0.2
+	return 90+(half-index)*one_card_angle
 
 func _recalculatePosition_by_oval() ->Vector2:
 	var card_position_x: float = 0.0
@@ -1314,10 +1315,11 @@ func _recalculatePosition_by_oval() ->Vector2:
 	var hor_rad: float = get_parent().get_node('Control').rect_size.x*0.45
 	var ver_rad: float = get_parent().get_node('Control').rect_size.x*0.3
 	var angle = get_angle_by_index(get_my_card_index())
+	angle = deg2rad(angle)
 	var oval_angle_vector = Vector2(hor_rad*cos(angle),-ver_rad*sin(angle))
 
-	card_position_x = (oval_angle_vector.x)
-	card_position_y = (oval_angle_vector.y)
+	card_position_x = (oval_angle_vector.x+200)
+	card_position_y = (oval_angle_vector.y-100)
 	return Vector2(card_position_x,card_position_y)
 
 func _recalculatePosition_by_rectangle() ->Vector2:
