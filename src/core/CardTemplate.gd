@@ -64,8 +64,6 @@ signal card_token_modified(card,trigger,details)
 signal card_attached(card,trigger,details)
 #Emited whenever the card unattaches from another
 signal card_unattached(card,trigger,details)
-#Emited whenever the card's attachments change
-signal card_attachments_modified(card,trigger,details)
 #Emited whenever the card is targeted by another
 signal card_targeted(card,trigger,details)
 
@@ -941,6 +939,10 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 		# also became an attachment here.
 		if current_host_card and not is_following_previous_host:
 			current_host_card.attachments.erase(self)
+			emit_signal("card_unattached",
+					self,
+					"card_unattached",
+					{"host": current_host_card})
 		current_host_card = host
 		# Once we selected the host, we don't need anything in the array anymore
 		_potential_cards.clear()
@@ -962,6 +964,10 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 				+ Vector2(0,(attach_index + 1)
 				* $Control.rect_size.y
 				* cfc.ATTACHMENT_OFFSET))
+		emit_signal("card_attached",
+				self,
+				"card_attached",
+				{"host": host})
 
 
 # Executes card scripts
@@ -1378,6 +1384,10 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 # It is typically called when a card is removed from the table
 func _clear_attachment_status() -> void:
 	if current_host_card:
+		emit_signal("card_unattached",
+				self,
+				"card_unattached",
+				{"host": current_host_card})
 		current_host_card.attachments.erase(self)
 		current_host_card = null
 	for card in attachments:

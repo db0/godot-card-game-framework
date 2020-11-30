@@ -66,6 +66,7 @@ func test_basics():
 			"Scripts should not fire while card is face-down")
 	card.scripts = {"hand": [{}]}
 
+
 # Checks that scripts from the CardScriptDefinitions.gd have been loaded correctly
 func test_CardScripts():
 	card = cards[0]
@@ -80,6 +81,7 @@ func test_CardScripts():
 			"Test1 script leaves target facedown")
 	assert_eq(target.card_rotation, 180,
 			"Test1 script rotates 180 degrees")
+
 
 # Checks that custom scripts fire correctly
 func test_custom_script():
@@ -136,7 +138,7 @@ func test_move_card_to_container():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_container",
 			"subject": "self",
-			"container":  cfc.NMAP.discard}]}}
+			"dest_container":  cfc.NMAP.discard}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(cfc.NMAP.discard,card.get_parent(),
@@ -146,7 +148,7 @@ func test_move_card_to_container():
 			{"name": "move_card_to_container",
 			"subject": "self",
 			"dest_index": 5,
-			"container":  cfc.NMAP.deck}]}}
+			"dest_container":  cfc.NMAP.deck}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(cfc.NMAP.deck,card.get_parent(),
@@ -247,7 +249,7 @@ func test_spawn_card():
 func test_shuffle_container():
 	card.scripts = {"manual": {"hand": [
 			{"name": "shuffle_container",
-			"container":  cfc.NMAP.hand}]}}
+			"dest_container":  cfc.NMAP.hand}]}}
 	var rng_threshold: int = 0
 	var prev_index = card.get_my_card_index()
 	card.execute_scripts()
@@ -272,6 +274,7 @@ func test_shuffle_container():
 	prev_index = card.get_my_card_index()
 	assert_gt(3,rng_threshold,
 		"Card should not fall in he same spot too many times")
+
 
 func test_attach_to_card():
 	yield(table_move(target, Vector2(500,400)), "completed")
