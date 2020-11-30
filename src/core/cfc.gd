@@ -136,6 +136,7 @@ var SHOW_TOKEN_BUTTONS = false
 var game_rng_seed := "CFC Random Seed" setget set_seed
 var card_definitions := {}
 
+var hand_use_oval_shape := true
 #-----------------------------------------------------------------------------
 # END Behaviour Constants
 #-----------------------------------------------------------------------------
@@ -209,7 +210,7 @@ func set_seed(_seed: String) -> void:
 func instance_card(card_name: String) -> Card:
 	# We discover the template from the "Type"  property defined
 	# in each card. Any property can be used
-	var template = load("res://src/custom/cards/" 
+	var template = load("res://src/custom/cards/"
 			+ card_definitions[card_name][CardConfig.SCENE_PROPERTY] + ".tscn")
 	var card = template.instance()
 	card.setup(card_name)

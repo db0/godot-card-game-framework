@@ -1295,6 +1295,32 @@ func _pushAside(targetpos: Vector2) -> void:
 # based on how many cards we have already in hand and its index among them
 # Returns the local position the card should have in the hand
 func _recalculatePosition() ->Vector2:
+	if cfc.hand_use_oval_shape:
+		return _recalculatePosition_by_oval()
+	return _recalculatePosition_by_rectangle()
+
+func get_angle_by_index(index,card_len = get_parent().get_card_count()):
+	var half
+	half = (card_len-1)/2
+	if index == half:
+		return 90
+	var one_card_angle = card_len*(5-card_len*0.2)
+	return 90+abs(half-index)*one_card_angle
+
+func _recalculatePosition_by_oval() ->Vector2:
+	var card_position_x: float = 0.0
+	var card_position_y: float = 0.0
+
+	var hor_rad: float = get_parent().get_node('Control').rect_size.x*0.45
+	var ver_rad: float = get_parent().get_node('Control').rect_size.x*0.3
+	var angle = get_angle_by_index(get_my_card_index())
+	var oval_angle_vector = Vector2(hor_rad*cos(angle),-ver_rad*sin(angle))
+
+	card_position_x = (oval_angle_vector.x)
+	card_position_y = (oval_angle_vector.y)
+	return Vector2(card_position_x,card_position_y)
+
+func _recalculatePosition_by_rectangle() ->Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	# The number of cards currently in hand
@@ -1326,8 +1352,6 @@ func _recalculatePosition() ->Vector2:
 	# and just offset the card if we want it higher or lower.
 	card_position_y = 0
 	return Vector2(card_position_x,card_position_y)
-
-
 # Pick up a card to drag around with the mouse.
 func _start_dragging() -> void:
 	# When dragging we want the dragged card to always be drawn above all else
