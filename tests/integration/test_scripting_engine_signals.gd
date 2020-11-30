@@ -52,42 +52,42 @@ func test_signals():
 	assert_signal_emitted_with_parameters(
 				target,"card_rotated",[target,"card_rotated",{"degrees": 90}])
 
-func test_card_properties_limitations():
+func test_card_properties_filter():
 	cards[2].scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_properties": {"Type": "Green"},
+			"filter_properties": {"Type": "Green"},
 			"set_faceup": false}]}}
 	cards[3].scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_properties": {"Type": "Red"},
+			"filter_properties": {"Type": "Red"},
 			"set_faceup": false}]}}
 	cards[4].scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_properties": {"Type": "Red", "Tags": "Tag 1"},
+			"filter_properties": {"Type": "Red", "Tags": "Tag 1"},
 			"set_faceup": false}]}}
 	cards[5].scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_properties": {"Tags": "Does not exist"},
+			"filter_properties": {"Tags": "Does not exist"},
 			"set_faceup": false}]}}
 	yield(table_move(target, Vector2(500,100)), "completed")
 	target.card_rotation = 90
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_true(cards[2].is_faceup,
-			"Card stayed face-up since limit_to_properties didn't match")
+			"Card stayed face-up since filter_properties didn't match")
 	assert_false(cards[3].is_faceup,
-			"Card turned face-down since limit_to_properties matches")
+			"Card turned face-down since filter_properties matches")
 	assert_false(cards[4].is_faceup,
-			"Card turned face-down since multiple limit_to_properties match")
+			"Card turned face-down since multiple filter_properties match")
 	assert_true(cards[5].is_faceup,
-			"Card stayed face-up since limit_to_properties array property did not match")
+			"Card stayed face-up since filter_properties array property did not match")
 
 func test_card_rotated():
 	watch_signals(target)
@@ -100,13 +100,13 @@ func test_card_rotated():
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_degrees": 270,
+			"filter_degrees": 270,
 			"set_faceup": false}]}}
 	cards[3].scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_degrees": 90,
+			"filter_degrees": 90,
 			"set_faceup": false}]}}
 	yield(table_move(target, Vector2(500,100)), "completed")
 	target.card_rotation = 90
@@ -118,9 +118,9 @@ func test_card_rotated():
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
-			"Card stayed face-up since limit_to_degrees didn't match")
+			"Card stayed face-up since filter_degrees didn't match")
 	assert_false(cards[3].is_faceup,
-			"Card turned face-down since limit_to_degrees matches")
+			"Card turned face-down since filter_degrees matches")
 
 
 func test_card_flipped():
@@ -134,13 +134,13 @@ func test_card_flipped():
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_faceup": true,
+			"filter_faceup": true,
 			"set_faceup": false}]}}
 	cards[3].scripts = {"card_flipped": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_faceup": false,
+			"filter_faceup": false,
 			"set_faceup": false}]}}
 	target.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
@@ -151,9 +151,9 @@ func test_card_flipped():
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
-			"Card stayed face-up since limit_to_facup didn't match")
+			"Card stayed face-up since filter_facup didn't match")
 	assert_false(cards[3].is_faceup,
-			"Card turned face-down since limit_to_facup matches")
+			"Card turned face-down since filter_facup matches")
 
 func test_card_viewed():
 	watch_signals(target)
@@ -220,36 +220,36 @@ func test_card_moved_to_pile():
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_destination": deck,
+			"filter_destination": deck,
 			"set_faceup": false}]}}
 	# This card should stay face-up since limit will be false
 	cards[3].scripts = {"card_moved_to_pile": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_source": deck,
+			"filter_source": deck,
 			"set_faceup": false}]}}
 	# This card should turn face-down since both limits will be true
 	cards[4].scripts = {"card_moved_to_pile": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_source": hand,
-			"limit_to_destination": discard,
+			"filter_source": hand,
+			"filter_destination": discard,
 			"set_faceup": false}]}}
 	# This card should stay face-up since both limits will be false
 	cards[5].scripts = {"card_moved_to_pile": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_source": discard,
-			"limit_to_destination": deck,
+			"filter_source": discard,
+			"filter_destination": deck,
 			"set_faceup": false}]}}
 	cards[6].scripts = {"card_moved_to_pile": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_destination": discard,
+			"filter_destination": discard,
 			"set_faceup": false}]}}
 	target.move_to(discard)
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
@@ -260,15 +260,15 @@ func test_card_moved_to_pile():
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
-			"Card stayed face-up limit_to_destination limit does not match")
+			"Card stayed face-up filter_destination limit does not match")
 	assert_true(cards[3].is_faceup,
-			"Card stayed face-up since limit_to_source does not match")
+			"Card stayed face-up since filter_source does not match")
 	assert_false(cards[4].is_faceup,
 			"Card turned face-down since both limits match")
 	assert_true(cards[5].is_faceup,
 			"Card stayed face-up since both limits do not match")
 	assert_false(cards[6].is_faceup,
-			"Card turned face-down since limit_to_destination matches")
+			"Card turned face-down since filter_destination matches")
 
 func test_card_token_modified():
 	# warning-ignore:return_value_discarded
@@ -286,46 +286,46 @@ func test_card_token_modified():
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_token_name": "Bio",
+			"filter_token_name": "Bio",
 			"set_faceup": false}]}}
 	# This card should stay face-up since token_count will not match
 	cards[3].scripts = {"card_token_modified": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_token_count": 10,
+			"filter_token_count": 10,
 			"set_faceup": false}]}}
 	# This card should stay face-up since token_difference will not have incr.
 	cards[4].scripts = {"card_token_modified": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_token_difference": "increased",
+			"filter_token_difference": "increased",
 			"set_faceup": false}]}}
 	# This card should turn face-down since token_difference will decrease
 	cards[5].scripts = {"card_token_modified": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_token_difference": "decreased",
+			"filter_token_difference": "decreased",
 			"set_faceup": false}]}}
 	# This card should turn face-down since all limits will match
 	cards[6].scripts = {"card_token_modified": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_token_difference": "decreased",
-			"limit_to_token_count": 0,
-			"limit_to_token_name": "Void",
+			"filter_token_difference": "decreased",
+			"filter_token_count": 0,
+			"filter_token_name": "Void",
 			"set_faceup": false}]}}
 	# This card should stay face-up since some limits will not match
 	cards[7].scripts = {"card_token_modified": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"limit_to_token_difference": "decreased",
-			"limit_to_token_count": 1,
-			"limit_to_token_name": "Tech",
+			"filter_token_difference": "decreased",
+			"filter_token_count": 1,
+			"filter_token_name": "Tech",
 			"set_faceup": false}]}}
 	# warning-ignore:return_value_discarded
 	target.mod_token("void", -5)
@@ -339,13 +339,13 @@ func test_card_token_modified():
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
-			"Card stayed face-up limit_to_token_name does not match")
+			"Card stayed face-up filter_token_name does not match")
 	assert_true(cards[3].is_faceup,
-			"Card stayed face-up since limit_to_token_count does not match")
+			"Card stayed face-up since filter_token_count does not match")
 	assert_true(cards[4].is_faceup,
-			"Card stayed face-up since limit_to_token_difference does not match")
+			"Card stayed face-up since filter_token_difference does not match")
 	assert_false(cards[5].is_faceup,
-			"Card turned face-down since limit_to_token_difference matches")
+			"Card turned face-down since filter_token_difference matches")
 	assert_false(cards[6].is_faceup,
 			"Card turned face-down since all limits match")
 	assert_true(cards[7].is_faceup,

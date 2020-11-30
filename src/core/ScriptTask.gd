@@ -29,7 +29,7 @@ var signal_details : Dictionary
 # has finished processing targetting
 var has_init_completed := false
 # If true if this task is valid to run.
-# A task is invalid to run if some limitation does not match.
+# A task is invalid to run if some filter does not match.
 var is_valid := true
 
 
@@ -50,7 +50,7 @@ func _init(card: Card,
 	# The function name to be called gets its own var
 	task_name = get("name")
 	# We test if this task is valid
-	_check_limitations()
+	_check_filters()
 	# We only seek targets if the task is valid
 	if is_valid:
 		# We discover which other card this task will affect, if any
@@ -168,10 +168,10 @@ func finalize():
 	if not get("common_target_request"):
 		owner.target_card = null
 
-# Ensures that all limitations requested by the script are respected
+# Ensures that all filters requested by the script are respected
 #
-# Will set is_valid to false if any limitation does not match reality
-func _check_limitations():
+# Will set is_valid to false if any filter does not match reality
+func _check_filters():
 	# Here we check that the trigger matches the _request_ for trigger
 	# A trigger which requires "another" card, should not trigger
 	# when itself causes the effect.
@@ -182,12 +182,12 @@ func _check_limitations():
 	if get("trigger") == "another" and trigger == owner:
 		is_valid = false
 
-	# Card properties limitation checks
-	if get("limit_to_properties"):
+	# Card properties filter checks
+	if get("filter_properties"):
 		# prop_limits is the variable which will hold the dictionary
 		# detailing which card properties on the subject must match
 		# to satisfy this limit
-		var prop_limits : Dictionary = get("limit_to_properties")
+		var prop_limits : Dictionary = get("filter_properties")
 		for property in prop_limits:
 			if property in CardConfig.PROPERTIES_ARRAYS:
 				# If it's an array, we assume they passed on element
@@ -199,41 +199,41 @@ func _check_limitations():
 					is_valid = false
 
 
-	# Card Rotation limitation checks
-	if get("limit_to_degrees") \
-			and get("limit_to_degrees") != signal_details.get("degrees"):
+	# Card Rotation filter checks
+	if get("filter_degrees") \
+			and get("filter_degrees") != signal_details.get("degrees"):
 		is_valid = false
 
-	# Card Flip limitation checks
-	if get("limit_to_faceup") \
-			and get("limit_to_faceup") != signal_details.get("is_faceup"):
+	# Card Flip filter checks
+	if get("filter_faceup") \
+			and get("filter_faceup") != signal_details.get("is_faceup"):
 		is_valid = false
 
-	# Card move limitation checks
-	if get("limit_to_source") \
-			and get("limit_to_source") != signal_details.get("source"):
+	# Card move filter checks
+	if get("filter_source") \
+			and get("filter_source") != signal_details.get("source"):
 		is_valid = false
-	if get("limit_to_destination") \
-			and get("limit_to_destination") != signal_details.get("destination"):
+	if get("filter_destination") \
+			and get("filter_destination") != signal_details.get("destination"):
 		is_valid = false
 
-	# Card Tokens limitation checks
-	if get("limit_to_token_count") \
-			and get("limit_to_token_count") != signal_details.get("new_token_value"):
+	# Card Tokens filter checks
+	if get("filter_token_count") \
+			and get("filter_token_count") != signal_details.get("new_token_value"):
 		is_valid = false
-	if get("limit_to_token_difference"):
+	if get("filter_token_difference"):
 		var prev_count = signal_details.get("previous_token_value")
 		var new_count = signal_details.get("new_token_value")
 		# Is true if the amount of tokens decreased
-		if get("limit_to_token_difference") == "increased" \
+		if get("filter_token_difference") == "increased" \
 				and prev_count > new_count:
 			is_valid = false
 		# Is true if the amount of tokens increased
-		if get("limit_to_token_difference") == "decreased" \
+		if get("filter_token_difference") == "decreased" \
 				and prev_count < new_count:
 			is_valid = false
-	if get("limit_to_token_name") \
-			and get("limit_to_token_name") != signal_details.get("token_name"):
+	if get("filter_token_name") \
+			and get("filter_token_name") != signal_details.get("token_name"):
 		is_valid = false
-#	if get("limit_to_card_property"):
-#			var property_limitation = get("limit_to_card_property")
+#	if get("filter_card_property"):
+#			var property_filter = get("filter_card_property")
