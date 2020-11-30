@@ -411,3 +411,37 @@ func test_card_targeted():
 				{"targeting_source": cards[4]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
+
+func test_card_un_attached():
+	watch_signals(target)
+	var host = cards[2]
+	card.scripts = {"card_attached": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"set_faceup": false}]}}
+	cards[3].scripts = {"card_unattached": { "hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"trigger": "another",
+			"set_faceup": false}]}}
+	yield(table_move(host, Vector2(500,100)), "completed")
+	yield(table_move(target, Vector2(500,50)), "completed")
+	target.attach_to_host(host)
+	yield(yield_for(0.1), YIELD)
+	assert_signal_emitted_with_parameters(
+				target,"card_attached",
+				[target,"card_attached",
+				{"host": host}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")
+	gut.p(target.get_parent().name)
+	target.move_to(discard)
+	yield(yield_for(0.5), YIELD)
+	gut.p(target.get_parent().name)
+	assert_signal_emitted_with_parameters(
+				target,"card_unattached",
+				[target,"card_unattached",
+				{"host": host}])
+	assert_false(cards[3].is_faceup,
+			"Card turned face-down after signal trigger")
