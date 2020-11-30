@@ -4,10 +4,10 @@ var cards := []
 
 
 func test_game_seed_consistency():
+	cfc.game_rng_seed = "GUT"
 	setup_board()
 	cards = draw_test_cards(10)
 	yield(yield_for(1), YIELD)
-	cfc.game_rng_seed = "GUT"
 	var all_index1 := []
 	hand.shuffle_cards()
 	yield(yield_for(0.2), YIELD)
@@ -16,10 +16,10 @@ func test_game_seed_consistency():
 
 	board.queue_free()
 	yield(yield_for(0.2), YIELD)
+	cfc.game_rng_seed = "GUT"
 	setup_board()
 	cards = draw_test_cards(10)
 	yield(yield_for(1), YIELD)
-	cfc.game_rng_seed = "GUT"
 	# warning-ignore:return_value_discarded
 	randi()
 	randomize()
@@ -35,10 +35,10 @@ func test_game_seed_consistency():
 		+ " even when godot seed changes")
 
 func test_game_seed_randomization():
+	cfc.game_rng_seed = "GUT"
 	setup_board()
 	cards = draw_test_cards(10)
 	yield(yield_for(1), YIELD)
-	cfc.game_rng_seed = "GUT"
 	var all_index1 := []
 	hand.shuffle_cards()
 	yield(yield_for(0.2), YIELD)
@@ -47,10 +47,10 @@ func test_game_seed_randomization():
 
 	board.queue_free()
 	yield(yield_for(0.2), YIELD)
+	cfc.game_rng_seed = "GUT"
 	setup_board()
 	cards = draw_test_cards(10)
 	yield(yield_for(1), YIELD)
-	cfc.game_rng_seed = "GUT"
 	cfc.game_rng.randomize()
 	var all_index2 := []
 	hand.shuffle_cards()
