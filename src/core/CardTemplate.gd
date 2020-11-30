@@ -52,13 +52,21 @@ signal card_rotated(card,trigger,details)
 signal card_flipped(card,trigger,details)
 # Emitted whenever the card is viewed while face-down
 signal card_viewed(card,trigger,details)
+#Emited whenever the card is moved to the board
 signal card_moved_to_board(card,trigger,details)
+#Emited whenever the card is moved to a pile
 signal card_moved_to_pile(card,trigger,details)
+#Emited whenever the card is moved to a hand
 signal card_moved_to_hand(card,trigger,details)
+#Emited whenever the card's tokens are modified
 signal card_token_modified(card,trigger,details)
+#Emited whenever the card attaches to another
 signal card_attached(card,trigger,details)
+#Emited whenever the card unattaches from another
 signal card_unattached(card,trigger,details)
+#Emited whenever the card's attachments change
 signal card_attachments_modified(card,trigger,details)
+#Emited whenever the card is targeted by another
 signal card_targeted(card,trigger,details)
 
 
@@ -495,9 +503,9 @@ func _on_Pulse_completed() -> void:
 
 # This function handles filling up the card's labels according to its
 # card definition dictionary entry.
-func setup(card_name: String) -> void:
+func setup(cname: String) -> void:
 	# The properties of the card should be already stored in cfc
-	properties = cfc.card_definitions.get(card_name)
+	properties = cfc.card_definitions.get(cname)
 	for label in properties.keys():
 		# These are standard properties which is simple a String to add to the
 		# label.text field
@@ -1078,7 +1086,7 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 			emit_signal("card_token_modified", self, "card_token_modified",
 					{"token_name": token.get_token_name(),
 					"previous_token_value": prev_value,
-					"new_token_value": token.count})
+					"new_token_value": new_value})
 	return(retcode)
 
 
@@ -1943,6 +1951,7 @@ func _token_drawer(drawer_state := true) -> void:
 				_is_drawer_open = true
 				# To avoid tween deadlocks
 				tween.remove_all()
+				# warning-ignore:return_value_discarded
 				tween.interpolate_property(
 						td,'rect_position', td.rect_position,
 						Vector2($Control.rect_size.x,td.rect_position.y),
@@ -1952,17 +1961,22 @@ func _token_drawer(drawer_state := true) -> void:
 					token.expand()
 				# Normally the drawer is invisible. We make it visible now
 				$Control/Tokens/Drawer.self_modulate[3] = 1
+#				 warning-ignore:return_value_discarded
+				# warning-ignore:return_value_discarded
 				tween.start()
 				# We need to make our tokens appear on top of other cards on the table
 				$Control/Tokens.z_index = 99
 		else:
 			if _is_drawer_open:
+				# warning-ignore:return_value_discarded
 				tween.remove_all()
+				# warning-ignore:return_value_discarded
 				tween.interpolate_property(
 						td,'rect_position', td.rect_position,
 						Vector2($Control.rect_size.x - 35,
 						td.rect_position.y),
 						0.2, Tween.TRANS_ELASTIC, Tween.EASE_IN)
+				# warning-ignore:return_value_discarded
 				tween.start()
 				# We want to consider the drawer closed
 				# only when the animation finished

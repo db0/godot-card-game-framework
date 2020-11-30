@@ -25,7 +25,7 @@ static func randi() -> int:
 	return cfc.game_rng.randi()
 
 # Mapping randi_range function
-static func randi_range(from: float, to: float) -> int:
+static func randi_range(from: int, to: int) -> int:
 	return cfc.game_rng.randi_range(from, to)
 
 
@@ -45,7 +45,9 @@ static func array_join(arr: Array, separator = "") -> String:
 static func list_files_in_directory(path: String, prepend_needed := "") -> Array:
 	var files := []
 	var dir := Directory.new()
+	# warning-ignore:return_value_discarded
 	dir.open(path)
+	# warning-ignore:return_value_discarded
 	dir.list_dir_begin()
 	while true:
 		var file := dir.get_next()

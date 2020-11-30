@@ -135,7 +135,6 @@ var SHOW_TOKEN_BUTTONS = false
 # When this stays the same, the game randomness will always play the predictable.
 var game_rng_seed := "CFC Random Seed" setget set_seed
 var card_definitions := {}
-var script_definitions := {}
 
 #-----------------------------------------------------------------------------
 # END Behaviour Constants
