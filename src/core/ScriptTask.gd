@@ -162,6 +162,12 @@ const TRIGGER_PREV_TOKEN_VALUE := "previous_token_value"
 #
 # This is the value of the token name modified
 const TRIGGER_TOKEN_NAME = "token_name"
+# Filter value sent by the following signals.
+# * card_attached
+# * card_unattached
+# It contains the host object onto which this card attached
+# of from which it unattached
+const TRIGGER_HOST = "token_name"
 
 
 #---------------------------------------------------------------------
