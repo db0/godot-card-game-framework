@@ -12,7 +12,7 @@ func after_all():
 
 func before_each():
 	setup_board()
-	cards = draw_test_cards(8)
+	cards = draw_test_cards(9)
 	yield(yield_for(0.5), YIELD)
 	card = cards[0]
 	target = cards[1]
@@ -53,41 +53,84 @@ func test_signals():
 				target,"card_rotated",[target,"card_rotated",{"degrees": 90}])
 
 func test_card_properties_filter():
+	var target2: Card = cards[8]
+	var ttype : String = target.properties["Type"]
+	var ttype2 : String = target2.properties["Type"]
+	card.scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
+			"subject": "target",
+			"trigger": "another",
+			"filter_properties_subject": {"Type": ttype2},
+			"filter_properties_trigger": {"Type": "FALSE"},
+			"set_faceup": false}]}}
 	cards[2].scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"filter_properties": {"Type": "Green"},
+			"filter_properties_trigger": {"Type": "FALSE"},
 			"set_faceup": false}]}}
 	cards[3].scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"filter_properties": {"Type": "Red"},
+			"filter_properties_trigger": {"Type": ttype},
 			"set_faceup": false}]}}
 	cards[4].scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"filter_properties": {"Type": "Red", "Tags": "Tag 1"},
+			"filter_properties_trigger": {"Type": ttype, "Tags": "Tag 1"},
 			"set_faceup": false}]}}
 	cards[5].scripts = {"card_rotated": { "hand": [
 			{"name": "flip_card",
 			"subject": "self",
 			"trigger": "another",
-			"filter_properties": {"Tags": "Does not exist"},
+			"filter_properties_trigger": {"Tags": "FALSE"},
+			"set_faceup": false}]}}
+	cards[6].scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
+			"subject": "target",
+			"trigger": "another",
+			"filter_properties_subject": {"Type": ttype2},
+			"filter_properties_trigger": {"Type": ttype},
+			"set_faceup": false}]}}
+	cards[7].scripts = {"card_rotated": { "hand": [
+			{"name": "flip_card",
+			"subject": "target",
+			"trigger": "another",
+			"filter_properties_subject": {"Type": "FALSE"},
+			"filter_properties_trigger": {"Type": ttype2},
 			"set_faceup": false}]}}
 	yield(table_move(target, Vector2(500,100)), "completed")
+	yield(table_move(target2, Vector2(900,100)), "completed")
 	target.card_rotation = 90
+	yield(yield_for(0.5), YIELD)
+	assert_false(card._is_targetting,
+			"Card did not start targeting since filter_properties_trigger"
+			+ "  did not match even though filter_properties_subject matched")
+	yield(target_card(cards[6],target2), "completed")
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_true(cards[2].is_faceup,
-			"Card stayed face-up since filter_properties didn't match")
+			"Card stayed face-up since filter_properties_trigger didn't match")
 	assert_false(cards[3].is_faceup,
-			"Card turned face-down since filter_properties matches")
+			"Card turned face-down since filter_properties_trigger matches")
 	assert_false(cards[4].is_faceup,
-			"Card turned face-down since multiple filter_properties match")
+			"Card turned face-down since multiple filter_properties_trigger match")
 	assert_true(cards[5].is_faceup,
-			"Card stayed face-up since filter_properties array property did not match")
+			"Card stayed face-up since filter_properties_trigger array property did not match")
+	assert_true(target.is_faceup,
+			"Card stayed face-up since filter_properties_subject didn't match"
+			+ " even though filter_properties_trigger matches")
+	assert_false(target2.is_faceup,
+			"Card turned face-down since filter_properties_subject matched"
+			+ " even though filter_properties_trigger does not match")
+	target2.card_rotation = 90
+	yield(yield_for(0.5), YIELD)
+	yield(target_card(cards[7],target), "completed")
+	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
+	assert_true(target.is_faceup,
+			"Card stayed face-up since filter_properties_subject didn't match"
+			+ " even though filter_properties_trigger matches")
 
 func test_card_rotated():
 	watch_signals(target)

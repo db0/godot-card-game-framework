@@ -58,6 +58,7 @@ func _init(card: Card,
 		if subject_seek is GDScriptFunctionState: # Still seeking...
 			subject_seek = yield(subject_seek, "completed")
 		subject = subject_seek
+		_check_properties("subject")
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
 	emit_signal("completed_init")
@@ -182,22 +183,9 @@ func _check_filters():
 	if get("trigger") == "another" and trigger == owner:
 		is_valid = false
 
-	# Card properties filter checks
-	if get("filter_properties"):
-		# prop_limits is the variable which will hold the dictionary
-		# detailing which card properties on the subject must match
-		# to satisfy this limit
-		var prop_limits : Dictionary = get("filter_properties")
-		for property in prop_limits:
-			if property in CardConfig.PROPERTIES_ARRAYS:
-				# If it's an array, we assume they passed on element
-				# of that array to check against the card properties
-				if not prop_limits[property] in trigger.properties[property]:
-					is_valid = false
-			else:
-				if prop_limits[property] != trigger.properties[property]:
-					is_valid = false
-
+	# Checking card properties is its own function as it might be 
+	# called from other places as well
+	_check_properties("trigger")
 
 	# Card Rotation filter checks
 	if get("filter_degrees") \
@@ -235,5 +223,25 @@ func _check_filters():
 	if get("filter_token_name") \
 			and get("filter_token_name") != signal_details.get("token_name"):
 		is_valid = false
-#	if get("filter_card_property"):
-#			var property_filter = get("filter_card_property")
+
+func _check_properties(type := "trigger") -> void:
+	var card: Card
+	if type == "subject":
+		card = subject
+	else:
+		card = trigger
+	# Card properties filter checks
+	if get("filter_properties_" + type):
+		# prop_limits is the variable which will hold the dictionary
+		# detailing which card properties on the subject must match
+		# to satisfy this limit
+		var prop_limits : Dictionary = get("filter_properties_" + type)
+		for property in prop_limits:
+			if property in CardConfig.PROPERTIES_ARRAYS:
+				# If it's an array, we assume they passed on element
+				# of that array to check against the card properties
+				if not prop_limits[property] in card.properties[property]:
+					is_valid = false
+			else:
+				if prop_limits[property] != card.properties[property]:
+					is_valid = false
