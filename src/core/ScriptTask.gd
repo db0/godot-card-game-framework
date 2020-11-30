@@ -5,6 +5,7 @@
 # the required objects in the game
 class_name ScriptTask
 extends Reference
+
 #---------------------------------------------------------------------
 # Script Definition Properties
 # 
