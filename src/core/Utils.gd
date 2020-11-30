@@ -28,13 +28,20 @@ static func randi() -> int:
 static func randi_range(from: float, to: float) -> int:
 	return cfc.game_rng.randi_range(from, to)
 
-static func array_join(arr, separator = ""):
+
+# Returns a string of all elements in the array, separared by the
+# provided separator
+static func array_join(arr: Array, separator = "") -> String:
 	var output = "";
 	for s in arr:
 		output += str(s) + separator
 	output = output.left( output.length() - separator.length() )
 	return output
 
+
+# Returns a an array of all files in a specific directory.
+# If a prepend_needed String is passed, only returns files
+# which start with that string.
 static func list_files_in_directory(path: String, prepend_needed := "") -> Array:
 	var files := []
 	var dir := Directory.new()
@@ -44,12 +51,13 @@ static func list_files_in_directory(path: String, prepend_needed := "") -> Array
 		var file := dir.get_next()
 		if file == "":
 			break
-		elif file.begins_with(prepend_needed):
+		elif not file.begins_with('.') and file.begins_with(prepend_needed):
 			files.append(file)
 	dir.list_dir_end()
 	return files
 
 
+# Returns the combined Card definitions of all set files
 static func load_card_definitions() -> Dictionary:
 	var set_definitions := list_files_in_directory(
 				"res://src/custom/cards/sets/", "SetDefinition_")
@@ -61,6 +69,8 @@ static func load_card_definitions() -> Dictionary:
 	return(combined_sets)
 
 
+# Seeks in the script definitions of all sets, and returns the script for
+# the requested card
 static func find_card_script(card_name, trigger) -> Dictionary:
 	var set_definitions := list_files_in_directory(
 				"res://src/custom/cards/sets/", "SetScripts_")

@@ -1,4 +1,4 @@
-# See SCRIPTS_README.md
+# See README.md
 extends Reference
 
 # This fuction returns all the scripts of the specified card name.
@@ -20,6 +20,27 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 						"name": "spawn_card",
 						"card_scene": "res://src/core/CardTemplate.tscn",
 						"board_position": Vector2(500,200),
+					}
+				]
+			},
+		},
+		"Test Card 2": {
+			"manual": {
+				"board": [
+					{
+						"name": "move_card_to_container",
+						"subject": "target",
+						"container": cfc.NMAP.discard,
+					},
+					{
+						"name": "move_card_to_container",
+						"subject": "self",
+						"container": cfc.NMAP.discard,
+					}
+				],
+				"hand": [
+					{
+						"name": "custom_script",
 					}
 				]
 			},

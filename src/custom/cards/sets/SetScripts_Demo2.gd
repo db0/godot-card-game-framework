@@ -1,4 +1,4 @@
-# See SCRIPTS_README.md
+# See README.md
 extends Reference
 
 # This fuction returns all the scripts of the specified card name.
@@ -6,24 +6,35 @@ extends Reference
 # if no scripts have been defined, an empty dictionary is returned instead.
 func get_scripts(card_name: String, trigger: String) -> Dictionary:
 	var scripts := {
-		"Test Card 2": {
+		"Test Card 3": {
 			"manual": {
 				"board": [
 					{
-						"name": "move_card_to_container",
+						"name": "flip_card",
 						"subject": "target",
-						"container": cfc.NMAP.discard,
+						"set_faceup": false,
 					},
 					{
-						"name": "move_card_to_container",
-						"subject": "self",
-						"container": cfc.NMAP.discard,
+						"name": "rotate_card",
+						"subject": "target",
+						"degrees": 180,
 					}
 				],
 				"hand": [
 					{
 						"name": "custom_script",
+						"subject": "target",
 					}
+				]
+			},
+			"card_rotated": {
+				"board": [
+					{
+						"name": "rotate_card",
+						"subject": "self",
+						"degrees": 270,
+						"trigger": "another",
+					},
 				]
 			},
 		},
