@@ -7,7 +7,7 @@ class_name ScriptTask
 extends Reference
 
 #---------------------------------------------------------------------
-# Script Definition Properties
+# Script Definition Keys
 # 
 # The below are all the possible dictionary keys that can be set in a 
 # task definition.
@@ -20,79 +20,83 @@ extends Reference
 # target
 # * If set to true (default), following tasks
 # requiring target, will use the previously selected one.
-const DEF_COMMON_TARGET_REQUEST := "common_target_request"
+const KEY_COMMON_TARGET_REQUEST := "common_target_request"
 # Subject can be "self" or "target".
 # * If the subject is "target", we initiate targetting from the owner card
 # to ask the player to find a appropriate target
 # * If the subject is "self", then the task effects the owner card
 # * If not specified, we set value to null, assuming there's no subject needed.
-const DEF_SUBJECT := "subject"
+const KEY_SUBJECT := "subject"
 # Used when a script is triggered by a signal.
 #
-# Limits the execution depending on the triggering card. Options are:
+# Limits the execution depending on the triggering card. Value options are:
 # * "self": Triggering card has to be the owner of the script
 # * "another": Triggering card has to not be the owner of the script
 # * "any" (default): Will execute regardless of the triggering card.
-const DEF_TRIGGER := "trigger"
+const KEY_TRIGGER := "trigger"
 # Used when a script is using the [ScriptingEngine] rotate_card()
 #
 # These are the degress in multiples of 90, that the subject will be rotated.
-const DEF_DEGREES := "degrees"
-# Used when a script is using the [ScriptingEngine] flip_card()
+const KEY_DEGREES := "degrees"
+# Used when a script is using the [ScriptingEngine] flip_card(). Values are:
 # * true: The card will be set face-up
 # * false: The card will be set face-down
-const DEF_SET_FACEUP := "set_faceup"
+const KEY_SET_FACEUP := "set_faceup"
 # Used when a script is using one of the following [ScriptingEngine] methods
 # * move_card_cont_to_cont()
 # * move_card_cont_to_board()
 #
 # Specifies the source container to pick the card from
-const DEF_SRC_CONTAINER := "src_container"
+const KEY_SRC_CONTAINER := "src_container"
 # Used when a script is using one of the following [ScriptingEngine] methods
 # * move_card_to_container()
 # * move_card_cont_to_cont()
 # * shuffle_container()
 #
 # Specifies the destination container to manipulate
-const DEF_DEST_CONTAINER := "dest_container"
+const KEY_DEST_CONTAINER := "dest_container"
 # Used when we're seeking a card inside a [CardContainer] 
 # in one of the following [ScriptingEngine] methods
 # * move_card_cont_to_board()
 # * move_card_cont_to_cont()
 #
 # Default is to seek card at index 0
-const DEF_PILE_INDEX := "pile_index"
+const KEY_PILE_INDEX := "pile_index"
 # Used when placing a card inside a [CardContainer]
 # in one of the follwing [ScriptingEngine] tasks
 # * move_card_to_container()
 # * move_card_cont_to_cont()
 #
 # When -1 is defined, it is placed on the last position
-const DEF_DEST_INDEX := "dest_index"
+const KEY_DEST_INDEX := "dest_index"
 # Used when a script is using one of the following [ScriptingEngine] methods
 # * move_card_to_board()
 # * move_card_cont_to_board()
 #
 # If Vector2(-1,-1) is specified, it uses the mouse position
 # which obviously not good for scripts
-const DEF_BOARD_POSITION := "board_position"
+const KEY_BOARD_POSITION := "board_position"
 # Used when a script is using the [ScriptingEngine] mod_tokens()
 #
 # It specifies if we're modifying the existing amount
 # or setting it to the exact one
-const DEF_TOKEN_SET_TO_MOD := "set_to_mod"
+const KEY_TOKEN_SET_TO_MOD := "set_to_mod"
+# Used when a script is using the [ScriptingEngine] mod_tokens()
+#
+# It specifies the name of the token we're modifying
+const KEY_TOKEN_NAME := "token_name"
 # Used when a script is using the [ScriptingEngine] mod_tokens()
 #
 # It specifies the amount we're setting/modifying
 # or setting it to the exact one
-const DEF_TOKEN_MODIFICATION := "modification"
+const KEY_TOKEN_MODIFICATION := "modification"
 # Used when a script is using the [ScriptingEngine] spawn_card()
 #
 # This is the path to the card template scene to use for this card
-const DEF_CARD_SCENE := "card_scene"
+const KEY_CARD_SCENE := "card_scene"
 
 #---------------------------------------------------------------------
-# Filter Definition Properties
+# Filter Definition Keys
 # 
 # The below are all the possible dictionary keys that can be set in a 
 # filter definition.
@@ -250,19 +254,19 @@ func get(property: String):
 	var default
 	# for property details, see const definitionts
 	match property:
-		DEF_COMMON_TARGET_REQUEST:
+		KEY_COMMON_TARGET_REQUEST:
 			default = true
-		DEF_TRIGGER:
+		KEY_TRIGGER:
 			default = "any"
-		DEF_PILE_INDEX:
+		KEY_PILE_INDEX:
 			default = 0
-		DEF_DEST_INDEX:
+		KEY_DEST_INDEX:
 			default = -1
-		DEF_BOARD_POSITION:
+		KEY_BOARD_POSITION:
 			default = Vector2(-1,-1)
-		DEF_TOKEN_SET_TO_MOD:
+		KEY_TOKEN_SET_TO_MOD:
 			default = false
-		DEF_TOKEN_MODIFICATION:
+		KEY_TOKEN_MODIFICATION:
 			default = 1
 		_:
 			default = null
@@ -274,14 +278,14 @@ func get(property: String):
 # Returns a Card object if subject is defined, else returns null.
 func _find_subject() -> Card:
 	var subject_seek
-	# See DEF_COMMON_TARGET_REQUEST doc
-	var common_target_request : bool = get(DEF_COMMON_TARGET_REQUEST)
-	# See DEF_SUBJECT doc
-	if get(DEF_SUBJECT) == "target":
+	# See KEY_COMMON_TARGET_REQUEST doc
+	var common_target_request : bool = get(KEY_COMMON_TARGET_REQUEST)
+	# See KEY_SUBJECT doc
+	if get(KEY_SUBJECT) == "target":
 		subject_seek = _initiate_card_targeting(common_target_request)
 		if subject_seek is GDScriptFunctionState: # Still working.
 			subject_seek = yield(subject_seek, "completed")
-	elif get(DEF_SUBJECT) == "self":
+	elif get(KEY_SUBJECT) == "self":
 		subject_seek = owner
 	else:
 		subject_seek = null
@@ -294,7 +298,7 @@ func _find_subject() -> Card:
 # Returns a Card object.
 func _initiate_card_targeting(common_target_request: bool) -> Card:
 	var target := owner.target_card
-	# See DEF_COMMON_TARGET_REQUEST doc
+	# See KEY_COMMON_TARGET_REQUEST doc
 	if not target or not common_target_request:
 		# We wait a centisecond, to prevent the card's _input function from seeing
 		# The double-click which started the script and immediately triggerring
@@ -313,7 +317,7 @@ func _initiate_card_targeting(common_target_request: bool) -> Card:
 
 
 func finalize():
-	if not get(DEF_COMMON_TARGET_REQUEST):
+	if not get(KEY_COMMON_TARGET_REQUEST):
 		owner.target_card = null
 
 # Ensures that all filters requested by the script are respected

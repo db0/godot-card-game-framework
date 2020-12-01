@@ -227,7 +227,6 @@ class SignalPropagator:
 		"card_token_modified",
 		"card_attached",
 		"card_unattached",
-		"card_attachments_modified",
 		"card_targeted",
 		]
 

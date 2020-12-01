@@ -67,7 +67,7 @@ func run_next_script(card_owner: Card,
 # * "degrees": int
 func rotate_card(script: ScriptTask) -> void:
 	var card = script.subject
-	card.card_rotation = script.get("degrees")
+	card.card_rotation = script.get(script.KEY_DEGREES)
 
 
 # Task for flipping cards
@@ -76,7 +76,7 @@ func rotate_card(script: ScriptTask) -> void:
 # * "set_faceup": bool
 func flip_card(script: ScriptTask) -> void:
 	var card = script.subject
-	card.is_faceup = script.get("set_faceup")
+	card.is_faceup = script.get(script.KEY_SET_FACEUP)
 
 
 # Task for moving cards to other containers
@@ -90,9 +90,9 @@ func flip_card(script: ScriptTask) -> void:
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
 func move_card_to_container(script: ScriptTask) -> void:
-	var dest_index: int = script.get("dest_index")
+	var dest_index: int = script.get(script.KEY_DEST_INDEX)
 	var card = script.subject
-	card.move_to(script.get("dest_container"), dest_index)
+	card.move_to(script.get(script.KEY_DEST_CONTAINER), dest_index)
 
 
 # Task for moving card to the board
@@ -101,7 +101,7 @@ func move_card_to_container(script: ScriptTask) -> void:
 # * "container": CardContainer
 func move_card_to_board(script: ScriptTask) -> void:
 	var card = script.subject
-	card.move_to(cfc.NMAP.board, -1, script.get("board_position"))
+	card.move_to(cfc.NMAP.board, -1, script.get(script.KEY_BOARD_POSITION))
 
 
 # Task for moving card from one container to another
@@ -117,11 +117,11 @@ func move_card_to_board(script: ScriptTask) -> void:
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
 func move_card_cont_to_cont(script: ScriptTask) -> void:
-	var card_index: int = script.get("pile_index")
-	var src_container: CardContainer = script.get("src_container")
+	var card_index: int = script.get(script.KEY_PILE_INDEX)
+	var src_container: CardContainer = script.get(script.KEY_SRC_CONTAINER)
 	var card = src_container.get_card(card_index)
-	var dest_container: CardContainer = script.get("dest_container")
-	var dest_index: int = script.get("dest_index")
+	var dest_container: CardContainer = script.get(script.KEY_DEST_CONTAINER)
+	var dest_index: int = script.get(script.KEY_DEST_INDEX)
 	card.move_to(dest_container,dest_index)
 
 
@@ -131,10 +131,10 @@ func move_card_cont_to_cont(script: ScriptTask) -> void:
 # * "card_index": int
 # * "src_container": CardContainer
 func move_card_cont_to_board(script: ScriptTask) -> void:
-	var card_index: int = script.get("pile_index")
-	var src_container: CardContainer = script.get("src_container")
+	var card_index: int = script.get(script.KEY_PILE_INDEX)
+	var src_container: CardContainer = script.get(script.KEY_SRC_CONTAINER)
 	var card := src_container.get_card(card_index)
-	var board_position = script.get("board_position")
+	var board_position = script.get(script.KEY_BOARD_POSITION)
 	card.move_to(cfc.NMAP.board, -1, board_position)
 
 
@@ -146,9 +146,9 @@ func move_card_cont_to_board(script: ScriptTask) -> void:
 # * (Optional) "set_to_mod": bool
 func mod_tokens(script: ScriptTask) -> void:
 	var card := script.subject
-	var token_name: String = script.get("token_name")
-	var modification: int = script.get("modification")
-	var set_to_mod: bool = script.get("set_to_mod")
+	var token_name: String = script.get(script.KEY_TOKEN_NAME)
+	var modification: int = script.get(script.KEY_TOKEN_MODIFICATION)
+	var set_to_mod: bool = script.get(script.KEY_TOKEN_SET_TO_MOD)
 	# warning-ignore:return_value_discarded
 	card.mod_token(token_name,modification,set_to_mod)
 
@@ -159,8 +159,8 @@ func mod_tokens(script: ScriptTask) -> void:
 # * "card_scene": path to .tscn file
 # * "board_position": Vector2
 func spawn_card(script: ScriptTask) -> void:
-	var card_scene: String = script.get("card_scene")
-	var board_position: Vector2 = script.get("board_position")
+	var card_scene: String = script.get(script.KEY_CARD_SCENE)
+	var board_position: Vector2 = script.get(script.KEY_BOARD_POSITION)
 	var card: Card = load(card_scene).instance()
 	cfc.NMAP.board.add_child(card)
 	card.position = board_position
@@ -172,7 +172,7 @@ func spawn_card(script: ScriptTask) -> void:
 # Requires the following keys:
 # * "container": CardContainer
 func shuffle_container(script: ScriptTask) -> void:
-	var container: CardContainer = script.get("dest_container")
+	var container: CardContainer = script.get(script.KEY_DEST_CONTAINER)
 	container.shuffle_cards()
 
 
