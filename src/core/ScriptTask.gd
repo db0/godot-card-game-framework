@@ -20,7 +20,7 @@ extends Reference
 # target
 # * If set to true (default), following tasks
 # requiring target, will use the previously selected one.
-const DEF_TARGET_REQUEST := "common_target_request"
+const DEF_COMMON_TARGET_REQUEST := "common_target_request"
 # Subject can be "self" or "target".
 # * If the subject is "target", we initiate targetting from the owner card
 # to ask the player to find a appropriate target
@@ -45,29 +45,34 @@ const DEF_SET_FACEUP := "set_faceup"
 # Used when a script is using one of the following [ScriptingEngine] methods
 # * move_card_cont_to_cont()
 # * move_card_cont_to_board()
+#
 # Specifies the source container to pick the card from
 const DEF_SRC_CONTAINER := "src_container"
 # Used when a script is using one of the following [ScriptingEngine] methods
 # * move_card_to_container()
 # * move_card_cont_to_cont()
 # * shuffle_container()
+#
 # Specifies the destination container to manipulate
 const DEF_DEST_CONTAINER := "dest_container"
 # Used when we're seeking a card inside a [CardContainer] 
 # in one of the following [ScriptingEngine] methods
 # * move_card_cont_to_board()
 # * move_card_cont_to_cont()
+#
 # Default is to seek card at index 0
 const DEF_PILE_INDEX := "pile_index"
 # Used when placing a card inside a [CardContainer]
 # in one of the follwing [ScriptingEngine] tasks
 # * move_card_to_container()
 # * move_card_cont_to_cont()
+#
 # When -1 is defined, it is placed on the last position
 const DEF_DEST_INDEX := "dest_index"
 # Used when a script is using one of the following [ScriptingEngine] methods
 # * move_card_to_board()
 # * move_card_cont_to_board()
+#
 # If Vector2(-1,-1) is specified, it uses the mouse position
 # which obviously not good for scripts
 const DEF_BOARD_POSITION := "board_position"
@@ -245,7 +250,7 @@ func get(property: String):
 	var default
 	# for property details, see const definitionts
 	match property:
-		DEF_TARGET_REQUEST:
+		DEF_COMMON_TARGET_REQUEST:
 			default = true
 		DEF_TRIGGER:
 			default = "any"
@@ -269,8 +274,8 @@ func get(property: String):
 # Returns a Card object if subject is defined, else returns null.
 func _find_subject() -> Card:
 	var subject_seek
-	# See DEF_TARGET_REQUEST doc
-	var common_target_request : bool = get(DEF_TARGET_REQUEST)
+	# See DEF_COMMON_TARGET_REQUEST doc
+	var common_target_request : bool = get(DEF_COMMON_TARGET_REQUEST)
 	# See DEF_SUBJECT doc
 	if get(DEF_SUBJECT) == "target":
 		subject_seek = _initiate_card_targeting(common_target_request)
@@ -289,7 +294,7 @@ func _find_subject() -> Card:
 # Returns a Card object.
 func _initiate_card_targeting(common_target_request: bool) -> Card:
 	var target := owner.target_card
-	# See DEF_TARGET_REQUEST doc
+	# See DEF_COMMON_TARGET_REQUEST doc
 	if not target or not common_target_request:
 		# We wait a centisecond, to prevent the card's _input function from seeing
 		# The double-click which started the script and immediately triggerring
@@ -308,7 +313,7 @@ func _initiate_card_targeting(common_target_request: bool) -> Card:
 
 
 func finalize():
-	if not get(DEF_TARGET_REQUEST):
+	if not get(DEF_COMMON_TARGET_REQUEST):
 		owner.target_card = null
 
 # Ensures that all filters requested by the script are respected
