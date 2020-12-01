@@ -1293,7 +1293,7 @@ func _pushAside(targetpos: Vector2) -> void:
 	state = PUSHED_ASIDE
 
 func _recalculate_rotation() ->float:
-	if cfc.hand_use_oval_shape:
+	if not cfc.hand_use_oval_shape:
 		return 0.0
 	return 90.0-get_angle_by_index(get_my_card_index())
 
@@ -1327,7 +1327,7 @@ func _recalculatePosition_by_oval() ->Vector2:
 	var center_y = get_parent().get_node('Control').rect_size.y+get_parent().get_node('Control').rect_position.y
 	card_position_x = (oval_angle_vector.x+center_x-$Control.rect_size.x/2)
 	card_position_y = (oval_angle_vector.y+center_y)
-	set_card_rotation(90-angle)
+	# set_card_rotation(90-angle)
 	return Vector2(card_position_x,card_position_y)
 
 func _recalculatePosition_by_rectangle() ->Vector2:
@@ -1632,6 +1632,12 @@ func _stop_pulse():
 		$Control/Back.modulate = Color(1,1,1)
 
 
+func add_tween_rotation(_target_rotation):
+	$Tween.remove($Control,'rect_rotation')
+	$Tween.interpolate_property($Control,'rect_rotation',
+			$Control.rect_rotation, _target_rotation, 0.3,
+			Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+
 # A rudimentary Finite State Engine for cards.
 #
 # Makes sure that when a card is in a specific state while
@@ -1642,7 +1648,13 @@ func _process_card_state() -> void:
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
-			set_card_rotation(0)
+			if cfc.hand_use_oval_shape:
+				if not $Tween.is_active():
+					_target_rotation  = _recalculate_rotation()
+					add_tween_rotation(_target_rotation)
+					$Tween.start()
+			else:
+				set_card_rotation(0)
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
 			set_focus(true)
@@ -1653,6 +1665,7 @@ func _process_card_state() -> void:
 					not _focus_completed and \
 					cfc.focus_style != cfc.FocusStyle.VIEWPORT:
 				var expected_position: Vector2 = _recalculatePosition()
+				var expected_rotation: float = _recalculate_rotation()
 				# We figure out our neighbours by their index
 				var neighbours := []
 				for neighbour_index_diff in [-2,-1,1,2]:
@@ -1682,6 +1695,7 @@ func _process_card_state() -> void:
 						- Vector2($Control.rect_size.x \
 						* 0.25,$Control.rect_size.y \
 						* 0.5 + cfc.NMAP.hand.bottom_margin)
+				_target_rotation = expected_rotation
 				# We make sure to remove other tweens of the same type
 				# to avoid a deadlock
 				$Tween.remove(self,'position')
@@ -1692,6 +1706,8 @@ func _process_card_state() -> void:
 				$Tween.interpolate_property(self,'scale',
 						scale, Vector2(1.5,1.5), 0.3,
 						Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				_target_rotation = 20
+				add_tween_rotation(_target_rotation)
 				$Tween.start()
 				_focus_completed = true
 				# We don't change state yet, only when the focus is removed
