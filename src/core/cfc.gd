@@ -124,10 +124,10 @@ var card_scale_while_dragging := Vector2(0.4, 0.4)
 var focus_style = FocusStyle.BOTH
 # If this is set to false, tokens on cards
 # will not be removed when they exit the board
-var TOKENS_ONLY_ON_BOARD := true
+var tokens_only_on_board := true
 # If true, each token will have a convenient +/- button when expanded
 # to allow the player to add a remove more of the same
-var SHOW_TOKEN_BUTTONS = false
+var show_token_buttons = false
 # The games initial Random Number Generator seed.
 # When this stays the same, the game randomness will always play the predictable.
 var game_rng_seed := "CFC Random Seed" setget set_seed
@@ -151,7 +151,7 @@ var card_drag_ongoing: Card = null
 
 # Game random number generator
 var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
-# Game random seed
+
 
 
 func _ready() -> void:

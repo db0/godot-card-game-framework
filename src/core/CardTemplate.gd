@@ -853,9 +853,9 @@ func move_to(targetHost: Node2D,
 			# If the card was or had attachments and it is removed from the table,
 			# all attachments status is cleared
 			_clear_attachment_status()
-			# If the card has tokens, and TOKENS_ONLY_ON_BOARD is true
+			# If the card has tokens, and tokens_only_on_board is true
 			# we remove all tokens
-			if cfc.TOKENS_ONLY_ON_BOARD:
+			if cfc.tokens_only_on_board:
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 					token.queue_free()
 			# We also make sure the card buttons don't stay visible or enabled
