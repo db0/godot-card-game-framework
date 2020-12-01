@@ -1,7 +1,7 @@
 # This class contains all the functionality required to perform
 # full rules enforcement on any card.
 #
-# The automation is based on Tasks. Each "task" performs a very specific
+# The automation is based on [ScriptTask]s. Each such "task" performs a very specific
 # manipulation of the board state, based on using existing functions
 # in the object manipulated.
 # Therefore each task function provides effectively a text-based API

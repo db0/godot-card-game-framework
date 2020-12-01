@@ -18,8 +18,8 @@ extends Reference
 # * If set to false, then it will reset the targetting, and any
 # future scripts which require targetting will have to acquire a new
 # target
-# * If set to true (default), following scripts
-# requiring target, will use the previous one.
+# * If set to true (default), following tasks
+# requiring target, will use the previously selected one.
 const DEF_TARGET_REQUEST := "common_target_request"
 # Subject can be "self" or "target".
 # * If the subject is "target", we initiate targetting from the owner card
@@ -34,54 +34,54 @@ const DEF_SUBJECT := "subject"
 # * "another": Triggering card has to not be the owner of the script
 # * "any" (default): Will execute regardless of the triggering card.
 const DEF_TRIGGER := "trigger"
-# Used when a script is using the rotate_card task (See ScriptingEngine doc)
+# Used when a script is using the [ScriptingEngine] rotate_card()
 #
 # These are the degress in multiples of 90, that the subject will be rotated.
 const DEF_DEGREES := "degrees"
-# Used when a script is using the flip_card task (See ScriptingEngine doc)
+# Used when a script is using the [ScriptingEngine] flip_card()
 # * true: The card will be set face-up
 # * false: The card will be set face-down
 const DEF_SET_FACEUP := "set_faceup"
-# Used when a script is using one of the follwing tasks (See ScriptingEngine doc)
-# * move_card_cont_to_cont
-# * move_card_cont_to_board
+# Used when a script is using one of the following [ScriptingEngine] methods
+# * move_card_cont_to_cont()
+# * move_card_cont_to_board()
 # Specifies the source container to pick the card from
 const DEF_SRC_CONTAINER := "src_container"
-# Used when a script is using one of the following tasks (See ScriptingEngine doc)
-# * move_card_to_container
-# * move_card_cont_to_cont
-# * shuffle_container
+# Used when a script is using one of the following [ScriptingEngine] methods
+# * move_card_to_container()
+# * move_card_cont_to_cont()
+# * shuffle_container()
 # Specifies the destination container to manipulate
 const DEF_DEST_CONTAINER := "dest_container"
-# Used when we're seeking a card inside a CardContainer 
-# in one of the follwing tasks (See ScriptingEngine doc)
-# * move_card_cont_to_board
-# * move_card_cont_to_cont
+# Used when we're seeking a card inside a [CardContainer] 
+# in one of the following [ScriptingEngine] methods
+# * move_card_cont_to_board()
+# * move_card_cont_to_cont()
 # Default is to seek card at index 0
 const DEF_PILE_INDEX := "pile_index"
-# Used when placing a card inside a CardContainer
-# in one of the follwing tasks (See ScriptingEngine doc)
-# * move_card_to_container
-# * move_card_cont_to_cont
+# Used when placing a card inside a [CardContainer]
+# in one of the follwing [ScriptingEngine] tasks
+# * move_card_to_container()
+# * move_card_cont_to_cont()
 # When -1 is defined, it is placed on the last position
 const DEF_DEST_INDEX := "dest_index"
-# Used when a script is using one of the following tasks (See ScriptingEngine doc)
-# * move_card_to_board
-# * move_card_cont_to_board
+# Used when a script is using one of the following [ScriptingEngine] methods
+# * move_card_to_board()
+# * move_card_cont_to_board()
 # If Vector2(-1,-1) is specified, it uses the mouse position
 # which obviously not good for scripts
 const DEF_BOARD_POSITION := "board_position"
-# Used when a script is using the mod_tokens task (See ScriptingEngine doc)
+# Used when a script is using the [ScriptingEngine] mod_tokens()
 #
 # It specifies if we're modifying the existing amount
 # or setting it to the exact one
 const DEF_TOKEN_SET_TO_MOD := "set_to_mod"
-# Used when a script is using the mod_tokens task (See ScriptingEngine doc)
+# Used when a script is using the [ScriptingEngine] mod_tokens()
 #
 # It specifies the amount we're setting/modifying
 # or setting it to the exact one
 const DEF_TOKEN_MODIFICATION := "modification"
-# Used when a script is using the spawn_card task (See ScriptingEngine doc)
+# Used when a script is using the [ScriptingEngine] spawn_card()
 #
 # This is the path to the card template scene to use for this card
 const DEF_CARD_SCENE := "card_scene"
@@ -142,7 +142,7 @@ const TRIGGER_FACEUP := "is_faceup"
 # * card_moved_to_hand
 # The value will be the node name the Card left
 const TRIGGER_SOURCE := "source"
-# Filter value sent by one of the trigger Card's following signals:
+# Filter value sent by one of the trigger [Card]'s following signals:
 # * card_moved_to_board
 # * card_moved_to_pile
 # * card_moved_to_hand

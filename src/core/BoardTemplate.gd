@@ -1,4 +1,6 @@
-# Holds Card objects for the player to manipulate
+# Mean to serve as the main play area for [Card] objects.
+#
+# It functions almost like a [CardContainer].
 class_name Board
 extends Node2D
 
