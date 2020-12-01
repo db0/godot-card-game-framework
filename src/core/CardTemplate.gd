@@ -1311,15 +1311,16 @@ func get_angle_by_index(index,card_len = get_parent().get_card_count()):
 func _recalculatePosition_by_oval() ->Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
-
-	var hor_rad: float = get_parent().get_node('Control').rect_size.x*0.45
+	var hor_rad: float = get_parent().get_node('Control').rect_size.x*0.5
 	var ver_rad: float = get_parent().get_node('Control').rect_size.x*0.3
 	var angle = get_angle_by_index(get_my_card_index())
-	angle = deg2rad(angle)
-	var oval_angle_vector = Vector2(hor_rad*cos(angle),-ver_rad*sin(angle))
-
-	card_position_x = (oval_angle_vector.x+200)
-	card_position_y = (oval_angle_vector.y-100)
+	var rad_angle = deg2rad(angle)
+	var oval_angle_vector = Vector2(hor_rad*cos(rad_angle),-ver_rad*sin(rad_angle))
+	var center_x = get_parent().get_node('Control').rect_size.x/2+get_parent().get_node('Control').rect_position.x
+	var center_y = get_parent().get_node('Control').rect_size.y+get_parent().get_node('Control').rect_position.y
+	card_position_x = (oval_angle_vector.x+center_x-$Control.rect_size.x/2)
+	card_position_y = (oval_angle_vector.y+center_y)
+	self.rotation_degrees = 90-angle
 	return Vector2(card_position_x,card_position_y)
 
 func _recalculatePosition_by_rectangle() ->Vector2:
