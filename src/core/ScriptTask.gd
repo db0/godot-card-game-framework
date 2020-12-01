@@ -8,8 +8,8 @@ extends Reference
 
 #---------------------------------------------------------------------
 # Script Definition Keys
-# 
-# The below are all the possible dictionary keys that can be set in a 
+#
+# The below are all the possible dictionary keys that can be set in a
 # task definition.
 # Most of them are only relevant for a specific task type
 #---------------------------------------------------------------------
@@ -26,6 +26,7 @@ const KEY_COMMON_TARGET_REQUEST := "common_target_request"
 # to ask the player to find a appropriate target
 # * If the subject is "self", then the task effects the owner card
 # * If not specified, we set value to null, assuming there's no subject needed.
+const KEY_IS_COST := "is_cost"
 const KEY_SUBJECT := "subject"
 # Used when a script is triggered by a signal.
 #
@@ -55,7 +56,7 @@ const KEY_SRC_CONTAINER := "src_container"
 #
 # Specifies the destination container to manipulate
 const KEY_DEST_CONTAINER := "dest_container"
-# Used when we're seeking a card inside a [CardContainer] 
+# Used when we're seeking a card inside a [CardContainer]
 # in one of the following [ScriptingEngine] methods
 # * move_card_cont_to_board()
 # * move_card_cont_to_cont()
@@ -97,8 +98,8 @@ const KEY_CARD_SCENE := "card_scene"
 
 #---------------------------------------------------------------------
 # Filter Definition Keys
-# 
-# The below are all the possible dictionary keys that can be set in a 
+#
+# The below are all the possible dictionary keys that can be set in a
 # filter definition.
 # Most of them are only relevant for a specific task type
 #---------------------------------------------------------------------
@@ -128,7 +129,7 @@ const FILTER_TOKEN_NAME := "filter_token_name"
 
 #---------------------------------------------------------------------
 # Signal Properties
-# 
+#
 # The below are all the possible dictionary keys send in the dictionary
 # passed by a card trigger signal (See Card signals)
 #
@@ -159,7 +160,7 @@ const TRIGGER_SOURCE := "source"
 const TRIGGER_DESTINATION := "destination"
 # Filter value sent by the trigger Card `card_token_modified` signal.
 #
-# This is the current value of the token. 
+# This is the current value of the token.
 # If token was removed value will be 0
 const TRIGGER_NEW_TOKEN_VALUE := "new_token_value"
 # Filter value sent by the trigger Card `card_token_modified` signal.
@@ -181,7 +182,7 @@ const TRIGGER_HOST = "token_name"
 
 #---------------------------------------------------------------------
 # Signal Values
-# 
+#
 # Some filter check signals against constants. They are defined below
 #---------------------------------------------------------------------
 
@@ -214,7 +215,6 @@ var has_init_completed := false
 # If true if this task is valid to run.
 # A task is invalid to run if some filter does not match.
 var is_valid := true
-
 
 # prepares the properties needed by the task to function.
 func _init(card: Card,
@@ -254,6 +254,8 @@ func get(property: String):
 	var default
 	# for property details, see const definitionts
 	match property:
+		KEY_IS_COST:
+			default = false
 		KEY_COMMON_TARGET_REQUEST:
 			default = true
 		KEY_TRIGGER:
@@ -334,7 +336,7 @@ func _check_filters():
 	if get("trigger") == "another" and trigger == owner:
 		is_valid = false
 
-	# Checking card properties is its own function as it might be 
+	# Checking card properties is its own function as it might be
 	# called from other places as well
 	_check_properties("trigger")
 

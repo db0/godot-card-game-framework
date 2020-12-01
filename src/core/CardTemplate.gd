@@ -41,6 +41,7 @@ enum _ReturnCode {
 	FAILED,
 }
 
+signal initiated_targeting
 # Emitted whenever the card has selected a target.
 signal target_selected(card)
 # Emitted whenever the card is rotated
@@ -704,24 +705,27 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 		# rotation, we reset it to 0 degrees
 		if card_rotation == value and toggle:
 			value = 0
-		# We make sure to remove other tweens of the same type to avoid a deadlock
-		$Tween.remove($Control,'rect_rotation')
-		# There's no way to rotate the Area2D node,
-		# so we just rotate the internal $Control. The results are the same.
-		$Tween.interpolate_property($Control,'rect_rotation',
-				$Control.rect_rotation, value, 0.3,
-				Tween.TRANS_BACK, Tween.EASE_IN_OUT)
-		# We only start the animation if this flag is set to true
-		# This allows us to set the card to rotate on the next
-		# available tween, instead of immediately.
-		if start_tween:
-			$Tween.start()
-		#$Control/Tokens.rotation_degrees = -value # need to figure this out
-		# When the card actually changes orientation
-		# We report that it changed.
+		# We modify the card only if this is not a cost dry-run
+		if not check:
+			# We make sure to remove other tweens of the same type
+			# to avoid a deadlock
+			$Tween.remove($Control,'rect_rotation')
+			# There's no way to rotate the Area2D node,
+			# so we just rotate the internal $Control. The results are the same.
+			$Tween.interpolate_property($Control,'rect_rotation',
+					$Control.rect_rotation, value, 0.3,
+					Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+			# We only start the animation if this flag is set to true
+			# This allows us to set the card to rotate on the next
+			# available tween, instead of immediately.
+			if start_tween:
+				$Tween.start()
+			card_rotation = value
+			#$Control/Tokens.rotation_degrees = -value # need to figure this out
+			# When the card actually changes orientation
+			# We report that it changed.
+			emit_signal("card_rotated", self, "card_rotated",  {"degrees": value})
 		retcode = _ReturnCode.CHANGED
-		card_rotation = value
-		emit_signal("card_rotated", self, "card_rotated",  {"degrees": value})
 	return retcode
 
 
@@ -897,6 +901,7 @@ func execute_scripts(
 		trigger: String = "manual",
 		details: Dictionary = {}):
 	var card_scripts
+	var sceng = null
 	# If scripts have been defined directly in this object
 	# They take precedence over CardScriptDefinitions.gd
 	#
@@ -918,14 +923,34 @@ func execute_scripts(
 			state_scripts = card_scripts.get("hand", [])
 		IN_POPUP,FOCUSED_IN_POPUP:
 			state_scripts = card_scripts.get("pile", [])
-	# The ScriptingEngine is where we execute the scripts
-	# We cannot use its class reference,
-	# as it causes a cyclic reference error when parsing
-	var sceng = scripting_engine.new(
-			self,
-			state_scripts,
-			trigger_card,
-			details)
+	# To avoid unnecessary operations
+	# we evoce the ScriptingEngine only if we have something to execute
+	if len(state_scripts):
+		# This evocation of the ScriptingEngine, checks the card for
+		# cost-defined tasks, and performs a dry-run on them
+		# to ascertain whether they can all be paid,
+		# before executing the card script.
+		sceng = scripting_engine.new(
+				self,
+				state_scripts,
+				trigger_card,
+				details,
+				true)
+		# In case the script involves targetting, we need to wait on further
+		# execution until targetting has completed
+		if not sceng.all_tasks_completed:
+			yield(sceng,"tasks_completed")
+		# If the dry-run of the ScriptingEngine returns that all
+		# costs can be paid, then we proceed with the actual run
+		if sceng.can_all_costs_be_paid:
+			# The ScriptingEngine is where we execute the scripts
+			# We cannot use its class reference,
+			# as it causes a cyclic reference error when parsing
+			sceng = scripting_engine.new(
+					self,
+					state_scripts,
+					trigger_card,
+					details)
 	return(sceng)
 
 
@@ -1152,6 +1177,7 @@ func initiate_targeting() -> void:
 	_is_targetting = true
 	$TargetLine/ArrowHead.visible = true
 	$TargetLine/ArrowHead/Area2D.monitoring = true
+	emit_signal("initiated_targeting")
 
 
 # Will end the targeting process.
