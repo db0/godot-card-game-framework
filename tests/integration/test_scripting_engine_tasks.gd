@@ -23,14 +23,11 @@ func test_basics():
 			{"name": "rotate_card",
 			"subject": "self",
 			"degrees": 270}]}}
-	watch_signals(card.scripting_engine)
 	card.execute_scripts()
-	assert_signal_emitted(card.scripting_engine,"scripts_completed")
 	yield(table_move(card, Vector2(100,200)), "completed")
 	card.execute_scripts()
 	assert_eq(target.card_rotation, 0,
 			"Script should not work from a different state")
-	assert_signal_emitted(card.scripting_engine,"scripts_completed")
 
 	# The below tests _common_target == false
 	card.scripts = {"manual": {"board": [
@@ -42,7 +39,8 @@ func test_basics():
 			"subject": "target",
 			"common_target_request": false,
 			"degrees": 90}]}}
-	card.execute_scripts()
+	var scripting_engine = card.execute_scripts()
+	watch_signals(scripting_engine)
 	yield(target_card(card,card), "completed")
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 270,
@@ -51,10 +49,10 @@ func test_basics():
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 90,
 			"Second rotation should also happen")
+	assert_signal_emitted(scripting_engine,"tasks_completed",
+			"Scripts finished signal fires")
 	card.scripts = {"hand": [{}]}
 	card.execute_scripts()
-	assert_signal_emitted(card.scripting_engine,"scripts_completed",
-			"Empty scripts are skipped")
 	card.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)

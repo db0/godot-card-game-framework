@@ -68,6 +68,7 @@ signal card_unattached(card,trigger,details)
 signal card_targeted(card,trigger,details)
 
 
+var scripting_engine = load("res://src/core/ScriptingEngine.gd")
 
 # Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
@@ -133,11 +134,6 @@ var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
 var _is_drawer_open := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
-
-# The ScriptingEngine is where we execute the scripts
-# We cannot use its class reference,
-# as it causes a cyclic reference error when parsing
-onready var scripting_engine = load("res://src/core/ScriptingEngine.gd").new()
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
@@ -688,7 +684,7 @@ func set_name(value : String) -> void:
 # Returns _ReturnCode.OK if the card was already in the correct rotation.
 #
 # Returns _ReturnCode.FAILED if an invalid rotation was specified.
-func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
+func set_card_rotation(value: int, toggle := false, start_tween := true, check := false) -> int:
 	var retcode
 	# For cards we only allow orthogonal degrees of rotation
 	# If it's not, we consider the request failed
@@ -893,7 +889,7 @@ func move_to(targetHost: Node2D,
 func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
-		details: Dictionary = {}) -> void:
+		details: Dictionary = {}):
 	# The CardScriptDefinitions.gd is where we keep all card scripting definitions
 	var card_scripts
 	# If scripts have been defined directly in this object
@@ -917,10 +913,15 @@ func execute_scripts(
 			state_scripts = card_scripts.get("hand", [])
 		IN_POPUP,FOCUSED_IN_POPUP:
 			state_scripts = card_scripts.get("pile", [])
-	scripting_engine.run_next_script(self,
-			state_scripts.duplicate(),
+	# The ScriptingEngine is where we execute the scripts
+	# We cannot use its class reference,
+	# as it causes a cyclic reference error when parsing
+	var sceng = scripting_engine.new(
+			self,
+			state_scripts,
 			trigger_card,
 			details)
+	return(sceng)
 
 
 # Handles the card becoming an attachment for a specified host Card object

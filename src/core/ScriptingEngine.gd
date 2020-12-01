@@ -11,8 +11,8 @@
 class_name ScriptingEngine
 extends Reference
 
-# Emitted when all scripts have finished running
-signal scripts_completed
+# Emitted when all tasks have been run succesfully
+signal tasks_completed
 
 
 var custom: CustomScripts
@@ -23,9 +23,15 @@ func _ready() -> void:
 
 
 # Sets the owner of this Scripting Engine
-func _init() -> void:
+func _init(card_owner: Card,
+		scripts_queue: Array,
+		trigger_card: Card,
+		signal_details := {}) -> void:
 	custom = CustomScripts.new()
-
+	run_next_script(card_owner,
+			scripts_queue.duplicate(),
+			trigger_card,
+			signal_details)
 
 # The main engine starts here.
 # It receives array with all the scripts to execute,
