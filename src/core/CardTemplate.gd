@@ -551,11 +551,11 @@ func get_targetcard() -> Card:
 # Returns _ReturnCode.CHANGED if the card actually changed rotation
 #
 # Returns _ReturnCode.OK if the card was already in the correct rotation
-func set_is_faceup(value: bool, instant := false) -> int:
+func set_is_faceup(value: bool, instant := false, check := false) -> int:
 	var retcode: int
 	if value == is_faceup:
 		retcode = _ReturnCode.OK
-	else:
+	elif not check:
 		if _is_drawer_open:
 			_token_drawer(false)
 		# We make sure to remove other tweens of the same type to avoid a deadlock
@@ -600,6 +600,9 @@ func set_is_faceup(value: bool, instant := false) -> int:
 					_flip_card(dupe_front, dupe_back, true)
 		retcode = _ReturnCode.CHANGED
 		emit_signal("card_flipped", self, "card_flipped", {"is_faceup": value})
+	# If we're doing a check, then we just report CHANGED.
+	else:
+		retcode = _ReturnCode.CHANGED
 	return retcode
 
 

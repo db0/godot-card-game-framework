@@ -97,7 +97,7 @@ func run_next_script(card_owner: Card,
 func rotate_card(script: ScriptTask) -> int:
 	var retcode: int
 	var card := script.subject
-	# The last "true" is the "check" flag.
+	# The last arg is the "check" flag.
 	# Unfortunately Godot does not support passing named vars
 	# (See https://github.com/godotengine/godot-proposals/issues/902)
 	retcode = card.set_card_rotation(script.get(script.KEY_DEGREES),
@@ -109,9 +109,12 @@ func rotate_card(script: ScriptTask) -> int:
 #
 # Requires the following keys:
 # * "set_faceup": bool
-func flip_card(script: ScriptTask) -> void:
+func flip_card(script: ScriptTask) -> int:
+	var retcode: int
 	var card := script.subject
-	card.is_faceup = script.get(script.KEY_SET_FACEUP)
+	retcode = card.set_is_faceup(script.get(script.KEY_SET_FACEUP),
+			false,costs_dry_run)
+	return(retcode)
 
 
 # Task for moving cards to other containers
