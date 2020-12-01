@@ -118,6 +118,8 @@ var tokens := {} setget ,get_all_tokens
 var _is_targetting := false
 # Used for animating the card.
 var _target_position: Vector2
+# Used for animating the card.
+var _target_rotation: float
 # Used to avoid the focus animation repeating once it's completed.
 var _focus_completed: bool = false
 # We use this to know at which stage of fancy movement this is.
@@ -1290,6 +1292,10 @@ func _pushAside(targetpos: Vector2) -> void:
 	_target_position = targetpos
 	state = PUSHED_ASIDE
 
+func _recalculate_rotation() ->float:
+	if cfc.hand_use_oval_shape:
+		return 0.0
+	return 90.0-get_angle_by_index(get_my_card_index())
 
 # Recalculates the position of the current card object
 # based on how many cards we have already in hand and its index among them
@@ -1301,7 +1307,8 @@ func _recalculatePosition() ->Vector2:
 
 func get_angle_by_index(index,card_len = get_parent().get_card_count()):
 	var half
-	half = (card_len-1)/2
+	half = (card_len-1)/2.0
+	print(half)
 	if index == half:
 		return 90
 	var max_hand_size = cfc.NMAP.hand.hand_size
@@ -1320,7 +1327,7 @@ func _recalculatePosition_by_oval() ->Vector2:
 	var center_y = get_parent().get_node('Control').rect_size.y+get_parent().get_node('Control').rect_position.y
 	card_position_x = (oval_angle_vector.x+center_x-$Control.rect_size.x/2)
 	card_position_y = (oval_angle_vector.y+center_y)
-	self.rotation_degrees = 90-angle
+	set_card_rotation(90-angle)
 	return Vector2(card_position_x,card_position_y)
 
 func _recalculatePosition_by_rectangle() ->Vector2:
