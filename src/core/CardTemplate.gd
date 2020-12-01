@@ -52,19 +52,22 @@ signal card_rotated(card,trigger,details)
 signal card_flipped(card,trigger,details)
 # Emitted whenever the card is viewed while face-down
 signal card_viewed(card,trigger,details)
-#Emited whenever the card is moved to the board
+# Emited whenever the card is moved to the board
 signal card_moved_to_board(card,trigger,details)
-#Emited whenever the card is moved to a pile
+# Emited whenever the card is moved to a pile
 signal card_moved_to_pile(card,trigger,details)
-#Emited whenever the card is moved to a hand
+# Emited whenever the card is moved to a hand
 signal card_moved_to_hand(card,trigger,details)
-#Emited whenever the card's tokens are modified
+# Emited whenever the card's tokens are modified
 signal card_token_modified(card,trigger,details)
-#Emited whenever the card attaches to another
+# Emited whenever the card attaches to another
 signal card_attached(card,trigger,details)
-#Emited whenever the card unattaches from another
+# Emited whenever the card unattaches from another
 signal card_unattached(card,trigger,details)
-#Emited whenever the card is targeted by another
+# Emited whenever the card is targeted by another card.
+# This signal is not fired by this card directly, but by the card
+# doing the targeting.
+# warning-ignore:unused_signal
 signal card_targeted(card,trigger,details)
 
 
@@ -885,12 +888,14 @@ func move_to(targetHost: Node2D,
 			card.set_highlight(false)
 		_potential_cards.clear()
 
-
+# Executes the tasks defined in the card's scripts in order.
+#
+# Returns a [ScriptingEngine] object but that it not statically typed
+# As it causes the parser think there's a cyclic dependency
 func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
 		details: Dictionary = {}):
-	# The CardScriptDefinitions.gd is where we keep all card scripting definitions
 	var card_scripts
 	# If scripts have been defined directly in this object
 	# They take precedence over CardScriptDefinitions.gd
@@ -1961,6 +1966,7 @@ func _token_drawer(drawer_state := true) -> void:
 			if not _is_drawer_open:
 				_is_drawer_open = true
 				# To avoid tween deadlocks
+				# warning-ignore:return_value_discarded
 				tween.remove_all()
 				# warning-ignore:return_value_discarded
 				tween.interpolate_property(
