@@ -17,7 +17,7 @@ func _init(dry_run_req) -> void:
 # You can pass a predefined subject, but it's optional.
 func custom_script(script: ScriptTask) -> void:
 	var card: Card = script.owner
-	var subject: Card = script.subject
+	var subjects: Array = script.subjects
 	# I don't like the extra indent caused by this if, 
 	# But not all object will be Card
 	# So I can't be certain the "card_name" var will exist
@@ -33,5 +33,5 @@ func custom_script(script: ScriptTask) -> void:
 			if not costs_dry_run:
 				print("This custom script uses the _find_subject()"
 						+ " to find a convenient target")
-				print("Destroying: " + subject.card_name)
-				subject.queue_free()
+				print("Destroying: " + subjects[0].card_name)
+				subjects[0].queue_free()

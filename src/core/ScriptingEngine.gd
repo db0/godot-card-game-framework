@@ -78,6 +78,7 @@ func run_next_script(card_owner: Card,
 		if not script.has_init_completed:
 			yield(script,"completed_init")
 		#print("Scripting: " + str(script.properties)) # Debug
+		#print("Scripting Subjects: " + str(script.subjects)) # Debug
 		if script.task_name == "custom_script":
 			# This class contains the customly defined scripts for each
 			# card.
@@ -105,12 +106,12 @@ func run_next_script(card_owner: Card,
 # * "degrees": int
 func rotate_card(script: ScriptTask) -> int:
 	var retcode: int
-	var card := script.subject
-	# The last arg is the "check" flag.
-	# Unfortunately Godot does not support passing named vars
-	# (See https://github.com/godotengine/godot-proposals/issues/902)
-	retcode = card.set_card_rotation(script.get(script.KEY_DEGREES),
-			false, true, costs_dry_run)
+	for card in script.subjects:
+		# The last arg is the "check" flag.
+		# Unfortunately Godot does not support passing named vars
+		# (See https://github.com/godotengine/godot-proposals/issues/902)
+		retcode = card.set_card_rotation(script.get(script.KEY_DEGREES),
+				false, true, costs_dry_run)
 	return(retcode)
 
 
@@ -122,9 +123,9 @@ func rotate_card(script: ScriptTask) -> int:
 # * "set_faceup": bool
 func flip_card(script: ScriptTask) -> int:
 	var retcode: int
-	var card := script.subject
-	retcode = card.set_is_faceup(script.get(script.KEY_SET_FACEUP),
-			false,costs_dry_run)
+	for card in script.subjects:
+		retcode = card.set_is_faceup(script.get(script.KEY_SET_FACEUP),
+				false,costs_dry_run)
 	return(retcode)
 
 
@@ -140,8 +141,8 @@ func flip_card(script: ScriptTask) -> int:
 # * index > 0 means the specific index among other cards.
 func move_card_to_container(script: ScriptTask) -> void:
 	var dest_index: int = script.get(script.KEY_DEST_INDEX)
-	var card := script.subject
-	card.move_to(script.get(script.KEY_DEST_CONTAINER), dest_index)
+	for card in script.subjects:
+		card.move_to(script.get(script.KEY_DEST_CONTAINER), dest_index)
 
 
 # Task for moving card to the board
@@ -149,8 +150,8 @@ func move_card_to_container(script: ScriptTask) -> void:
 # Requires the following keys:
 # * "container": CardContainer
 func move_card_to_board(script: ScriptTask) -> void:
-	var card := script.subject
-	card.move_to(cfc.NMAP.board, -1, script.get(script.KEY_BOARD_POSITION))
+	for card in script.subjects:
+		card.move_to(cfc.NMAP.board, -1, script.get(script.KEY_BOARD_POSITION))
 
 
 # Task for moving card from one container to another
@@ -197,11 +198,11 @@ func move_card_cont_to_board(script: ScriptTask) -> void:
 # * (Optional) "set_to_mod": bool
 func mod_tokens(script: ScriptTask) -> int:
 	var retcode: int
-	var card := script.subject
 	var token_name: String = script.get(script.KEY_TOKEN_NAME)
 	var modification: int = script.get(script.KEY_TOKEN_MODIFICATION)
 	var set_to_mod: bool = script.get(script.KEY_TOKEN_SET_TO_MOD)
-	retcode = card.mod_token(token_name,modification,set_to_mod,costs_dry_run)
+	for card in script.subjects:
+		retcode = card.mod_token(token_name,modification,set_to_mod,costs_dry_run)
 	return(retcode)
 
 
@@ -230,11 +231,12 @@ func shuffle_container(script: ScriptTask) -> void:
 
 # Task from making the owner card an attachment to another card
 func attach_to_card(script: ScriptTask) -> void:
-	var card := script.subject
-	script.owner.attach_to_host(card)
+	for card in script.subjects:
+		script.owner.attach_to_host(card)
 
 
 # Task for attaching another card to the owner
 func host_card(script: ScriptTask) -> void:
-	var card := script.subject
+	# host_card can only ever have one subject
+	var card: Card = script.subjects[0]
 	card.attach_to_host(script.owner)

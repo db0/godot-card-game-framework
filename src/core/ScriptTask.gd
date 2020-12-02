@@ -21,12 +21,20 @@ extends Reference
 # * If set to true (default), following tasks
 # requiring target, will use the previously selected one.
 const KEY_COMMON_TARGET_REQUEST := "common_target_request"
-# Subject can be "self" or "target".
-# * If the subject is "target", we initiate targetting from the owner card
-# to ask the player to find a appropriate target
-# * If the subject is "self", then the task effects the owner card
-# * If not specified, we set value to null, assuming there's no subject needed.
+# See the `KEY_SUBJECT_V_` consts for the possible values for this key
+#
+# If key does not exist, we set value to null, assuming there's no subjects needed.
 const KEY_SUBJECT := "subject"
+# * If this value is the "subjects", we initiate targetting from the owner card
+const KEY_SUBJECT_V_TARGET := "target"
+# * If this value is the "subjects", then the task effects the owner card
+const KEY_SUBJECT_V_SELF := "self"
+# * If this value is the "subjects", then we search all cards on the table
+# by node order, and pick the first candidate that matches the filter
+const KEY_SUBJECT_V_BOARDSEEK := "boardseek"
+# * If this value is the "subjects", then we search all cards on the speified
+# pile by node order, and pick the first candidate that matches the filter
+const KEY_SUBJECT_V_TUTOR := "tutor"
 # This key is used to mark a task as being a cost requirement before the
 # rest of the defined tasks can execute.
 #
@@ -47,7 +55,7 @@ const KEY_IS_COST := "is_cost"
 const KEY_TRIGGER := "trigger"
 # Used when a script is using the rotate_card task
 #
-# These are the degress in multiples of 90, that the subject will be rotated.
+# These are the degress in multiples of 90, that the subjects will be rotated.
 const KEY_DEGREES := "degrees"
 # Used when a script is using the flip_card task. Values are:
 # * true: The card will be set face-up
@@ -117,7 +125,7 @@ const KEY_CARD_SCENE := "card_scene"
 # Filter used for checking against Card.properties
 #
 # This is open ended in the end, as the check can be run either
-# against the trigger card, or the subject card
+# against the trigger card, or the subjects card
 # see _check_properties()
 const FILTER_PROPERTIES := "filter_properties_"
 # Filter used in for checking against TRIGGER_DEGREES
@@ -148,7 +156,7 @@ const FILTER_TOKEN_NAME := "filter_token_name"
 
 # Filter value sent by the trigger Card `card_rotated` signal.
 #
-# These are the degress in multiples of 90, that the subject was rotated.
+# These are the degress in multiples of 90, that the subjects was rotated.
 const TRIGGER_DEGREES := "degrees"
 # Filter value sent by the trigger Card `card_flipped` signal.
 #
@@ -209,9 +217,9 @@ var owner: Card
 # It is typically `"self"` during manual execution,
 # but is `"another"` card during signal-based execution
 var trigger: Card
-# The subject is typically a `Card` object
+# The subjects is typically a `Card` object
 # in the future might be other things
-var subject: Card
+var subjects: Array
 # The name of the method to call in the ScriptingEngine
 # to implement this task
 var task_name: String
@@ -231,7 +239,6 @@ func _init(card: Card,
 		trigger_card: Card,
 		details: Dictionary,
 		script: Dictionary) -> void:
-	var subject_seek
 	# We store the card which executes this task
 	owner = card
 	# We store the card which triggered this task (typically via signal)
@@ -243,15 +250,13 @@ func _init(card: Card,
 	# The function name to be called gets its own var
 	task_name = get("name")
 	# We test if this task is valid
-	_check_filters()
+	_filter_trigger()
 	# We only seek targets if the task is valid
 	if is_valid:
 		# We discover which other card this task will affect, if any
-		subject_seek =_find_subject()
-		if subject_seek is GDScriptFunctionState: # Still seeking...
-			subject_seek = yield(subject_seek, "completed")
-		subject = subject_seek
-		_check_properties("subject")
+		var ret =_find_subjects()
+		if ret is GDScriptFunctionState: # Still working.
+			ret = yield(ret, "completed")
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
 	emit_signal("completed_init")
@@ -285,23 +290,38 @@ func get(property: String):
 	return(properties.get(property,default))
 
 
-# Figures out what the subject of this script is supposed to be.
+# Figures out what the subjects of this script is supposed to be.
 #
-# Returns a Card object if subject is defined, else returns null.
-func _find_subject() -> Card:
-	var subject_seek
+# Returns a Card object if subjects is defined, else returns null.
+func _find_subjects() -> Card:
+	var subjects_array := []
 	# See KEY_COMMON_TARGET_REQUEST doc
 	var common_target_request : bool = get(KEY_COMMON_TARGET_REQUEST)
 	# See KEY_SUBJECT doc
-	if get(KEY_SUBJECT) == "target":
-		subject_seek = _initiate_card_targeting(common_target_request)
-		if subject_seek is GDScriptFunctionState: # Still working.
-			subject_seek = yield(subject_seek, "completed")
-	elif get(KEY_SUBJECT) == "self":
-		subject_seek = owner
-	else:
-		subject_seek = null
-	return(subject_seek)
+	match get(KEY_SUBJECT):
+		KEY_SUBJECT_V_TARGET:
+			var c = _initiate_card_targeting(common_target_request)
+			if c is GDScriptFunctionState: # Still working.
+				c = yield(c, "completed")
+			is_valid = _check_properties(c,"subject")
+			subjects_array.append(c)
+		KEY_SUBJECT_V_BOARDSEEK:
+			for c in cfc.NMAP.board.get_all_cards():
+				if _check_properties(c,"seek"):
+					subjects_array.append(c)
+		KEY_SUBJECT_V_TUTOR:
+			# When we're tutoring for a subjects, we expect a
+			# source CardContainer to have been provided.
+			for c in get(KEY_SRC_CONTAINER):
+				if _check_properties(c,"tutor"):
+					subjects_array.append(c)
+					break
+		KEY_SUBJECT_V_SELF:
+			subjects_array.append(owner)
+		_:
+			subjects_array = []
+	subjects = subjects_array
+	return(subjects_array)
 
 
 # Handles initiation of target seeking.
@@ -335,7 +355,7 @@ func finalize():
 # Ensures that all filters requested by the script are respected
 #
 # Will set is_valid to false if any filter does not match reality
-func _check_filters():
+func _filter_trigger():
 	# Here we check that the trigger matches the _request_ for trigger
 	# A trigger which requires "another" card, should not trigger
 	# when itself causes the effect.
@@ -348,7 +368,7 @@ func _check_filters():
 
 	# Checking card properties is its own function as it might be
 	# called from other places as well
-	_check_properties("trigger")
+	is_valid = _check_properties(trigger, "trigger")
 
 	# Card Rotation filter checks
 	if get(FILTER_DEGREES) \
@@ -387,16 +407,16 @@ func _check_filters():
 			and get(FILTER_TOKEN_NAME) != signal_details.get(TRIGGER_TOKEN_NAME):
 		is_valid = false
 
-func _check_properties(type := "trigger") -> void:
-	var card: Card
-	if type == "subject":
-		card = subject
-	else:
-		card = trigger
-	# Card properties filter checks
+func _check_properties(card: Card, type := "trigger") -> bool:
+	var card_matches := true
+	# Card properties filter checks. We use the type of seek we're doing
+	# To know which dictionary property to pass for the required dict
+	# This way a script can be limited on more than one thing according to
+	# properties. For example limit on the properties of the trigger card
+	# and the properties of the subjects card.
 	if get(FILTER_PROPERTIES + type):
 		# prop_limits is the variable which will hold the dictionary
-		# detailing which card properties on the subject must match
+		# detailing which card properties on the subjects must match
 		# to satisfy this limit
 		var prop_limits : Dictionary = get(FILTER_PROPERTIES + type)
 		for property in prop_limits:
@@ -404,7 +424,8 @@ func _check_properties(type := "trigger") -> void:
 				# If it's an array, we assume they passed on element
 				# of that array to check against the card properties
 				if not prop_limits[property] in card.properties[property]:
-					is_valid = false
+					card_matches = false
 			else:
 				if prop_limits[property] != card.properties[property]:
-					is_valid = false
+					card_matches = false
+	return(card_matches)
