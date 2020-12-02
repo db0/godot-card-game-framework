@@ -26,8 +26,18 @@ const KEY_COMMON_TARGET_REQUEST := "common_target_request"
 # to ask the player to find a appropriate target
 # * If the subject is "self", then the task effects the owner card
 # * If not specified, we set value to null, assuming there's no subject needed.
-const KEY_IS_COST := "is_cost"
 const KEY_SUBJECT := "subject"
+# This key is used to task a script as being a cost requirements befire the
+# rest of the tasks can execute.
+#
+# If any tasks marked as costs will not be able to fulfil, then the whole
+# script is not executed.
+#
+# The following tasks support being set as costs:
+# * rotate_card
+# * flip_card
+# * mod_tokens
+const KEY_IS_COST := "is_cost"
 # Used when a script is triggered by a signal.
 #
 # Limits the execution depending on the triggering card. Value options are:
@@ -35,63 +45,63 @@ const KEY_SUBJECT := "subject"
 # * "another": Triggering card has to not be the owner of the script
 # * "any" (default): Will execute regardless of the triggering card.
 const KEY_TRIGGER := "trigger"
-# Used when a script is using the [ScriptingEngine] rotate_card()
+# Used when a script is using the rotate_card task
 #
 # These are the degress in multiples of 90, that the subject will be rotated.
 const KEY_DEGREES := "degrees"
-# Used when a script is using the [ScriptingEngine] flip_card(). Values are:
+# Used when a script is using the flip_card task. Values are:
 # * true: The card will be set face-up
 # * false: The card will be set face-down
 const KEY_SET_FACEUP := "set_faceup"
-# Used when a script is using one of the following [ScriptingEngine] methods
-# * move_card_cont_to_cont()
-# * move_card_cont_to_board()
+# Used when a script is using one of the following tasks
+# * move_card_cont_to_cont
+# * move_card_cont_to_board
 #
 # Specifies the source container to pick the card from
 const KEY_SRC_CONTAINER := "src_container"
-# Used when a script is using one of the following [ScriptingEngine] methods
-# * move_card_to_container()
-# * move_card_cont_to_cont()
-# * shuffle_container()
+# Used when a script is using one of the following tasks
+# * move_card_to_container
+# * move_card_cont_to_cont
+# * shuffle_container
 #
 # Specifies the destination container to manipulate
 const KEY_DEST_CONTAINER := "dest_container"
 # Used when we're seeking a card inside a [CardContainer]
-# in one of the following [ScriptingEngine] methods
-# * move_card_cont_to_board()
-# * move_card_cont_to_cont()
+# in one of the following tasks
+# * move_card_cont_to_board
+# * move_card_cont_to_cont
 #
 # Default is to seek card at index 0
 const KEY_PILE_INDEX := "pile_index"
 # Used when placing a card inside a [CardContainer]
-# in one of the follwing [ScriptingEngine] tasks
-# * move_card_to_container()
-# * move_card_cont_to_cont()
+# in one of the follwing tasks
+# * move_card_to_container
+# * move_card_cont_to_cont
 #
 # When -1 is defined, it is placed on the last position
 const KEY_DEST_INDEX := "dest_index"
-# Used when a script is using one of the following [ScriptingEngine] methods
-# * move_card_to_board()
-# * move_card_cont_to_board()
+# Used when a script is using one of the following tasks
+# * move_card_to_board
+# * move_card_cont_to_board
 #
 # If Vector2(-1,-1) is specified, it uses the mouse position
 # which obviously not good for scripts
 const KEY_BOARD_POSITION := "board_position"
-# Used when a script is using the [ScriptingEngine] mod_tokens()
+# Used when a script is using the mod_tokens task
 #
 # It specifies if we're modifying the existing amount
 # or setting it to the exact one
 const KEY_TOKEN_SET_TO_MOD := "set_to_mod"
-# Used when a script is using the [ScriptingEngine] mod_tokens()
+# Used when a script is using the mod_tokens task
 #
 # It specifies the name of the token we're modifying
 const KEY_TOKEN_NAME := "token_name"
-# Used when a script is using the [ScriptingEngine] mod_tokens()
+# Used when a script is using the mod_tokens task
 #
 # It specifies the amount we're setting/modifying
 # or setting it to the exact one
 const KEY_TOKEN_MODIFICATION := "modification"
-# Used when a script is using the [ScriptingEngine] spawn_card()
+# Used when a script is using the spawn_card task
 #
 # This is the path to the card template scene to use for this card
 const KEY_CARD_SCENE := "card_scene"

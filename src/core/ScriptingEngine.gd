@@ -17,7 +17,14 @@ signal tasks_completed
 # This flag will be true if we're attempting to find if the card
 # has costs that need to be paid, before the effects take place.
 var costs_dry_run := false
+# This is set to true whenever we're doing a cost dry-run
+# and any task marked "is_cost" wil lnot be able to manipulate the
+# game state as required, either because the board is already at the
+# requested state, or because something prevents it.
 var can_all_costs_be_paid := true
+# This is checked by the yield in [Card] execute_scripts()
+# to know when the cost dry-run has completed, so that it can
+# check the state of `can_all_costs_be_paid`.
 var all_tasks_completed := false
 
 # Called when the node enters the scene tree for the first time.
@@ -92,6 +99,8 @@ func run_next_script(card_owner: Card,
 
 # Task for rotating cards
 #
+# Supports KEY_IS_COST.
+#
 # Requires the following keys:
 # * "degrees": int
 func rotate_card(script: ScriptTask) -> int:
@@ -106,6 +115,8 @@ func rotate_card(script: ScriptTask) -> int:
 
 
 # Task for flipping cards
+#
+# Supports KEY_IS_COST.
 #
 # Requires the following keys:
 # * "set_faceup": bool
@@ -178,6 +189,8 @@ func move_card_cont_to_board(script: ScriptTask) -> void:
 
 # Task from modifying tokens on a card
 #
+# Supports KEY_IS_COST.
+#
 # Requires the following keys:
 # * "token_name": String
 # * "modification": int
@@ -190,6 +203,7 @@ func mod_tokens(script: ScriptTask) -> int:
 	var set_to_mod: bool = script.get(script.KEY_TOKEN_SET_TO_MOD)
 	retcode = card.mod_token(token_name,modification,set_to_mod,costs_dry_run)
 	return(retcode)
+
 
 # Task from creating a new card instance on the board
 #
