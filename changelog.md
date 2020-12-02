@@ -16,14 +16,30 @@
     * Move card to a CardContainer
     * Move card to board
     * Move card from Container to Container
+    * Spawn new card
+	* Shuffle CardContainer
+	* Attach to card
+	* Attach card to self
   * Trigger-based execution supported:
-    * card_rotated
-	* card_flipped
-	* card_viewed
-	* card_moved_to_board
-	* card_moved_to_hand
-	* card_moved_to_pile
-	* card_tokens_modified
+    * Card rotated
+	* Card flipped
+	* Card viewed
+	* Card moved to board
+	* Card moved to hand
+	* Card moved to pile
+	* Card_tokens_modified
+	* Card attached to another
+	* Card unattached from another
+  * Filtering of triggers supported:
+	* Card properties
+	* Card rotation degrees
+	* Card facing
+	* Source container of move
+	* Destination container of move
+	* Token count
+	* Token increase/decrease
+	* Token name
+* Scripting also support setting some tasks as costs required and targetting cards on the table.
 
 
 In case you're wondering why the FocusHighlight node has two children panel nodes, instead of making it itself a Panel node.

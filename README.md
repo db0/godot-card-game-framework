@@ -46,6 +46,8 @@ Click on the 'F' button to exchange between these two states
 
 The first three cards you will draw from your deck each have different prepared automation. You can double click any of them in the hand or board to see their effects. 
 
+Some of them have also effects that trigger off of other effects.
+
 Mind that their script effect change, depending on whether they're in the hand or board
 
 ## Installation
@@ -191,9 +193,9 @@ For more fine customization, you'll need to modify manually
 
 One of the most powerful features of this framework, is the possibility to easily script each individual card's abilities from start to finish, so that a player only needs to double-click on a card and your code will handle the proper execution. This allows games to very easily create complete rules enforcement of all card abilities, from the simplest to the most tricky ones.
 
-The scripting engine relies on two gdscipt files, `ScriptingEngine.gd`, which contains all the scripting APIs for manipulating cards and `CardScriptDefinitions.gd` which contains a dictionary of all the scripts you've defined for your cards. Not only that, but if needed you can customize an individual card's script during runtime, which can make it behave different than other cards of the same name.
+Please see the [ScriptDefinitions](wiki/ScriptDefinitions) documentation for more details
 
-The game comes with some sample scripted cards which can be found under `res://src/custom/cards`. You can peruse the CardScripts to understand how they work.
+The game comes with some sample scripted cards which can be found under `res://src/custom/cards/sets`.
 
 
 ## Provided features
