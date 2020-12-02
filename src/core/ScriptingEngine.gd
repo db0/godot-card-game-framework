@@ -181,7 +181,9 @@ func move_card_cont_to_cont(script: ScriptTask) -> void:
 func move_card_cont_to_board(script: ScriptTask) -> void:
 	var board_position = script.get(script.KEY_BOARD_POSITION)
 	for card in script.subjects:
+		# We assume cards moving to board want to be face-up
 		card.move_to(cfc.NMAP.board, -1, board_position)
+		card.is_faceup = true
 
 
 # Task from modifying tokens on a card

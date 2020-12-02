@@ -102,7 +102,6 @@ func test_subject_tutor():
 			"board_position":  Vector2(1000,200)}]}}
 	card.execute_scripts()
 	target = cfc.NMAP.board.get_card(0)
-	target.is_faceup = true
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq("Red",target.properties["Type"],
 			"Card of the correct type should be placed on the board")

@@ -109,7 +109,8 @@ func test_move_card_cont_to_cont():
 	target = cfc.NMAP.deck.get_card(5)
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_cont_to_cont",
-			"pile_index": 5,
+			"subject": "index",
+			"subject_index": 5,
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard}]}}
 	card.execute_scripts()
@@ -119,7 +120,8 @@ func test_move_card_cont_to_cont():
 	target = cfc.NMAP.deck.get_card(3)
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_cont_to_cont",
-			"pile_index": 3,
+			"subject": "index",
+			"subject_index": 3,
 			"dest_index": 1,
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard}]}}
@@ -135,7 +137,8 @@ func test_move_card_cont_to_board():
 	target = cfc.NMAP.deck.get_card(5)
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_cont_to_board",
-			"pile_index": 5,
+			"subject": "index",
+			"subject_index": 5,
 			"src_container":  cfc.NMAP.deck,
 			"board_position":  Vector2(1000,200)}]}}
 	card.execute_scripts()
