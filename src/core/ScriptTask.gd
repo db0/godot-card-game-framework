@@ -34,14 +34,14 @@ const KEY_SUBJECT_V_TARGET := "target"
 const KEY_SUBJECT_V_SELF := "self"
 # * If this is the value of the "subject" key,
 # then we search all cards on the table
-# by node order, and pick the first candidate that matches the filter
-const KEY_SUBJECT_V_BOARDSEEK := "boardseek"
-# * If this is the value of the "subject" key,
-# then we search all cards on the specified
-# pile by node order, and return **all** candidates that matches the filter
+# by node order, and return **all** candidates that matches the filter
 #
 # This allows us to make tasks which will affect more than 1 card at
 # the same time (e.g. "All Soldiers")
+const KEY_SUBJECT_V_BOARDSEEK := "boardseek"
+# * If this is the value of the "subject" key,
+# then we search all cards on the specified
+# pile by node order, and pick the first candidate that matches the filter
 const KEY_SUBJECT_V_TUTOR := "tutor"
 # * If this is the value of the "subject" key,
 # then we pick the card on the specified
