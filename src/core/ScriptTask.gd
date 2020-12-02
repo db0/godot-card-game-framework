@@ -32,9 +32,12 @@ const KEY_SUBJECT_V_SELF := "self"
 # * If this value is the "subjects", then we search all cards on the table
 # by node order, and pick the first candidate that matches the filter
 const KEY_SUBJECT_V_BOARDSEEK := "boardseek"
-# * If this value is the "subjects", then we search all cards on the speified
+# * If this value is the "subjects", then we search all cards on the specified
 # pile by node order, and pick the first candidate that matches the filter
 const KEY_SUBJECT_V_TUTOR := "tutor"
+# * If this value is the "subjects", then we pick the card on the specified
+# source pile by its index among other cards.
+const KEY_SUBJECT_V_INDEX := "index"
 # This key is used to mark a task as being a cost requirement before the
 # rest of the defined tasks can execute.
 #
@@ -80,7 +83,7 @@ const KEY_DEST_CONTAINER := "dest_container"
 # * move_card_cont_to_cont
 #
 # Default is to seek card at index 0
-const KEY_PILE_INDEX := "pile_index"
+const KEY_SUBJECT_INDEX := "subject_index"
 # Used when placing a card inside a [CardContainer]
 # in one of the follwing tasks
 # * move_card_to_container
@@ -275,7 +278,7 @@ func get(property: String):
 			default = true
 		KEY_TRIGGER:
 			default = "any"
-		KEY_PILE_INDEX:
+		KEY_SUBJECT_INDEX:
 			default = 0
 		KEY_DEST_INDEX:
 			default = -1
@@ -312,10 +315,16 @@ func _find_subjects() -> Card:
 		KEY_SUBJECT_V_TUTOR:
 			# When we're tutoring for a subjects, we expect a
 			# source CardContainer to have been provided.
-			for c in get(KEY_SRC_CONTAINER):
+			for c in get(KEY_SRC_CONTAINER).get_all_cards():
 				if _check_properties(c,"tutor"):
 					subjects_array.append(c)
 					break
+		KEY_SUBJECT_V_INDEX:
+			# When we're seeking for index, we expect a
+			# source CardContainer to have been provided.
+			var index: int = get(KEY_SUBJECT_INDEX)
+			var src_container: CardContainer = get(KEY_SRC_CONTAINER)
+			subjects_array.append(src_container.get_card(index))
 		KEY_SUBJECT_V_SELF:
 			subjects_array.append(owner)
 		_:

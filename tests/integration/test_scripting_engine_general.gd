@@ -93,6 +93,42 @@ func test_subject_boardseek():
 			"Card on board matching property should be rotated 180 degrees")
 
 
+func test_subject_tutor():
+	card.scripts = {"manual": {"hand": [
+			{"name": "move_card_cont_to_board",
+			"subject": "tutor",
+			"src_container":  cfc.NMAP.deck,
+			"filter_properties_tutor": {"Type": "Red"},
+			"board_position":  Vector2(1000,200)}]}}
+	card.execute_scripts()
+	target = cfc.NMAP.board.get_card(0)
+	target.is_faceup = true
+	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq("Red",target.properties["Type"],
+			"Card of the correct type should be placed on the board")
+
+func test_subject_index():
+	target = cfc.NMAP.deck.get_card(5)
+	card.scripts = {"manual": {"hand": [
+			{"name": "move_card_cont_to_board",
+			"subject": "index",
+			"subject_index": 5,
+			"src_container":  cfc.NMAP.deck,
+			"board_position":  Vector2(1000,200)}]}}
+	card.execute_scripts()
+	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(cfc.NMAP.board,target.get_parent(),
+			"Card should have moved to board")
+	target = cfc.NMAP.deck.get_card(0)
+	card.scripts = {"manual": {"hand": [
+			{"name": "move_card_cont_to_board",
+			"subject": "index",
+			"src_container":  cfc.NMAP.deck,
+			"board_position":  Vector2(100,200)}]}}
+	card.execute_scripts()
+	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(cfc.NMAP.board,target.get_parent(),
+			"When index is not specified, top card should have moved to the board")
 
 # Checks that scripts from the CardScriptDefinitions.gd have been loaded correctly
 func test_CardScripts():

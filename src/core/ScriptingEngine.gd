@@ -167,12 +167,10 @@ func move_card_to_board(script: ScriptTask) -> void:
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
 func move_card_cont_to_cont(script: ScriptTask) -> void:
-	var card_index: int = script.get(script.KEY_PILE_INDEX)
-	var src_container: CardContainer = script.get(script.KEY_SRC_CONTAINER)
-	var card := src_container.get_card(card_index)
 	var dest_container: CardContainer = script.get(script.KEY_DEST_CONTAINER)
 	var dest_index: int = script.get(script.KEY_DEST_INDEX)
-	card.move_to(dest_container,dest_index)
+	for card in script.subjects:
+		card.move_to(dest_container,dest_index)
 
 
 # Task for playing a card to the board from a container directly.
@@ -181,11 +179,9 @@ func move_card_cont_to_cont(script: ScriptTask) -> void:
 # * "card_index": int
 # * "src_container": CardContainer
 func move_card_cont_to_board(script: ScriptTask) -> void:
-	var card_index: int = script.get(script.KEY_PILE_INDEX)
-	var src_container: CardContainer = script.get(script.KEY_SRC_CONTAINER)
-	var card := src_container.get_card(card_index)
 	var board_position = script.get(script.KEY_BOARD_POSITION)
-	card.move_to(cfc.NMAP.board, -1, board_position)
+	for card in script.subjects:
+		card.move_to(cfc.NMAP.board, -1, board_position)
 
 
 # Task from modifying tokens on a card

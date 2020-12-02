@@ -140,10 +140,8 @@ func test_move_card_cont_to_board():
 			"board_position":  Vector2(1000,200)}]}}
 	card.execute_scripts()
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	assert_eq(cfc.NMAP.board,target.get_parent(),
-			"Card should have moved to board")
 	assert_eq(Vector2(1000,200),target.global_position,
-			"Card should have moved to specified position")
+			"Card should have moved to specified board position")
 
 
 func test_mod_tokens():
