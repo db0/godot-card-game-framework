@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.12 (Ongoing)
+
+* SciptEngine target finding now supports tutoring cards from deck
+* SciptEngine target finding now supports affecting multiple cards from the board by filtering their properties
+
 ## 0.11
 
 * Added new card back

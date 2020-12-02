@@ -25,17 +25,22 @@ const KEY_COMMON_TARGET_REQUEST := "common_target_request"
 #
 # If key does not exist, we set value to null, assuming there's no subjects needed.
 const KEY_SUBJECT := "subject"
-# * If this value is the "subjects", we initiate targetting from the owner card
+# * If this is the value of the "subject" key,
+# we initiate targetting from the owner card
 const KEY_SUBJECT_V_TARGET := "target"
-# * If this value is the "subjects", then the task effects the owner card
+# * If this is the value of the "subject" key,
+# then the task effects the owner card
 const KEY_SUBJECT_V_SELF := "self"
-# * If this value is the "subjects", then we search all cards on the table
+# * If this is the value of the "subject" key,
+# then we search all cards on the table
 # by node order, and pick the first candidate that matches the filter
 const KEY_SUBJECT_V_BOARDSEEK := "boardseek"
-# * If this value is the "subjects", then we search all cards on the specified
+# * If this is the value of the "subject" key,
+# then we search all cards on the specified
 # pile by node order, and pick the first candidate that matches the filter
 const KEY_SUBJECT_V_TUTOR := "tutor"
-# * If this value is the "subjects", then we pick the card on the specified
+# * If this is the value of the "subject" key,
+# then we pick the card on the specified
 # source pile by its index among other cards.
 const KEY_SUBJECT_V_INDEX := "index"
 # This key is used to mark a task as being a cost requirement before the
