@@ -15,7 +15,7 @@ The format for each card is as follows:
 	in the card_name variable of each card.
 * Inside that is a dictionary based on triggers. Each trigger specified what causes the script to fire. 
 	The default one is "manual" which triggers when the player double-clicks the card.
-	You can see the list of triggers in `cfc.SignalPropagator.known_card_signals`
+	You can see the list of triggers in [cfc.SignalPropagator.known_card_signals](https://github.com/db0/godot-card-gaming/wiki/CardFrameworkConfiguration#known_card_signals)
 * Inside is a dictionary based on card states, where each key is the container
 	from which the scripts will execute. So if the key is "board", then
 	the scripts defined in that dictionary, will be executed only while
