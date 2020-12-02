@@ -40,6 +40,7 @@ func setup(token_name: String) -> void:
 
 # Sets the token counter to the specified value
 func set_count(value := 1) -> void:
+	# We do not allow tokens to be set to negative values
 	if value < 0:
 		value = 0
 	count = value

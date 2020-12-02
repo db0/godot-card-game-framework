@@ -182,14 +182,14 @@ func move_card_cont_to_board(script: ScriptTask) -> void:
 # * "token_name": String
 # * "modification": int
 # * (Optional) "set_to_mod": bool
-func mod_tokens(script: ScriptTask) -> void:
+func mod_tokens(script: ScriptTask) -> int:
+	var retcode: int
 	var card := script.subject
 	var token_name: String = script.get(script.KEY_TOKEN_NAME)
 	var modification: int = script.get(script.KEY_TOKEN_MODIFICATION)
 	var set_to_mod: bool = script.get(script.KEY_TOKEN_SET_TO_MOD)
-	# warning-ignore:return_value_discarded
-	card.mod_token(token_name,modification,set_to_mod)
-
+	retcode = card.mod_token(token_name,modification,set_to_mod,costs_dry_run)
+	return(retcode)
 
 # Task from creating a new card instance on the board
 #

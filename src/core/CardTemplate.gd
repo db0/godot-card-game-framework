@@ -1089,7 +1089,7 @@ func get_focus() -> bool:
 #
 # If the amount of existing tokens of that type drops to 0 or lower,
 # the token node is also removed.
-func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
+func mod_token(token_name : String, mod := 1, set_to_mod := false, check := false) -> int:
 	var retcode : int
 	# If the player requested a token name that has not been defined by the game
 	# we return a failure
@@ -1107,8 +1107,26 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 		# We just increment it by 1
 		if not token and mod == 0:
 			retcode = _ReturnCode.OK
+		# For cost dry-runs, we don't want to modify the tokens at all.
+		# Just check if we could.
+		elif check:
+			# For a  cost dry run, we can only return FAILED
+			# when removing tokens as it's always possible to add new ones
+			if mod < 0:
+				# If the current tokens are equal or higher, then we can
+				# remove the requested amount and therefore return CHANGED.
+				if token.count + mod >= 0:
+					retcode = _ReturnCode.CHANGED
+				# If we cannot remove the full amount requested
+				# we return FAILED
+				else:
+					retcode = _ReturnCode.FAILED
+			else:
+				retcode = _ReturnCode.CHANGED
 		else:
 			var prev_value = token.count
+			# The set_to_mod value means that we want to set the tokens to the
+			# exact value specified
 			if set_to_mod:
 				token.count = mod
 			else:
