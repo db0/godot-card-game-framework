@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.11 (Ongoing)
+## 0.11
 
 * Added new card back
 * Made the card back glow-pulse
@@ -9,7 +9,7 @@
 * Cards in Piles are now places face-up or facedown depending on the pile config
 * Card definitions can now be created using json
 * Supports multiple sets of card and script definitions
-* Added Scripting Engine!
+* Added [Scripting Engine](https://github.com/db0/godot-card-gaming/wiki/ScriptDefinitions)!
   * Tasks supported:
     * Rotate Card
     * Flip card face-up/down
