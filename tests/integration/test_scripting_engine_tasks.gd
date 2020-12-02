@@ -23,15 +23,11 @@ func test_basics():
 			{"name": "rotate_card",
 			"subject": "self",
 			"degrees": 270}]}}
-	watch_signals(card.scripting_engine)
-	card.execute_scripts()
-	assert_signal_emitted(card.scripting_engine,"scripts_completed")
 	yield(table_move(card, Vector2(100,200)), "completed")
 	card.execute_scripts()
 	assert_eq(target.card_rotation, 0,
 			"Script should not work from a different state")
-	assert_signal_emitted(card.scripting_engine,"scripts_completed")
-
+	yield(yield_for(0.5), YIELD)
 	# The below tests _common_target == false
 	card.scripts = {"manual": {"board": [
 			{"name": "rotate_card",
@@ -42,7 +38,11 @@ func test_basics():
 			"subject": "target",
 			"common_target_request": false,
 			"degrees": 90}]}}
-	card.execute_scripts()
+	var scripting_engine = card.execute_scripts()
+	yield(yield_for(0.1), YIELD)
+	if scripting_engine is GDScriptFunctionState: # Still seeking...
+		yield(card, "initiated_targeting")
+	watch_signals(scripting_engine)
 	yield(target_card(card,card), "completed")
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 270,
@@ -51,10 +51,10 @@ func test_basics():
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 90,
 			"Second rotation should also happen")
+	assert_signal_emitted(scripting_engine,"tasks_completed",
+			"Scripts finished signal fires")
 	card.scripts = {"hand": [{}]}
 	card.execute_scripts()
-	assert_signal_emitted(card.scripting_engine,"scripts_completed",
-			"Empty scripts are skipped")
 	card.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
@@ -81,7 +81,12 @@ func test_CardScripts():
 			"Test1 script leaves target facedown")
 	assert_eq(target.card_rotation, 180,
 			"Test1 script rotates 180 degrees")
-
+	yield(table_move(cards[4], Vector2(500,200)), "completed")
+	card.execute_scripts()
+	yield(target_card(card,cards[4]), "completed")
+	yield(yield_to(cards[4].get_node("Tween"), "tween_all_completed", 1), YIELD)
+	assert_false(cards[4].is_faceup,
+			"Ensure targeting is cleared after first ScriptingEngine")
 
 # Checks that custom scripts fire correctly
 func test_custom_script():
@@ -95,7 +100,7 @@ func test_custom_script():
 	target = cards[2]
 	card.execute_scripts()
 	yield(target_card(card,target), "completed")
-	yield(yield_for(0.1), YIELD)
+	yield(yield_for(0.3), YIELD)
 	assert_freed(target, "Test Card 1")
 
 
@@ -228,6 +233,8 @@ func test_mod_tokens():
 			"token_name":  "industry"}]}}
 	card.execute_scripts()
 	yield(target_card(card,target), "completed")
+	# My scripts are slower now
+	yield(yield_for(0.2), YIELD)
 	assert_eq(2,industry_token.count,"Token set to specified amount")
 
 

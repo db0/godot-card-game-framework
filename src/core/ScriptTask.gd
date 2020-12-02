@@ -7,9 +7,9 @@ class_name ScriptTask
 extends Reference
 
 #---------------------------------------------------------------------
-# Script Definition Properties
-# 
-# The below are all the possible dictionary keys that can be set in a 
+# Script Definition Keys
+#
+# The below are all the possible dictionary keys that can be set in a
 # task definition.
 # Most of them are only relevant for a specific task type
 #---------------------------------------------------------------------
@@ -20,81 +20,96 @@ extends Reference
 # target
 # * If set to true (default), following tasks
 # requiring target, will use the previously selected one.
-const DEF_COMMON_TARGET_REQUEST := "common_target_request"
+const KEY_COMMON_TARGET_REQUEST := "common_target_request"
 # Subject can be "self" or "target".
 # * If the subject is "target", we initiate targetting from the owner card
 # to ask the player to find a appropriate target
 # * If the subject is "self", then the task effects the owner card
 # * If not specified, we set value to null, assuming there's no subject needed.
-const DEF_SUBJECT := "subject"
+const KEY_SUBJECT := "subject"
+# This key is used to task a script as being a cost requirements befire the
+# rest of the tasks can execute.
+#
+# If any tasks marked as costs will not be able to fulfil, then the whole
+# script is not executed.
+#
+# The following tasks support being set as costs:
+# * rotate_card
+# * flip_card
+# * mod_tokens
+const KEY_IS_COST := "is_cost"
 # Used when a script is triggered by a signal.
 #
-# Limits the execution depending on the triggering card. Options are:
+# Limits the execution depending on the triggering card. Value options are:
 # * "self": Triggering card has to be the owner of the script
 # * "another": Triggering card has to not be the owner of the script
 # * "any" (default): Will execute regardless of the triggering card.
-const DEF_TRIGGER := "trigger"
-# Used when a script is using the [ScriptingEngine] rotate_card()
+const KEY_TRIGGER := "trigger"
+# Used when a script is using the rotate_card task
 #
 # These are the degress in multiples of 90, that the subject will be rotated.
-const DEF_DEGREES := "degrees"
-# Used when a script is using the [ScriptingEngine] flip_card()
+const KEY_DEGREES := "degrees"
+# Used when a script is using the flip_card task. Values are:
 # * true: The card will be set face-up
 # * false: The card will be set face-down
-const DEF_SET_FACEUP := "set_faceup"
-# Used when a script is using one of the following [ScriptingEngine] methods
-# * move_card_cont_to_cont()
-# * move_card_cont_to_board()
+const KEY_SET_FACEUP := "set_faceup"
+# Used when a script is using one of the following tasks
+# * move_card_cont_to_cont
+# * move_card_cont_to_board
 #
 # Specifies the source container to pick the card from
-const DEF_SRC_CONTAINER := "src_container"
-# Used when a script is using one of the following [ScriptingEngine] methods
-# * move_card_to_container()
-# * move_card_cont_to_cont()
-# * shuffle_container()
+const KEY_SRC_CONTAINER := "src_container"
+# Used when a script is using one of the following tasks
+# * move_card_to_container
+# * move_card_cont_to_cont
+# * shuffle_container
 #
 # Specifies the destination container to manipulate
-const DEF_DEST_CONTAINER := "dest_container"
-# Used when we're seeking a card inside a [CardContainer] 
-# in one of the following [ScriptingEngine] methods
-# * move_card_cont_to_board()
-# * move_card_cont_to_cont()
+const KEY_DEST_CONTAINER := "dest_container"
+# Used when we're seeking a card inside a [CardContainer]
+# in one of the following tasks
+# * move_card_cont_to_board
+# * move_card_cont_to_cont
 #
 # Default is to seek card at index 0
-const DEF_PILE_INDEX := "pile_index"
+const KEY_PILE_INDEX := "pile_index"
 # Used when placing a card inside a [CardContainer]
-# in one of the follwing [ScriptingEngine] tasks
-# * move_card_to_container()
-# * move_card_cont_to_cont()
+# in one of the follwing tasks
+# * move_card_to_container
+# * move_card_cont_to_cont
 #
 # When -1 is defined, it is placed on the last position
-const DEF_DEST_INDEX := "dest_index"
-# Used when a script is using one of the following [ScriptingEngine] methods
-# * move_card_to_board()
-# * move_card_cont_to_board()
+const KEY_DEST_INDEX := "dest_index"
+# Used when a script is using one of the following tasks
+# * move_card_to_board
+# * move_card_cont_to_board
 #
 # If Vector2(-1,-1) is specified, it uses the mouse position
 # which obviously not good for scripts
-const DEF_BOARD_POSITION := "board_position"
-# Used when a script is using the [ScriptingEngine] mod_tokens()
+const KEY_BOARD_POSITION := "board_position"
+# Used when a script is using the mod_tokens task
 #
 # It specifies if we're modifying the existing amount
 # or setting it to the exact one
-const DEF_TOKEN_SET_TO_MOD := "set_to_mod"
-# Used when a script is using the [ScriptingEngine] mod_tokens()
+const KEY_TOKEN_SET_TO_MOD := "set_to_mod"
+# Used when a script is using the mod_tokens task
+#
+# It specifies the name of the token we're modifying
+const KEY_TOKEN_NAME := "token_name"
+# Used when a script is using the mod_tokens task
 #
 # It specifies the amount we're setting/modifying
 # or setting it to the exact one
-const DEF_TOKEN_MODIFICATION := "modification"
-# Used when a script is using the [ScriptingEngine] spawn_card()
+const KEY_TOKEN_MODIFICATION := "modification"
+# Used when a script is using the spawn_card task
 #
 # This is the path to the card template scene to use for this card
-const DEF_CARD_SCENE := "card_scene"
+const KEY_CARD_SCENE := "card_scene"
 
 #---------------------------------------------------------------------
-# Filter Definition Properties
-# 
-# The below are all the possible dictionary keys that can be set in a 
+# Filter Definition Keys
+#
+# The below are all the possible dictionary keys that can be set in a
 # filter definition.
 # Most of them are only relevant for a specific task type
 #---------------------------------------------------------------------
@@ -124,7 +139,7 @@ const FILTER_TOKEN_NAME := "filter_token_name"
 
 #---------------------------------------------------------------------
 # Signal Properties
-# 
+#
 # The below are all the possible dictionary keys send in the dictionary
 # passed by a card trigger signal (See Card signals)
 #
@@ -155,7 +170,7 @@ const TRIGGER_SOURCE := "source"
 const TRIGGER_DESTINATION := "destination"
 # Filter value sent by the trigger Card `card_token_modified` signal.
 #
-# This is the current value of the token. 
+# This is the current value of the token.
 # If token was removed value will be 0
 const TRIGGER_NEW_TOKEN_VALUE := "new_token_value"
 # Filter value sent by the trigger Card `card_token_modified` signal.
@@ -177,7 +192,7 @@ const TRIGGER_HOST = "token_name"
 
 #---------------------------------------------------------------------
 # Signal Values
-# 
+#
 # Some filter check signals against constants. They are defined below
 #---------------------------------------------------------------------
 
@@ -210,7 +225,6 @@ var has_init_completed := false
 # If true if this task is valid to run.
 # A task is invalid to run if some filter does not match.
 var is_valid := true
-
 
 # prepares the properties needed by the task to function.
 func _init(card: Card,
@@ -250,19 +264,21 @@ func get(property: String):
 	var default
 	# for property details, see const definitionts
 	match property:
-		DEF_COMMON_TARGET_REQUEST:
-			default = true
-		DEF_TRIGGER:
-			default = "any"
-		DEF_PILE_INDEX:
-			default = 0
-		DEF_DEST_INDEX:
-			default = -1
-		DEF_BOARD_POSITION:
-			default = Vector2(-1,-1)
-		DEF_TOKEN_SET_TO_MOD:
+		KEY_IS_COST:
 			default = false
-		DEF_TOKEN_MODIFICATION:
+		KEY_COMMON_TARGET_REQUEST:
+			default = true
+		KEY_TRIGGER:
+			default = "any"
+		KEY_PILE_INDEX:
+			default = 0
+		KEY_DEST_INDEX:
+			default = -1
+		KEY_BOARD_POSITION:
+			default = Vector2(-1,-1)
+		KEY_TOKEN_SET_TO_MOD:
+			default = false
+		KEY_TOKEN_MODIFICATION:
 			default = 1
 		_:
 			default = null
@@ -274,14 +290,14 @@ func get(property: String):
 # Returns a Card object if subject is defined, else returns null.
 func _find_subject() -> Card:
 	var subject_seek
-	# See DEF_COMMON_TARGET_REQUEST doc
-	var common_target_request : bool = get(DEF_COMMON_TARGET_REQUEST)
-	# See DEF_SUBJECT doc
-	if get(DEF_SUBJECT) == "target":
+	# See KEY_COMMON_TARGET_REQUEST doc
+	var common_target_request : bool = get(KEY_COMMON_TARGET_REQUEST)
+	# See KEY_SUBJECT doc
+	if get(KEY_SUBJECT) == "target":
 		subject_seek = _initiate_card_targeting(common_target_request)
 		if subject_seek is GDScriptFunctionState: # Still working.
 			subject_seek = yield(subject_seek, "completed")
-	elif get(DEF_SUBJECT) == "self":
+	elif get(KEY_SUBJECT) == "self":
 		subject_seek = owner
 	else:
 		subject_seek = null
@@ -294,7 +310,7 @@ func _find_subject() -> Card:
 # Returns a Card object.
 func _initiate_card_targeting(common_target_request: bool) -> Card:
 	var target := owner.target_card
-	# See DEF_COMMON_TARGET_REQUEST doc
+	# See KEY_COMMON_TARGET_REQUEST doc
 	if not target or not common_target_request:
 		# We wait a centisecond, to prevent the card's _input function from seeing
 		# The double-click which started the script and immediately triggerring
@@ -313,7 +329,7 @@ func _initiate_card_targeting(common_target_request: bool) -> Card:
 
 
 func finalize():
-	if not get(DEF_COMMON_TARGET_REQUEST):
+	if not get(KEY_COMMON_TARGET_REQUEST):
 		owner.target_card = null
 
 # Ensures that all filters requested by the script are respected
@@ -330,7 +346,7 @@ func _check_filters():
 	if get("trigger") == "another" and trigger == owner:
 		is_valid = false
 
-	# Checking card properties is its own function as it might be 
+	# Checking card properties is its own function as it might be
 	# called from other places as well
 	_check_properties("trigger")
 

@@ -41,6 +41,7 @@ enum _ReturnCode {
 	FAILED,
 }
 
+signal initiated_targeting
 # Emitted whenever the card has selected a target.
 signal target_selected(card)
 # Emitted whenever the card is rotated
@@ -52,22 +53,26 @@ signal card_rotated(card,trigger,details)
 signal card_flipped(card,trigger,details)
 # Emitted whenever the card is viewed while face-down
 signal card_viewed(card,trigger,details)
-#Emited whenever the card is moved to the board
+# Emited whenever the card is moved to the board
 signal card_moved_to_board(card,trigger,details)
-#Emited whenever the card is moved to a pile
+# Emited whenever the card is moved to a pile
 signal card_moved_to_pile(card,trigger,details)
-#Emited whenever the card is moved to a hand
+# Emited whenever the card is moved to a hand
 signal card_moved_to_hand(card,trigger,details)
-#Emited whenever the card's tokens are modified
+# Emited whenever the card's tokens are modified
 signal card_token_modified(card,trigger,details)
-#Emited whenever the card attaches to another
+# Emited whenever the card attaches to another
 signal card_attached(card,trigger,details)
-#Emited whenever the card unattaches from another
+# Emited whenever the card unattaches from another
 signal card_unattached(card,trigger,details)
-#Emited whenever the card is targeted by another
+# Emited whenever the card is targeted by another card.
+# This signal is not fired by this card directly, but by the card
+# doing the targeting.
+# warning-ignore:unused_signal
 signal card_targeted(card,trigger,details)
 
 
+var scripting_engine = load("res://src/core/ScriptingEngine.gd")
 
 # Used to add new token instances to cards
 const _token_scene = preload("res://src/core/Token.tscn")
@@ -133,11 +138,6 @@ var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
 var _is_drawer_open := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
-
-# The ScriptingEngine is where we execute the scripts
-# We cannot use its class reference,
-# as it causes a cyclic reference error when parsing
-onready var scripting_engine = load("res://src/core/ScriptingEngine.gd").new()
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
@@ -551,11 +551,11 @@ func get_targetcard() -> Card:
 # Returns _ReturnCode.CHANGED if the card actually changed rotation
 #
 # Returns _ReturnCode.OK if the card was already in the correct rotation
-func set_is_faceup(value: bool, instant := false) -> int:
+func set_is_faceup(value: bool, instant := false, check := false) -> int:
 	var retcode: int
 	if value == is_faceup:
 		retcode = _ReturnCode.OK
-	else:
+	elif not check:
 		if _is_drawer_open:
 			_token_drawer(false)
 		# We make sure to remove other tweens of the same type to avoid a deadlock
@@ -600,6 +600,9 @@ func set_is_faceup(value: bool, instant := false) -> int:
 					_flip_card(dupe_front, dupe_back, true)
 		retcode = _ReturnCode.CHANGED
 		emit_signal("card_flipped", self, "card_flipped", {"is_faceup": value})
+	# If we're doing a check, then we just report CHANGED.
+	else:
+		retcode = _ReturnCode.CHANGED
 	return retcode
 
 
@@ -688,7 +691,7 @@ func set_name(value : String) -> void:
 # Returns _ReturnCode.OK if the card was already in the correct rotation.
 #
 # Returns _ReturnCode.FAILED if an invalid rotation was specified.
-func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
+func set_card_rotation(value: int, toggle := false, start_tween := true, check := false) -> int:
 	var retcode
 	# For cards we only allow orthogonal degrees of rotation
 	# If it's not, we consider the request failed
@@ -705,24 +708,27 @@ func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 		# rotation, we reset it to 0 degrees
 		if card_rotation == value and toggle:
 			value = 0
-		# We make sure to remove other tweens of the same type to avoid a deadlock
-		$Tween.remove($Control,'rect_rotation')
-		# There's no way to rotate the Area2D node,
-		# so we just rotate the internal $Control. The results are the same.
-		$Tween.interpolate_property($Control,'rect_rotation',
-				$Control.rect_rotation, value, 0.3,
-				Tween.TRANS_BACK, Tween.EASE_IN_OUT)
-		# We only start the animation if this flag is set to true
-		# This allows us to set the card to rotate on the next
-		# available tween, instead of immediately.
-		if start_tween:
-			$Tween.start()
-		#$Control/Tokens.rotation_degrees = -value # need to figure this out
-		# When the card actually changes orientation
-		# We report that it changed.
+		# We modify the card only if this is not a cost dry-run
+		if not check:
+			# We make sure to remove other tweens of the same type
+			# to avoid a deadlock
+			$Tween.remove($Control,'rect_rotation')
+			# There's no way to rotate the Area2D node,
+			# so we just rotate the internal $Control. The results are the same.
+			$Tween.interpolate_property($Control,'rect_rotation',
+					$Control.rect_rotation, value, 0.3,
+					Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+			# We only start the animation if this flag is set to true
+			# This allows us to set the card to rotate on the next
+			# available tween, instead of immediately.
+			if start_tween:
+				$Tween.start()
+			card_rotation = value
+			#$Control/Tokens.rotation_degrees = -value # need to figure this out
+			# When the card actually changes orientation
+			# We report that it changed.
+			emit_signal("card_rotated", self, "card_rotated",  {"degrees": value})
 		retcode = _ReturnCode.CHANGED
-		card_rotation = value
-		emit_signal("card_rotated", self, "card_rotated",  {"degrees": value})
 	return retcode
 
 
@@ -853,9 +859,9 @@ func move_to(targetHost: Node2D,
 			# If the card was or had attachments and it is removed from the table,
 			# all attachments status is cleared
 			_clear_attachment_status()
-			# If the card has tokens, and TOKENS_ONLY_ON_BOARD is true
+			# If the card has tokens, and tokens_only_on_board is true
 			# we remove all tokens
-			if cfc.TOKENS_ONLY_ON_BOARD:
+			if cfc.tokens_only_on_board:
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 					token.queue_free()
 			# We also make sure the card buttons don't stay visible or enabled
@@ -889,13 +895,16 @@ func move_to(targetHost: Node2D,
 			card.set_highlight(false)
 		_potential_cards.clear()
 
-
+# Executes the tasks defined in the card's scripts in order.
+#
+# Returns a [ScriptingEngine] object but that it not statically typed
+# As it causes the parser think there's a cyclic dependency
 func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
-		details: Dictionary = {}) -> void:
-	# The CardScriptDefinitions.gd is where we keep all card scripting definitions
+		details: Dictionary = {}):
 	var card_scripts
+	var sceng = null
 	# If scripts have been defined directly in this object
 	# They take precedence over CardScriptDefinitions.gd
 	#
@@ -917,10 +926,35 @@ func execute_scripts(
 			state_scripts = card_scripts.get("hand", [])
 		IN_POPUP,FOCUSED_IN_POPUP:
 			state_scripts = card_scripts.get("pile", [])
-	scripting_engine.run_next_script(self,
-			state_scripts.duplicate(),
-			trigger_card,
-			details)
+	# To avoid unnecessary operations
+	# we evoce the ScriptingEngine only if we have something to execute
+	if len(state_scripts):
+		# This evocation of the ScriptingEngine, checks the card for
+		# cost-defined tasks, and performs a dry-run on them
+		# to ascertain whether they can all be paid,
+		# before executing the card script.
+		sceng = scripting_engine.new(
+				self,
+				state_scripts,
+				trigger_card,
+				details,
+				true)
+		# In case the script involves targetting, we need to wait on further
+		# execution until targetting has completed
+		if not sceng.all_tasks_completed:
+			yield(sceng,"tasks_completed")
+		# If the dry-run of the ScriptingEngine returns that all
+		# costs can be paid, then we proceed with the actual run
+		if sceng.can_all_costs_be_paid:
+			# The ScriptingEngine is where we execute the scripts
+			# We cannot use its class reference,
+			# as it causes a cyclic reference error when parsing
+			sceng = scripting_engine.new(
+					self,
+					state_scripts,
+					trigger_card,
+					details)
+	return(sceng)
 
 
 # Handles the card becoming an attachment for a specified host Card object
@@ -1055,7 +1089,7 @@ func get_focus() -> bool:
 #
 # If the amount of existing tokens of that type drops to 0 or lower,
 # the token node is also removed.
-func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
+func mod_token(token_name : String, mod := 1, set_to_mod := false, check := false) -> int:
 	var retcode : int
 	# If the player requested a token name that has not been defined by the game
 	# we return a failure
@@ -1073,8 +1107,26 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false) -> int:
 		# We just increment it by 1
 		if not token and mod == 0:
 			retcode = _ReturnCode.OK
+		# For cost dry-runs, we don't want to modify the tokens at all.
+		# Just check if we could.
+		elif check:
+			# For a  cost dry run, we can only return FAILED
+			# when removing tokens as it's always possible to add new ones
+			if mod < 0:
+				# If the current tokens are equal or higher, then we can
+				# remove the requested amount and therefore return CHANGED.
+				if token.count + mod >= 0:
+					retcode = _ReturnCode.CHANGED
+				# If we cannot remove the full amount requested
+				# we return FAILED
+				else:
+					retcode = _ReturnCode.FAILED
+			else:
+				retcode = _ReturnCode.CHANGED
 		else:
 			var prev_value = token.count
+			# The set_to_mod value means that we want to set the tokens to the
+			# exact value specified
 			if set_to_mod:
 				token.count = mod
 			else:
@@ -1146,6 +1198,7 @@ func initiate_targeting() -> void:
 	_is_targetting = true
 	$TargetLine/ArrowHead.visible = true
 	$TargetLine/ArrowHead/Area2D.monitoring = true
+	emit_signal("initiated_targeting")
 
 
 # Will end the targeting process.
@@ -1960,6 +2013,7 @@ func _token_drawer(drawer_state := true) -> void:
 			if not _is_drawer_open:
 				_is_drawer_open = true
 				# To avoid tween deadlocks
+				# warning-ignore:return_value_discarded
 				tween.remove_all()
 				# warning-ignore:return_value_discarded
 				tween.interpolate_property(
