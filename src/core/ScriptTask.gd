@@ -27,13 +27,13 @@ const KEY_COMMON_TARGET_REQUEST := "common_target_request"
 # * If the subject is "self", then the task effects the owner card
 # * If not specified, we set value to null, assuming there's no subject needed.
 const KEY_SUBJECT := "subject"
-# This key is used to task a script as being a cost requirements befire the
-# rest of the tasks can execute.
+# This key is used to mark a task as being a cost requirement before the
+# rest of the defined tasks can execute.
 #
 # If any tasks marked as costs will not be able to fulfil, then the whole
 # script is not executed.
 #
-# The following tasks support being set as costs:
+# Currently the following tasks support being set as costs:
 # * rotate_card
 # * flip_card
 # * mod_tokens
