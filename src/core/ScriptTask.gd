@@ -23,7 +23,8 @@ extends Reference
 const KEY_COMMON_TARGET_REQUEST := "common_target_request"
 # See the `KEY_SUBJECT_V_` consts for the possible values for this key
 #
-# If key does not exist, we set value to null, assuming there's no subjects needed.
+# If key does not exist, we set value to [], assuming there's no subjects
+# in the task.
 const KEY_SUBJECT := "subject"
 # * If this is the value of the "subject" key,
 # we initiate targetting from the owner card
