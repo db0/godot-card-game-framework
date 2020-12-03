@@ -75,7 +75,8 @@ signal card_targeted(card,trigger,details)
 var scripting_engine = load("res://src/core/ScriptingEngine.gd")
 
 # Used to add new token instances to cards
-const _token_scene = preload("res://src/core/Token.tscn")
+const _TOKEN_SCENE = preload("res://src/core/Token.tscn")
+const _CARD_CHOICES_SCENE = preload("res://src/core/CardChoices.tscn")
 
 export var properties :=  {}
 # We export this variable to the editor to allow us to add scripts to each card
@@ -932,6 +933,12 @@ func execute_scripts(
 			state_scripts = card_scripts.get("hand", [])
 		IN_POPUP,FOCUSED_IN_POPUP:
 			state_scripts = card_scripts.get("pile", [])
+	if typeof(state_scripts) == TYPE_DICTIONARY:
+		var choices_menu = _CARD_CHOICES_SCENE.instance()
+		choices_menu.prep(self,state_scripts)
+		yield(choices_menu,"id_pressed")
+		state_scripts = state_scripts[choices_menu.selected_key]
+		choices_menu.queue_free()
 	# To avoid unnecessary operations
 	# we evoce the ScriptingEngine only if we have something to execute
 	if len(state_scripts):
@@ -1102,7 +1109,7 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false, check := fals
 		# If the token does not exist in the card, we add its node
 		# and set it to 1
 		if not token and mod > 0:
-			token = _token_scene.instance()
+			token = _TOKEN_SCENE.instance()
 			token.setup(token_name)
 			$Control/Tokens/Drawer/VBoxContainer.add_child(token)
 		# If the token node of this name has already been added to the card

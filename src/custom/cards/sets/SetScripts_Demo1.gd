@@ -8,13 +8,22 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 	var scripts := {
 		"Test Card 1": {
 			"manual": {
-				"board": [
-					{
-						"name": "rotate_card",
-						"subject": "self",
-						"degrees": 90,
-					}
-				],
+				"board": {
+					"Rotate This Card": [
+						{
+							"name": "rotate_card",
+							"subject": "self",
+							"degrees": 90,
+						}
+					],
+					"Flip This Card Face-down": [
+						{
+							"name": "flip_card",
+							"subject": "self",
+							"set_faceup": false,
+						}
+					]
+				},
 				"hand": [
 					{
 						"name": "spawn_card",
