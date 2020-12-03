@@ -708,7 +708,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true) -> int:
 		if card_rotation == value and toggle:
 			value = 0
 		# We make sure to remove other tweens of the same type to avoid a deadlock
-		add_tween_rotation(value)
+		add_tween_rotation($Control.rect_rotation,value)
 		# We only start the animation if this flag is set to true
 		# This allows us to set the card to rotate on the next
 		# available tween, instead of immediately.
@@ -1557,11 +1557,30 @@ func _stop_pulse():
 		$Control/Back.modulate = Color(1,1,1)
 
 
-func add_tween_rotation(_target_rotation,_time:=0.3):
+func add_tween_rotation(_expected_rotation,_target_rotation,_time:=0.3, trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
 	$Tween.remove($Control,'rect_rotation')
 	$Tween.interpolate_property($Control,'rect_rotation',
-			$Control.rect_rotation, _target_rotation, _time,
-			Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+			_expected_rotation, _target_rotation, _time,
+			trans_type, ease_type)
+
+func add_tween_position(_expected_position,_target_position,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
+	$Tween.remove(self,'position')
+	$Tween.interpolate_property(self,'position',
+			_expected_position, _target_position, _time,
+			trans_type, ease_type)
+
+func add_tween_global_position(_expected_position,_target_position,_time:=0.5,trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
+	$Tween.remove(self,'global_position')
+	$Tween.interpolate_property(self,'global_position',
+			_expected_position, _target_position, _time,
+			trans_type, ease_type)
+
+func add_tween_scale(_expected_scale,_target_scale,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
+	$Tween.remove(self,'scale')
+	$Tween.interpolate_property(self,'scale',
+			_expected_scale, _target_scale, _time,
+			trans_type, ease_type)
+
 
 # A rudimentary Finite State Engine for cards.
 #
@@ -1576,7 +1595,7 @@ func _process_card_state() -> void:
 			if cfc.hand_use_oval_shape:
 				if not $Tween.is_active():
 					_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
-					add_tween_rotation(_target_rotation)
+					add_tween_rotation($Control.rect_rotation,_target_rotation)
 					$Tween.start()
 			else:
 				set_card_rotation(0)
@@ -1620,16 +1639,11 @@ func _process_card_state() -> void:
 				_target_rotation = expected_rotation
 				# We make sure to remove other tweens of the same type
 				# to avoid a deadlock
-				$Tween.remove(self,'position')
-				$Tween.interpolate_property(self,'position',
-						expected_position, _target_position, 0.3,
-						Tween.TRANS_CUBIC, Tween.EASE_OUT)
-				$Tween.remove(self,'scale')
-				$Tween.interpolate_property(self,'scale',
-						scale, Vector2(1.5,1.5), 0.3,
-						Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				add_tween_position(expected_position, _target_position)
+				add_tween_scale(scale, Vector2(1.5,1.5))
+
 				if cfc.hand_use_oval_shape:
-					add_tween_rotation(0)
+					add_tween_rotation($Control.rect_rotation,0)
 				else:
 					set_card_rotation(0)
 				$Tween.start()
@@ -1648,10 +1662,7 @@ func _process_card_state() -> void:
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if not scale.is_equal_approx(Vector2(1,1)):
-					$Tween.remove(self,'scale')
-					$Tween.interpolate_property(self,'scale',
-							scale, Vector2(1,1), 0.4,
-							Tween.TRANS_CUBIC, Tween.EASE_OUT)
+					add_tween_scale(scale, Vector2(1,1),0.4)
 				if cfc.fancy_movement:
 					# The below calculations figure out
 					# the intermediate position as a spot,
@@ -1698,23 +1709,17 @@ func _process_card_state() -> void:
 					# Instead we use directly the viewport coords.
 					else:
 						intermediate_position = get_viewport().size/2
-					$Tween.remove(self,'global_position')
-					$Tween.interpolate_property(self,'global_position',
-							global_position, intermediate_position, 0.5,
-							Tween.TRANS_BACK, Tween.EASE_IN_OUT)
+					add_tween_global_position(global_position, intermediate_position)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
 					_tween_stuck_time = 0
 					_fancy_move_second_part = true
 				# We need to check again, just in case it's been reorganized instead.
 				if state == MOVING_TO_CONTAINER:
-					$Tween.remove(self,'position')
-					$Tween.interpolate_property(self,'position',
-							position, _target_position, 0.35,
-							Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+					add_tween_position(position, _target_position, 0.35,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					if cfc.hand_use_oval_shape:
 						_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
-						add_tween_rotation(_target_rotation)
+						add_tween_rotation($Control.rect_rotation,_target_rotation)
 					else:
 						set_card_rotation(0)
 					$Tween.start()
@@ -1729,17 +1734,12 @@ func _process_card_state() -> void:
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') #
-				$Tween.interpolate_property(self,'position',
-						position, _target_position, 0.4,
-						Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				add_tween_position(position, _target_position, 0.4)
 				if not scale.is_equal_approx(Vector2(1,1)):
-					$Tween.remove(self,'scale')
-					$Tween.interpolate_property(self,'scale',
-							scale, Vector2(1,1), 0.4,
-							Tween.TRANS_CUBIC, Tween.EASE_OUT)
+					add_tween_scale(scale, Vector2(1,1),0.4)
 				if cfc.hand_use_oval_shape:
 					_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
-					add_tween_rotation(_target_rotation)
+					add_tween_rotation($Control.rect_rotation,_target_rotation)
 #				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
 				state = IN_HAND
@@ -1751,15 +1751,10 @@ func _process_card_state() -> void:
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not position.is_equal_approx(_target_position):
-				$Tween.remove(self,'position')
-				$Tween.interpolate_property(self,'position',
-						position, _target_position, 0.3,
+				add_tween_position(position, _target_position, 0.3,
 						Tween.TRANS_QUART, Tween.EASE_IN)
 				if not scale.is_equal_approx(Vector2(1,1)):
-					$Tween.remove(self,'scale')
-					$Tween.interpolate_property(self,'scale',
-							scale, Vector2(1,1), 0.3,
-							Tween.TRANS_QUART, Tween.EASE_IN)
+					add_tween_scale(scale, Vector2(1,1), 0.3,Tween.TRANS_QUART, Tween.EASE_IN)
 				$Tween.start()
 				# We don't change state yet,
 				# only when the focus is removed from the neighbour
@@ -1769,9 +1764,7 @@ func _process_card_state() -> void:
 			if (not $Tween.is_active() and
 				not scale.is_equal_approx(cfc.card_scale_while_dragging) and
 				get_parent() != cfc.NMAP.board):
-				$Tween.remove(self,'scale')
-				$Tween.interpolate_property(self,'scale',
-						scale, cfc.card_scale_while_dragging, 0.2,
+				add_tween_scale(scale, cfc.card_scale_while_dragging, 0.2,
 						Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
 			# We need to capture the mouse cursos in the window while dragging
@@ -1793,9 +1786,7 @@ func _process_card_state() -> void:
 			set_mouse_filters(true)
 			if not $Tween.is_active() and \
 					not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
-				$Tween.remove(self,'scale')
-				$Tween.interpolate_property(self,'scale',
-						scale, cfc.PLAY_AREA_SCALE, 0.3,
+				add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.3,
 						Tween.TRANS_SINE, Tween.EASE_OUT)
 				$Tween.start()
 			# This tween hides the container manipulation buttons
@@ -1822,14 +1813,10 @@ func _process_card_state() -> void:
 #					_target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x
 #				if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y > get_viewport().size.y:
 #					_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y
-				$Tween.interpolate_property(self,'position',
-						position, _target_position, 0.25,
-						Tween.TRANS_CUBIC, Tween.EASE_OUT)
+				add_tween_position(position, _target_position, 0.25)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
-					$Tween.remove(self,'scale')
-					$Tween.interpolate_property(self,'scale',
-							scale, cfc.PLAY_AREA_SCALE, 0.5,
+					add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.5,
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = ON_PLAY_BOARD
