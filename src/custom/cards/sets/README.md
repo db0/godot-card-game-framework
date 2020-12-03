@@ -15,7 +15,7 @@ The format for each card is as follows:
 	in the card_name variable of each card.
 * Inside that is a dictionary based on triggers. Each trigger specified what causes the script to fire. 
 	The default one is "manual" which triggers when the player double-clicks the card.
-	You can see the list of triggers in `cfc.SignalPropagator.known_card_signals`
+	You can see the list of triggers in [cfc.SignalPropagator.known_card_signals](https://github.com/db0/godot-card-gaming/wiki/CardFrameworkConfiguration#known_card_signals)
 * Inside is a dictionary based on card states, where each key is the container
 	from which the scripts will execute. So if the key is "board", then
 	the scripts defined in that dictionary, will be executed only while
@@ -24,34 +24,14 @@ The format for each card is as follows:
 	per individual task. The tasks will execute in the order
 	they are defined in that list.
 * Each task dictionary has many possible keys depending on its type,
-	but also a few mandatory ones:
-	* *(Mandatory)* **String** `"name"`: The name of the function which
-	to call inside the ScriptingEngine.
-	* *(Mandatory)* `"subject"`: The thing that will be affected by this script.
-		* `"self"`: The card which owns/runs this script.
-		* `"target"`: The player will be asked to select a card with a taretting arrow.
-		* `CardContainer`: Will be pre-specified in the task.
-	* *(Optional)* **bool** `"common_target_request"`: Used then subject
-		is `"target"` to tell the script whether to target each script
-		individually. Defaults to true.
-	* *(Mandatory)* Script arguments are put in the form of their individual names
-		and value types as per their definition
-		in the corresponding `ScriptingEngine.gd` task.
-	* *(Optional)* **String** `"trigger"`: Used with signal triggers to specify
-		further limitation to the trigger. You should generally always try
-		to specify the trigger, during anything other than manual execution
-		to keep things more understandable
-		* `"any"` (Default): This effect will run regardless of who the trigger is
-		* `"another"`: This effect will run only if the trigger card
-		is someone other than self
-		* `"self"`: This effect will run only if the trigger card is self
-	* *(Optional)* limit_to_...: You can specify limits for this script that match
-		The triggering signal. The following have been defined
-		* **int** `"limit_to_degrees"`: Use with card_rotated signal
-		* **bool** `"limit_to_faceup"`: Use with card_flipped signal
-		* **CardContainer** `"limit_to_source"`: Use with card_moved_to_... signals
-		* **CardContainer** `"limit_to_destination"`: Use with card_moved_to_... signals
+	but also a few mandatory ones. 
 
-And exception to the above is when the name is "custom_script".
+Please see the documentation of the [ScriptTask](ScriptTask) which goes into details for each key the dictionary will accept
+
+* Constants starting with `KEY_` are used as keys in card script definitions. They specify how an individual task should behave.
+* Constants starting with `FILTER_` are also used as keys in card script definitions, but they are only relevant for scripts which are triggered automatically, or when looking up targets.
+* Constants starting with `TRIGGER_` are sent by card signals as keys in a dictionary. The specify what the values of the task that triggered the script are. They are checked against the relevant `FILTER_` values.
+
+An exception to the above is when the name is "custom_script".
 In that case you don't need any other keys. The complete definition should
 be in CustomScripts.gd

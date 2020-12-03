@@ -165,8 +165,8 @@ func test_board_tokens():
 
 
 func test_off_board_tokens():
-	cfc.TOKENS_ONLY_ON_BOARD = false
-	cfc.SHOW_TOKEN_BUTTONS = false
+	cfc.tokens_only_on_board = false
+	cfc.show_token_buttons = false
 	var card : Card
 	card = cards[3]
 	yield(table_move(card, Vector2(1000,100)), 'completed')
@@ -184,14 +184,14 @@ func test_off_board_tokens():
 			plasma_token.get_node("CenterContainer/TokenIcon").texture.resource_path,
 			"Two tokens can use the same texture but different names")
 	assert_false(tech_token.get_node("Buttons").visible,
-			"Tokens buttons not shown when cfc.SHOW_TOKEN_BUTTONS == false")
+			"Tokens buttons not shown when cfc.show_token_buttons == false")
 	yield(yield_for(0.2), YIELD)
 	assert_eq(1.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer appears when card gets tokens while card focused")
 	card.move_to(cfc.NMAP.discard)
 	yield(yield_for(0.8), YIELD)
 	assert_false(card.get_all_tokens().empty(),
-			"Tokens not removed when card leaves with cfc.TOKENS_ONLY_ON_BOARD == false")
-	cfc.TOKENS_ONLY_ON_BOARD = true
+			"Tokens not removed when card leaves with cfc.tokens_only_on_board == false")
+	cfc.tokens_only_on_board = true
 	# warning-ignore:standalone_expression
-	cfc.SHOW_TOKEN_BUTTONS = true
+	cfc.show_token_buttons = true

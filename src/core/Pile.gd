@@ -1,4 +1,4 @@
-# A type of CardContainer that stores its Card objects without visibility
+# A type of [CardContainer] that stores its [Card] objects optional visibility
 # to the player and provides methods for retrieving and viewing them
 class_name Pile
 extends  CardContainer
@@ -54,7 +54,7 @@ func _on_ViewPopup_about_to_show() -> void:
 		$ViewPopup/Tween.start()
 
 
-# Puts all card objects to the root node once the popup view window closes
+# Puts all [Card] objects to the root node once the popup view window closes
 func _on_ViewPopup_popup_hide() -> void:
 	$ViewPopup/Tween.remove_all()
 	$ViewPopup/Tween.interpolate_property($ViewPopup,'modulate',
@@ -83,6 +83,8 @@ func _on_ViewPopup_popup_hide() -> void:
 
 # Overrides the built-in add_child() method,
 # To make sure the control node is set to be the last one among siblings.
+# This way the control node intercepts any inputs.
+#
 # Also checks if the popup window is currently open, and puts the card
 # directly there in that case.
 func add_child(node, _legible_unique_name=false) -> void:
@@ -112,7 +114,7 @@ func move_child(child_node, to_position) -> void:
 	$Control.raise()
 
 
-# Overrides CardContainer function to include cards in the popup window
+# Overrides [CardContainer] function to include cards in the popup window
 # Returns an array with all children nodes which are of Card class
 func get_all_cards(scanViewPopup := true) -> Array:
 	var cardsArray := .get_all_cards()
@@ -128,7 +130,7 @@ func get_all_cards(scanViewPopup := true) -> Array:
 	return cardsArray
 
 
-# Return the top a Card object from the pile.
+# Return the top a [Card] object from the pile.
 func get_top_card() -> Card:
 	var card: Card = null
 	# prevents from trying to retrieve more cards
@@ -141,7 +143,7 @@ func get_top_card() -> Card:
 	return card # Returning the card object for unit testing
 
 
-# Teturn the bottom Card object from the pile.
+# Teturn the bottom [Card] object from the pile.
 func get_bottom_card() -> Card:
 	var card: Card = null
 	# prevents from trying to retrieve more cards
@@ -157,7 +159,7 @@ func get_bottom_card() -> Card:
 func get_stack_position(card: Card) -> Vector2:
 	return Vector2(0.5 * get_card_index(card), -1 * get_card_index(card))
 
-# Prepares a Card object to be added to the popup grid
+# Prepares a [Card] object to be added to the popup grid
 func _slot_card_into_popup(card: Card) -> void:
 	# We need to make the cards visible as they're by default invisible in piles
 	#card.modulate[3] = 1
@@ -182,7 +184,7 @@ func _slot_card_into_popup(card: Card) -> void:
 	card.position = Vector2(0,0)
 	card.state = card.IN_POPUP
 
-# Randomly rearranges the order of the Card nodes.
+# Randomly rearranges the order of the [Card] nodes.
 func shuffle_cards() -> void:
 	.shuffle_cards()
 	reorganize_stack()

@@ -18,71 +18,6 @@ func before_each():
 	target = cards[2]
 
 
-func test_basics():
-	card.scripts = {"manual": { "hand": [
-			{"name": "rotate_card",
-			"subject": "self",
-			"degrees": 270}]}}
-	watch_signals(card.scripting_engine)
-	card.execute_scripts()
-	assert_signal_emitted(card.scripting_engine,"scripts_completed")
-	yield(table_move(card, Vector2(100,200)), "completed")
-	card.execute_scripts()
-	assert_eq(target.card_rotation, 0,
-			"Script should not work from a different state")
-	assert_signal_emitted(card.scripting_engine,"scripts_completed")
-
-	# The below tests _common_target == false
-	card.scripts = {"manual": {"board": [
-			{"name": "rotate_card",
-			"subject": "target",
-			"common_target_request": false,
-			"degrees": 270},
-			{"name": "rotate_card",
-			"subject": "target",
-			"common_target_request": false,
-			"degrees": 90}]}}
-	card.execute_scripts()
-	yield(target_card(card,card), "completed")
-	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
-	assert_eq(card.card_rotation, 270,
-			"First rotation should happen before targetting second time")
-	yield(target_card(card,card), "completed")
-	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
-	assert_eq(card.card_rotation, 90,
-			"Second rotation should also happen")
-	card.scripts = {"hand": [{}]}
-	card.execute_scripts()
-	assert_signal_emitted(card.scripting_engine,"scripts_completed",
-			"Empty scripts are skipped")
-	card.is_faceup = false
-	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
-	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
-	card.scripts = {"hand": [{"name": "flip_card","set_faceup": true}]}
-	card.execute_scripts()
-	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
-	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
-	assert_false(card.is_faceup,
-			"Scripts should not fire while card is face-down")
-	card.scripts = {"hand": [{}]}
-
-
-# Checks that scripts from the CardScriptDefinitions.gd have been loaded correctly
-func test_CardScripts():
-	card = cards[0]
-	target = cards[2]
-	yield(table_move(target, Vector2(800,200)), "completed")
-	yield(table_move(card, Vector2(100,200)), "completed")
-	card.execute_scripts()
-	yield(target_card(card,target,"slow"), "completed")
-	yield(yield_to(target.get_node("Tween"), "tween_all_completed", 1), YIELD)
-	# This also tests the _common_target set
-	assert_false(target.is_faceup,
-			"Test1 script leaves target facedown")
-	assert_eq(target.card_rotation, 180,
-			"Test1 script rotates 180 degrees")
-
-
 # Checks that custom scripts fire correctly
 func test_custom_script():
 	card = cards[1]
@@ -95,7 +30,7 @@ func test_custom_script():
 	target = cards[2]
 	card.execute_scripts()
 	yield(target_card(card,target), "completed")
-	yield(yield_for(0.1), YIELD)
+	yield(yield_for(0.3), YIELD)
 	assert_freed(target, "Test Card 1")
 
 
@@ -174,7 +109,8 @@ func test_move_card_cont_to_cont():
 	target = cfc.NMAP.deck.get_card(5)
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_cont_to_cont",
-			"pile_index": 5,
+			"subject": "index",
+			"subject_index": 5,
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard}]}}
 	card.execute_scripts()
@@ -184,7 +120,8 @@ func test_move_card_cont_to_cont():
 	target = cfc.NMAP.deck.get_card(3)
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_cont_to_cont",
-			"pile_index": 3,
+			"subject": "index",
+			"subject_index": 3,
 			"dest_index": 1,
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard}]}}
@@ -200,15 +137,14 @@ func test_move_card_cont_to_board():
 	target = cfc.NMAP.deck.get_card(5)
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_cont_to_board",
-			"pile_index": 5,
+			"subject": "index",
+			"subject_index": 5,
 			"src_container":  cfc.NMAP.deck,
 			"board_position":  Vector2(1000,200)}]}}
 	card.execute_scripts()
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	assert_eq(cfc.NMAP.board,target.get_parent(),
-			"Card should have moved to board")
 	assert_eq(Vector2(1000,200),target.global_position,
-			"Card should have moved to specified position")
+			"Card should have moved to specified board position")
 
 
 func test_mod_tokens():
@@ -228,6 +164,8 @@ func test_mod_tokens():
 			"token_name":  "industry"}]}}
 	card.execute_scripts()
 	yield(target_card(card,target), "completed")
+	# My scripts are slower now
+	yield(yield_for(0.2), YIELD)
 	assert_eq(2,industry_token.count,"Token set to specified amount")
 
 

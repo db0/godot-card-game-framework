@@ -14,20 +14,16 @@ enum FocusStyle {
 	BOTH					#2
 }
 
-
-
-
 #-----------------------------------------------------------------------------
 # BEGIN Behaviour Constants
 # Change the below to change how all cards behave to match your game.
 #-----------------------------------------------------------------------------
 
-
 # The amount of distance neighboring cards are pushed during card focus
 #
 # It's based on the card width. Bigger percentage means larger push.
 const NEIGHBOUR_PUSH := 0.75
-# The scale of the card while on the play area
+# The scale of a card while on the play area
 const PLAY_AREA_SCALE := Vector2(1, 1) * 0.8
 # The margin towards the bottom of the viewport on which to draw the cards.
 #
@@ -71,7 +67,7 @@ const TARGET_HOVER_COLOUR := Color(0, 0.4, 1) * 1.3
 #
 # You can change the colour to something else if  you want however
 const TARGETTING_ARROW_COLOUR := TARGET_HOVER_COLOUR
-# This is used when filling in card property labels in Card.setup()
+# This is used when filling in card property labels in [Card].setup()
 # when the property is an array, the label will still display it as a string
 # but will have to join its elements somehow.
 #
@@ -104,7 +100,8 @@ const TOKEN_ASSETS_PATH = "res://assets/tokens/"
 # Adapt this according to your node structure. Do not prepent /root in front,
 # as this is assumed.
 #
-# Optimally this should be moved to its own reference class and set in the autoloader
+# Optimally this should be moved to its own reference class
+# and set in the autoloader
 const NODES_MAP := {
 	'board': "Board",
 	'hand': "Board/Hand",
@@ -127,10 +124,10 @@ var card_scale_while_dragging := Vector2(0.4, 0.4)
 var focus_style = FocusStyle.BOTH
 # If this is set to false, tokens on cards
 # will not be removed when they exit the board
-var TOKENS_ONLY_ON_BOARD := true
+var tokens_only_on_board := true
 # If true, each token will have a convenient +/- button when expanded
 # to allow the player to add a remove more of the same
-var SHOW_TOKEN_BUTTONS = false
+var show_token_buttons = false
 # The games initial Random Number Generator seed.
 # When this stays the same, the game randomness will always play the predictable.
 var game_rng_seed := "CFC Random Seed" setget set_seed
@@ -154,7 +151,7 @@ var card_drag_ongoing: Card = null
 
 # Game random number generator
 var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
-# Game random seed
+
 
 
 func _ready() -> void:
@@ -216,7 +213,7 @@ func instance_card(card_name: String) -> Card:
 	return(card)
 
 # The SignalPropagator is responsible for collecting all card signals
-# and asking all cards to check if there's any Automation they need to perform
+# and asking all cards to check if there's any automation they need to perform
 class SignalPropagator:
 
 	# The working signals cards might send depending on their status changes
@@ -230,7 +227,6 @@ class SignalPropagator:
 		"card_token_modified",
 		"card_attached",
 		"card_unattached",
-		"card_attachments_modified",
 		"card_targeted",
 		]
 
@@ -250,6 +246,6 @@ class SignalPropagator:
 	func _on_Card_signal_received(
 			trigger_card: Card, trigger: String, details: Dictionary):
 		# We use Godot groups to ask every card to check if they
-			# have ScriptingEngine triggers for this signal
+			# have [ScriptingEngine] triggers for this signal
 		cfc.get_tree().call_group("cards",
 				"execute_scripts",trigger_card,trigger,details)
