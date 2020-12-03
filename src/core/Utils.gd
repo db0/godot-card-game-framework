@@ -184,9 +184,12 @@ static func recalculate_position_use_rectangle(card,index_diff=null)-> Vector2:
 		return Vector2(card_position_x,card_position_y)
 
 static func recalculate_rotation(card,index_diff=null)-> float:
-	if cfc.hand_use_oval_shape:
-		return recalculate_rotation_use_oval(card,index_diff)
-	return recalculate_rotation_use_rectangle(card)
+	if card.get_parent() == cfc.NMAP.hand:
+		if cfc.hand_use_oval_shape:
+			return recalculate_rotation_use_oval(card,index_diff)
+		return recalculate_rotation_use_rectangle(card)
+	else:
+		return 0.0
 
 static func recalculate_rotation_use_rectangle(card)-> float:
 	return 0.0

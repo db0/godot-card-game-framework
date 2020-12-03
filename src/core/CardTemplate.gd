@@ -1557,28 +1557,28 @@ func _stop_pulse():
 		$Control/Back.modulate = Color(1,1,1)
 
 
-func add_tween_rotation(_expected_rotation,_target_rotation,_time:=0.3, trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
+func add_tween_rotation(expected_rotation,target_rotation,_time:=0.3, trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
 	$Tween.remove($Control,'rect_rotation')
 	$Tween.interpolate_property($Control,'rect_rotation',
-			_expected_rotation, _target_rotation, _time,
+			expected_rotation, target_rotation, _time,
 			trans_type, ease_type)
 
-func add_tween_position(_expected_position,_target_position,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
+func add_tween_position(expected_position,target_position,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
 	$Tween.remove(self,'position')
 	$Tween.interpolate_property(self,'position',
-			_expected_position, _target_position, _time,
+			expected_position, target_position, _time,
 			trans_type, ease_type)
 
-func add_tween_global_position(_expected_position,_target_position,_time:=0.5,trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
+func add_tween_global_position(expected_position,target_position,_time:=0.5,trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
 	$Tween.remove(self,'global_position')
 	$Tween.interpolate_property(self,'global_position',
-			_expected_position, _target_position, _time,
+			expected_position, target_position, _time,
 			trans_type, ease_type)
 
-func add_tween_scale(_expected_scale,_target_scale,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
+func add_tween_scale(expected_scale,target_scale,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
 	$Tween.remove(self,'scale')
 	$Tween.interpolate_property(self,'scale',
-			_expected_scale, _target_scale, _time,
+			expected_scale, target_scale, _time,
 			trans_type, ease_type)
 
 
@@ -1717,11 +1717,8 @@ func _process_card_state() -> void:
 				# We need to check again, just in case it's been reorganized instead.
 				if state == MOVING_TO_CONTAINER:
 					add_tween_position(position, _target_position, 0.35,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
-					if cfc.hand_use_oval_shape:
-						_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
-						add_tween_rotation($Control.rect_rotation,_target_rotation)
-					else:
-						set_card_rotation(0)
+					_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
+					add_tween_rotation($Control.rect_rotation,_target_rotation)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
 					_determine_idle_state()
@@ -1737,9 +1734,8 @@ func _process_card_state() -> void:
 				add_tween_position(position, _target_position, 0.4)
 				if not scale.is_equal_approx(Vector2(1,1)):
 					add_tween_scale(scale, Vector2(1,1),0.4)
-				if cfc.hand_use_oval_shape:
-					_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
-					add_tween_rotation($Control.rect_rotation,_target_rotation)
+				_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
+				add_tween_rotation($Control.rect_rotation,_target_rotation)
 #				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
 				state = IN_HAND
