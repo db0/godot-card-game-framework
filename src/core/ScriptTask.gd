@@ -14,13 +14,8 @@ extends Reference
 # Most of them are only relevant for a specific task type
 #---------------------------------------------------------------------
 
-# Used when targeting is required.
-# * If set to false, then it will reset the targetting, and any
-# future scripts which require targetting will have to acquire a new
-# target
-# * If set to true (default), following tasks
-# requiring target, will use the previously selected one.
-const KEY_COMMON_TARGET_REQUEST := "common_target_request"
+# Determines which card, if any, this script will try to affect.
+#
 # See the `KEY_SUBJECT_V_` consts for the possible values for this key
 #
 # If key does not exist, we set value to [], assuming there's no subjects
@@ -30,11 +25,11 @@ const KEY_SUBJECT := "subject"
 # we initiate targetting from the owner card
 const KEY_SUBJECT_V_TARGET := "target"
 # * If this is the value of the "subject" key,
-# then the task effects the owner card
+# then the task affects the owner card only.
 const KEY_SUBJECT_V_SELF := "self"
 # * If this is the value of the "subject" key,
 # then we search all cards on the table
-# by node order, and return **all** candidates that matches the filter
+# by node order, and return **all** candidates that match the filter
 #
 # This allows us to make tasks which will affect more than 1 card at
 # the same time (e.g. "All Soldiers")
@@ -47,6 +42,9 @@ const KEY_SUBJECT_V_TUTOR := "tutor"
 # then we pick the card on the specified
 # source pile by its index among other cards.
 const KEY_SUBJECT_V_INDEX := "index"
+# * If this is the value of the "subject" key,
+# then we use the subject specified in the previous task
+const KEY_SUBJECT_V_PREVIOUS := "previous"
 # This key is used to mark a task as being a cost requirement before the
 # rest of the defined tasks can execute.
 #
@@ -250,7 +248,8 @@ var is_valid := true
 func _init(card: Card,
 		trigger_card: Card,
 		details: Dictionary,
-		script: Dictionary) -> void:
+		script: Dictionary,
+		prev_subjects: Array) -> void:
 	# We store the card which executes this task
 	owner = card
 	# We store the card which triggered this task (typically via signal)
@@ -266,7 +265,7 @@ func _init(card: Card,
 	# We only seek targets if the task is valid
 	if is_valid:
 		# We discover which other card this task will affect, if any
-		var ret =_find_subjects()
+		var ret =_find_subjects(prev_subjects)
 		if ret is GDScriptFunctionState: # Still working.
 			ret = yield(ret, "completed")
 	# We emit a signal when done so that our ScriptingEngine
@@ -283,8 +282,6 @@ func get(property: String):
 	match property:
 		KEY_IS_COST:
 			default = false
-		KEY_COMMON_TARGET_REQUEST:
-			default = true
 		KEY_TRIGGER:
 			default = "any"
 		KEY_SUBJECT_INDEX:
@@ -305,18 +302,26 @@ func get(property: String):
 # Figures out what the subjects of this script is supposed to be.
 #
 # Returns a Card object if subjects is defined, else returns null.
-func _find_subjects() -> Card:
+func _find_subjects(prev_subjects := []) -> Card:
 	var subjects_array := []
-	# See KEY_COMMON_TARGET_REQUEST doc
-	var common_target_request : bool = get(KEY_COMMON_TARGET_REQUEST)
 	# See KEY_SUBJECT doc
 	match get(KEY_SUBJECT):
+		# Ever task retrieves the subjects used in the previous task.
+		# if the value "previous" is given to the "subjects" key, 
+		# it simple reuses the same ones.
+		KEY_SUBJECT_V_PREVIOUS:
+			subjects_array = prev_subjects
 		KEY_SUBJECT_V_TARGET:
-			var c = _initiate_card_targeting(common_target_request)
-			if c is GDScriptFunctionState: # Still working.
-				c = yield(c, "completed")
-			is_valid = _check_properties(c,"subject")
-			subjects_array.append(c)
+			if owner.target_dry_run_card:
+				is_valid = _check_properties(owner.target_dry_run_card,"subject")
+				subjects_array.append(owner.target_dry_run_card)
+				owner.target_dry_run_card = null
+			else:
+				var c = _initiate_card_targeting()
+				if c is GDScriptFunctionState: # Still working.
+					c = yield(c, "completed")
+				is_valid = _check_properties(c,"subject")
+				subjects_array.append(c)
 		KEY_SUBJECT_V_BOARDSEEK:
 			for c in cfc.NMAP.board.get_all_cards():
 				if _check_properties(c,"seek"):
@@ -346,29 +351,17 @@ func _find_subjects() -> Card:
 # and yields until it's found.
 #
 # Returns a Card object.
-func _initiate_card_targeting(common_target_request: bool) -> Card:
-	var target := owner.target_card
-	# See KEY_COMMON_TARGET_REQUEST doc
-	if not target or not common_target_request:
-		# We wait a centisecond, to prevent the card's _input function from seeing
-		# The double-click which started the script and immediately triggerring
-		# the target completion
-		yield(owner.get_tree().create_timer(0.1), "timeout")
-		owner.initiate_targeting()
-		# We wait until the targetting has been completed to continue
-		yield(owner,"target_selected")
-		target = owner.target_card
-	else:
-		# I don't understand it, but if I remove this timer
-		# it breaks the yield from the caller
-		# Replacing it with a pass or something simple doesn't work either
-		yield(owner.get_tree().create_timer(0.1), "timeout")
+func _initiate_card_targeting() -> Card:
+	# We wait a centisecond, to prevent the card's _input function from seeing
+	# The double-click which started the script and immediately triggerring
+	# the target completion
+	yield(owner.get_tree().create_timer(0.1), "timeout")
+	owner.initiate_targeting()
+	# We wait until the targetting has been completed to continue
+	yield(owner,"target_selected")
+	var target = owner.target_card
+	#owner.target_card = null
 	return(target)
-
-
-func finalize():
-	if not get(KEY_COMMON_TARGET_REQUEST):
-		owner.target_card = null
 
 # Ensures that all filters requested by the script are respected
 #
@@ -444,6 +437,7 @@ func _check_properties(card: Card, type := "trigger") -> bool:
 				if not prop_limits[property] in card.properties[property]:
 					card_matches = false
 			else:
+				#print(type,prop_limits[property], card.properties[property])
 				if prop_limits[property] != card.properties[property]:
 					card_matches = false
 	return(card_matches)

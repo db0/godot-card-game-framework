@@ -108,6 +108,9 @@ export var card_name : String setget set_card_name, get_card_name
 # It should be cleared from whichever effect requires a target.
 # once it is used
 var target_card : Card = null setget set_targetcard, get_targetcard
+# Used to store a card targeted via the cost-dry-run mechanism.
+# it is reset to null every time the properties check is not valid
+var target_dry_run_card : Card = null
 # Starting state for each card
 var state := IN_PILE
 # If this card is hosting other cards,
@@ -121,6 +124,9 @@ var tokens := {} setget ,get_all_tokens
 
 # To track that this card attempting to target another card.
 var _is_targetting := false
+# Used when completing targeting to know whether to put the target
+# into target_dry_run_card or target_card
+var _cost_dry_run := false
 # Used for animating the card.
 var _target_position: Vector2
 # Used to avoid the focus animation repeating once it's completed.
@@ -697,7 +703,8 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 	# If it's not, we consider the request failed
 	if not value in [0,90,180,270]:
 		retcode = _ReturnCode.FAILED
-	elif value != 0 and not (state == ON_PLAY_BOARD or state == FOCUSED_ON_BOARD):
+	# We only allow rotating card while they're on the board
+	elif value != 0 and get_parent() != cfc.NMAP.board:
 		retcode = _ReturnCode.FAILED
 	# If the card is already in the specified rotation
 	# and a toggle was not requested, we consider we did nothing
@@ -946,6 +953,7 @@ func execute_scripts(
 		# If the dry-run of the ScriptingEngine returns that all
 		# costs can be paid, then we proceed with the actual run
 		if sceng.can_all_costs_be_paid:
+			#print("DEBUG:" + str(state_scripts))
 			# The ScriptingEngine is where we execute the scripts
 			# We cannot use its class reference,
 			# as it causes a cyclic reference error when parsing
@@ -1194,7 +1202,8 @@ func highlight_potential_card(colour : Color) -> void:
 # Will generate a targeting arrow on the card which will follow the mouse cursor.
 # The top card hovered over by the mouse cursor will be highlighted
 # and will become the target when complete_targeting() is called
-func initiate_targeting() -> void:
+func initiate_targeting(dry_run := false) -> void:
+	_cost_dry_run = dry_run
 	_is_targetting = true
 	$TargetLine/ArrowHead.visible = true
 	$TargetLine/ArrowHead/Area2D.monitoring = true
@@ -1207,15 +1216,26 @@ func initiate_targeting() -> void:
 # into the target_card property for future use.
 func complete_targeting() -> void:
 	if len(_potential_cards) and _is_targetting:
-		target_card = _potential_cards.back()
+		var tc = _potential_cards.back()
+		# We don't want to emit a signal, if the card is a dummy viewport card
+		# or we already selected a target during dry-run
+		if get_parent() != null and get_parent().name != "Viewport" \
+				and not target_dry_run_card:
+			# We make the targeted card also emit a targeting signal for automation
+			tc.emit_signal("card_targeted", tc, "card_targeted",
+					{"targeting_source": self})
+		# We use the _cost_dry_run variable when the targeting is happening
+		# as part of the checking for costs. We store the target card
+		# in a different variable, which is reused during the normal execution
+		# of the script, instead of looking for a target again
+		if _cost_dry_run:
+			target_dry_run_card = tc
+		else:
+			target_card = tc
 #		print("Targeting Demo: ",
 #				self.name," targeted ",
 #				target_card.name, " in ",
 #				target_card.get_parent().name)
-		if get_parent() != null and get_parent().name != "Viewport":
-			# We make the targeted card also emit a targeting signal for automation
-			target_card.emit_signal("card_targeted", target_card, "card_targeted",
-					{"targeting_source": self})
 		emit_signal("target_selected",target_card)
 	_is_targetting = false
 	$TargetLine.clear_points()

@@ -87,7 +87,7 @@ func test_multiple_costs():
 			"is_cost": true,
 			"degrees": 90},
 			{"name": "flip_card",
-			"subject": "target",
+			"subject": "previous",
 			"is_cost": true,
 			"set_faceup": false},
 			{"name": "flip_card",

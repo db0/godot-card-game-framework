@@ -51,7 +51,8 @@ func _init(card_owner: Card,
 func run_next_script(card_owner: Card,
 		scripts_queue: Array,
 		trigger_card: Card,
-		signal_details := {}) -> void:
+		signal_details := {},
+		prev_subjects := []) -> void:
 	if scripts_queue.empty():
 		#print('Scripting: All done!') # Debug
 		# If we're doing a try run, we don't clean the targeting
@@ -59,26 +60,34 @@ func run_next_script(card_owner: Card,
 		# We do clear it though if all the costs cannot be paid.
 		if not costs_dry_run or (costs_dry_run and not can_all_costs_be_paid):
 			card_owner.target_card = null
+		if not costs_dry_run:
+			card_owner.target_dry_run_card = null
 		all_tasks_completed = true
 		emit_signal("tasks_completed")
 	# checking costs on multiple targeted cards in the same script,
 	# is not supported at the moment due to the exponential complexities
-	elif costs_dry_run and not \
-				scripts_queue[0].get(ScriptTask.KEY_COMMON_TARGET_REQUEST, true):
+	elif costs_dry_run and card_owner.target_dry_run_card and \
+				scripts_queue[0].get(ScriptTask.KEY_SUBJECT) == "target":
 			scripts_queue.pop_front()
-			run_next_script(card_owner,scripts_queue,trigger_card,signal_details)
+			run_next_script(card_owner,
+					scripts_queue,trigger_card,
+					signal_details,prev_subjects)
 	else:
 		var script := ScriptTask.new(
 				card_owner,
 				trigger_card,
 				signal_details,
-				scripts_queue.pop_front())
+				scripts_queue.pop_front(),
+				prev_subjects)
 		# In case the task involves targetting, we need to wait on further
 		# execution until targetting has completed
 		if not script.has_init_completed:
 			yield(script,"completed_init")
 		#print("Scripting: " + str(script.properties)) # Debug
 		#print("Scripting Subjects: " + str(script.subjects)) # Debug
+		if costs_dry_run and card_owner.target_card:
+			card_owner.target_dry_run_card = card_owner.target_card
+			card_owner.target_card = null
 		if script.task_name == "custom_script":
 			# This class contains the customly defined scripts for each
 			# card.
@@ -88,14 +97,16 @@ func run_next_script(card_owner: Card,
 			if script.is_valid \
 					and (not costs_dry_run
 						or (costs_dry_run and script.get(script.KEY_IS_COST))):
+				#print(script.is_valid,':',costs_dry_run)
 				var retcode = call(script.task_name, script)
 				if costs_dry_run and retcode != Card._ReturnCode.CHANGED:
 					can_all_costs_be_paid = false
 		else:
 			 # If card has a script but it's null, it probably not coded yet. Just go on...
 			print("[WARN] Found empty script. Ignoring...")
-		script.finalize()
-		run_next_script(card_owner,scripts_queue,trigger_card,signal_details)
+		# At the end of the task run, we loop back to the start, but of course
+		# with one less item in our scripts_queue.
+		run_next_script(card_owner,scripts_queue,trigger_card,signal_details,script.subjects)
 
 
 # Task for rotating cards
@@ -183,7 +194,7 @@ func move_card_cont_to_board(script: ScriptTask) -> void:
 	for card in script.subjects:
 		# We assume cards moving to board want to be face-up
 		card.move_to(cfc.NMAP.board, -1, board_position)
-		card.is_faceup = true
+		#card.is_faceup = true
 
 
 # Task from modifying tokens on a card

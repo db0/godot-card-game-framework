@@ -1,5 +1,5 @@
 # This class defines how the properties of the [Card] definition are to be
-# used during [Card] `setup()`
+# used during `setup()`
 class_name CardConfig
 extends Reference
 

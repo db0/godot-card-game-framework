@@ -2,6 +2,9 @@ extends "res://tests/UTcommon.gd"
 
 var cards := []
 
+func after_all():
+	# To prevent messing with other tests
+	cfc.game_rng_seed = "CFC Random Seed"
 
 func test_game_seed_consistency():
 	cfc.game_rng_seed = "GUT"
