@@ -937,7 +937,11 @@ func execute_scripts(
 		var choices_menu = _CARD_CHOICES_SCENE.instance()
 		choices_menu.prep(self,state_scripts)
 		yield(choices_menu,"id_pressed")
-		state_scripts = state_scripts[choices_menu.selected_key]
+		# If the player just closed the pop-up without choosing
+		# an option, we don't execute anything
+		if choices_menu.id_selected:
+			state_scripts = state_scripts[choices_menu.selected_key]
+		else: state_scripts = []
 		choices_menu.queue_free()
 	# To avoid unnecessary operations
 	# we evoce the ScriptingEngine only if we have something to execute
