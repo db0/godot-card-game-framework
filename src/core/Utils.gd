@@ -85,47 +85,66 @@ static func find_card_script(card_name, trigger) -> Dictionary:
 	return(card_script)
 
 
-static func recalculate_position(card)-> Vector2:
+static func recalculate_position(card,index_diff=null)-> Vector2:
 	if cfc.hand_use_oval_shape:
-		return recalculate_position_use_oval(card)
-	return recalculate_position_use_rectangle(card)
+		return recalculate_position_use_oval(card,index_diff)
+	return recalculate_position_use_rectangle(card,index_diff)
 
 
-static func get_angle_by_index(card):
+static func get_angle_by_index(card,index_diff = null):
 	var index = card.get_my_card_index()
 	var hand_size = card.get_parent().get_card_count()
 	var half
 	half = (hand_size-1)/2.0
-	if index == half:
-		return 90
 	var max_hand_size = cfc.NMAP.hand.hand_size
 	var card_angle_max:float = 15
 	var card_angle_min:float = 5
-	min()
-	var one_card_angle = 6+(max_hand_size-hand_size)*0.2
-	return 90+(half-index)*one_card_angle
+	var card_angle = max(min(60/hand_size,card_angle_max),card_angle_min)
+	if index_diff != null:
+		return 90+(half-index)*card_angle - sign(index_diff)*(-index_diff*index_diff+5)
+	else:
+		return 90+(half-index)*card_angle
+
+static func get_oval_angle_by_index(card,angle=null,index_diff = null,hor_rad=null,ver_rad=null):
+	if not angle:
+		angle = get_angle_by_index(card,index_diff)
+	var parent_control
+	if not hor_rad:
+		parent_control = card.get_parent().get_node('Control')
+		hor_rad = parent_control.rect_size.x * 0.5 * 1.5
+	if not ver_rad:
+		parent_control = card.get_parent().get_node('Control')
+		ver_rad = parent_control.rect_size.y * 1.5
+	var card_angle
+	if angle == 90:
+		card_angle = 90
+	else:
+		card_angle= rad2deg(atan(-ver_rad/hor_rad/tan(deg2rad(angle))))
+		card_angle = card_angle + 90
+	return card_angle
 
 # Calculate the value after the rotation has been calculated
-static func recalculate_position_use_oval(card)-> Vector2:
+static func recalculate_position_use_oval(card,index_diff=null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	var parent_control = card.get_parent().get_node('Control')
 	var control = card.get_node('Control')
 	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.5
 	var ver_rad: float = parent_control.rect_size.y * 1.5
-	var angle = get_angle_by_index(card)
+	var angle = get_angle_by_index(card,index_diff)
 	var rad_angle = deg2rad(angle)
 	var oval_angle_vector = Vector2(hor_rad*cos(rad_angle),-ver_rad*sin(rad_angle))
 	var left_top = Vector2(-control.rect_size.x/2,-control.rect_size.y/2)
 	var center_top = Vector2(0,-control.rect_size.y/2)
-	var delta_vector = left_top - center_top.rotated(deg2rad(90-angle))
+	var card_angle = get_oval_angle_by_index(card,angle,null,hor_rad,ver_rad)
+	var delta_vector = left_top - center_top.rotated(deg2rad(90-card_angle))
 	var center_x = parent_control.rect_size.x/2+parent_control.rect_position.x
 	var center_y = parent_control.rect_size.y*1.5 +parent_control.rect_position.y
 	card_position_x = (oval_angle_vector.x+center_x)
 	card_position_y = (oval_angle_vector.y+center_y)
 	return Vector2(card_position_x,card_position_y)+delta_vector
 
-static func recalculate_position_use_rectangle(card)-> Vector2:
+static func recalculate_position_use_rectangle(card,index_diff=null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	# The number of cards currently in hand
@@ -158,4 +177,19 @@ static func recalculate_position_use_rectangle(card)-> Vector2:
 	# Since our control container has the same size as the cards,we start from 0
 	# and just offset the card if we want it higher or lower.
 	card_position_y = 0
-	return Vector2(card_position_x,card_position_y)
+
+	if index_diff!=null:
+		return Vector2(card_position_x,card_position_y)+Vector2(control.rect_size.x/index_diff* cfc.NEIGHBOUR_PUSH,0)
+	else:
+		return Vector2(card_position_x,card_position_y)
+
+static func recalculate_rotation(card,index_diff=null)-> float:
+	if cfc.hand_use_oval_shape:
+		return recalculate_rotation_use_oval(card,index_diff)
+	return recalculate_rotation_use_rectangle(card)
+
+static func recalculate_rotation_use_rectangle(card)-> float:
+	return 0.0
+
+static func recalculate_rotation_use_oval(card,index_diff=null)-> float:
+	return 90.0-get_oval_angle_by_index(card,null,index_diff)

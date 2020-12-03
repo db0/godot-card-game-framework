@@ -1287,76 +1287,6 @@ func _pushAside(targetpos: Vector2) -> void:
 	_target_position = targetpos
 	state = PUSHED_ASIDE
 
-func _recalculate_rotation() ->float:
-	if not cfc.hand_use_oval_shape:
-		return 0.0
-	return (90.0-get_angle_by_index(get_my_card_index()))*0.9
-
-# Recalculates the position of the current card object
-# based on how many cards we have already in hand and its index among them
-# Returns the local position the card should have in the hand
-func _recalculatePosition() ->Vector2:
-	if cfc.hand_use_oval_shape:
-		return _recalculatePosition_by_oval()
-	return _recalculatePosition_by_rectangle()
-
-func get_angle_by_index(index,card_len = get_parent().get_card_count()):
-	var half
-	half = (card_len-1)/2.0
-	print(half)
-	if index == half:
-		return 90
-	var max_hand_size = cfc.NMAP.hand.hand_size
-	var one_card_angle = 6+(max_hand_size-card_len)*0.2
-	return 90+(half-index)*one_card_angle
-
-func _recalculatePosition_by_oval() ->Vector2:
-	var card_position_x: float = 0.0
-	var card_position_y: float = 0.0
-	var hor_rad: float = get_parent().get_node('Control').rect_size.x*0.5
-	var ver_rad: float = get_parent().get_node('Control').rect_size.x*0.3
-	var angle = get_angle_by_index(get_my_card_index())
-	var rad_angle = deg2rad(angle)
-	var oval_angle_vector = Vector2(hor_rad*cos(rad_angle),-ver_rad*sin(rad_angle))
-	var center_x = get_parent().get_node('Control').rect_size.x/2+get_parent().get_node('Control').rect_position.x
-	var center_y = get_parent().get_node('Control').rect_size.y+get_parent().get_node('Control').rect_position.y
-	card_position_x = (oval_angle_vector.x+center_x-$Control.rect_size.x/2)
-	card_position_y = (oval_angle_vector.y+center_y)
-	# set_card_rotation(90-angle)
-	return Vector2(card_position_x,card_position_y)
-
-func _recalculatePosition_by_rectangle() ->Vector2:
-	var card_position_x: float = 0.0
-	var card_position_y: float = 0.0
-	# The number of cards currently in hand
-	var hand_size: int = get_parent().get_card_count()
-	# The maximum of horizontal pixels we want the cards to take
-	# We simply use the size of the parent control container we've defined in
-	# the node settings
-	var max_hand_size_width: float = get_parent().get_node('Control').rect_size.x
-	# The maximum distance between cards
-	# We base it on the card width to allow it to work with any card-size.
-	var card_gap_max: float = $Control.rect_size.x * 1.1
-	# The minimum distance between cards
-	# (less than card width means they start overlapping)
-	var card_gap_min: float = $Control.rect_size.x/2
-	# The current distance between cards.
-	# It is inversely proportional to the amount of cards in hand
-	var cards_gap: float = max(min((max_hand_size_width
-			- $Control.rect_size.x/2)
-			/ hand_size, card_gap_max), card_gap_min)
-	# The current width of all cards in hand together
-	var hand_width: float = (cards_gap * (hand_size-1)) + $Control.rect_size.x
-	# The following just create the vector position to place this specific card
-	# in the playspace.
-	card_position_x = (max_hand_size_width/2
-			- hand_width/2
-			+ cards_gap
-			* get_my_card_index())
-	# Since our control container has the same size as the cards,we start from 0
-	# and just offset the card if we want it higher or lower.
-	card_position_y = 0
-	return Vector2(card_position_x,card_position_y)
 # Pick up a card to drag around with the mouse.
 func _start_dragging() -> void:
 	# When dragging we want the dragged card to always be drawn above all else
@@ -1645,7 +1575,7 @@ func _process_card_state() -> void:
 			# warning-ignore:return_value_discarded
 			if cfc.hand_use_oval_shape:
 				if not $Tween.is_active():
-					_target_rotation  = _recalculate_rotation()
+					_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
 					add_tween_rotation(_target_rotation)
 					$Tween.start()
 			else:
@@ -1660,7 +1590,7 @@ func _process_card_state() -> void:
 					not _focus_completed and \
 					cfc.focus_style != cfc.FocusStyle.VIEWPORT:
 				var expected_position: Vector2 = CardFrameworkUtils.recalculate_position(self)
-				var expected_rotation: float = _recalculate_rotation()
+				var expected_rotation: float = CardFrameworkUtils.recalculate_rotation(self)
 				# We figure out our neighbours by their index
 				var neighbours := []
 				for neighbour_index_diff in [-2,-1,1,2]:
@@ -1675,10 +1605,7 @@ func _process_card_state() -> void:
 						# how close neighbours they are.
 						# Closest neighbours (1 card away) are pushed more
 						# than further neighbours.
-						neighbour_card._pushAside(CardFrameworkUtils.recalculate_position(neighbour_card)
-								+ Vector2(neighbour_card.get_node('Control').rect_size.x
-									/ neighbour_index_diff
-									* cfc.NEIGHBOUR_PUSH,0))
+						neighbour_card._pushAside(CardFrameworkUtils.recalculate_position(neighbour_card,neighbour_index_diff))
 						neighbours.append(neighbour_card)
 				for c in get_parent().get_all_cards():
 					if not c in neighbours and c != self:
@@ -1786,7 +1713,7 @@ func _process_card_state() -> void:
 							position, _target_position, 0.35,
 							Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					if cfc.hand_use_oval_shape:
-						_target_rotation  = _recalculate_rotation()
+						_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
 						add_tween_rotation(_target_rotation)
 					else:
 						set_card_rotation(0)
@@ -1811,7 +1738,7 @@ func _process_card_state() -> void:
 							scale, Vector2(1,1), 0.4,
 							Tween.TRANS_CUBIC, Tween.EASE_OUT)
 				if cfc.hand_use_oval_shape:
-					_target_rotation  = _recalculate_rotation()
+					_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
 					add_tween_rotation(_target_rotation)
 #				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
