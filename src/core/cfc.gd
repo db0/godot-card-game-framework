@@ -133,7 +133,7 @@ var show_token_buttons = false
 var game_rng_seed := "CFC Random Seed" setget set_seed
 var card_definitions := {}
 
-var hand_use_oval_shape := false
+var hand_use_oval_shape := true
 #-----------------------------------------------------------------------------
 # END Behaviour Constants
 #-----------------------------------------------------------------------------
