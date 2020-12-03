@@ -554,9 +554,8 @@ func get_targetcard() -> Card:
 #
 # Flips the card face-up/face-down
 #
-# Returns _ReturnCode.CHANGED if the card actually changed rotation
-#
-# Returns _ReturnCode.OK if the card was already in the correct rotation
+# * Returns _ReturnCode.CHANGED if the card actually changed rotation
+# * Returns _ReturnCode.OK if the card was already in the correct rotation
 func set_is_faceup(value: bool, instant := false, check := false) -> int:
 	var retcode: int
 	if value == is_faceup:
@@ -621,11 +620,9 @@ func get_is_faceup() -> bool:
 #
 # Flips the card face-up/face-down
 #
-# Returns _ReturnCode.CHANGED if the card actually changed view status
-#
-# Returns _ReturnCode.OK if the card was already in the correct view status
-#
-# Returns _ReturnCode.FAILED if changing the status is now allowed
+# * Returns _ReturnCode.CHANGED if the card actually changed view status
+# * Returns _ReturnCode.OK if the card was already in the correct view status
+# * Returns _ReturnCode.FAILED if changing the status is now allowed
 func set_is_viewed(value: bool) -> int:
 	var retcode: int
 	if value == true:
@@ -692,11 +689,9 @@ func set_name(value : String) -> void:
 # and they have enabled the toggle flag,
 # then we just reset the card to 0 degrees.
 #
-# Returns _ReturnCode.CHANGED if the card actually changed rotation.
-#
-# Returns _ReturnCode.OK if the card was already in the correct rotation.
-#
-# Returns _ReturnCode.FAILED if an invalid rotation was specified.
+# * Returns _ReturnCode.CHANGED if the card actually changed rotation.
+# * Returns _ReturnCode.OK if the card was already in the correct rotation.
+# * Returns _ReturnCode.FAILED if an invalid rotation was specified.
 func set_card_rotation(value: int, toggle := false, start_tween := true, check := false) -> int:
 	var retcode
 	# For cards we only allow orthogonal degrees of rotation
@@ -743,13 +738,16 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 func get_card_rotation() -> int:
 	return card_rotation
 
+
 # Arranges so that the card enters the chosen container.
 #
 # Will take care of interpolation.
 #
 # If the target container is the board, the card will either be placed at the
-# mouse position, or at the 'boardPosition' variable if it's provided
-# index determines the card's position among other cards.
+# mouse position, or at the 'boardPosition' variable.
+#
+# If placed in a pile, the index determines the card's position
+# among other card. If it's -1, card will be placed on the bottom of the pile
 func move_to(targetHost: Node2D,
 		index := -1,
 		boardPosition := Vector2(-1,-1)) -> void:
@@ -902,10 +900,11 @@ func move_to(targetHost: Node2D,
 			card.set_highlight(false)
 		_potential_cards.clear()
 
+
 # Executes the tasks defined in the card's scripts in order.
 #
 # Returns a [ScriptingEngine] object but that it not statically typed
-# As it causes the parser think there's a cyclic dependency
+# As it causes the parser think there's a cyclic dependency.
 func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
@@ -1010,11 +1009,6 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 				self,
 				"card_attached",
 				{"host": host})
-
-
-# Executes card scripts
-func card_action() -> void:
-	pass
 
 
 # Overrides the built-in get_class to
