@@ -1,5 +1,4 @@
-
-# The CardContainer is meant to have Card objects as children
+# The CardContainer is meant to have [Card] objects as children nodes
 # and arrange their indexing and visibility
 class_name CardContainer
 extends Area2D
@@ -62,7 +61,7 @@ func _on_button_mouse_entered() -> void:
 
 
 ### Ugh, I will need to implement the same _are_buttons_hovered nosense
-### That I'm doing in Card to avoid the buttons sometimes staying visible
+### That I'm doing in [Card] to avoid the buttons sometimes staying visible
 #
 ## Ensures the mouse is invisible on hover
 ## Ensures that button it not trying to appear via previous animation

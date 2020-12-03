@@ -16,7 +16,7 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 					},
 					{
 						"name": "rotate_card",
-						"subject": "target",
+						"subject": "previous",
 						"degrees": 180,
 					}
 				],

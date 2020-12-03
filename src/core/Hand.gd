@@ -1,4 +1,4 @@
-# A type of CardContainer that stores its Card objects without full visibility
+# A type of [CardContainer] that stores its Card objects with full visibility
 # to the player and provides methods for adding new ones and reorganizing them
 class_name Hand
 extends CardContainer
@@ -16,7 +16,7 @@ func _ready() -> void:
 	$Control/ManipulationButtons/DiscardRandom.connect("pressed",self,'_on_DiscardRandom_Button_pressed')
 
 
-# Button which shuffles the children Card objects
+# Button which shuffles the children [Card] objects
 func _on_Shuffle_Button_pressed() -> void:
 	shuffle_cards()
 
@@ -45,7 +45,7 @@ func shuffle_cards() -> void:
 	move_child($Control,0)
 
 
-# Takes the top card from the specified CardContainer
+# Takes the top card from the specified [CardContainer]
 # and adds it to this node
 # Returns a card object drawn
 func draw_card(pile : Pile = cfc.NMAP.deck) -> Card:
