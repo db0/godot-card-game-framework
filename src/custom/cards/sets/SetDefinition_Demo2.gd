@@ -9,7 +9,9 @@ const CARDS := {
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
 		"Abilities": "While on board, this card will flip face-down " \
-				+ "and rotate 180 degrees a target.",
+				+ "and rotate 180 degrees a target." \
+				+ "\n\nWhile on the hand, this card will remove " \
+				+ "a target card from the game",
 		"Cost": 0,
 	},
 	"Multiple Choices Test Card": {

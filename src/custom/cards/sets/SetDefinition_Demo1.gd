@@ -8,8 +8,8 @@ const CARDS := {
 		"Type": "Blue",
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
-		"Abilities": "While on board, this will rotate itself 90 degrees." \
-				+ "\n\nWhile in hand, this card will go back in the deck.",
+		"Abilities": "While on board, this will rotate itself." \
+				+ "\n\nWhile in hand, this will spawn a test card on the board.",
 		"Cost": 0,
 	},
 	"Test Card 2": {
@@ -17,7 +17,9 @@ const CARDS := {
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
 		"Abilities": "While on board, this card will discard itself " \
-				+ "and another target.",
+				+ "and another target."\
+				+ "\n\nWhile on the hand, this card will remove itself " \
+				+ "from the game",
 		"Cost": 0,
 	},
 }

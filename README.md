@@ -202,6 +202,7 @@ The game comes with some sample scripted cards which can be found under `res://s
 
 * Tween animations that look good for card movements.
 * Customizable card highlights
+* Oval shaped hand shape
 * Automatic focus-in on cards when moused over in-hand.
 * Automatic re-arranging of hand as cards are added or removed.
 * Drag & Drop

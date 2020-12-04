@@ -51,12 +51,15 @@ func test_subject_target():
 			"degrees": 270},
 			{"name": "rotate_card",
 			"subject": "target",
-			"degrees": 90}]}}
+			"degrees": 90}
+			]}}
 	var scripting_engine = card.execute_scripts()
 	yield(yield_for(0.1), YIELD)
 	if scripting_engine is GDScriptFunctionState: # Still seeking...
 		yield(card, "initiated_targeting")
 	#watch_signals(scripting_engine)
+	if cfc.hand_use_oval_shape:
+		yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	yield(target_card(card,card), "completed")
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 270,
