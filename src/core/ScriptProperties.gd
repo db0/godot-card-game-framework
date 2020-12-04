@@ -220,6 +220,7 @@ const TRIGGER_V_TOKENS_INCREASED := "increased"
 const TRIGGER_V_TOKENS_DECREASED := "decreased"
 
 
+# Returns the default value any script definition key should have
 static func get_default(property: String):
 	var default
 	# for property details, see const definitionts
@@ -242,9 +243,11 @@ static func get_default(property: String):
 			default = null
 	return(default)
 
+
 # Ensures that all filters requested by the script are respected
 #
-# Will set is_valid to false if any filter does not match reality
+# Will return `false` if any filter does not match the filter request. 
+# Otherise returns `true`
 static func filter_trigger(
 		card_scripts,
 		trigger_card,
@@ -309,6 +312,11 @@ static func filter_trigger(
 	return(is_valid)
 
 
+# Checks the provided card properties against filters specified in 
+# the provided card_scripts.
+#
+# Returns true if all the filters match the card properties.
+# Otherwise returns false.
 static func check_properties(card, card_scripts, type := "trigger") -> bool:
 	var card_matches := true
 	# Card properties filter checks. We use the type of seek we're doing
