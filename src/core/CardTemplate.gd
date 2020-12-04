@@ -836,6 +836,7 @@ func move_to(targetHost: Node2D,
 				targetHost.reorganize_stack()
 		else:
 			interruptTweening()
+			_target_rotation = CardFrameworkUtils.recalculate_rotation(self)
 			if len(_potential_cards):
 				# The _potential_cards are always organized so that the card higher
 				# in index that we were hovering over, is the last in the array.
@@ -1627,25 +1628,28 @@ func _stop_pulse():
 		$Control/Back/Pulse.remove_all()
 		$Control/Back.modulate = Color(1,1,1)
 
-
+# Card rotation animation
 func add_tween_rotation(expected_rotation,target_rotation,_time:=0.3, trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
 	$Tween.remove($Control,'rect_rotation')
 	$Tween.interpolate_property($Control,'rect_rotation',
 			expected_rotation, target_rotation, _time,
 			trans_type, ease_type)
 
+# Card position animation
 func add_tween_position(expected_position,target_position,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
 	$Tween.remove(self,'position')
 	$Tween.interpolate_property(self,'position',
 			expected_position, target_position, _time,
 			trans_type, ease_type)
 
+# Card global position animation
 func add_tween_global_position(expected_position,target_position,_time:=0.5,trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
 	$Tween.remove(self,'global_position')
 	$Tween.interpolate_property(self,'global_position',
 			expected_position, target_position, _time,
 			trans_type, ease_type)
 
+# Card scale animation
 func add_tween_scale(expected_scale,target_scale,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
 	$Tween.remove(self,'scale')
 	$Tween.interpolate_property(self,'scale',
@@ -1664,10 +1668,11 @@ func _process_card_state() -> void:
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
 			if cfc.hand_use_oval_shape:
-				if not $Tween.is_active():
-					_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
-					add_tween_rotation($Control.rect_rotation,_target_rotation)
-					$Tween.start()
+				# if not $Tween.is_active():
+				# 	_target_rotation  = CardFrameworkUtils.recalculate_rotation(self)
+				# 	add_tween_rotation($Control.rect_rotation,_target_rotation)
+				# 	$Tween.start()
+				set_card_rotation(0)
 			else:
 				set_card_rotation(0)
 		FOCUSED_IN_HAND:
@@ -1881,6 +1886,7 @@ func _process_card_state() -> void:
 #				if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y > get_viewport().size.y:
 #					_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y
 				add_tween_position(position, _target_position, 0.25)
+				add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 					add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.5,

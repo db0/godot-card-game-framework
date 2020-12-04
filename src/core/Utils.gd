@@ -84,13 +84,14 @@ static func find_card_script(card_name, trigger) -> Dictionary:
 			break
 	return(card_script)
 
-
+# Get card position in hand by index
+# if use oval shape, the card has a certain offset according to the angle
 static func recalculate_position(card,index_diff=null)-> Vector2:
 	if cfc.hand_use_oval_shape:
 		return recalculate_position_use_oval(card,index_diff)
 	return recalculate_position_use_rectangle(card,index_diff)
 
-
+# Get the angle on the ellipse
 static func get_angle_by_index(card,index_diff = null):
 	var index = card.get_my_card_index()
 	var hand_size = card.get_parent().get_card_count()
@@ -105,6 +106,8 @@ static func get_angle_by_index(card,index_diff = null):
 	else:
 		return 90+(half-index)*card_angle
 
+# Get card angle in hand by index that use oval shape
+# The angle of the normal on the ellipse
 static func get_oval_angle_by_index(card,angle=null,index_diff = null,hor_rad=null,ver_rad=null):
 	if not angle:
 		angle = get_angle_by_index(card,index_diff)
@@ -123,7 +126,7 @@ static func get_oval_angle_by_index(card,angle=null,index_diff = null,hor_rad=nu
 		card_angle = card_angle + 90
 	return card_angle
 
-# Calculate the value after the rotation has been calculated
+# Calculate the position after the rotation has been calculated that use oval shape
 static func recalculate_position_use_oval(card,index_diff=null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
@@ -144,6 +147,7 @@ static func recalculate_position_use_oval(card,index_diff=null)-> Vector2:
 	card_position_y = (oval_angle_vector.y+center_y)
 	return Vector2(card_position_x,card_position_y)+delta_vector
 
+# Calculate the position that use rectangle
 static func recalculate_position_use_rectangle(card,index_diff=null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
@@ -183,6 +187,7 @@ static func recalculate_position_use_rectangle(card,index_diff=null)-> Vector2:
 	else:
 		return Vector2(card_position_x,card_position_y)
 
+# Calculate the rotation
 static func recalculate_rotation(card,index_diff=null)-> float:
 	if card.get_parent() == cfc.NMAP.hand:
 		if cfc.hand_use_oval_shape:
