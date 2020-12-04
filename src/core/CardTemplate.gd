@@ -990,7 +990,7 @@ func execute_scripts(
 
 
 
-		
+
 # Ensures that all filters requested by the script are respected
 #
 # Will set is_valid to false if any filter does not match reality
@@ -1694,7 +1694,8 @@ func _add_tween_rotation(
 			trans_type, ease_type)
 	# We ensure the card_rotation value is also kept up to date
 	# But onlf it it's one of the expected multiples
-	if int(target_rotation) in [0,90,180,270]:
+	if int(target_rotation) != card_rotation \
+			and int(target_rotation) in [0,90,180,270]:
 		card_rotation = int(target_rotation)
 
 # Card position animation
@@ -1970,6 +1971,8 @@ func _process_card_state() -> void:
 #				if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y > get_viewport().size.y:
 #					_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y
 				_add_tween_position(position, _target_position, 0.25)
+				# The below ensures a card dropped from the hand will not
+				# retain a slight rotation.
 				_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
@@ -2237,11 +2240,9 @@ func _recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 		return(Vector2(card_position_x,card_position_y))
 
 
-# Calculate the rotation
+# Calculates the rotation the card should have based on its parent.
 func _recalculate_rotation(index_diff = null)-> float:
-	if get_parent() == cfc.NMAP.hand:
-		if cfc.hand_use_oval_shape:
-			return 90.0 - _get_oval_angle_by_index(null, index_diff)
-		return(0.0)
-	else:
-		return(0.0)
+	var calculated_rotation := float(card_rotation)
+	if get_parent() == cfc.NMAP.hand and cfc.hand_use_oval_shape:
+		calculated_rotation = 90.0 - _get_oval_angle_by_index(null, index_diff)
+	return(calculated_rotation)
