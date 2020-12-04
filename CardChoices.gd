@@ -34,5 +34,4 @@ func _on_CardChoices_id_pressed(id: int) -> void:
 # leave yields waiting
 func _on_CardChoices_popup_hide() -> void:
 	if not id_selected:
-		print('aaaaa')
 		emit_signal("id_pressed", 0)

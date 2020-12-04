@@ -244,7 +244,10 @@ static func filter_trigger(
 		trigger_card,
 		owner_card,
 		signal_details) -> bool:
-	var is_valid: bool
+	# Checking card properties is its own function as it might be
+	# called from other places as well
+	var is_valid := check_properties(trigger_card, card_scripts, "trigger")
+
 	# Here we check that the trigger matches the _request_ for trigger
 	# A trigger which requires "another" card, should not trigger
 	# when itself causes the effect.
@@ -254,10 +257,6 @@ static func filter_trigger(
 		is_valid = false
 	if card_scripts.get("trigger") == "another" and trigger_card == owner_card:
 		is_valid = false
-
-	# Checking card properties is its own function as it might be
-	# called from other places as well
-	is_valid = check_properties(trigger_card, card_scripts, "trigger")
 
 	# Card Rotation filter checks
 	if card_scripts.get(FILTER_DEGREES) \
