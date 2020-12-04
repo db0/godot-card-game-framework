@@ -9,7 +9,7 @@ const CARDS := {
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
 		"Abilities": "While on board, this will rotate itself." \
-				+ "\n\nWhile in hand, this card will go back in the deck.",
+				+ "\n\nWhile in hand, this will spawn a test card on the board.",
 		"Cost": 0,
 	},
 	"Test Card 2": {

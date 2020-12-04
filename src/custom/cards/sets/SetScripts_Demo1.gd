@@ -30,12 +30,12 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 					{
 						"name": "move_card_to_container",
 						"subject": "target",
-						"container": cfc.NMAP.discard,
+						"dest_container": cfc.NMAP.discard,
 					},
 					{
 						"name": "move_card_to_container",
 						"subject": "self",
-						"container": cfc.NMAP.discard,
+						"dest_container": cfc.NMAP.discard,
 					}
 				],
 				"hand": [
