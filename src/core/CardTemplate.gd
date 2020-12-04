@@ -1721,6 +1721,7 @@ func _process_card_state() -> void:
 				if cfc.hand_use_oval_shape:
 					add_tween_rotation($Control.rect_rotation,0)
 				else:
+					# warning-ignore:return_value_discarded
 					set_card_rotation(0)
 				$Tween.start()
 				_focus_completed = true
@@ -2089,7 +2090,7 @@ func _get_oval_angle_by_index(
 	if angle == 90:
 		card_angle = 90
 	else:
-		card_angle= rad2deg(atan(-ver_rad/hor_rad/tan(deg2rad(angle))))
+		card_angle= rad2deg(atan(- ver_rad / hor_rad / tan(deg2rad(angle))))
 		card_angle = card_angle + 90
 	return card_angle
 
