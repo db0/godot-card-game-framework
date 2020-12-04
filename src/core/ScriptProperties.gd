@@ -1,4 +1,5 @@
-# SP stands for ScriptProperties
+# SP stands for "ScriptProperties".
+#
 # This class provides a library for constants which are used a key values
 # in the Card Script Definition
 #
