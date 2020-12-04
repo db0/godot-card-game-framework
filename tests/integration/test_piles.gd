@@ -56,7 +56,7 @@ func test_move_from_board_to_deck_to_hand():
 	hand.draw_card()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
-	assert_almost_eq(hand.to_global(CardFrameworkUtils.recalculate_position(card)),
+	assert_almost_eq(hand.to_global(card.recalculate_position(card)),
 			card.global_position,Vector2(2,2),
 			"Card finished move to hand from deck from board")
 

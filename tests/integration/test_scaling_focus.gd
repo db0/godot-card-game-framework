@@ -19,7 +19,7 @@ func test_single_card_focus():
 			"Card has correct scale")
 	cards[0]._on_Card_mouse_exited()
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	assert_almost_eq(CardFrameworkUtils.recalculate_position(cards[0]),cards[0].position,Vector2(2,2),
+	assert_almost_eq(cards[0].recalculate_position(cards[0]),cards[0].position,Vector2(2,2),
 			"Card placed in correct global position")
 	assert_almost_eq(Vector2(1, 1),cards[0].scale,Vector2(0.1,0.1),
 			"Card has correct scale")
@@ -65,19 +65,19 @@ func test_card_change_focus_to_neighbour():
 	yield(yield_for(YIELD_TIME2), YIELD)
 	cards[0]._on_Card_mouse_exited()
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	assert_almost_eq(CardFrameworkUtils.recalculate_position(cards[0]),
+	assert_almost_eq(cards[0].recalculate_position(cards[0]),
 			cards[0].position,Vector2(2,2),
 			"Card dragged in correct global position")
-	assert_almost_eq(CardFrameworkUtils.recalculate_position(cards[1]),
+	assert_almost_eq(cards[1].recalculate_position(cards[1]),
 			cards[1].position,Vector2(2,2),
 			"Card dragged in correct global position")
-	assert_almost_eq(CardFrameworkUtils.recalculate_position(cards[2]),
+	assert_almost_eq(cards[2].recalculate_position(cards[2]),
 			cards[2].position,Vector2(2,2),
 			"Card dragged in correct global position")
-	assert_almost_eq(CardFrameworkUtils.recalculate_position(cards[3]),
+	assert_almost_eq(cards[3].recalculate_position(cards[3]),
 			cards[3].position,Vector2(2,2),
 			"Card dragged in correct global position")
-	assert_almost_eq(CardFrameworkUtils.recalculate_position(cards[4]),
+	assert_almost_eq(cards[4].recalculate_position(cards[4]),
 			cards[4].position,Vector2(2,2),
 			"Card dragged in correct global position")
 
