@@ -2152,13 +2152,7 @@ func recalculate_position_use_rectangle(index_diff=null)-> Vector2:
 func recalculate_rotation(index_diff=null)-> float:
 	if get_parent() == cfc.NMAP.hand:
 		if cfc.hand_use_oval_shape:
-			return recalculate_rotation_use_oval(index_diff)
-		return recalculate_rotation_use_rectangle()
+			return 90.0-get_oval_angle_by_index(null,index_diff)
+		return  0.0
 	else:
 		return 0.0
-
-func recalculate_rotation_use_rectangle()-> float:
-	return 0.0
-
-func recalculate_rotation_use_oval(index_diff=null)-> float:
-	return 90.0-get_oval_angle_by_index(null,index_diff)
