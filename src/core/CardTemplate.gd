@@ -1487,7 +1487,8 @@ func _clear_attachment_status() -> void:
 #
 # So we make sure buttons stay visible while the mouse is on top.
 #
-# This is all necessary as a workaround for godotengine/godot#16854
+# This is all necessary as a workaround for
+# https://github.com/godotengine/godot/issues/16854
 #
 # Returns true if the mouse is hovering over the buttons, else false
 func _are_buttons_hovered() -> bool:

@@ -18,13 +18,12 @@ func prep(owner_card, script_with_choices: Dictionary) -> void:
 		for key in script_with_choices.keys():
 			add_item(key)
 		cfc.NMAP.board.add_child(self)
-		popup()
+		popup_centered()
 		# One again we need two different Panels due to 
 		# https://github.com/godotengine/godot/issues/32030
 		$HorizontalHighlights.rect_size = rect_size
 		$VecticalHighlights.rect_size = rect_size
 		# We spawn the dialogue at the middle of the screen.
-		rect_global_position = get_viewport().size/2 - rect_size/2
 
 func _on_CardChoices_id_pressed(id: int) -> void:
 	id_selected = id
@@ -35,4 +34,5 @@ func _on_CardChoices_id_pressed(id: int) -> void:
 # leave yields waiting
 func _on_CardChoices_popup_hide() -> void:
 	if not id_selected:
+		print('aaaaa')
 		emit_signal("id_pressed", 0)
