@@ -1973,7 +1973,10 @@ func _process_card_state() -> void:
 				_add_tween_position(position, _target_position, 0.25)
 				# The below ensures a card dropped from the hand will not
 				# retain a slight rotation.
-				_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
+				# We check if the card already has been rotated to a different
+				# card_cotation
+				if not int($Control.rect_rotation) in [0,90,180,270]:
+					_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 					_add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.5,
