@@ -131,13 +131,17 @@ var show_token_buttons = false
 # The games initial Random Number Generator seed.
 # When this stays the same, the game randomness will always play the predictable.
 var game_rng_seed := "CFC Random Seed" setget set_seed
-var card_definitions := {}
-
+# If set to true, the hand will be presented in the form of an oval shape
+# If set to false, the hand will be presented with all cards
+# horizontally aligned
 var hand_use_oval_shape := true
 #-----------------------------------------------------------------------------
 # END Behaviour Constants
 #-----------------------------------------------------------------------------
 
+# This will store all card properties which are placed in the card labels
+var card_definitions := {}
+# A class to propagate script triggers to all cards.
 var signal_propagator = SignalPropagator.new()
 # Unit Testing flag
 var UT := false
