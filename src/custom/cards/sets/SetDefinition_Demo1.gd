@@ -17,7 +17,9 @@ const CARDS := {
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
 		"Abilities": "While on board, this card will discard itself " \
-				+ "and another target.",
+				+ "and another target."\
+				+ "\n\nWhile on the hand, this card will remove itself " \
+				+ "from the game",
 		"Cost": 0,
 	},
 }
