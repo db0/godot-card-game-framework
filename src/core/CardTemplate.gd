@@ -75,7 +75,8 @@ signal card_targeted(card,trigger,details)
 var scripting_engine = load("res://src/core/ScriptingEngine.gd")
 
 # Used to add new token instances to cards
-const _token_scene = preload("res://src/core/Token.tscn")
+const _TOKEN_SCENE = preload("res://src/core/Token.tscn")
+const _CARD_CHOICES_SCENE = preload("res://src/core/CardChoices.tscn")
 
 export var properties :=  {}
 # We export this variable to the editor to allow us to add scripts to each card
@@ -157,7 +158,10 @@ onready var _card_text = $Control/Front/CardText
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	# The below check ensures out card_name variable is set.
+	# The below call ensures out card_name variable is set.
+	# Normally the setup() function should be used to set it,
+	# but setting the name here as well ensures that a card can be also put on
+	# The board without calling setup() and then use its hardcoded labels
 	_init_card_name()
 	# First we set the card to always pivot from its center.
 	# We only rotate the Control node however, so the collision shape is not rotated
@@ -511,7 +515,9 @@ func _on_Pulse_completed() -> void:
 # card definition dictionary entry.
 func setup(cname: String) -> void:
 	# The properties of the card should be already stored in cfc
+	set_card_name(cname)
 	properties = cfc.card_definitions.get(cname)
+
 	for label in properties.keys():
 		# These are standard properties which is simple a String to add to the
 		# label.text field
@@ -530,7 +536,6 @@ func setup(cname: String) -> void:
 			$Control/Front/CardText.get_node(label).text = \
 					CardFrameworkUtils.array_join(properties[label],
 					cfc.ARRAY_PROPERTY_JOIN)
-
 
 # Setter for _is_attachment
 func set_is_attachment(value: bool) -> void:
@@ -910,7 +915,7 @@ func move_to(targetHost: Node2D,
 func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
-		details: Dictionary = {}):
+		signal_details: Dictionary = {}):
 	var card_scripts
 	var sceng = null
 	# If scripts have been defined directly in this object
@@ -919,10 +924,18 @@ func execute_scripts(
 	# This allows us to modify a card's scripts during runtime
 	# in isolation from other cards of the same name
 	if not scripts.empty():
-		card_scripts = scripts.get(trigger,{})
+		card_scripts = scripts.get(trigger,{}).duplicate()
 	else:
 		# CardScriptDefinitions.gd should contain scripts for all defined cards
 		card_scripts = CardFrameworkUtils.find_card_script(card_name, trigger)
+	# We check the trigger against the filter defined
+	# If it does not match, then we don't pass any scripts for this trigger.
+	if not SP.filter_trigger(
+			card_scripts,
+			trigger_card,
+			self,
+			signal_details):
+		card_scripts.clear()
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state
 	match state:
@@ -934,6 +947,20 @@ func execute_scripts(
 			state_scripts = card_scripts.get("hand", [])
 		IN_POPUP,FOCUSED_IN_POPUP:
 			state_scripts = card_scripts.get("pile", [])
+	# If the state_scripts return a dictionary entry
+	# it means it's a multiple choice between two scripts
+	if typeof(state_scripts) == TYPE_DICTIONARY:
+		var choices_menu = _CARD_CHOICES_SCENE.instance()
+		choices_menu.prep(self.card_name,state_scripts)
+		# We have to wait until the player has finished selecting an option
+		yield(choices_menu,"id_pressed")
+		# If the player just closed the pop-up without choosing
+		# an option, we don't execute anything
+		if choices_menu.id_selected:
+			state_scripts = state_scripts[choices_menu.selected_key]
+		else: state_scripts = []
+		# Garbage cleanup
+		choices_menu.queue_free()
 	# To avoid unnecessary operations
 	# we evoce the ScriptingEngine only if we have something to execute
 	if len(state_scripts):
@@ -944,8 +971,6 @@ func execute_scripts(
 		sceng = scripting_engine.new(
 				self,
 				state_scripts,
-				trigger_card,
-				details,
 				true)
 		# In case the script involves targetting, we need to wait on further
 		# execution until targetting has completed
@@ -960,10 +985,28 @@ func execute_scripts(
 			# as it causes a cyclic reference error when parsing
 			sceng = scripting_engine.new(
 					self,
-					state_scripts,
-					trigger_card,
-					details)
+					state_scripts)
 	return(sceng)
+
+
+
+		
+# Ensures that all filters requested by the script are respected
+#
+# Will set is_valid to false if any filter does not match reality
+func _filter_signal_trigger(card_scripts, trigger_card: Card) -> bool:
+	var is_valid = true
+	# Here we check that the trigger matches the _request_ for trigger
+	# A trigger which requires "another" card, should not trigger
+	# when itself causes the effect.
+	# For example, a card which rotates itself whenever another card
+	# is rotated, should not automatically rotate when itself rotates.
+	var trigger = card_scripts.get("trigger", "any")
+	if trigger == "self" and trigger_card != self:
+		is_valid = false
+	if trigger == "another" and trigger_card == self:
+		is_valid = false
+	return(is_valid)
 
 
 # Handles the card becoming an attachment for a specified host Card object
@@ -1104,7 +1147,7 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false, check := fals
 		# If the token does not exist in the card, we add its node
 		# and set it to 1
 		if not token and mod > 0:
-			token = _token_scene.instance()
+			token = _TOKEN_SCENE.instance()
 			token.setup(token_name)
 			$Control/Tokens/Drawer/VBoxContainer.add_child(token)
 		# If the token node of this name has already been added to the card
@@ -1448,7 +1491,8 @@ func _clear_attachment_status() -> void:
 #
 # So we make sure buttons stay visible while the mouse is on top.
 #
-# This is all necessary as a workaround for godotengine/godot#16854
+# This is all necessary as a workaround for
+# https://github.com/godotengine/godot/issues/16854
 #
 # Returns true if the mouse is hovering over the buttons, else false
 func _are_buttons_hovered() -> bool:

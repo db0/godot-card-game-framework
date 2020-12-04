@@ -28,15 +28,55 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 				]
 			},
 			"card_rotated": {
+				"trigger": "another",
 				"board": [
 					{
-						"name": "rotate_card",
+						"name": "mod_tokens",
 						"subject": "self",
-						"degrees": 270,
-						"trigger": "another",
+						"modification": 1,
+						"token_name":  "blood",
 					},
 				]
 			},
+		},
+		"Multiple Choices Test Card": {
+			"manual": {
+				"board": {
+					"Rotate This Card": [
+						{
+							"name": "rotate_card",
+							"subject": "self",
+							"degrees": 90,
+						}
+					],
+					"Flip This Card Face-down": [
+						{
+							"name": "flip_card",
+							"subject": "self",
+							"set_faceup": false,
+						}
+					]
+				},
+			},
+#			"card_flipped": {
+#				"trigger": "another",
+#				"board": {
+#					"Rotate This Card": [
+#						{
+#							"name": "rotate_card",
+#							"subject": "self",
+#							"degrees": 90,
+#						}
+#					],
+#					"Flip This Card Face-down": [
+#						{
+#							"name": "flip_card",
+#							"subject": "self",
+#							"set_faceup": false,
+#						}
+#					]
+#				},
+#			},
 		},
 	}
 	# We return only the scripts that match the card name and trigger

@@ -30,8 +30,8 @@ func test_signals():
 	card.scripts = {"card_rotated": { "board": [
 			{"name": "flip_card",
 			"subject": "self",
-			"trigger": "self",
-			"set_faceup": false}]}}
+			"set_faceup": false}],
+			"trigger": "self"}}
 	yield(table_move(card, Vector2(100,100)), "completed")
 	card.card_rotation = 90
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
@@ -52,55 +52,64 @@ func test_signals():
 	assert_signal_emitted_with_parameters(
 				target,"card_rotated",[target,"card_rotated",{"degrees": 90}])
 
+
 func test_card_properties_filter():
 	var target2: Card = cards[8]
 	var ttype : String = target.properties["Type"]
 	var ttype2 : String = target2.properties["Type"]
-	card.scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "target",
-			"trigger": "another",
-			"filter_properties_subject": {"Type": ttype2},
+	card.scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "target",
+				"filter_properties_subject": {"Type": ttype2},
+				"set_faceup": false}],
 			"filter_properties_trigger": {"Type": "FALSE"},
-			"set_faceup": false}]}}
-	cards[2].scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+			"trigger": "another"}}
+	cards[2].scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_properties_trigger": {"Type": "FALSE"},
-			"set_faceup": false}]}}
-	cards[3].scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+			"trigger": "another"}}
+	cards[3].scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_properties_trigger": {"Type": ttype},
-			"set_faceup": false}]}}
-	cards[4].scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+			"trigger": "another"}}
+	cards[4].scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_properties_trigger": {"Type": ttype, "Tags": "Tag 1"},
-			"set_faceup": false}]}}
-	cards[5].scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"filter_properties_trigger": {"Tags": "FALSE"},
-			"set_faceup": false}]}}
-	cards[6].scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "target",
-			"trigger": "another",
-			"filter_properties_subject": {"Type": ttype2},
+			"trigger": "another"}}
+	cards[5].scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_properties_trigger": {"Type": "FALSE"},
+			"trigger": "another"}}
+	cards[6].scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "target",
+				"filter_properties_subject": {"Type": ttype2},
+				"set_faceup": false}],
 			"filter_properties_trigger": {"Type": ttype},
-			"set_faceup": false}]}}
-	cards[7].scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "target",
-			"trigger": "another",
-			"filter_properties_subject": {"Type": "FALSE"},
+			"trigger": "another"}}
+	cards[7].scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "target",
+				"filter_properties_subject": {"Type": "FALSE"},
+				"set_faceup": false}],
 			"filter_properties_trigger": {"Type": ttype2},
-			"set_faceup": false}]}}
+			"trigger": "another"}}
+	yield(yield_for(0.5), YIELD)
 	yield(table_move(target, Vector2(500,100)), "completed")
 	yield(table_move(target2, Vector2(900,100)), "completed")
 	target.card_rotation = 90
@@ -126,31 +135,41 @@ func test_card_properties_filter():
 			+ " even though filter_properties_trigger does not match")
 	target2.card_rotation = 90
 	yield(yield_for(0.5), YIELD)
+	assert_true(cards[7]._is_targetting,
+			"Card started targeting since filter_properties_trigger "
+			+ "match even though filter_properties_subject don't match")
+	assert_false(cards[6]._is_targetting,
+			"Card did not start targeting since filter_properties_trigger"
+			+ "  did not match even though filter_properties_subject matched")
 	yield(target_card(cards[7],target), "completed")
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_true(target.is_faceup,
 			"Card stayed face-up since filter_properties_subject didn't match"
 			+ " even though filter_properties_trigger matches")
 
+
 func test_card_rotated():
 	watch_signals(target)
-	card.scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
-	cards[2].scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	card.scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
+	cards[2].scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_degrees": 270,
-			"set_faceup": false}]}}
-	cards[3].scripts = {"card_rotated": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+			"trigger": "another"}}
+	cards[3].scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_degrees": 90,
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	yield(table_move(target, Vector2(500,100)), "completed")
 	target.card_rotation = 90
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
@@ -168,23 +187,27 @@ func test_card_rotated():
 
 func test_card_flipped():
 	watch_signals(target)
-	card.scripts = {"card_flipped": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
-	cards[2].scripts = {"card_flipped": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	card.scripts = {"card_flipped": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
+	cards[2].scripts = {"card_flipped": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_faceup": true,
-			"set_faceup": false}]}}
-	cards[3].scripts = {"card_flipped": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+			"trigger": "another"}}
+	cards[3].scripts = {"card_flipped": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_faceup": false,
-			"set_faceup": false}]}}
+			"trigger": "another"}}
+
 	target.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
@@ -200,11 +223,13 @@ func test_card_flipped():
 
 func test_card_viewed():
 	watch_signals(target)
-	card.scripts = {"card_viewed": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
+	card.scripts = {"card_viewed": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
+
 	yield(table_move(target, Vector2(600,100)), "completed")
 	target.is_faceup = false
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
@@ -220,11 +245,12 @@ func test_card_viewed():
 func test_card_moved_to_hand():
 	target = cfc.NMAP.deck.get_top_card()
 	watch_signals(target)
-	card.scripts = {"card_moved_to_hand": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
+	card.scripts = {"card_moved_to_hand": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
 	target.move_to(hand)
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
@@ -236,11 +262,13 @@ func test_card_moved_to_hand():
 
 func test_card_moved_to_board():
 	watch_signals(target)
-	card.scripts = {"card_moved_to_board": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
+	card.scripts = {"card_moved_to_board": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"trigger": "another",
+				"set_faceup": false}],
+			"trigger": "another"}}
 	target.move_to(board, -1, Vector2(100,100))
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
@@ -253,47 +281,53 @@ func test_card_moved_to_board():
 func test_card_moved_to_pile():
 	watch_signals(target)
 	# This card should turn face-down since there's no limit
-	card.scripts = {"card_moved_to_pile": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
+	card.scripts = {"card_moved_to_pile": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
 	# This card should stay face-up since destination limit will be false
-	cards[2].scripts = {"card_moved_to_pile": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[2].scripts = {"card_moved_to_pile": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_destination": deck,
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	# This card should stay face-up since limit will be false
-	cards[3].scripts = {"card_moved_to_pile": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[3].scripts = {"card_moved_to_pile": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_source": deck,
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	# This card should turn face-down since both limits will be true
-	cards[4].scripts = {"card_moved_to_pile": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[4].scripts = {"card_moved_to_pile": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_source": hand,
 			"filter_destination": discard,
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	# This card should stay face-up since both limits will be false
-	cards[5].scripts = {"card_moved_to_pile": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[5].scripts = {"card_moved_to_pile": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_source": discard,
 			"filter_destination": deck,
-			"set_faceup": false}]}}
-	cards[6].scripts = {"card_moved_to_pile": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+			"trigger": "another"}}
+	cards[6].scripts = {"card_moved_to_pile": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_destination": discard,
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	target.move_to(discard)
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
@@ -319,57 +353,65 @@ func test_card_token_modified():
 	yield(yield_for(0.1), YIELD)
 	watch_signals(target)
 	# This card should turn face-down since there's no limit
-	card.scripts = {"card_token_modified": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
+	card.scripts = {"card_token_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
+
 	# This card should stay face-up since token_name limit will not match
-	cards[2].scripts = {"card_token_modified": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[2].scripts = {"card_token_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_token_name": "Bio",
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	# This card should stay face-up since token_count will not match
-	cards[3].scripts = {"card_token_modified": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[3].scripts = {"card_token_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_token_count": 10,
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	# This card should stay face-up since token_difference will not have incr.
-	cards[4].scripts = {"card_token_modified": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[4].scripts = {"card_token_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_token_difference": "increased",
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	# This card should turn face-down since token_difference will decrease
-	cards[5].scripts = {"card_token_modified": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[5].scripts = {"card_token_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_token_difference": "decreased",
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	# This card should turn face-down since all limits will match
-	cards[6].scripts = {"card_token_modified": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[6].scripts = {"card_token_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_token_difference": "decreased",
 			"filter_token_count": 0,
 			"filter_token_name": "Void",
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	# This card should stay face-up since some limits will not match
-	cards[7].scripts = {"card_token_modified": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
+	cards[7].scripts = {"card_token_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
 			"filter_token_difference": "decreased",
 			"filter_token_count": 1,
 			"filter_token_name": "Tech",
-			"set_faceup": false}]}}
+			"trigger": "another"}}
 	# warning-ignore:return_value_discarded
 	target.mod_token("void", -5)
 	yield(yield_for(0.1), YIELD)
@@ -397,11 +439,12 @@ func test_card_token_modified():
 
 func test_card_targeted():
 	watch_signals(target)
-	card.scripts = {"card_targeted": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
+	card.scripts = {"card_targeted": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
 	cards[4].initiate_targeting()
 	yield(target_card(cards[4], target), "completed")
 	yield(yield_for(0.1), YIELD)
@@ -415,16 +458,18 @@ func test_card_targeted():
 func test_card_un_attached():
 	watch_signals(target)
 	var host = cards[2]
-	card.scripts = {"card_attached": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
-	cards[3].scripts = {"card_unattached": { "hand": [
-			{"name": "flip_card",
-			"subject": "self",
-			"trigger": "another",
-			"set_faceup": false}]}}
+	card.scripts = {"card_attached": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
+	cards[3].scripts = {"card_unattached": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
 	yield(table_move(host, Vector2(500,100)), "completed")
 	yield(table_move(target, Vector2(500,50)), "completed")
 	target.attach_to_host(host)
@@ -435,10 +480,8 @@ func test_card_un_attached():
 				{"host": host}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
-	gut.p(target.get_parent().name)
 	target.move_to(discard)
 	yield(yield_for(0.5), YIELD)
-	gut.p(target.get_parent().name)
 	assert_signal_emitted_with_parameters(
 				target,"card_unattached",
 				[target,"card_unattached",

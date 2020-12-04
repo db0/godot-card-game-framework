@@ -179,8 +179,8 @@ func test_subject_index():
 
 # Checks that scripts from the CardScriptDefinitions.gd have been loaded correctly
 func test_CardScripts():
-	card = cards[0]
-	target = cards[2]
+	card = cards[1]
+	target = cards[3]
 	yield(table_move(target, Vector2(800,200)), "completed")
 	yield(table_move(card, Vector2(100,200)), "completed")
 	card.execute_scripts()
