@@ -60,6 +60,11 @@ _global_script_classes=[ {
 "path": "res://src/core/Pile.gd"
 }, {
 "base": "Reference",
+"class": "SP",
+"language": "GDScript",
+"path": "res://src/core/ScriptProperties.gd"
+}, {
+"base": "Reference",
 "class": "ScriptTask",
 "language": "GDScript",
 "path": "res://src/core/ScriptTask.gd"
@@ -95,6 +100,7 @@ _global_script_class_icons={
 "CustomScripts": "",
 "Hand": "",
 "Pile": "",
+"SP": "",
 "ScriptTask": "",
 "ScriptingEngine": "",
 "Token": "",

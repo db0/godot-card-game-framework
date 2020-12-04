@@ -35,14 +35,10 @@ func _ready() -> void:
 # Sets the owner of this Scripting Engine
 func _init(card_owner: Card,
 		scripts_queue: Array,
-		trigger_card: Card,
-		signal_details := {},
 		check_costs := false) -> void:
 	costs_dry_run = check_costs
 	run_next_script(card_owner,
-			scripts_queue.duplicate(),
-			trigger_card,
-			signal_details)
+			scripts_queue.duplicate())
 
 # The main engine starts here.
 # It receives array with all the scripts to execute,
@@ -50,8 +46,6 @@ func _init(card_owner: Card,
 # send it to the appropriate tasks.
 func run_next_script(card_owner: Card,
 		scripts_queue: Array,
-		trigger_card: Card,
-		signal_details := {},
 		prev_subjects := []) -> void:
 	if scripts_queue.empty():
 		#print('Scripting: All done!') # Debug
@@ -67,16 +61,13 @@ func run_next_script(card_owner: Card,
 	# checking costs on multiple targeted cards in the same script,
 	# is not supported at the moment due to the exponential complexities
 	elif costs_dry_run and card_owner.target_dry_run_card and \
-				scripts_queue[0].get(ScriptTask.KEY_SUBJECT) == "target":
+				scripts_queue[0].get(SP.KEY_SUBJECT) == "target":
 			scripts_queue.pop_front()
 			run_next_script(card_owner,
-					scripts_queue,trigger_card,
-					signal_details,prev_subjects)
+					scripts_queue,prev_subjects)
 	else:
 		var script := ScriptTask.new(
 				card_owner,
-				trigger_card,
-				signal_details,
 				scripts_queue.pop_front(),
 				prev_subjects)
 		# In case the task involves targetting, we need to wait on further
@@ -96,7 +87,7 @@ func run_next_script(card_owner: Card,
 		elif script.task_name:
 			if script.is_valid \
 					and (not costs_dry_run
-						or (costs_dry_run and script.get(script.KEY_IS_COST))):
+						or (costs_dry_run and script.get(SP.KEY_IS_COST))):
 				#print(script.is_valid,':',costs_dry_run)
 				var retcode = call(script.task_name, script)
 				if costs_dry_run and retcode != Card._ReturnCode.CHANGED:
@@ -106,7 +97,7 @@ func run_next_script(card_owner: Card,
 			print("[WARN] Found empty script. Ignoring...")
 		# At the end of the task run, we loop back to the start, but of course
 		# with one less item in our scripts_queue.
-		run_next_script(card_owner,scripts_queue,trigger_card,signal_details,script.subjects)
+		run_next_script(card_owner,scripts_queue,script.subjects)
 
 
 # Task for rotating cards
@@ -121,7 +112,7 @@ func rotate_card(script: ScriptTask) -> int:
 		# The last arg is the "check" flag.
 		# Unfortunately Godot does not support passing named vars
 		# (See https://github.com/godotengine/godot-proposals/issues/902)
-		retcode = card.set_card_rotation(script.get(script.KEY_DEGREES),
+		retcode = card.set_card_rotation(script.get(SP.KEY_DEGREES),
 				false, true, costs_dry_run)
 	return(retcode)
 
@@ -135,7 +126,7 @@ func rotate_card(script: ScriptTask) -> int:
 func flip_card(script: ScriptTask) -> int:
 	var retcode: int
 	for card in script.subjects:
-		retcode = card.set_is_faceup(script.get(script.KEY_SET_FACEUP),
+		retcode = card.set_is_faceup(script.get(SP.KEY_SET_FACEUP),
 				false,costs_dry_run)
 	return(retcode)
 
@@ -151,9 +142,9 @@ func flip_card(script: ScriptTask) -> int:
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
 func move_card_to_container(script: ScriptTask) -> void:
-	var dest_index: int = script.get(script.KEY_DEST_INDEX)
+	var dest_index: int = script.get(SP.KEY_DEST_INDEX)
 	for card in script.subjects:
-		card.move_to(script.get(script.KEY_DEST_CONTAINER), dest_index)
+		card.move_to(script.get(SP.KEY_DEST_CONTAINER), dest_index)
 
 
 # Task for moving card to the board
@@ -162,7 +153,7 @@ func move_card_to_container(script: ScriptTask) -> void:
 # * "container": CardContainer
 func move_card_to_board(script: ScriptTask) -> void:
 	for card in script.subjects:
-		card.move_to(cfc.NMAP.board, -1, script.get(script.KEY_BOARD_POSITION))
+		card.move_to(cfc.NMAP.board, -1, script.get(SP.KEY_BOARD_POSITION))
 
 
 # Task for moving card from one container to another
@@ -178,8 +169,8 @@ func move_card_to_board(script: ScriptTask) -> void:
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
 func move_card_cont_to_cont(script: ScriptTask) -> void:
-	var dest_container: CardContainer = script.get(script.KEY_DEST_CONTAINER)
-	var dest_index: int = script.get(script.KEY_DEST_INDEX)
+	var dest_container: CardContainer = script.get(SP.KEY_DEST_CONTAINER)
+	var dest_index: int = script.get(SP.KEY_DEST_INDEX)
 	for card in script.subjects:
 		card.move_to(dest_container,dest_index)
 
@@ -190,7 +181,7 @@ func move_card_cont_to_cont(script: ScriptTask) -> void:
 # * "card_index": int
 # * "src_container": CardContainer
 func move_card_cont_to_board(script: ScriptTask) -> void:
-	var board_position = script.get(script.KEY_BOARD_POSITION)
+	var board_position = script.get(SP.KEY_BOARD_POSITION)
 	for card in script.subjects:
 		# We assume cards moving to board want to be face-up
 		card.move_to(cfc.NMAP.board, -1, board_position)
@@ -207,9 +198,9 @@ func move_card_cont_to_board(script: ScriptTask) -> void:
 # * (Optional) "set_to_mod": bool
 func mod_tokens(script: ScriptTask) -> int:
 	var retcode: int
-	var token_name: String = script.get(script.KEY_TOKEN_NAME)
-	var modification: int = script.get(script.KEY_TOKEN_MODIFICATION)
-	var set_to_mod: bool = script.get(script.KEY_TOKEN_SET_TO_MOD)
+	var token_name: String = script.get(SP.KEY_TOKEN_NAME)
+	var modification: int = script.get(SP.KEY_TOKEN_MODIFICATION)
+	var set_to_mod: bool = script.get(SP.KEY_TOKEN_SET_TO_MOD)
 	for card in script.subjects:
 		retcode = card.mod_token(token_name,modification,set_to_mod,costs_dry_run)
 	return(retcode)
@@ -221,8 +212,8 @@ func mod_tokens(script: ScriptTask) -> int:
 # * "card_scene": path to .tscn file
 # * "board_position": Vector2
 func spawn_card(script: ScriptTask) -> void:
-	var card_scene: String = script.get(script.KEY_CARD_SCENE)
-	var board_position: Vector2 = script.get(script.KEY_BOARD_POSITION)
+	var card_scene: String = script.get(SP.KEY_CARD_SCENE)
+	var board_position: Vector2 = script.get(SP.KEY_BOARD_POSITION)
 	var card: Card = load(card_scene).instance()
 	cfc.NMAP.board.add_child(card)
 	card.position = board_position
@@ -234,7 +225,7 @@ func spawn_card(script: ScriptTask) -> void:
 # Requires the following keys:
 # * "container": CardContainer
 func shuffle_container(script: ScriptTask) -> void:
-	var container: CardContainer = script.get(script.KEY_DEST_CONTAINER)
+	var container: CardContainer = script.get(SP.KEY_DEST_CONTAINER)
 	container.shuffle_cards()
 
 

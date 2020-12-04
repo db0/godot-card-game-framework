@@ -20,14 +20,14 @@ func before_each():
 
 # Checks that custom scripts fire correctly
 func test_custom_script():
-	card = cards[1]
+	card = cards[2]
 	# Custom scripts have to be predefined in code
 	# So not possible to specify them as runtime scripts
 	card.execute_scripts()
 	yield(yield_for(0.1), YIELD)
 	assert_freed(card, "Test Card 2")
-	card = cards[0]
-	target = cards[2]
+	card = cards[1]
+	target = cards[3]
 	card.execute_scripts()
 	yield(target_card(card,target), "completed")
 	yield(yield_for(0.3), YIELD)

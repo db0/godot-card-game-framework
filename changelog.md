@@ -2,8 +2,9 @@
 
 ## 0.12 (Ongoing)
 
-* SciptEngine target finding now supports tutoring cards from deck
-* SciptEngine target finding now supports affecting multiple cards from the board by filtering their properties
+* Scipting Engine target finding now supports tutoring cards from deck
+* Scipting Engine target finding now supports affecting multiple cards from the board by filtering their properties
+* Scripting Engine now supports cards with multiple choices for abilities.
 * Hand shape can now be oval (default). Contribution by [@vmjcv](https://github.com/vmjcv)
 
 ## 0.11
