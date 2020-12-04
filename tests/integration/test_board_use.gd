@@ -58,8 +58,11 @@ func test_card_table_drop_location_and_rotation():
 	drop_card(card,board._UT_mouse_position)
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	assert_eq(0.0,card.get_node("Control").rect_rotation,
-			"Rotation reset to 0 when card moved off board")
+	if cfc.hand_use_oval_shape:
+		pass
+	else:
+		assert_eq(0.0,card.get_node("Control").rect_rotation,
+				"Rotation reset to 0 when card moved off board")
 
 func test_card_hand_drop_recovery():
 	var card = cards[1]
