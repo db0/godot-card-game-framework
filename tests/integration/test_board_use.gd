@@ -115,3 +115,12 @@ func test_fast_card_table_drop():
 	yield(yield_for(0.6), YIELD)
 	assert_almost_eq(Vector2(1000, 300),cards[0].global_position,Vector2(2,2),
 			"Card not dragged with mouse after dropping on table")
+
+func test_board_to_board_move():
+	var card: Card
+	card = cards[0]
+	yield(table_move(card, Vector2(100,200)), "completed")
+	card.card_rotation = 90
+	yield(drag_drop(card, Vector2(800,200)), 'completed')
+	assert_eq(90.0,card.get_node("Control").rect_rotation,
+			"Card should stay in the same rotation when moved around the board")

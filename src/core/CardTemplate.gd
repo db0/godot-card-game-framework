@@ -900,7 +900,7 @@ func move_to(targetHost: Node2D,
 			else:
 				_determine_target_position_from_mouse()
 				raise()
-			state = DROPPING_TO_BOARD
+			state = ON_PLAY_BOARD
 	# Just in case there's any leftover potential host highlights
 	if len(_potential_cards):
 		for card in _potential_cards:
@@ -1285,7 +1285,7 @@ func complete_targeting() -> void:
 #
 # * When set to false, card cannot receive inputs anymore
 #    (this is useful when card is in motion or in a pile)
-# * When set to false, card can receive inputs again
+# * When set to true, card can receive inputs again
 func set_mouse_filters(value = true) -> void:
 	var control_filter := 0
 	var all_filter := 1
@@ -1295,9 +1295,9 @@ func set_mouse_filters(value = true) -> void:
 	# We do a comparison first, to make sure we avoid unnecessary operations
 	if $Control.mouse_filter != control_filter:
 		$Control.mouse_filter = control_filter
-		for n in $Control/ManipulationButtons.get_children():
-			if n as Button:
-				n.mouse_filter = all_filter
+#		for n in $Control/ManipulationButtons.get_children():
+#			if n as Button:
+#				n.mouse_filter = all_filter
 
 
 # Get card position in hand by index
@@ -1692,7 +1692,10 @@ func _add_tween_rotation(
 	$Tween.interpolate_property($Control,'rect_rotation',
 			expected_rotation, target_rotation, runtime,
 			trans_type, ease_type)
-
+	# We ensure the card_rotation value is also kept up to date
+	# But onlf it it's one of the expected multiples
+	if int(target_rotation) in [0,90,180,270]:
+		card_rotation = int(target_rotation)
 
 # Card position animation
 func _add_tween_position(
@@ -1751,6 +1754,7 @@ func _process_card_state() -> void:
 				set_card_rotation(0)
 			else:
 				set_card_rotation(0)
+
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
 			set_focus(true)
@@ -1803,6 +1807,7 @@ func _process_card_state() -> void:
 				_focus_completed = true
 				# We don't change state yet, only when the focus is removed
 				# from this card
+
 		MOVING_TO_CONTAINER:
 			# Used when moving card between places
 			# (i.e. deck to hand, hand to discard etc)
@@ -1810,8 +1815,6 @@ func _process_card_state() -> void:
 			set_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			# set_card_rotation(0,false,false)
-
-
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if not scale.is_equal_approx(Vector2(1,1)):
@@ -1876,6 +1879,7 @@ func _process_card_state() -> void:
 					yield($Tween, "tween_all_completed")
 					_determine_idle_state()
 				_fancy_move_second_part = false
+
 		REORGANIZING:
 			# Used when reorganizing the cards in the hand
 			set_focus(false)
@@ -1889,9 +1893,9 @@ func _process_card_state() -> void:
 					_add_tween_scale(scale, Vector2(1,1),0.4)
 				_target_rotation  = _recalculate_rotation()
 				_add_tween_rotation($Control.rect_rotation,_target_rotation)
-#				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
 				state = IN_HAND
+
 		PUSHED_ASIDE:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
 			set_focus(false)
@@ -1907,6 +1911,7 @@ func _process_card_state() -> void:
 				$Tween.start()
 				# We don't change state yet,
 				# only when the focus is removed from the neighbour
+
 		DRAGGED:
 			# Used when the card is dragged around the game with the mouse
 			set_mouse_filters(true)
@@ -1929,6 +1934,7 @@ func _process_card_state() -> void:
 			# We want to keep the token drawer closed during movement
 			if _is_drawer_open:
 				_token_drawer(false)
+
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			set_focus(false)
@@ -1949,6 +1955,7 @@ func _process_card_state() -> void:
 						Tween.TRANS_SINE, Tween.EASE_IN)
 				_buttons_tween.start()
 			_organize_attachments()
+
 		DROPPING_TO_BOARD:
 			set_mouse_filters(true)
 			# Used when dropping the cards to the table
@@ -1970,6 +1977,7 @@ func _process_card_state() -> void:
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = ON_PLAY_BOARD
+
 		FOCUSED_ON_BOARD:
 			# Used when card is focused on by the mouse hovering over it while it is on the board.
 			# The below tween shows the container manipulation buttons when you hover over them
@@ -2015,6 +2023,7 @@ func _process_card_state() -> void:
 #				_determine_idle_state()
 #				_fancy_move_second_part = false
 #				state = IN_PILE
+
 		IN_PILE:
 			set_focus(false)
 			set_mouse_filters(false)
@@ -2022,6 +2031,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
+
 		IN_POPUP:
 			# We make sure that a card in a popup stays in its position
 			# Unless moved
@@ -2035,11 +2045,13 @@ func _process_card_state() -> void:
 				scale = Vector2(0.75,0.75)
 			if position != Vector2(0,0):
 				position = Vector2(0,0)
+
 		FOCUSED_IN_POPUP:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
+
 		VIEWPORT_FOCUS:
 			set_focus(false)
 			set_mouse_filters(false)

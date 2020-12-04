@@ -332,7 +332,6 @@ __meta__ = {
 [node name="Rot90" type="Button" parent="Control/ManipulationButtons"]
 margin_right = 29.0
 margin_bottom = 26.0
-mouse_filter = 1
 custom_fonts/font = SubResource( 14 )
 text = "T"
 
@@ -340,7 +339,6 @@ text = "T"
 margin_top = 30.0
 margin_right = 29.0
 margin_bottom = 56.0
-mouse_filter = 1
 custom_fonts/font = SubResource( 14 )
 text = "@"
 
@@ -348,7 +346,6 @@ text = "@"
 margin_top = 60.0
 margin_right = 29.0
 margin_bottom = 86.0
-mouse_filter = 1
 custom_fonts/font = SubResource( 14 )
 text = "F"
 
@@ -356,7 +353,6 @@ text = "F"
 margin_top = 90.0
 margin_right = 29.0
 margin_bottom = 116.0
-mouse_filter = 1
 custom_fonts/font = SubResource( 14 )
 text = "O"
 
@@ -365,7 +361,6 @@ visible = false
 margin_top = 90.0
 margin_right = 40.0
 margin_bottom = 116.0
-mouse_filter = 1
 custom_fonts/font = SubResource( 14 )
 text = "V"
 
