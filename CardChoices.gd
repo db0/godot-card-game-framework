@@ -2,7 +2,7 @@
 # options
 extends PopupMenu
 
-var id_selected: int
+var id_selected := 0
 var selected_key: String
 
 # Called from Card.execute_scripts() when a card has multiple options.
@@ -33,5 +33,6 @@ func _on_CardChoices_id_pressed(id: int) -> void:
 # been made, to allow the script execution to continue and not
 # leave yields waiting
 func _on_CardChoices_popup_hide() -> void:
-	if not id_selected:
-		emit_signal("id_pressed", 0)
+	# We also allow Unit Tests to send the signal through this function
+	if not id_selected or cfc.UT:
+		emit_signal("id_pressed", id_selected)
