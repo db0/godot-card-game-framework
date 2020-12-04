@@ -2049,11 +2049,11 @@ func _token_drawer(drawer_state := true) -> void:
 # if use oval shape, the card has a certain offset according to the angle
 func recalculate_position(index_diff=null)-> Vector2:
 	if cfc.hand_use_oval_shape:
-		return recalculate_position_use_oval(index_diff)
-	return recalculate_position_use_rectangle(index_diff)
+		return _recalculate_position_use_oval(index_diff)
+	return _recalculate_position_use_rectangle(index_diff)
 
 # Get the angle on the ellipse
-func get_angle_by_index(index_diff = null):
+func _get_angle_by_index(index_diff = null):
 	var index = get_my_card_index()
 	var hand_size = get_parent().get_card_count()
 	var half
@@ -2069,9 +2069,9 @@ func get_angle_by_index(index_diff = null):
 
 # Get card angle in hand by index that use oval shape
 # The angle of the normal on the ellipse
-func get_oval_angle_by_index(angle=null,index_diff = null,hor_rad=null,ver_rad=null):
+func _get_oval_angle_by_index(angle=null,index_diff = null,hor_rad=null,ver_rad=null):
 	if not angle:
-		angle = get_angle_by_index(index_diff)
+		angle = _get_angle_by_index(index_diff)
 	var parent_control
 	if not hor_rad:
 		parent_control = get_parent().get_node('Control')
@@ -2088,19 +2088,19 @@ func get_oval_angle_by_index(angle=null,index_diff = null,hor_rad=null,ver_rad=n
 	return card_angle
 
 # Calculate the position after the rotation has been calculated that use oval shape
-func recalculate_position_use_oval(index_diff=null)-> Vector2:
+func _recalculate_position_use_oval(index_diff=null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	var parent_control = get_parent().get_node('Control')
 	var control = get_node('Control')
 	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.5
 	var ver_rad: float = parent_control.rect_size.y * 1.5
-	var angle = get_angle_by_index(index_diff)
+	var angle = _get_angle_by_index(index_diff)
 	var rad_angle = deg2rad(angle)
 	var oval_angle_vector = Vector2(hor_rad*cos(rad_angle),-ver_rad*sin(rad_angle))
 	var left_top = Vector2(-control.rect_size.x/2,-control.rect_size.y/2)
 	var center_top = Vector2(0,-control.rect_size.y/2)
-	var card_angle = get_oval_angle_by_index(angle,null,hor_rad,ver_rad)
+	var card_angle = _get_oval_angle_by_index(angle,null,hor_rad,ver_rad)
 	var delta_vector = left_top - center_top.rotated(deg2rad(90-card_angle))
 	var center_x = parent_control.rect_size.x/2+parent_control.rect_position.x
 	var center_y = parent_control.rect_size.y*1.5 +parent_control.rect_position.y
@@ -2109,7 +2109,7 @@ func recalculate_position_use_oval(index_diff=null)-> Vector2:
 	return Vector2(card_position_x,card_position_y)+delta_vector
 
 # Calculate the position that use rectangle
-func recalculate_position_use_rectangle(index_diff=null)-> Vector2:
+func _recalculate_position_use_rectangle(index_diff=null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	# The number of cards currently in hand
@@ -2152,7 +2152,7 @@ func recalculate_position_use_rectangle(index_diff=null)-> Vector2:
 func recalculate_rotation(index_diff=null)-> float:
 	if get_parent() == cfc.NMAP.hand:
 		if cfc.hand_use_oval_shape:
-			return 90.0-get_oval_angle_by_index(null,index_diff)
+			return 90.0-_get_oval_angle_by_index(null,index_diff)
 		return  0.0
 	else:
 		return 0.0
