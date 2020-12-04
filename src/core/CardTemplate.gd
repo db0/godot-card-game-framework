@@ -1288,10 +1288,10 @@ func complete_targeting() -> void:
 # * When set to true, card can receive inputs again
 func set_mouse_filters(value = true) -> void:
 	var control_filter := 0
-	var all_filter := 1
+#	var all_filter := 1
 	if not value:
 		control_filter = 2
-		all_filter = 2
+#		all_filter = 2
 	# We do a comparison first, to make sure we avoid unnecessary operations
 	if $Control.mouse_filter != control_filter:
 		$Control.mouse_filter = control_filter
@@ -1683,8 +1683,8 @@ func _stop_pulse():
 
 # Card rotation animation
 func _add_tween_rotation(
-		expected_rotation: int,
-		target_rotation: int,
+		expected_rotation: float,
+		target_rotation: float,
 		runtime := 0.3,
 		trans_type = Tween.TRANS_BACK,
 		ease_type = Tween.EASE_IN_OUT):
@@ -1759,6 +1759,8 @@ func _process_card_state() -> void:
 
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
+			# We increase the z_index to allow the focused card appear
+			# always over its neighbours
 			z_index = 1
 			set_focus(true)
 			set_mouse_filters(true)

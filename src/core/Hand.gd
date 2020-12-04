@@ -41,6 +41,7 @@ func shuffle_cards() -> void:
 	# So execute the parent function, then call each card to reorg itself
 	.shuffle_cards()
 	for card in get_all_cards():
+		card.interruptTweening()
 		card.reorganizeSelf()
 	move_child($Control,0)
 
