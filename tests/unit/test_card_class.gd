@@ -58,9 +58,9 @@ func test_move_to():
 
 func test_init_card_name():
 	# We know which are the last 3 card types of the test cards
-	var test3 = cfc.NMAP.deck.get_card(14)
-	var test2 = cfc.NMAP.deck.get_card(13)
-	var test1 = cfc.NMAP.deck.get_card(12)
+	var test3 = cfc.NMAP.deck.get_card(13)
+	var test2 = cfc.NMAP.deck.get_card(12)
+	var test1 = cfc.NMAP.deck.get_card(11)
 	assert_eq("Test Card 1",test1.card_name,
 			'card_name variable is set correctly')
 	assert_string_contains(test1.name, "Test Card 1")
