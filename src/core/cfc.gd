@@ -131,12 +131,17 @@ var show_token_buttons = false
 # The games initial Random Number Generator seed.
 # When this stays the same, the game randomness will always play the predictable.
 var game_rng_seed := "CFC Random Seed" setget set_seed
-var card_definitions := {}
-
+# If set to true, the hand will be presented in the form of an oval shape
+# If set to false, the hand will be presented with all cards
+# horizontally aligned
+var hand_use_oval_shape := true
 #-----------------------------------------------------------------------------
 # END Behaviour Constants
 #-----------------------------------------------------------------------------
 
+# This will store all card properties which are placed in the card labels
+var card_definitions := {}
+# A class to propagate script triggers to all cards.
 var signal_propagator = SignalPropagator.new()
 # Unit Testing flag
 var UT := false
@@ -206,7 +211,7 @@ func set_seed(_seed: String) -> void:
 func instance_card(card_name: String) -> Card:
 	# We discover the template from the "Type"  property defined
 	# in each card. Any property can be used
-	var template = load("res://src/custom/cards/" 
+	var template = load("res://src/custom/cards/"
 			+ card_definitions[card_name][CardConfig.SCENE_PROPERTY] + ".tscn")
 	var card = template.instance()
 	card.setup(card_name)
