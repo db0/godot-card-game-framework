@@ -836,7 +836,7 @@ func move_to(targetHost: Node2D,
 				targetHost.reorganize_stack()
 		else:
 			interruptTweening()
-			_target_rotation = recalculate_rotation()
+			_target_rotation = _recalculate_rotation()
 			if len(_potential_cards):
 				# The _potential_cards are always organized so that the card higher
 				# in index that we were hovering over, is the last in the array.
@@ -1669,7 +1669,7 @@ func _process_card_state() -> void:
 			# warning-ignore:return_value_discarded
 			if cfc.hand_use_oval_shape:
 				# if not $Tween.is_active():
-				# 	_target_rotation  = recalculate_rotation()
+				# 	_target_rotation  = _recalculate_rotation()
 				# 	add_tween_rotation($Control.rect_rotation,_target_rotation)
 				# 	$Tween.start()
 				set_card_rotation(0)
@@ -1685,7 +1685,7 @@ func _process_card_state() -> void:
 					not _focus_completed and \
 					cfc.focus_style != cfc.FocusStyle.VIEWPORT:
 				var expected_position: Vector2 = recalculate_position()
-				var expected_rotation: float = recalculate_rotation()
+				var expected_rotation: float = _recalculate_rotation()
 				# We figure out our neighbours by their index
 				var neighbours := []
 				for neighbour_index_diff in [-2,-1,1,2]:
@@ -1793,7 +1793,7 @@ func _process_card_state() -> void:
 				# We need to check again, just in case it's been reorganized instead.
 				if state == MOVING_TO_CONTAINER:
 					add_tween_position(position, _target_position, 0.35,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
-					_target_rotation  = recalculate_rotation()
+					_target_rotation  = _recalculate_rotation()
 					add_tween_rotation($Control.rect_rotation,_target_rotation)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
@@ -1810,7 +1810,7 @@ func _process_card_state() -> void:
 				add_tween_position(position, _target_position, 0.4)
 				if not scale.is_equal_approx(Vector2(1,1)):
 					add_tween_scale(scale, Vector2(1,1),0.4)
-				_target_rotation  = recalculate_rotation()
+				_target_rotation  = _recalculate_rotation()
 				add_tween_rotation($Control.rect_rotation,_target_rotation)
 #				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
@@ -2157,7 +2157,7 @@ func _recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 
 
 # Calculate the rotation
-func recalculate_rotation(index_diff = null)-> float:
+func _recalculate_rotation(index_diff = null)-> float:
 	if get_parent() == cfc.NMAP.hand:
 		if cfc.hand_use_oval_shape:
 			return 90.0 - _get_oval_angle_by_index(null, index_diff)
