@@ -785,7 +785,7 @@ func move_to(targetHost: Node2D,
 			previous_pos = targetHost.to_local(global_pos)
 			# The end position is always the final position the card would be
 			# inside the hand
-			_target_position = recalculate_position(self)
+			_target_position = recalculate_position()
 			state = MOVING_TO_CONTAINER
 			emit_signal("card_moved_to_hand",
 					self,
@@ -836,7 +836,7 @@ func move_to(targetHost: Node2D,
 				targetHost.reorganize_stack()
 		else:
 			interruptTweening()
-			_target_rotation = recalculate_rotation(self)
+			_target_rotation = recalculate_rotation()
 			if len(_potential_cards):
 				# The _potential_cards are always organized so that the card higher
 				# in index that we were hovering over, is the last in the array.
@@ -1028,7 +1028,7 @@ func reorganizeSelf() ->void:
 	_focus_completed = false
 	match state:
 		IN_HAND, FOCUSED_IN_HAND, PUSHED_ASIDE:
-			_target_position = recalculate_position(self)
+			_target_position = recalculate_position()
 			state = REORGANIZING
 	# This second match is  to prevent from changing the state
 	# when we're doing fancy movement
@@ -1038,7 +1038,7 @@ func reorganizeSelf() ->void:
 	# it will automatically pick up the right location.
 	match state:
 		MOVING_TO_CONTAINER:
-			_target_position = recalculate_position(self)
+			_target_position = recalculate_position()
 
 
 # Stops existing card animations then makes sure they're
@@ -1669,7 +1669,7 @@ func _process_card_state() -> void:
 			# warning-ignore:return_value_discarded
 			if cfc.hand_use_oval_shape:
 				# if not $Tween.is_active():
-				# 	_target_rotation  = recalculate_rotation(self)
+				# 	_target_rotation  = recalculate_rotation()
 				# 	add_tween_rotation($Control.rect_rotation,_target_rotation)
 				# 	$Tween.start()
 				set_card_rotation(0)
@@ -1684,8 +1684,8 @@ func _process_card_state() -> void:
 			if not $Tween.is_active() and \
 					not _focus_completed and \
 					cfc.focus_style != cfc.FocusStyle.VIEWPORT:
-				var expected_position: Vector2 = recalculate_position(self)
-				var expected_rotation: float = recalculate_rotation(self)
+				var expected_position: Vector2 = recalculate_position()
+				var expected_rotation: float = recalculate_rotation()
 				# We figure out our neighbours by their index
 				var neighbours := []
 				for neighbour_index_diff in [-2,-1,1,2]:
@@ -1700,7 +1700,7 @@ func _process_card_state() -> void:
 						# how close neighbours they are.
 						# Closest neighbours (1 card away) are pushed more
 						# than further neighbours.
-						neighbour_card._pushAside(recalculate_position(neighbour_card,neighbour_index_diff))
+						neighbour_card._pushAside(neighbour_card.recalculate_position(neighbour_index_diff))
 						neighbours.append(neighbour_card)
 				for c in get_parent().get_all_cards():
 					if not c in neighbours and c != self:
@@ -1793,7 +1793,7 @@ func _process_card_state() -> void:
 				# We need to check again, just in case it's been reorganized instead.
 				if state == MOVING_TO_CONTAINER:
 					add_tween_position(position, _target_position, 0.35,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
-					_target_rotation  = recalculate_rotation(self)
+					_target_rotation  = recalculate_rotation()
 					add_tween_rotation($Control.rect_rotation,_target_rotation)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
@@ -1810,7 +1810,7 @@ func _process_card_state() -> void:
 				add_tween_position(position, _target_position, 0.4)
 				if not scale.is_equal_approx(Vector2(1,1)):
 					add_tween_scale(scale, Vector2(1,1),0.4)
-				_target_rotation  = recalculate_rotation(self)
+				_target_rotation  = recalculate_rotation()
 				add_tween_rotation($Control.rect_rotation,_target_rotation)
 #				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
@@ -2047,15 +2047,15 @@ func _token_drawer(drawer_state := true) -> void:
 
 # Get card position in hand by index
 # if use oval shape, the card has a certain offset according to the angle
-static func recalculate_position(card,index_diff=null)-> Vector2:
+func recalculate_position(index_diff=null)-> Vector2:
 	if cfc.hand_use_oval_shape:
-		return recalculate_position_use_oval(card,index_diff)
-	return recalculate_position_use_rectangle(card,index_diff)
+		return recalculate_position_use_oval(index_diff)
+	return recalculate_position_use_rectangle(index_diff)
 
 # Get the angle on the ellipse
-static func get_angle_by_index(card,index_diff = null):
-	var index = card.get_my_card_index()
-	var hand_size = card.get_parent().get_card_count()
+func get_angle_by_index(index_diff = null):
+	var index = get_my_card_index()
+	var hand_size = get_parent().get_card_count()
 	var half
 	half = (hand_size-1)/2.0
 	var max_hand_size = cfc.NMAP.hand.hand_size
@@ -2069,15 +2069,15 @@ static func get_angle_by_index(card,index_diff = null):
 
 # Get card angle in hand by index that use oval shape
 # The angle of the normal on the ellipse
-static func get_oval_angle_by_index(card,angle=null,index_diff = null,hor_rad=null,ver_rad=null):
+func get_oval_angle_by_index(angle=null,index_diff = null,hor_rad=null,ver_rad=null):
 	if not angle:
-		angle = get_angle_by_index(card,index_diff)
+		angle = get_angle_by_index(index_diff)
 	var parent_control
 	if not hor_rad:
-		parent_control = card.get_parent().get_node('Control')
+		parent_control = get_parent().get_node('Control')
 		hor_rad = parent_control.rect_size.x * 0.5 * 1.5
 	if not ver_rad:
-		parent_control = card.get_parent().get_node('Control')
+		parent_control = get_parent().get_node('Control')
 		ver_rad = parent_control.rect_size.y * 1.5
 	var card_angle
 	if angle == 90:
@@ -2088,19 +2088,19 @@ static func get_oval_angle_by_index(card,angle=null,index_diff = null,hor_rad=nu
 	return card_angle
 
 # Calculate the position after the rotation has been calculated that use oval shape
-static func recalculate_position_use_oval(card,index_diff=null)-> Vector2:
+func recalculate_position_use_oval(index_diff=null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
-	var parent_control = card.get_parent().get_node('Control')
-	var control = card.get_node('Control')
+	var parent_control = get_parent().get_node('Control')
+	var control = get_node('Control')
 	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.5
 	var ver_rad: float = parent_control.rect_size.y * 1.5
-	var angle = get_angle_by_index(card,index_diff)
+	var angle = get_angle_by_index(index_diff)
 	var rad_angle = deg2rad(angle)
 	var oval_angle_vector = Vector2(hor_rad*cos(rad_angle),-ver_rad*sin(rad_angle))
 	var left_top = Vector2(-control.rect_size.x/2,-control.rect_size.y/2)
 	var center_top = Vector2(0,-control.rect_size.y/2)
-	var card_angle = get_oval_angle_by_index(card,angle,null,hor_rad,ver_rad)
+	var card_angle = get_oval_angle_by_index(angle,null,hor_rad,ver_rad)
 	var delta_vector = left_top - center_top.rotated(deg2rad(90-card_angle))
 	var center_x = parent_control.rect_size.x/2+parent_control.rect_position.x
 	var center_y = parent_control.rect_size.y*1.5 +parent_control.rect_position.y
@@ -2109,16 +2109,16 @@ static func recalculate_position_use_oval(card,index_diff=null)-> Vector2:
 	return Vector2(card_position_x,card_position_y)+delta_vector
 
 # Calculate the position that use rectangle
-static func recalculate_position_use_rectangle(card,index_diff=null)-> Vector2:
+func recalculate_position_use_rectangle(index_diff=null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	# The number of cards currently in hand
-	var hand_size: int = card.get_parent().get_card_count()
+	var hand_size: int = get_parent().get_card_count()
 	# The maximum of horizontal pixels we want the cards to take
 	# We simply use the size of the parent control container we've defined in
 	# the node settings
-	var parent_control = card.get_parent().get_node('Control')
-	var control = card.get_node('Control')
+	var parent_control = get_parent().get_node('Control')
+	var control = get_node('Control')
 	var max_hand_size_width: float = parent_control.rect_size.x
 	# The maximum distance between cards
 	# We base it on the card width to allow it to work with any card-size.
@@ -2138,7 +2138,7 @@ static func recalculate_position_use_rectangle(card,index_diff=null)-> Vector2:
 	card_position_x = (max_hand_size_width/2
 			- hand_width/2
 			+ cards_gap
-			* card.get_my_card_index())
+			* get_my_card_index())
 	# Since our control container has the same size as the cards,we start from 0
 	# and just offset the card if we want it higher or lower.
 	card_position_y = 0
@@ -2149,16 +2149,16 @@ static func recalculate_position_use_rectangle(card,index_diff=null)-> Vector2:
 		return Vector2(card_position_x,card_position_y)
 
 # Calculate the rotation
-static func recalculate_rotation(card,index_diff=null)-> float:
-	if card.get_parent() == cfc.NMAP.hand:
+func recalculate_rotation(index_diff=null)-> float:
+	if get_parent() == cfc.NMAP.hand:
 		if cfc.hand_use_oval_shape:
-			return recalculate_rotation_use_oval(card,index_diff)
-		return recalculate_rotation_use_rectangle(card)
+			return recalculate_rotation_use_oval(index_diff)
+		return recalculate_rotation_use_rectangle()
 	else:
 		return 0.0
 
-static func recalculate_rotation_use_rectangle(card)-> float:
+func recalculate_rotation_use_rectangle()-> float:
 	return 0.0
 
-static func recalculate_rotation_use_oval(card,index_diff=null)-> float:
-	return 90.0-get_oval_angle_by_index(card,null,index_diff)
+func recalculate_rotation_use_oval(index_diff=null)-> float:
+	return 90.0-get_oval_angle_by_index(null,index_diff)
