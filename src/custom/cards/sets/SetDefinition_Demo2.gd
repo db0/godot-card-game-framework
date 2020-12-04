@@ -12,4 +12,13 @@ const CARDS := {
 				+ "and rotate 180 degrees a target.",
 		"Cost": 0,
 	},
+	"Multiple Choices Test Card": {
+		"Type": "Blue",
+		"Tags": ["Tag 1","Tag 2"],
+		"Requirements": "",
+		"Abilities": "While on board, either rotate 90, or flip face-down." \
+				+ "\n\nAfter a card is flipped, either rotate 90, " \
+				+ "or flip face-down.",
+		"Cost": 0,
+	},
 }

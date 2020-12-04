@@ -8,7 +8,7 @@ const CARDS := {
 		"Type": "Blue",
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
-		"Abilities": "While on board, this will rotate itself." \
+		"Abilities": "While on board, this will rotate itself 90 degrees." \
 				+ "\n\nWhile in hand, this card will go back in the deck.",
 		"Cost": 0,
 	},

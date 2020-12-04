@@ -28,14 +28,53 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 				]
 			},
 			"card_rotated": {
+				"trigger": "another",
 				"board": [
 					{
 						"name": "rotate_card",
 						"subject": "self",
 						"degrees": 270,
-						"trigger": "another",
 					},
 				]
+			},
+		},
+		"Multiple Choices Test Card": {
+			"manual": {
+				"board": {
+					"Rotate This Card": [
+						{
+							"name": "rotate_card",
+							"subject": "self",
+							"degrees": 90,
+						}
+					],
+					"Flip This Card Face-down": [
+						{
+							"name": "flip_card",
+							"subject": "self",
+							"set_faceup": false,
+						}
+					]
+				},
+			},
+			"card_flipped": {
+				"trigger": "another",
+				"board": {
+					"Rotate This Card": [
+						{
+							"name": "rotate_card",
+							"subject": "self",
+							"degrees": 90,
+						}
+					],
+					"Flip This Card Face-down": [
+						{
+							"name": "flip_card",
+							"subject": "self",
+							"set_faceup": false,
+						}
+					]
+				},
 			},
 		},
 	}

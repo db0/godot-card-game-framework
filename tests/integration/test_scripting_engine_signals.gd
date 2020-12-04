@@ -52,6 +52,7 @@ func test_signals():
 	assert_signal_emitted_with_parameters(
 				target,"card_rotated",[target,"card_rotated",{"degrees": 90}])
 
+
 func test_card_properties_filter():
 	var target2: Card = cards[8]
 	var ttype : String = target.properties["Type"]
