@@ -719,7 +719,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 			# to avoid a deadlock
 			# There's no way to rotate the Area2D node,
 			# so we just rotate the internal $Control. The results are the same.
-			add_tween_rotation($Control.rect_rotation,value)
+			_add_tween_rotation($Control.rect_rotation,value)
 			# We only start the animation if this flag is set to true
 			# This allows us to set the card to rotate on the next
 			# available tween, instead of immediately.
@@ -1257,6 +1257,14 @@ func set_mouse_filters(value = true) -> void:
 				n.mouse_filter = all_filter
 
 
+# Get card position in hand by index
+# if use oval shape, the card has a certain offset according to the angle
+func recalculate_position(index_diff = null) -> Vector2:
+	if cfc.hand_use_oval_shape:
+		return _recalculate_position_use_oval(index_diff)
+	return _recalculate_position_use_rectangle(index_diff)
+
+
 class CardIndexSorter:
 	# Used with sort_custom to find the highest child index among multiple cards
 	static func sort_index_ascending(c1: Card, c2: Card):
@@ -1628,32 +1636,56 @@ func _stop_pulse():
 		$Control/Back/Pulse.remove_all()
 		$Control/Back.modulate = Color(1,1,1)
 
+
 # Card rotation animation
-func add_tween_rotation(expected_rotation,target_rotation,_time:=0.3, trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
+func _add_tween_rotation(
+		expected_rotation: int,
+		target_rotation: int,
+		runtime := 0.3,
+		trans_type = Tween.TRANS_BACK,
+		ease_type = Tween.EASE_IN_OUT):
 	$Tween.remove($Control,'rect_rotation')
 	$Tween.interpolate_property($Control,'rect_rotation',
-			expected_rotation, target_rotation, _time,
+			expected_rotation, target_rotation, runtime,
 			trans_type, ease_type)
+
 
 # Card position animation
-func add_tween_position(expected_position,target_position,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
+func _add_tween_position(
+		expected_position: Vector2,
+		target_position: Vector2,
+		runtime := 0.3,
+		trans_type = Tween.TRANS_CUBIC,
+		ease_type = Tween.EASE_OUT):
 	$Tween.remove(self,'position')
 	$Tween.interpolate_property(self,'position',
-			expected_position, target_position, _time,
+			expected_position, target_position, runtime,
 			trans_type, ease_type)
+
 
 # Card global position animation
-func add_tween_global_position(expected_position,target_position,_time:=0.5,trans_type=Tween.TRANS_BACK, ease_type=Tween.EASE_IN_OUT):
+func _add_tween_global_position(
+		expected_position: Vector2,
+		target_position: Vector2,
+		runtime := 0.5,
+		trans_type = Tween.TRANS_BACK,
+		ease_type = Tween.EASE_IN_OUT):
 	$Tween.remove(self,'global_position')
 	$Tween.interpolate_property(self,'global_position',
-			expected_position, target_position, _time,
+			expected_position, target_position, runtime,
 			trans_type, ease_type)
 
+
 # Card scale animation
-func add_tween_scale(expected_scale,target_scale,_time:=0.3,trans_type=Tween.TRANS_CUBIC, ease_type=Tween.EASE_OUT):
+func _add_tween_scale(
+		expected_scale: Vector2,
+		target_scale: Vector2,
+		runtime := 0.3,
+		trans_type = Tween.TRANS_CUBIC,
+		ease_type = Tween.EASE_OUT):
 	$Tween.remove(self,'scale')
 	$Tween.interpolate_property(self,'scale',
-			expected_scale, target_scale, _time,
+			expected_scale, target_scale, runtime,
 			trans_type, ease_type)
 
 
@@ -1670,7 +1702,7 @@ func _process_card_state() -> void:
 			if cfc.hand_use_oval_shape:
 				# if not $Tween.is_active():
 				# 	_target_rotation  = _recalculate_rotation()
-				# 	add_tween_rotation($Control.rect_rotation,_target_rotation)
+				# 	_add_tween_rotation($Control.rect_rotation,_target_rotation)
 				# 	$Tween.start()
 				set_card_rotation(0)
 			else:
@@ -1715,11 +1747,11 @@ func _process_card_state() -> void:
 				_target_rotation = expected_rotation
 				# We make sure to remove other tweens of the same type
 				# to avoid a deadlock
-				add_tween_position(expected_position, _target_position)
-				add_tween_scale(scale, Vector2(1.5,1.5))
+				_add_tween_position(expected_position, _target_position)
+				_add_tween_scale(scale, Vector2(1.5,1.5))
 
 				if cfc.hand_use_oval_shape:
-					add_tween_rotation($Control.rect_rotation,0)
+					_add_tween_rotation($Control.rect_rotation,0)
 				else:
 					# warning-ignore:return_value_discarded
 					set_card_rotation(0)
@@ -1739,7 +1771,7 @@ func _process_card_state() -> void:
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if not scale.is_equal_approx(Vector2(1,1)):
-					add_tween_scale(scale, Vector2(1,1),0.4)
+					_add_tween_scale(scale, Vector2(1,1),0.4)
 				if cfc.fancy_movement:
 					# The below calculations figure out
 					# the intermediate position as a spot,
@@ -1786,16 +1818,16 @@ func _process_card_state() -> void:
 					# Instead we use directly the viewport coords.
 					else:
 						intermediate_position = get_viewport().size/2
-					add_tween_global_position(global_position, intermediate_position)
+					_add_tween_global_position(global_position, intermediate_position)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
 					_tween_stuck_time = 0
 					_fancy_move_second_part = true
 				# We need to check again, just in case it's been reorganized instead.
 				if state == MOVING_TO_CONTAINER:
-					add_tween_position(position, _target_position, 0.35,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+					_add_tween_position(position, _target_position, 0.35,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 					_target_rotation  = _recalculate_rotation()
-					add_tween_rotation($Control.rect_rotation,_target_rotation)
+					_add_tween_rotation($Control.rect_rotation,_target_rotation)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
 					_determine_idle_state()
@@ -1808,11 +1840,11 @@ func _process_card_state() -> void:
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') #
-				add_tween_position(position, _target_position, 0.4)
+				_add_tween_position(position, _target_position, 0.4)
 				if not scale.is_equal_approx(Vector2(1,1)):
-					add_tween_scale(scale, Vector2(1,1),0.4)
+					_add_tween_scale(scale, Vector2(1,1),0.4)
 				_target_rotation  = _recalculate_rotation()
-				add_tween_rotation($Control.rect_rotation,_target_rotation)
+				_add_tween_rotation($Control.rect_rotation,_target_rotation)
 #				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
 				state = IN_HAND
@@ -1824,10 +1856,10 @@ func _process_card_state() -> void:
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not position.is_equal_approx(_target_position):
-				add_tween_position(position, _target_position, 0.3,
+				_add_tween_position(position, _target_position, 0.3,
 						Tween.TRANS_QUART, Tween.EASE_IN)
 				if not scale.is_equal_approx(Vector2(1,1)):
-					add_tween_scale(scale, Vector2(1,1), 0.3,Tween.TRANS_QUART, Tween.EASE_IN)
+					_add_tween_scale(scale, Vector2(1,1), 0.3,Tween.TRANS_QUART, Tween.EASE_IN)
 				$Tween.start()
 				# We don't change state yet,
 				# only when the focus is removed from the neighbour
@@ -1837,7 +1869,7 @@ func _process_card_state() -> void:
 			if (not $Tween.is_active() and
 				not scale.is_equal_approx(cfc.card_scale_while_dragging) and
 				get_parent() != cfc.NMAP.board):
-				add_tween_scale(scale, cfc.card_scale_while_dragging, 0.2,
+				_add_tween_scale(scale, cfc.card_scale_while_dragging, 0.2,
 						Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
 			# We need to capture the mouse cursos in the window while dragging
@@ -1859,7 +1891,7 @@ func _process_card_state() -> void:
 			set_mouse_filters(true)
 			if not $Tween.is_active() and \
 					not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
-				add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.3,
+				_add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.3,
 						Tween.TRANS_SINE, Tween.EASE_OUT)
 				$Tween.start()
 			# This tween hides the container manipulation buttons
@@ -1886,11 +1918,11 @@ func _process_card_state() -> void:
 #					_target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x
 #				if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y > get_viewport().size.y:
 #					_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y
-				add_tween_position(position, _target_position, 0.25)
-				add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
+				_add_tween_position(position, _target_position, 0.25)
+				_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
-					add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.5,
+					_add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.5,
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = ON_PLAY_BOARD
@@ -2044,14 +2076,6 @@ func _token_drawer(drawer_state := true) -> void:
 				$Control/Tokens/Drawer.self_modulate[3] = 0
 				_is_drawer_open = false
 				$Control/Tokens.z_index = 0
-
-
-# Get card position in hand by index
-# if use oval shape, the card has a certain offset according to the angle
-func recalculate_position(index_diff = null) -> Vector2:
-	if cfc.hand_use_oval_shape:
-		return _recalculate_position_use_oval(index_diff)
-	return _recalculate_position_use_rectangle(index_diff)
 
 
 # Get the angle on the ellipse
