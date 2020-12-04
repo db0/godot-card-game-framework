@@ -18,9 +18,10 @@ func before_each():
 	target = cards[2]
 
 
-func test_multiple_choice_with_filters():
+func test_filtered_multiple_choice():
 	card.scripts = {"card_flipped": {
 				"trigger": "another",
+				"filter_properties_trigger": {"Type": "Red"},
 				"board": {
 					"Rotate This Card": [
 						{
@@ -54,9 +55,4 @@ func test_multiple_choice_with_filters():
 	cards[3].is_faceup = false
 	yield(yield_for(0.1), YIELD)
 	menu = board.get_node("CardChoices")
-	menu._on_CardChoices_id_pressed(4)
-	assert_eq("Flip This Card Face-down",menu.selected_key)
-	yield(yield_for(0.1), YIELD)
-	menu.hide()
-	assert_false(card.is_faceup,
-			"Target should be face-down")
+	assert_null(menu, "menu should not appear when filter does not match")
