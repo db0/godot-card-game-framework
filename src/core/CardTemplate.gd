@@ -2047,29 +2047,31 @@ func _token_drawer(drawer_state := true) -> void:
 
 # Get card position in hand by index
 # if use oval shape, the card has a certain offset according to the angle
-func recalculate_position(index_diff=null)-> Vector2:
+func recalculate_position(index_diff = null) -> Vector2:
 	if cfc.hand_use_oval_shape:
 		return recalculate_position_use_oval(index_diff)
 	return recalculate_position_use_rectangle(index_diff)
+
 
 # Get the angle on the ellipse
 func get_angle_by_index(index_diff = null):
 	var index = get_my_card_index()
 	var hand_size = get_parent().get_card_count()
 	var half
-	half = (hand_size-1)/2.0
-	var max_hand_size = cfc.NMAP.hand.hand_size
-	var card_angle_max:float = 15
-	var card_angle_min:float = 5
+	half = (hand_size - 1) / 2.0
+	var card_angle_max: float = 15
+	var card_angle_min: float = 5
 	var card_angle = max(min(60/hand_size,card_angle_max),card_angle_min)
 	if index_diff != null:
-		return 90+(half-index)*card_angle - sign(index_diff)*(-index_diff*index_diff+5)
+		return 90 + (half - index) * card_angle \
+				- sign(index_diff) * (-index_diff*index_diff + 5)
 	else:
-		return 90+(half-index)*card_angle
+		return 90 + (half - index) * card_angle
+
 
 # Get card angle in hand by index that use oval shape
 # The angle of the normal on the ellipse
-func get_oval_angle_by_index(angle=null,index_diff = null,hor_rad=null,ver_rad=null):
+func get_oval_angle_by_index(angle = null,index_diff = null,hor_rad = null,ver_rad = null):
 	if not angle:
 		angle = get_angle_by_index(index_diff)
 	var parent_control
@@ -2087,29 +2089,31 @@ func get_oval_angle_by_index(angle=null,index_diff = null,hor_rad=null,ver_rad=n
 		card_angle = card_angle + 90
 	return card_angle
 
+
 # Calculate the position after the rotation has been calculated that use oval shape
-func recalculate_position_use_oval(index_diff=null)-> Vector2:
+func recalculate_position_use_oval(index_diff = null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	var parent_control = get_parent().get_node('Control')
-	var control = get_node('Control')
 	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.5
 	var ver_rad: float = parent_control.rect_size.y * 1.5
 	var angle = get_angle_by_index(index_diff)
 	var rad_angle = deg2rad(angle)
-	var oval_angle_vector = Vector2(hor_rad*cos(rad_angle),-ver_rad*sin(rad_angle))
-	var left_top = Vector2(-control.rect_size.x/2,-control.rect_size.y/2)
-	var center_top = Vector2(0,-control.rect_size.y/2)
-	var card_angle = get_oval_angle_by_index(angle,null,hor_rad,ver_rad)
-	var delta_vector = left_top - center_top.rotated(deg2rad(90-card_angle))
-	var center_x = parent_control.rect_size.x/2+parent_control.rect_position.x
-	var center_y = parent_control.rect_size.y*1.5 +parent_control.rect_position.y
-	card_position_x = (oval_angle_vector.x+center_x)
-	card_position_y = (oval_angle_vector.y+center_y)
-	return Vector2(card_position_x,card_position_y)+delta_vector
+	var oval_angle_vector = Vector2(hor_rad * cos(rad_angle),
+			- ver_rad * sin(rad_angle))
+	var left_top = Vector2(- $Control.rect_size.x/2, - $Control.rect_size.y/2)
+	var center_top = Vector2(0, - $Control.rect_size.y/2)
+	var card_angle = get_oval_angle_by_index(angle, null, hor_rad,ver_rad)
+	var delta_vector = left_top - center_top.rotated(deg2rad(90 - card_angle))
+	var center_x = parent_control.rect_size.x / 2 + parent_control.rect_position.x
+	var center_y = parent_control.rect_size.y * 1.5 + parent_control.rect_position.y
+	card_position_x = (oval_angle_vector.x + center_x)
+	card_position_y = (oval_angle_vector.y + center_y)
+	return(Vector2(card_position_x, card_position_y) + delta_vector)
+
 
 # Calculate the position that use rectangle
-func recalculate_position_use_rectangle(index_diff=null)-> Vector2:
+func recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	# The number of cards currently in hand
@@ -2118,21 +2122,20 @@ func recalculate_position_use_rectangle(index_diff=null)-> Vector2:
 	# We simply use the size of the parent control container we've defined in
 	# the node settings
 	var parent_control = get_parent().get_node('Control')
-	var control = get_node('Control')
 	var max_hand_size_width: float = parent_control.rect_size.x
 	# The maximum distance between cards
 	# We base it on the card width to allow it to work with any card-size.
-	var card_gap_max: float = control.rect_size.x * 1.1
+	var card_gap_max: float = $Control.rect_size.x * 1.1
 	# The minimum distance between cards
 	# (less than card width means they start overlapping)
-	var card_gap_min: float = control.rect_size.x/2
+	var card_gap_min: float = $Control.rect_size.x/2
 	# The current distance between cards.
 	# It is inversely proportional to the amount of cards in hand
 	var cards_gap: float = max(min((max_hand_size_width
-			- control.rect_size.x/2)
+			- $Control.rect_size.x/2)
 			/ hand_size, card_gap_max), card_gap_min)
 	# The current width of all cards in hand together
-	var hand_width: float = (cards_gap * (hand_size-1)) + control.rect_size.x
+	var hand_width: float = (cards_gap * (hand_size-1)) + $Control.rect_size.x
 	# The following just create the vector position to place this specific card
 	# in the playspace.
 	card_position_x = (max_hand_size_width/2
@@ -2142,17 +2145,18 @@ func recalculate_position_use_rectangle(index_diff=null)-> Vector2:
 	# Since our control container has the same size as the cards,we start from 0
 	# and just offset the card if we want it higher or lower.
 	card_position_y = 0
-
 	if index_diff!=null:
-		return Vector2(card_position_x,card_position_y)+Vector2(control.rect_size.x/index_diff* cfc.NEIGHBOUR_PUSH,0)
+		return(Vector2(card_position_x, card_position_y)
+				+ Vector2($Control.rect_size.x / index_diff * cfc.NEIGHBOUR_PUSH, 0))
 	else:
-		return Vector2(card_position_x,card_position_y)
+		return(Vector2(card_position_x,card_position_y))
+
 
 # Calculate the rotation
-func recalculate_rotation(index_diff=null)-> float:
+func recalculate_rotation(index_diff = null)-> float:
 	if get_parent() == cfc.NMAP.hand:
 		if cfc.hand_use_oval_shape:
-			return 90.0-get_oval_angle_by_index(null,index_diff)
-		return  0.0
+			return 90.0 - get_oval_angle_by_index(null, index_diff)
+		return(0.0)
 	else:
-		return 0.0
+		return(0.0)
