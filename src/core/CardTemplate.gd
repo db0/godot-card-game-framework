@@ -1744,6 +1744,7 @@ func _add_tween_scale(
 func _process_card_state() -> void:
 	match state:
 		IN_HAND:
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1758,6 +1759,7 @@ func _process_card_state() -> void:
 
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
+			z_index = 1
 			set_focus(true)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1812,6 +1814,7 @@ func _process_card_state() -> void:
 		MOVING_TO_CONTAINER:
 			# Used when moving card between places
 			# (i.e. deck to hand, hand to discard etc)
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(false)
 			# warning-ignore:return_value_discarded
@@ -1883,6 +1886,7 @@ func _process_card_state() -> void:
 
 		REORGANIZING:
 			# Used when reorganizing the cards in the hand
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1899,6 +1903,7 @@ func _process_card_state() -> void:
 
 		PUSHED_ASIDE:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -2151,7 +2156,7 @@ func _get_angle_by_index(index_diff = null):
 	var card_angle = max(min(60/hand_size,card_angle_max),card_angle_min)
 	if index_diff != null:
 		return 90 + (half - index) * card_angle \
-				- sign(index_diff) * (-index_diff*index_diff + 5)
+				- sign(index_diff) * (- index_diff * index_diff + 10)
 	else:
 		return 90 + (half - index) * card_angle
 
@@ -2186,7 +2191,7 @@ func _recalculate_position_use_oval(index_diff = null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	var parent_control = get_parent().get_node('Control')
-	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.5
+	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.7
 	var ver_rad: float = parent_control.rect_size.y * 1.5
 	var angle = _get_angle_by_index(index_diff)
 	var rad_angle = deg2rad(angle)
