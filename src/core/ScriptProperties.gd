@@ -310,11 +310,11 @@ static func check_properties(card, card_scripts, type := "trigger") -> bool:
 	# This way a script can be limited on more than one thing according to
 	# properties. For example limit on the properties of the trigger card
 	# and the properties of the subjects card.
-	if card_scripts.get(FILTER_PROPERTIES + "trigger"):
+	if card_scripts.get(FILTER_PROPERTIES + type):
 		# prop_limits is the variable which will hold the dictionary
 		# detailing which card properties on the subjects must match
 		# to satisfy this limit
-		var prop_limits : Dictionary = card_scripts.get(FILTER_PROPERTIES + "trigger")
+		var prop_limits : Dictionary = card_scripts.get(FILTER_PROPERTIES + type)
 		for property in prop_limits:
 			if property in CardConfig.PROPERTIES_ARRAYS:
 				# If it's an array, we assume they passed on element
@@ -325,4 +325,5 @@ static func check_properties(card, card_scripts, type := "trigger") -> bool:
 				#print(type,prop_limits[property], card.properties[property])
 				if prop_limits[property] != card.properties[property]:
 					card_matches = false
+#	if card.card_name == "Test Card 2":
 	return(card_matches)

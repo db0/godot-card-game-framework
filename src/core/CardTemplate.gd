@@ -924,7 +924,7 @@ func execute_scripts(
 	# This allows us to modify a card's scripts during runtime
 	# in isolation from other cards of the same name
 	if not scripts.empty():
-		card_scripts = scripts.get(trigger,{})
+		card_scripts = scripts.get(trigger,{}).duplicate()
 	else:
 		# CardScriptDefinitions.gd should contain scripts for all defined cards
 		card_scripts = CardFrameworkUtils.find_card_script(card_name, trigger)
