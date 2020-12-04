@@ -933,15 +933,19 @@ func execute_scripts(
 			state_scripts = card_scripts.get("hand", [])
 		IN_POPUP,FOCUSED_IN_POPUP:
 			state_scripts = card_scripts.get("pile", [])
+	# If the state_scripts return a dictionary entry
+	# it means it's a multiple choice between two scripts
 	if typeof(state_scripts) == TYPE_DICTIONARY:
 		var choices_menu = _CARD_CHOICES_SCENE.instance()
-		choices_menu.prep(self,state_scripts)
+		choices_menu.prep(self.card_name,state_scripts)
+		# We have to wait until the player has finished selecting an option
 		yield(choices_menu,"id_pressed")
 		# If the player just closed the pop-up without choosing
 		# an option, we don't execute anything
 		if choices_menu.id_selected:
 			state_scripts = state_scripts[choices_menu.selected_key]
 		else: state_scripts = []
+		# Garbage cleanup
 		choices_menu.queue_free()
 	# To avoid unnecessary operations
 	# we evoce the ScriptingEngine only if we have something to execute

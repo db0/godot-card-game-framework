@@ -9,8 +9,8 @@ var selected_key: String
 #
 # It prepares the menu items based on the dictionary keys and bring the
 # popup to the front.
-func prep(owner_card, script_with_choices: Dictionary) -> void:
-		set_item_text(0, "Please choose option for " + owner_card.card_name)
+func prep(title_reference, script_with_choices: Dictionary) -> void:
+		set_item_text(0, "Please choose option for " + title_reference)
 		# The dictionary passed is a card script which contains
 		# an extra dictionary before the task definitions
 		# When that happens, it specifies multiple choice
