@@ -44,7 +44,7 @@ Click on the 'F' button to exchange between these two states
 
 ### Card Scripts
 
-The first three cards you will draw from your deck each have different prepared automation. You can double click any of them in the hand or board to see their effects. 
+The first four cards you will draw from your deck each have different prepared automation. You can double click any of them in the hand or board to see their effects. 
 
 Some of them have also effects that trigger off of other effects.
 
