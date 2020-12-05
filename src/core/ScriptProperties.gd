@@ -125,7 +125,41 @@ const KEY_TOKEN_MODIFICATION := "modification"
 #
 # This is the path to the card template scene to use for this card
 const KEY_CARD_SCENE := "card_scene"
-
+# Specifies whether this script or task can be skipped by the owner.
+#
+# This value needs to be prepended and placed
+# depending on what it is making optional
+#
+# If it is making a sigle task optional, you need to add "task" at the end
+# and place it inside a task definition
+# Example:
+#		"manual": {
+#			"board": [
+#				{"name": "rotate_card",
+#				"is_optional_task": true,
+#				"subject": "self",
+#				"degrees": 90},
+#			]}
+# If you want to make a whole script optional, then you need to place it on
+# the same level as the state and append the state to
+# Example:
+#		"card_flipped": {
+#			"is_optional_board": true,
+#			"board": [
+#				{"name": "rotate_card",
+#				"is_cost": true,
+#				"subject": "self",
+#				"degrees": 90}
+#			]}
+#
+# When set to true, a confirmation window will appear to the player
+# when this script/task is about to execute.
+#
+# At the task level, it will ask the player before activating that task only
+# If that task is a cost, it will also prevent subsequent tasks from firing
+#
+# At the script level, the whole script if cancelled.
+const KEY_IS_OPTIONAL := "is_optional_"
 #---------------------------------------------------------------------
 # Filter Definition Keys
 #
@@ -239,6 +273,8 @@ static func get_default(property: String):
 			default = false
 		KEY_TOKEN_MODIFICATION:
 			default = 1
+		KEY_IS_OPTIONAL:
+			default = false
 		_:
 			default = null
 	return(default)
@@ -246,7 +282,7 @@ static func get_default(property: String):
 
 # Ensures that all filters requested by the script are respected
 #
-# Will return `false` if any filter does not match the filter request. 
+# Will return `false` if any filter does not match the filter request.
 # Otherise returns `true`
 static func filter_trigger(
 		card_scripts,
@@ -312,7 +348,7 @@ static func filter_trigger(
 	return(is_valid)
 
 
-# Checks the provided card properties against filters specified in 
+# Checks the provided card properties against filters specified in
 # the provided card_scripts.
 #
 # Returns true if all the filters match the card properties.
