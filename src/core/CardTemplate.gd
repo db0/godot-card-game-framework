@@ -905,7 +905,7 @@ func move_to(targetHost: Node2D,
 			else:
 				_determine_target_position_from_mouse()
 				raise()
-			state = DROPPING_TO_BOARD
+			state = ON_PLAY_BOARD
 	# Just in case there's any leftover potential host highlights
 	if len(_potential_cards):
 		for card in _potential_cards:
@@ -923,7 +923,8 @@ func execute_scripts(
 		signal_details: Dictionary = {}):
 	var card_scripts
 	var sceng = null
-	# If scripts have been defined directly in this object
+
+	# If scripts have been defined directly in this Card object
 	# They take precedence over CardScriptDefinitions.gd
 	#
 	# This allows us to modify a card's scripts during runtime
@@ -933,6 +934,7 @@ func execute_scripts(
 	else:
 		# CardScriptDefinitions.gd should contain scripts for all defined cards
 		card_scripts = CardFrameworkUtils.find_card_script(card_name, trigger)
+
 	# We check the trigger against the filter defined
 	# If it does not match, then we don't pass any scripts for this trigger.
 	if not SP.filter_trigger(
@@ -943,15 +945,34 @@ func execute_scripts(
 		card_scripts.clear()
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state
+	var state_exec := "NONE"
 	match state:
 		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
 			# We assume only faceup cards can execute scripts on the board
 			if is_faceup:
-				state_scripts = card_scripts.get("board", [])
+				state_exec ="board"
 		IN_HAND,FOCUSED_IN_HAND:
-			state_scripts = card_scripts.get("hand", [])
+				state_exec ="hand"
 		IN_POPUP,FOCUSED_IN_POPUP:
-			state_scripts = card_scripts.get("pile", [])
+				state_exec ="pile"
+	state_scripts = card_scripts.get(state_exec, [])
+
+	# Here we check for confirmation of optional trigger effects
+	# There should be an SP.KEY_IS_OPTIONAL definition per state
+	# E.g. if board scripts are optional, but hand scripts are not
+	# Then you'd include an "is_optional_board" key at the same level as "board"
+	var confirm_return = CardFrameworkUtils.confirm(
+		card_scripts,
+		card_name,
+		trigger,
+		state_exec)
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
+		# If the player chooses not to play an optional cost
+		# We consider the whole cost dry run unsuccesful
+		if not confirm_return:
+			state_scripts = []
+
 	# If the state_scripts return a dictionary entry
 	# it means it's a multiple choice between two scripts
 	if typeof(state_scripts) == TYPE_DICTIONARY:
@@ -966,6 +987,8 @@ func execute_scripts(
 		else: state_scripts = []
 		# Garbage cleanup
 		choices_menu.queue_free()
+
+
 	# To avoid unnecessary operations
 	# we evoce the ScriptingEngine only if we have something to execute
 	if len(state_scripts):
@@ -1288,19 +1311,19 @@ func complete_targeting() -> void:
 #
 # * When set to false, card cannot receive inputs anymore
 #    (this is useful when card is in motion or in a pile)
-# * When set to false, card can receive inputs again
+# * When set to true, card can receive inputs again
 func set_mouse_filters(value = true) -> void:
 	var control_filter := 0
-	var all_filter := 1
+#	var all_filter := 1
 	if not value:
 		control_filter = 2
-		all_filter = 2
+#		all_filter = 2
 	# We do a comparison first, to make sure we avoid unnecessary operations
 	if $Control.mouse_filter != control_filter:
 		$Control.mouse_filter = control_filter
-		for n in $Control/ManipulationButtons.get_children():
-			if n as Button:
-				n.mouse_filter = all_filter
+#		for n in $Control/ManipulationButtons.get_children():
+#			if n as Button:
+#				n.mouse_filter = all_filter
 
 
 # Get card position in hand by index
@@ -1686,8 +1709,8 @@ func _stop_pulse():
 
 # Card rotation animation
 func _add_tween_rotation(
-		expected_rotation: int,
-		target_rotation: int,
+		expected_rotation: float,
+		target_rotation: float,
 		runtime := 0.3,
 		trans_type = Tween.TRANS_BACK,
 		ease_type = Tween.EASE_IN_OUT):
@@ -1695,7 +1718,11 @@ func _add_tween_rotation(
 	$Tween.interpolate_property($Control,'rect_rotation',
 			expected_rotation, target_rotation, runtime,
 			trans_type, ease_type)
-
+	# We ensure the card_rotation value is also kept up to date
+	# But onlf it it's one of the expected multiples
+	if int(target_rotation) != card_rotation \
+			and int(target_rotation) in [0,90,180,270]:
+		card_rotation = int(target_rotation)
 
 # Card position animation
 func _add_tween_position(
@@ -1743,6 +1770,7 @@ func _add_tween_scale(
 func _process_card_state() -> void:
 	match state:
 		IN_HAND:
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1754,8 +1782,12 @@ func _process_card_state() -> void:
 				set_card_rotation(0)
 			else:
 				set_card_rotation(0)
+
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
+			# We increase the z_index to allow the focused card appear
+			# always over its neighbours
+			z_index = 1
 			set_focus(true)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1806,15 +1838,15 @@ func _process_card_state() -> void:
 				_focus_completed = true
 				# We don't change state yet, only when the focus is removed
 				# from this card
+
 		MOVING_TO_CONTAINER:
 			# Used when moving card between places
 			# (i.e. deck to hand, hand to discard etc)
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			# set_card_rotation(0,false,false)
-
-
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if not scale.is_equal_approx(Vector2(1,1)):
@@ -1879,8 +1911,10 @@ func _process_card_state() -> void:
 					yield($Tween, "tween_all_completed")
 					_determine_idle_state()
 				_fancy_move_second_part = false
+
 		REORGANIZING:
 			# Used when reorganizing the cards in the hand
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1892,11 +1926,12 @@ func _process_card_state() -> void:
 					_add_tween_scale(scale, Vector2(1,1),0.4)
 				_target_rotation  = _recalculate_rotation()
 				_add_tween_rotation($Control.rect_rotation,_target_rotation)
-#				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
 				state = IN_HAND
+
 		PUSHED_ASIDE:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1910,6 +1945,7 @@ func _process_card_state() -> void:
 				$Tween.start()
 				# We don't change state yet,
 				# only when the focus is removed from the neighbour
+
 		DRAGGED:
 			# Used when the card is dragged around the game with the mouse
 			set_mouse_filters(true)
@@ -1932,6 +1968,7 @@ func _process_card_state() -> void:
 			# We want to keep the token drawer closed during movement
 			if _is_drawer_open:
 				_token_drawer(false)
+
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			set_focus(false)
@@ -1952,6 +1989,7 @@ func _process_card_state() -> void:
 						Tween.TRANS_SINE, Tween.EASE_IN)
 				_buttons_tween.start()
 			_organize_attachments()
+
 		DROPPING_TO_BOARD:
 			set_mouse_filters(true)
 			# Used when dropping the cards to the table
@@ -1966,13 +2004,19 @@ func _process_card_state() -> void:
 #				if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y > get_viewport().size.y:
 #					_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y
 				_add_tween_position(position, _target_position, 0.25)
-				_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
+				# The below ensures a card dropped from the hand will not
+				# retain a slight rotation.
+				# We check if the card already has been rotated to a different
+				# card_cotation
+				if not int($Control.rect_rotation) in [0,90,180,270]:
+					_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 					_add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.5,
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = ON_PLAY_BOARD
+
 		FOCUSED_ON_BOARD:
 			# Used when card is focused on by the mouse hovering over it while it is on the board.
 			# The below tween shows the container manipulation buttons when you hover over them
@@ -2018,6 +2062,7 @@ func _process_card_state() -> void:
 #				_determine_idle_state()
 #				_fancy_move_second_part = false
 #				state = IN_PILE
+
 		IN_PILE:
 			set_focus(false)
 			set_mouse_filters(false)
@@ -2025,6 +2070,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
+
 		IN_POPUP:
 			# We make sure that a card in a popup stays in its position
 			# Unless moved
@@ -2038,11 +2084,13 @@ func _process_card_state() -> void:
 				scale = Vector2(0.75,0.75)
 			if position != Vector2(0,0):
 				position = Vector2(0,0)
+
 		FOCUSED_IN_POPUP:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
+
 		VIEWPORT_FOCUS:
 			set_focus(false)
 			set_mouse_filters(false)
@@ -2136,7 +2184,7 @@ func _get_angle_by_index(index_diff = null):
 	var card_angle = max(min(60/hand_size,card_angle_max),card_angle_min)
 	if index_diff != null:
 		return 90 + (half - index) * card_angle \
-				- sign(index_diff) * (-index_diff*index_diff + 5)
+				- sign(index_diff) * (- index_diff * index_diff + 10)
 	else:
 		return 90 + (half - index) * card_angle
 
@@ -2171,7 +2219,7 @@ func _recalculate_position_use_oval(index_diff = null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	var parent_control = get_parent().get_node('Control')
-	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.5
+	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.7
 	var ver_rad: float = parent_control.rect_size.y * 1.5
 	var angle = _get_angle_by_index(index_diff)
 	var rad_angle = deg2rad(angle)
@@ -2228,14 +2276,12 @@ func _recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 		return(Vector2(card_position_x,card_position_y))
 
 
-# Calculate the rotation
+# Calculates the rotation the card should have based on its parent.
 func _recalculate_rotation(index_diff = null)-> float:
-	if get_parent() == cfc.NMAP.hand:
-		if cfc.hand_use_oval_shape:
-			return 90.0 - _get_oval_angle_by_index(null, index_diff)
-		return(0.0)
-	else:
-		return(0.0)
+	var calculated_rotation := float(card_rotation)
+	if get_parent() == cfc.NMAP.hand and cfc.hand_use_oval_shape:
+		calculated_rotation = 90.0 - _get_oval_angle_by_index(null, index_diff)
+	return(calculated_rotation)
 
 
 # Set a label node's text.

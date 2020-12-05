@@ -36,6 +36,11 @@ func _on_FancyMovementToggle_toggled(_button_pressed) -> void:
 	cfc.fancy_movement = $FancyMovementToggle.pressed
 
 
+func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
+	cfc.hand_use_oval_shape = $OvalHandToggle.pressed
+	for c in cfc.NMAP.hand.get_all_cards():
+		c.reorganizeSelf()
+
 # Reshuffles all Card objects created back into the deck
 func _on_ReshuffleAll_pressed() -> void:
 	for c in allCards:
@@ -76,3 +81,4 @@ func load_test_cards() -> void:
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		#card.modulate.a = 0 # We use this for a nice transition effect
 	$Deck.reorganize_stack()
+

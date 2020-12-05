@@ -46,4 +46,7 @@ Make sure you follow the [Official Godot syntax guidelines](https://docs.godoten
 
 ## Git and pull requests
 
-When you want to submit code, you should send a pull request from the branch you've modified. Do not send us pull requests from your main branch.
+When you want to submit code, you should send a pull request from the branch you've modified. Do not send us pull requests from your main branch!
+
+**Before you do that though**,you need to squash all your commits into one larger commit. [You can use this handy guide for instructions](https://www.internalpointers.com/post/squash-commits-into-one-git)
+
