@@ -5,6 +5,7 @@
 * Scipting Engine target finding now supports tutoring cards from deck
 * Scipting Engine target finding now supports affecting multiple cards from the board by filtering their properties
 * Scripting Engine now supports cards with multiple choices for abilities.
+* Scripting Engine now supports cards with optional abilities
 * Hand shape can now be oval (default). Contribution by [@vmjcv](https://github.com/vmjcv)
 
 ## 0.11
