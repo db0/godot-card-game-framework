@@ -43,7 +43,7 @@ func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
 
 # Reshuffles all Card objects created back into the deck
 func _on_ReshuffleAll_pressed() -> void:
-	for c in allCards:
+	for c in get_tree().get_nodes_in_group("cards"):
 		if c.get_parent() != cfc.NMAP.deck:
 			c.move_to(cfc.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
