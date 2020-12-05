@@ -133,25 +133,28 @@ const KEY_CARD_SCENE := "card_scene"
 # If it is making a sigle task optional, you need to add "task" at the end
 # and place it inside a task definition
 # Example:
-#		"manual": {
-#			"board": [
-#				{"name": "rotate_card",
-#				"is_optional_task": true,
-#				"subject": "self",
-#				"degrees": 90},
-#			]}
+# ```
+#"manual": {
+#	"board": [
+#		{"name": "rotate_card",
+#		"is_optional_task": true,
+#		"subject": "self",
+#		"degrees": 90},
+#	]}
+# ```
 # If you want to make a whole script optional, then you need to place it on
-# the same level as the state and append the state to
+# the same level as the state and append the state name
 # Example:
-#		"card_flipped": {
-#			"is_optional_board": true,
-#			"board": [
-#				{"name": "rotate_card",
-#				"is_cost": true,
-#				"subject": "self",
-#				"degrees": 90}
-#			]}
-#
+# ```
+#"card_flipped": {
+#	"is_optional_board": true,
+#	"board": [
+#		{"name": "rotate_card",
+#		"is_cost": true,
+#		"subject": "self",
+#		"degrees": 90}
+#	]}
+# ```
 # When set to true, a confirmation window will appear to the player
 # when this script/task is about to execute.
 #

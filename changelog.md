@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.12 (Ongoing)
+## 0.12
 
 * Scipting Engine target finding now supports tutoring cards from deck
 * Scipting Engine target finding now supports affecting multiple cards from the board by filtering their properties
