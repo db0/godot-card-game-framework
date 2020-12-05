@@ -918,7 +918,8 @@ func execute_scripts(
 		signal_details: Dictionary = {}):
 	var card_scripts
 	var sceng = null
-	# If scripts have been defined directly in this object
+
+	# If scripts have been defined directly in this Card object
 	# They take precedence over CardScriptDefinitions.gd
 	#
 	# This allows us to modify a card's scripts during runtime
@@ -928,6 +929,7 @@ func execute_scripts(
 	else:
 		# CardScriptDefinitions.gd should contain scripts for all defined cards
 		card_scripts = CardFrameworkUtils.find_card_script(card_name, trigger)
+
 	# We check the trigger against the filter defined
 	# If it does not match, then we don't pass any scripts for this trigger.
 	if not SP.filter_trigger(
@@ -938,15 +940,34 @@ func execute_scripts(
 		card_scripts.clear()
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state
+	var state_exec := "NONE"
 	match state:
 		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
 			# We assume only faceup cards can execute scripts on the board
 			if is_faceup:
-				state_scripts = card_scripts.get("board", [])
+				state_exec ="board"
 		IN_HAND,FOCUSED_IN_HAND:
-			state_scripts = card_scripts.get("hand", [])
+				state_exec ="hand"
 		IN_POPUP,FOCUSED_IN_POPUP:
-			state_scripts = card_scripts.get("pile", [])
+				state_exec ="pile"
+	state_scripts = card_scripts.get(state_exec, [])
+
+	# Here we check for confirmation of optional trigger effects
+	# There should be an SP.KEY_IS_OPTIONAL definition per state
+	# E.g. if board scripts are optional, but hand scripts are not
+	# Then you'd include an "is_optional_board" key at the same level as "board"
+	var confirm_return = CardFrameworkUtils.confirm(
+		card_scripts,
+		card_name,
+		trigger,
+		state_exec)
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
+		# If the player chooses not to play an optional cost
+		# We consider the whole cost dry run unsuccesful
+		if not confirm_return:
+			state_scripts = []
+
 	# If the state_scripts return a dictionary entry
 	# it means it's a multiple choice between two scripts
 	if typeof(state_scripts) == TYPE_DICTIONARY:
@@ -961,6 +982,8 @@ func execute_scripts(
 		else: state_scripts = []
 		# Garbage cleanup
 		choices_menu.queue_free()
+
+
 	# To avoid unnecessary operations
 	# we evoce the ScriptingEngine only if we have something to execute
 	if len(state_scripts):

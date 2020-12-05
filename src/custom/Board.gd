@@ -36,7 +36,7 @@ func _on_FancyMovementToggle_toggled(_button_pressed) -> void:
 	cfc.fancy_movement = $FancyMovementToggle.pressed
 
 
-func _on_OvalHandToggle_toggled(button_pressed: bool) -> void:
+func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
 	cfc.hand_use_oval_shape = $OvalHandToggle.pressed
 	for c in cfc.NMAP.hand.get_all_cards():
 		c.reorganizeSelf()

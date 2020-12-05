@@ -9,6 +9,7 @@ extends Reference
 # Sent when the _init() method has completed
 signal completed_init
 
+
 # The card which owns this Task
 var owner: Card
 # The card which triggered this Task.
@@ -18,7 +19,7 @@ var owner: Card
 var trigger: Card
 # The subjects is typically a `Card` object
 # in the future might be other things
-var subjects: Array
+var subjects := []
 # The name of the method to call in the ScriptingEngine
 # to implement this task
 var task_name: String
@@ -32,21 +33,52 @@ var has_init_completed := false
 # If true if this task is valid to run.
 # A task is invalid to run if some filter does not match.
 var is_valid := true
+# If true if this task has been confirmed to run by the player
+# Only relevant for optional tasks (see [SP].KEY_IS_OPTIONAL)
+var is_accepted := true
 
 # prepares the properties needed by the task to function.
 func _init(card: Card,
 		script: Dictionary,
-		prev_subjects: Array) -> void:
+		prev_subjects: Array,
+		cost_dry_run: bool) -> void:
 	# We store the card which executes this task
 	owner = card
 	# We store all the task properties in our own dictionary
 	properties = script
 	# The function name to be called gets its own var
 	task_name = get("name")
+	if ((not cost_dry_run and not get(SP.KEY_IS_COST))
+			# This is the typical spot we're checking 
+			# for non-cost optional confirmations.
+			# The only time we're testing here during a cost-dry-run
+			# is when its an "is_cost" task requiring targeting.
+			# We want to avoid targeting and THEN ask for confirmation.
+			# Non-targeting is_cost tasks are confirmed in the 
+			# ScriptingEngine loop
+			or (cost_dry_run
+			and get(SP.KEY_IS_COST)
+			and get(SP.KEY_SUBJECT) == "target")):
+		# If this task has been specified as optional
+		# We check if the player confirms it, before looking for targets
+		# We check for optional confirmations only during
+		# The normal run (i.e. not in a cost dry-run)
+		var confirm_return = CardFrameworkUtils.confirm(
+				properties,
+				owner.card_name,
+				task_name)
+		if confirm_return is GDScriptFunctionState: # Still working.
+			is_accepted = yield(confirm_return, "completed")
+	# If any confirmation is accepted, then we only draw a target
+	# if either the card is a cost and we're doing a cost-dry run,
+	# or the card is not a cost and we're in the normal run
+	if is_accepted and (not cost_dry_run
+			or (cost_dry_run and get(SP.KEY_IS_COST))):
 	# We discover which other card this task will affect, if any
-	var ret =_find_subjects(prev_subjects)
-	if ret is GDScriptFunctionState: # Still working.
-		ret = yield(ret, "completed")
+		var ret =_find_subjects(prev_subjects)
+		if ret is GDScriptFunctionState: # Still working.
+			ret = yield(ret, "completed")
+	#print_debug(str(subjects), str(cost_dry_run))
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
 	emit_signal("completed_init")
@@ -67,7 +99,7 @@ func _find_subjects(prev_subjects := []) -> Card:
 	# See SP.KEY_SUBJECT doc
 	match get(SP.KEY_SUBJECT):
 		# Ever task retrieves the subjects used in the previous task.
-		# if the value "previous" is given to the "subjects" key, 
+		# if the value "previous" is given to the "subjects" key,
 		# it simple reuses the same ones.
 		SP.KEY_SUBJECT_V_PREVIOUS:
 			subjects_array = prev_subjects
