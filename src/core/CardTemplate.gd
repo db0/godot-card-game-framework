@@ -517,25 +517,29 @@ func setup(cname: String) -> void:
 	# The properties of the card should be already stored in cfc
 	set_card_name(cname)
 	properties = cfc.card_definitions.get(cname)
-
 	for label in properties.keys():
 		# These are standard properties which is simple a String to add to the
 		# label.text field
 		if label in CardConfig.PROPERTIES_STRINGS:
-			$Control/Front/CardText.get_node(label).text = properties[label]
+			_set_label_text($Control/Front/CardText.get_node(label),
+					properties[label])
+			# $Control/Front/CardText.get_node(label).text = properties[label]
+			if properties[label]=="":
+				$Control/Front/CardText.get_node(label).visible = false
 		# These are int or float properties which need to be converted
 		# to a string with some formatting.
 		#
 		# In this demo, the format is defined as: "labelname: value"
 		elif label in CardConfig.PROPERTIES_NUMBERS:
-			$Control/Front/CardText.get_node(label).text = \
-					label + ": " + str(properties[label])
+			_set_label_text($Control/Front/CardText.get_node(label),label
+					+ ": " + str(properties[label]))
 		# These are arrays of properties which are put in a label with a simple
 		# Join character
 		elif label in CardConfig.PROPERTIES_ARRAYS:
-			$Control/Front/CardText.get_node(label).text = \
+			_set_label_text($Control/Front/CardText.get_node(label),
 					CardFrameworkUtils.array_join(properties[label],
-					cfc.ARRAY_PROPERTY_JOIN)
+					cfc.ARRAY_PROPERTY_JOIN))
+
 
 # Setter for _is_attachment
 func set_is_attachment(value: bool) -> void:
@@ -670,7 +674,8 @@ func get_is_viewed() -> bool:
 # Setter for card_name
 # Also changes the card label and the node name
 func set_card_name(value : String) -> void:
-	$Control/Front/CardText/Name.text = value
+	var name_label = $Control/Front/CardText/Name
+	_set_label_text(name_label,value)
 	name = value
 	card_name = value
 
@@ -1010,8 +1015,6 @@ func execute_scripts(
 					self,
 					state_scripts)
 	return(sceng)
-
-
 
 
 # Ensures that all filters requested by the script are respected
@@ -2279,3 +2282,41 @@ func _recalculate_rotation(index_diff = null)-> float:
 	if get_parent() == cfc.NMAP.hand and cfc.hand_use_oval_shape:
 		calculated_rotation = 90.0 - _get_oval_angle_by_index(null, index_diff)
 	return(calculated_rotation)
+
+
+# Set a label node's text.
+# As the string becomes longer, the font size becomes smaller
+func _set_label_text(node, value):
+	# We do not want some fields, like the name, to be too small.
+	# see CardConfig.TEXT_EXPANSION_MULTIPLIER documentation
+	var allowed_expansion = CardConfig.TEXT_EXPANSION_MULTIPLIER.get(node.name,1)
+	var label_size = node.rect_size
+	var label_font = node.get("custom_fonts/font").duplicate()
+	var line_height = label_font.get_height()
+	# line_spacing should be calculated into rect_size
+	var line_spacing = node.get("custom_constants/line_spacing")
+	if not line_spacing:
+		line_spacing = 3
+	# This calculates the amount of vertical pixels the text would take
+	# once it was word-wrapped.
+	var label_rect_y = label_font.get_wordwrap_string_size(
+			value, label_size.x).y \
+			/ line_height \
+			* (line_height + line_spacing) \
+			- line_spacing
+	# If the y-size of the wordwrapped text would be bigger than the current
+	# available y-size foir this label, we reduce the text, until we
+	# it's small enough to stay within the boundaries
+	while label_rect_y > label_size.y * allowed_expansion:
+		label_font.size = label_font.size - 1
+		if label_font.size < 3:
+			label_font.size = 2
+			break
+		label_rect_y = label_font.get_wordwrap_string_size(
+				value,label_size.x).y \
+				/ line_height \
+				* (line_height + line_spacing) \
+				- line_spacing
+	node.set("custom_fonts/font", label_font)
+	node.rect_min_size = label_size
+	node.text = value
