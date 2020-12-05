@@ -6,7 +6,8 @@
 * Scipting Engine target finding now supports affecting multiple cards from the board by filtering their properties
 * Scripting Engine now supports cards with multiple choices for abilities.
 * Scripting Engine now supports cards with optional abilities
-* Hand shape can now be oval (default). Contribution by [@vmjcv](https://github.com/vmjcv)
+* Hand shape can now be oval (default) - Contribution by [@vmjcv](https://github.com/vmjcv).
+* Font-size will decrease when it amount of chars is too large, in order to stay within the defined label rectangle - Contribution by [@vmjcv](https://github.com/vmjcv).
 
 ## 0.11
 

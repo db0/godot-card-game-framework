@@ -219,6 +219,7 @@ The game comes with some sample scripted cards which can be found under `res://s
 * Can add tokens on cards. Tokens expand in the own drawer for more info.
 * Ability to define cards in standard json
 * Ability to split card definitions into sets
+* Automatically resizing text inside cards to fit the card size.
 
 ### Scripting Engine Features
 
