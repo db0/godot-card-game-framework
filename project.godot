@@ -54,6 +54,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/Hand.gd"
 }, {
+"base": "Area2D",
+"class": "MousePointer",
+"language": "GDScript",
+"path": "res://src/core/MousePointer.gd"
+}, {
 "base": "CardContainer",
 "class": "Pile",
 "language": "GDScript",
@@ -99,6 +104,7 @@ _global_script_class_icons={
 "CardScriptDefinitions": "",
 "CustomScripts": "",
 "Hand": "",
+"MousePointer": "",
 "Pile": "",
 "SP": "",
 "ScriptTask": "",

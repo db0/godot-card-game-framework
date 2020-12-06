@@ -1,4 +1,4 @@
-# Godot Card Gaming Framework 0.11
+# Godot Card Gaming Framework 0.12
 
 This framework is meant to provide well-designed, statically-typed, and well-commented classes which you can plug into any potential card game to provide a polished way to handle typical behaviour expected from cards in a game.
 

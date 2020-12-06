@@ -108,3 +108,5 @@ __meta__ = {
 }
 
 [node name="Tween" type="Tween" parent="ViewPopup"]
+
+[node name="Tween" type="Tween" parent="."]
