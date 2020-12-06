@@ -256,7 +256,7 @@ func _process(delta) -> void:
 
 func _on_Card_mouse_entered() -> void:
 	# This triggers the focus-in effect on the card
-	#print(state,":enter:",get_index()) # Debug
+	#print(state,":enter:",get_index(), ":", _are_buttons_hovered()) # Debug
 	#print($Control/Tokens/Drawer/VBoxContainer.rect_size) # debug
 	# We use this variable to check if mouse thinks it changed nodes because
 	# it just entered a child node
@@ -279,7 +279,8 @@ func _on_Card_mouse_entered() -> void:
 func _input(event) -> void:
 	if event is InputEventMouseButton and \
 			event.get_button_index() == 1 and \
-			not event.is_pressed():
+			not event.is_pressed() \
+			and not _are_buttons_hovered():
 		if _is_targetting:
 			complete_targeting()
 		# On depressed left mouse click anywhere on the board
@@ -296,7 +297,7 @@ func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
 		# If the player left clicks, we need to see if it's a double-click
 		# or a long click
-		if event.get_button_index() == 1:
+		if event.get_button_index() == 1 and not _are_buttons_hovered():
 			# If it's a double-click, then it's not a card drag
 			# But rather it's script execution
 			if event.doubleclick:
@@ -742,7 +743,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 			if value == 0 \
 					and get_parent() == cfc.NMAP.hand \
 					and cfc.hand_use_oval_shape:
-				value = _recalculate_rotation()
+				value = int(_recalculate_rotation())
 			# We make sure to remove other tweens of the same type
 			# to avoid a deadlock
 			# There's no way to rotate the Area2D node,
@@ -1316,18 +1317,32 @@ func complete_targeting() -> void:
 # * When set to false, card cannot receive inputs anymore
 #    (this is useful when card is in motion or in a pile)
 # * When set to true, card can receive inputs again
-func set_mouse_filters(value = true) -> void:
+func set_control_mouse_filters(value = true) -> void:
 	var control_filter := 0
-	var all_filter := 1
 	if not value:
 		control_filter = 2
-		all_filter = 2
 	# We do a comparison first, to make sure we avoid unnecessary operations
 	if $Control.mouse_filter != control_filter:
 		$Control.mouse_filter = control_filter
-		for n in $Control/ManipulationButtons.get_children():
-			if n as Button:
-				n.mouse_filter = all_filter
+
+
+# Changes the hosted Manipulation button node mouse filters
+#
+# * When set to false, buttons cannot receive inputs anymore
+#    (this is useful when card is in hand or a pile)
+# * When set to true, buttons can receive inputs again
+func set_manipulation_button_mouse_filters(value = true) -> void:
+	var button_filter := 1
+	# We also want the buttons disabled while the card is being targeted
+	# with a tarteting arrow.
+	# We do not want to activate the buttons when a player is trying to
+	# select the card for an effect.
+	if not value or $Control/FocusHighlight.modulate == cfc.TARGET_HOVER_COLOUR:
+		button_filter = 2
+	# We do a comparison first, to make sure we avoid unnecessary operations
+	for button in $Control/ManipulationButtons.get_children():
+		if button as Button and button.mouse_filter != button_filter:
+			button.mouse_filter = button_filter
 
 
 # Get card position in hand by index
@@ -1525,20 +1540,25 @@ func _clear_attachment_status() -> void:
 # This is all necessary as a workaround for
 # https://github.com/godotengine/godot/issues/16854
 #
-# Returns true if the mouse is hovering over the buttons, else false
+# Returns true if the mouse is hovering any of the buttons, else false
 func _are_buttons_hovered() -> bool:
 	var ret = false
-	if (_determine_global_mouse_pos().x
-			>= $Control/ManipulationButtons.rect_global_position.x and
-			_determine_global_mouse_pos().y
-			>= $Control/ManipulationButtons.rect_global_position.y and
-			_determine_global_mouse_pos().x
-			<= $Control/ManipulationButtons.rect_global_position.x
-			+ $Control/ManipulationButtons.rect_size.x and
-			_determine_global_mouse_pos().y
-			<= $Control/ManipulationButtons.rect_global_position.y
-			+ $Control/ManipulationButtons.rect_size.y):
-		ret = true
+	for button in $Control/ManipulationButtons.get_children():
+		if button as Button \
+				and button.is_hovered() \
+				and button.modulate.a == 1:
+			ret = true
+#	if (_determine_global_mouse_pos().x
+#			>= $Control/ManipulationButtons.rect_global_position.x and
+#			_determine_global_mouse_pos().y
+#			>= $Control/ManipulationButtons.rect_global_position.y and
+#			_determine_global_mouse_pos().x
+#			<= $Control/ManipulationButtons.rect_global_position.x
+#			+ $Control/ManipulationButtons.rect_size.x and
+#			_determine_global_mouse_pos().y
+#			<= $Control/ManipulationButtons.rect_global_position.y
+#			+ $Control/ManipulationButtons.rect_size.y):
+#		ret = true
 	return(ret)
 
 
@@ -1777,7 +1797,8 @@ func _process_card_state() -> void:
 		IN_HAND:
 			z_index = 0
 			set_focus(false)
-			set_mouse_filters(true)
+			set_control_mouse_filters(true)
+			set_manipulation_button_mouse_filters(false)
 			set_card_rotation(0)
 			# warning-ignore:return_value_discarded
 			# When we have an oval shape, we ensure the cards stay
@@ -1795,7 +1816,8 @@ func _process_card_state() -> void:
 			# always over its neighbours
 			z_index = 1
 			set_focus(true)
-			set_mouse_filters(true)
+			set_control_mouse_filters(true)
+			set_manipulation_button_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
@@ -1854,7 +1876,8 @@ func _process_card_state() -> void:
 			# (i.e. deck to hand, hand to discard etc)
 			z_index = 0
 			set_focus(false)
-			set_mouse_filters(false)
+			set_control_mouse_filters(false)
+			set_manipulation_button_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			# set_card_rotation(0,false,false)
 			if not $Tween.is_active():
@@ -1925,7 +1948,8 @@ func _process_card_state() -> void:
 			# Used when reorganizing the cards in the hand
 			z_index = 0
 			set_focus(false)
-			set_mouse_filters(true)
+			set_control_mouse_filters(true)
+			set_manipulation_button_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active():
@@ -1941,7 +1965,8 @@ func _process_card_state() -> void:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
 			z_index = 0
 			set_focus(false)
-			set_mouse_filters(true)
+			set_control_mouse_filters(true)
+			set_manipulation_button_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			if not $Tween.is_active() and \
 					not position.is_equal_approx(_target_position):
@@ -1956,7 +1981,8 @@ func _process_card_state() -> void:
 
 		DRAGGED:
 			# Used when the card is dragged around the game with the mouse
-			set_mouse_filters(true)
+			set_control_mouse_filters(true)
+			set_manipulation_button_mouse_filters(false)
 			if (not $Tween.is_active() and
 				not scale.is_equal_approx(cfc.card_scale_while_dragging) and
 				get_parent() != cfc.NMAP.board):
@@ -1980,7 +2006,8 @@ func _process_card_state() -> void:
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			set_focus(false)
-			set_mouse_filters(true)
+			set_control_mouse_filters(true)
+			set_manipulation_button_mouse_filters(true)
 			if not $Tween.is_active() and \
 					not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 				_add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.3,
@@ -1999,7 +2026,8 @@ func _process_card_state() -> void:
 			_organize_attachments()
 
 		DROPPING_TO_BOARD:
-			set_mouse_filters(true)
+			set_control_mouse_filters(true)
+			set_manipulation_button_mouse_filters(false)
 			# Used when dropping the cards to the table
 			# When dragging the card, the card is slightly behind the mouse cursor
 			# so we tween it to the right location
@@ -2029,7 +2057,8 @@ func _process_card_state() -> void:
 			# Used when card is focused on by the mouse hovering over it while it is on the board.
 			# The below tween shows the container manipulation buttons when you hover over them
 			set_focus(true)
-			set_mouse_filters(true)
+			set_control_mouse_filters(true)
+			set_manipulation_button_mouse_filters(true)
 			if not _buttons_tween.is_active() and \
 					$Control/ManipulationButtons.modulate[3] != 1:
 				_buttons_tween.remove_all()
@@ -2042,7 +2071,7 @@ func _process_card_state() -> void:
 #		DROPPING_INTO_PILE:
 #			# Used when dropping the cards into a container (Deck, Discard etc)
 #			set_focus(false)
-#			set_mouse_filters(false)
+#			set_control_mouse_filters(false)
 #			if not $Tween.is_active():
 #				var intermediate_position: Vector2
 #				if cfc.fancy_movement:
@@ -2073,7 +2102,8 @@ func _process_card_state() -> void:
 
 		IN_PILE:
 			set_focus(false)
-			set_mouse_filters(false)
+			set_control_mouse_filters(false)
+			set_manipulation_button_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			if scale != Vector2(1,1):
@@ -2083,7 +2113,8 @@ func _process_card_state() -> void:
 			# We make sure that a card in a popup stays in its position
 			# Unless moved
 			set_focus(false)
-			set_mouse_filters(true)
+			set_control_mouse_filters(true)
+			set_manipulation_button_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			if modulate[3] != 1:
@@ -2101,7 +2132,8 @@ func _process_card_state() -> void:
 
 		VIEWPORT_FOCUS:
 			set_focus(false)
-			set_mouse_filters(false)
+			set_control_mouse_filters(false)
+			set_manipulation_button_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			$Control/ManipulationButtons.modulate[3] = 0
