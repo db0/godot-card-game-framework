@@ -1296,16 +1296,16 @@ func complete_targeting() -> void:
 # * When set to true, card can receive inputs again
 func set_mouse_filters(value = true) -> void:
 	var control_filter := 0
-#	var all_filter := 1
+	var all_filter := 1
 	if not value:
 		control_filter = 2
-#		all_filter = 2
+		all_filter = 2
 	# We do a comparison first, to make sure we avoid unnecessary operations
 	if $Control.mouse_filter != control_filter:
 		$Control.mouse_filter = control_filter
-#		for n in $Control/ManipulationButtons.get_children():
-#			if n as Button:
-#				n.mouse_filter = all_filter
+		for n in $Control/ManipulationButtons.get_children():
+			if n as Button:
+				n.mouse_filter = all_filter
 
 
 # Get card position in hand by index
