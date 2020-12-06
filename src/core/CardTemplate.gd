@@ -253,10 +253,9 @@ func _process(delta) -> void:
 		_on_Card_mouse_exited()
 
 
-
+# Triggers the focus-in effect on the card
 func _on_Card_mouse_entered() -> void:
-	# This triggers the focus-in effect on the card
-	#print(state,":enter:",get_index()) # Debug
+	#print("ENTER: state: ", state," Index: ",get_index()) # debug
 	#print($Control/Tokens/Drawer/VBoxContainer.rect_size) # debug
 	# We use this variable to check if mouse thinks it changed nodes because
 	# it just entered a child node
@@ -357,7 +356,7 @@ func _on_Card_mouse_exited() -> void:
 	# just enter a child button
 	# If it did, then that button will immediately set a variable to let us know
 	# not to restart the focus
-	#print(state,":exit:",get_index()) # debug
+	#print("EXIT: state: ", state," Index: ",get_index()) # debug
 	#print(_are_buttons_hovered()) # debug
 	# We use this variable to check if mouse thinks it changed nodes
 	# because it just entered a child node
