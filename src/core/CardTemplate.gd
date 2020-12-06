@@ -1017,24 +1017,6 @@ func execute_scripts(
 	return(sceng)
 
 
-# Ensures that all filters requested by the script are respected
-#
-# Will set is_valid to false if any filter does not match reality
-func _filter_signal_trigger(card_scripts, trigger_card: Card) -> bool:
-	var is_valid = true
-	# Here we check that the trigger matches the _request_ for trigger
-	# A trigger which requires "another" card, should not trigger
-	# when itself causes the effect.
-	# For example, a card which rotates itself whenever another card
-	# is rotated, should not automatically rotate when itself rotates.
-	var trigger = card_scripts.get("trigger", "any")
-	if trigger == "self" and trigger_card != self:
-		is_valid = false
-	if trigger == "another" and trigger_card == self:
-		is_valid = false
-	return(is_valid)
-
-
 # Handles the card becoming an attachment for a specified host Card object
 func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 	# First we check if the selected host is not the current host anyway.
@@ -2320,3 +2302,21 @@ func _set_label_text(node, value):
 	node.set("custom_fonts/font", label_font)
 	node.rect_min_size = label_size
 	node.text = value
+
+
+# Ensures that all filters requested by the script are respected
+#
+# Will set is_valid to false if any filter does not match reality
+func _filter_signal_trigger(card_scripts, trigger_card: Card) -> bool:
+	var is_valid = true
+	# Here we check that the trigger matches the _request_ for trigger
+	# A trigger which requires "another" card, should not trigger
+	# when itself causes the effect.
+	# For example, a card which rotates itself whenever another card
+	# is rotated, should not automatically rotate when itself rotates.
+	var trigger = card_scripts.get("trigger", "any")
+	if trigger == "self" and trigger_card != self:
+		is_valid = false
+	if trigger == "another" and trigger_card == self:
+		is_valid = false
+	return(is_valid)

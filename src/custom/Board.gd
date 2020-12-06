@@ -47,6 +47,8 @@ func _on_ReshuffleAll_pressed() -> void:
 		if c.get_parent() != cfc.NMAP.deck:
 			c.move_to(cfc.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
+	yield(get_tree().create_timer(1), "timeout")
+	cfc.NMAP.deck.shuffle_cards()
 
 
 # Button to change focus mode
