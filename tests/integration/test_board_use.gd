@@ -8,7 +8,11 @@ func before_each():
 	yield(yield_for(1), YIELD)
 
 
-func test_card_table_drop_location_and_rotation():
+func test_card_table_drop_location_and_rotation_use_rectangle():
+	cfc.hand_use_oval_shape = false
+	for c in cfc.NMAP.hand.get_all_cards():
+		c.reorganizeSelf()
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start		
 	# Reminder that card should not have trigger script definitions, to avoid
 	# messing with the tests
 	var card = cards[1]
@@ -58,11 +62,25 @@ func test_card_table_drop_location_and_rotation():
 	drop_card(card,board._UT_mouse_position)
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	if cfc.hand_use_oval_shape:
-		pass
-	else:
-		assert_eq(0.0,card.get_node("Control").rect_rotation,
-				"Rotation reset to 0 when card moved off board")
+	assert_eq(0.0,card.get_node("Control").rect_rotation,
+			"Rotation reset to 0 while card is moving to hand")
+	cfc.hand_use_oval_shape = true
+
+func test_card_table_drop_location_use_oval():
+	cfc.hand_use_oval_shape = true
+	# Reminder that card should not have trigger script definitions, to avoid
+	# messing with the tests
+	var card = cards[1]
+	yield(table_move(card, Vector2(100,200)), "completed")
+	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+	card.card_rotation = 180
+	yield(drag_drop(card, Vector2(100,600)), 'completed')
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_almost_eq(12.461,card.get_node("Control").rect_rotation,2.0,
+			"Rotation reset to a hand angle when card moved off board")
+	cfc.hand_use_oval_shape = true
+
 
 func test_card_hand_drop_recovery():
 	var card = cards[1]

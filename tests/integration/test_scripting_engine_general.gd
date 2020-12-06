@@ -58,8 +58,6 @@ func test_subject_target():
 	if scripting_engine is GDScriptFunctionState: # Still seeking...
 		yield(card, "initiated_targeting")
 	#watch_signals(scripting_engine)
-	if cfc.hand_use_oval_shape:
-		yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	yield(target_card(card,card), "completed")
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 270,
@@ -71,8 +69,6 @@ func test_subject_target():
 # Cannot figure out how to catch this signal...
 #	assert_signal_emitted(scripting_engine,"tasks_completed",
 #			"Scripts finished signal fires")
-
-
 
 func test_subject_boardseek():
 	var target2: Card = cards[2]

@@ -253,9 +253,10 @@ func _process(delta) -> void:
 		_on_Card_mouse_exited()
 
 
-# Triggers the focus-in effect on the card
+
 func _on_Card_mouse_entered() -> void:
-	#print("ENTER: state: ", state," Index: ",get_index()) # debug
+	# This triggers the focus-in effect on the card
+	#print(state,":enter:",get_index()) # Debug
 	#print($Control/Tokens/Drawer/VBoxContainer.rect_size) # debug
 	# We use this variable to check if mouse thinks it changed nodes because
 	# it just entered a child node
@@ -356,7 +357,7 @@ func _on_Card_mouse_exited() -> void:
 	# just enter a child button
 	# If it did, then that button will immediately set a variable to let us know
 	# not to restart the focus
-	#print("EXIT: state: ", state," Index: ",get_index()) # debug
+	#print(state,":exit:",get_index()) # debug
 	#print(_are_buttons_hovered()) # debug
 	# We use this variable to check if mouse thinks it changed nodes
 	# because it just entered a child node
@@ -716,6 +717,17 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 	# and a toggle was not requested, we consider we did nothing
 	elif value == card_rotation and not toggle:
 		retcode = _ReturnCode.OK
+		# We add this check because hand oval rotation
+		# does not change the card_rotation property
+		# so we ensure that the displayed rotation of a card
+		# which is not in hand, matches our expectations
+		if get_parent() != cfc.NMAP.hand \
+				and cfc.hand_use_oval_shape \
+				and $Control.rect_rotation != 0.0 \
+				and not $Tween.is_active():
+			_add_tween_rotation($Control.rect_rotation,value)
+			if start_tween:
+				$Tween.start()
 	else:
 		# If the toggle was specified then if the card matches the requested
 		# rotation, we reset it to 0 degrees
@@ -724,6 +736,13 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 
 		# We modify the card only if this is not a cost dry-run
 		if not check:
+			card_rotation = value
+			# If the value is 0 but the card is in an oval hand, we ensure the actual
+			# rotation we apply to the card will be their hand oval rotation
+			if value == 0 \
+					and get_parent() == cfc.NMAP.hand \
+					and cfc.hand_use_oval_shape:
+				value = _recalculate_rotation()
 			# We make sure to remove other tweens of the same type
 			# to avoid a deadlock
 			# There's no way to rotate the Area2D node,
@@ -734,7 +753,6 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 			# available tween, instead of immediately.
 			if start_tween:
 				$Tween.start()
-			card_rotation = value
 			#$Control/Tokens.rotation_degrees = -value # need to figure this out
 			# When the card actually changes orientation
 			# We report that it changed.
@@ -795,6 +813,8 @@ func move_to(targetHost: Node2D,
 			# The end position is always the final position the card would be
 			# inside the hand
 			_target_position = recalculate_position()
+			card_rotation = 0
+			_target_rotation = _recalculate_rotation()
 			state = MOVING_TO_CONTAINER
 			emit_signal("card_moved_to_hand",
 					self,
@@ -827,6 +847,7 @@ func move_to(targetHost: Node2D,
 				# of the stack position the card would have
 				# (this means how far up in the pile the card would appear)
 				_target_position = targetHost.get_stack_position(self)
+				_target_rotation = 0.0
 				state = MOVING_TO_CONTAINER
 				emit_signal("card_moved_to_pile",
 						self,
@@ -1079,6 +1100,7 @@ func reorganizeSelf() ->void:
 	match state:
 		IN_HAND, FOCUSED_IN_HAND, PUSHED_ASIDE:
 			_target_position = recalculate_position()
+			_target_rotation = _recalculate_rotation()
 			state = REORGANIZING
 	# This second match is  to prevent from changing the state
 	# when we're doing fancy movement
@@ -1089,6 +1111,7 @@ func reorganizeSelf() ->void:
 	match state:
 		MOVING_TO_CONTAINER:
 			_target_position = recalculate_position()
+			_target_rotation = _recalculate_rotation()
 
 
 # Stops existing card animations then makes sure they're
@@ -1412,9 +1435,10 @@ func _determine_target_position_from_mouse() -> void:
 
 
 # Instructs the card to move aside for another card enterring focus
-func _pushAside(targetpos: Vector2) -> void:
+func _pushAside(targetpos: Vector2, target_rotation: float) -> void:
 	interruptTweening()
 	_target_position = targetpos
+	_target_rotation = target_rotation
 	state = PUSHED_ASIDE
 
 # Pick up a card to drag around with the mouse.
@@ -1754,15 +1778,16 @@ func _process_card_state() -> void:
 			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
+			set_card_rotation(0)
 			# warning-ignore:return_value_discarded
+			# When we have an oval shape, we ensure the cards stay
+			# in the rotation expected of their position
 			if cfc.hand_use_oval_shape:
-				# if not $Tween.is_active():
-				# 	_target_rotation  = _recalculate_rotation()
-				# 	_add_tween_rotation($Control.rect_rotation,_target_rotation)
-				# 	$Tween.start()
-				set_card_rotation(0)
-			else:
-				set_card_rotation(0)
+				_target_rotation  = _recalculate_rotation()
+				if not $Tween.is_active() \
+						and $Control.rect_rotation != _target_rotation:
+					_add_tween_rotation($Control.rect_rotation,_target_rotation)
+					$Tween.start()
 
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
@@ -1792,7 +1817,11 @@ func _process_card_state() -> void:
 						# how close neighbours they are.
 						# Closest neighbours (1 card away) are pushed more
 						# than further neighbours.
-						neighbour_card._pushAside(neighbour_card.recalculate_position(neighbour_index_diff))
+						neighbour_card._pushAside(
+								neighbour_card.recalculate_position(
+									neighbour_index_diff),
+								neighbour_card._recalculate_rotation(
+									neighbour_index_diff))
 						neighbours.append(neighbour_card)
 				for c in get_parent().get_all_cards():
 					if not c in neighbours and c != self:
@@ -1886,7 +1915,6 @@ func _process_card_state() -> void:
 				# We need to check again, just in case it's been reorganized instead.
 				if state == MOVING_TO_CONTAINER:
 					_add_tween_position(position, _target_position, 0.35,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
-					_target_rotation  = _recalculate_rotation()
 					_add_tween_rotation($Control.rect_rotation,_target_rotation)
 					$Tween.start()
 					yield($Tween, "tween_all_completed")
@@ -1905,7 +1933,6 @@ func _process_card_state() -> void:
 				_add_tween_position(position, _target_position, 0.4)
 				if not scale.is_equal_approx(Vector2(1,1)):
 					_add_tween_scale(scale, Vector2(1,1),0.4)
-				_target_rotation  = _recalculate_rotation()
 				_add_tween_rotation($Control.rect_rotation,_target_rotation)
 				$Tween.start()
 				state = IN_HAND
@@ -1916,11 +1943,11 @@ func _process_card_state() -> void:
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
-			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not position.is_equal_approx(_target_position):
 				_add_tween_position(position, _target_position, 0.3,
 						Tween.TRANS_QUART, Tween.EASE_IN)
+				_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.3)
 				if not scale.is_equal_approx(Vector2(1,1)):
 					_add_tween_scale(scale, Vector2(1,1), 0.3,Tween.TRANS_QUART, Tween.EASE_IN)
 				$Tween.start()
@@ -2162,10 +2189,13 @@ func _get_angle_by_index(index_diff = null):
 	half = (hand_size - 1) / 2.0
 	var card_angle_max: float = 15
 	var card_angle_min: float = 5
+	# Angle between cards
 	var card_angle = max(min(60/hand_size,card_angle_max),card_angle_min)
+	# When foucs hand, the card needs to be offset by a certain angle
+	# The current practice is just to find a suitable expression function, if there is a better function, please replace this function: - sign(index_diff) * (1.95-0.3*index_diff*index_diff) * min(card_angle,5)
 	if index_diff != null:
 		return 90 + (half - index) * card_angle \
-				- sign(index_diff) * (- index_diff * index_diff + 10)
+				- sign(index_diff) * (1.95-0.3*index_diff*index_diff) * min(card_angle,5)
 	else:
 		return 90 + (half - index) * card_angle
 
@@ -2178,6 +2208,7 @@ func _get_oval_angle_by_index(
 		hor_rad = null,
 		ver_rad = null):
 	if not angle:
+		# Get the angle from the point on the oval to the center of the oval
 		angle = _get_angle_by_index(index_diff)
 	var parent_control
 	if not hor_rad:
@@ -2190,6 +2221,7 @@ func _get_oval_angle_by_index(
 	if angle == 90:
 		card_angle = 90
 	else:
+		# Convert oval angle to normal angle
 		card_angle= rad2deg(atan(- ver_rad / hor_rad / tan(deg2rad(angle))))
 		card_angle = card_angle + 90
 	return card_angle
@@ -2200,18 +2232,28 @@ func _recalculate_position_use_oval(index_diff = null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	var parent_control = get_parent().get_node('Control')
-	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.7
+	# Oval hor rad, rect_size.x*0.5*1.5 it’s an empirical formula, and it’s tested to feel good
+	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.5
+	# Oval ver rad, rect_size.y * 1.5 it’s an empirical formula, and it’s tested to feel good
 	var ver_rad: float = parent_control.rect_size.y * 1.5
+	# Get the angle from the point on the oval to the center of the oval
 	var angle = _get_angle_by_index(index_diff)
 	var rad_angle = deg2rad(angle)
+	# Get the direction vector of a point on the oval
 	var oval_angle_vector = Vector2(hor_rad * cos(rad_angle),
 			- ver_rad * sin(rad_angle))
+	# Take the center point of the card as the starting point, the coordinates of the top left corner of the card
 	var left_top = Vector2(- $Control.rect_size.x/2, - $Control.rect_size.y/2)
+	# Place the top center of the card on the oval point
 	var center_top = Vector2(0, - $Control.rect_size.y/2)
+	# Get the angle of the card, which is different from the oval angle, the card angle is the normal angle of a certain point
 	var card_angle = _get_oval_angle_by_index(angle, null, hor_rad,ver_rad)
+	# Displacement offset due to card rotation
 	var delta_vector = left_top - center_top.rotated(deg2rad(90 - card_angle))
+	# Oval center x
 	var center_x = parent_control.rect_size.x / 2 + parent_control.rect_position.x
-	var center_y = parent_control.rect_size.y * 1.5 + parent_control.rect_position.y
+	# Oval center y, - parent_control.rect_size.y * 0.25:This method ensures that the card is moved to the proper position
+	var center_y = parent_control.rect_size.y * 1.5 + parent_control.rect_position.y - parent_control.rect_size.y * 0.25
 	card_position_x = (oval_angle_vector.x + center_x)
 	card_position_y = (oval_angle_vector.y + center_y)
 	return(Vector2(card_position_x, card_position_y) + delta_vector)
