@@ -25,8 +25,7 @@ func test_attaching_and_switching_parent():
 			cfc.HOST_HOVER_COLOUR,
 			"Hovered host has the right colour highlight")
 	drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_almost_eq(card.global_position,cards[0].global_position
 			+ Vector2(0,1)
 			* card.get_node('Control').rect_size.y
@@ -34,7 +33,7 @@ func test_attaching_and_switching_parent():
 			"Card dragged in correct global position")
 	assert_eq(card.current_host_card,cards[0],
 			"Attached card has its parent in the current_host_card var")
-	assert_eq(card,cards[0].attachments[0],
+	assert_eq(card,cards[0].attachments.front(),
 			"Card with hosted card has its children attachments array")
 	assert_eq(1,len(cards[0].attachments),
 			"Parent attachments array is the right size")
@@ -42,13 +41,12 @@ func test_attaching_and_switching_parent():
 			"Attaching card turns attach highlights off")
 
 	card = cards[2]
-	yield(drag_drop(card,Vector2(310,310)), 'completed')
+	yield(drag_drop(card,Vector2(410,310)), 'completed')
 	assert_almost_eq(card.global_position,cards[0].global_position
 			+ Vector2(0,2)
 			* card.get_node('Control').rect_size.y
 			* cfc.ATTACHMENT_OFFSET, Vector2(2,2),
 			"Multiple attached card are placed in the right position in regards to their parent")
-
 	card = cards[3]
 	yield(drag_drop(card,Vector2(310,310)), 'completed')
 	assert_almost_eq(card.global_position,cards[0].global_position
@@ -93,17 +91,11 @@ func test_attaching_and_switching_parent():
 
 	card = cards[1]
 	card_prev_pos = card.global_position
-	card._on_Card_mouse_entered()
-	click_card(card)
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(700,100),card.global_position)
-	yield(yield_for(0.2), YIELD)
+	yield(drag_card(card, Vector2(700,100)), "completed")
 	assert_almost_ne(card_prev_pos,card.global_position, Vector2(2,2),
 			"Dragging an attached card is allowed")
-	yield(yield_for(0.4), YIELD)
 	drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_almost_eq(card_prev_pos,card.global_position, Vector2(2,2),
 			"After dropping an attached card, it returns to the parent host")
 	yield(drag_drop(card,Vector2(400,500)), 'completed')
@@ -123,7 +115,7 @@ func test_attaching_and_switching_parent():
 	yield(drag_drop(card,Vector2(630,230)), 'completed')
 	assert_eq(card.current_host_card,cards[4],
 			"Attached card can attach to another and clears out previous attachments")
-	assert_eq(card,cards[4].attachments[0],
+	assert_eq(card,cards[4].attachments.front(),
 			"Reattached card is added to new host correctly")
 	assert_false(card in cards[0].attachments,
 			"Reattached card is removed from old host correctly")
@@ -147,6 +139,8 @@ func test_attaching_and_switching_parent():
 
 	card = cards[4]
 	exhost_attachments = card.attachments.duplicate()
+	board._UT_interpolate_mouse_move(Vector2(100,100), Vector2(-1,-1), 10)
+	yield(yield_for(0.3), YIELD)
 	yield(drag_drop(card,cfc.NMAP.deck.position), 'completed')
 	yield(yield_for(1), YIELD) # Wait to allow dragging to start
 	assert_eq(0,len(card.attachments),
@@ -175,9 +169,7 @@ func test_multi_host_hover():
 	board.get_node("EnableAttach").pressed = true
 
 	card = cards[3]
-	card._on_Card_mouse_entered()
-	click_card(card)
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
+	yield(drag_card(card, Vector2(150,100)), "completed")
 	board._UT_interpolate_mouse_move(Vector2(150,100),card.global_position,10)
 	yield(yield_for(0.3), YIELD)
 	assert_true(cards[2].get_node('Control/FocusHighlight').visible,
@@ -189,5 +181,4 @@ func test_multi_host_hover():
 	assert_true(cards[1].get_node('Control/FocusHighlight').visible,
 			"Potential host highlight changes as it changes hover areas")
 	drop_card(card,board._UT_mouse_position)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)

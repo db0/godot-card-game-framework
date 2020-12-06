@@ -24,8 +24,8 @@ func test_move_to_multiple_container():
 	yield(drag_drop(cards[4], cfc.NMAP.deck.position), 'completed')
 	yield(drag_drop(cards[1], cfc.NMAP.discard.position), 'completed')
 	yield(drag_drop(cards[0], cfc.NMAP.deck.position), 'completed')
-	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 0.5), YIELD)
-	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(cards[0]._tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(cards[0]._tween, "tween_all_completed", 0.5), YIELD)
 	assert_almost_eq(cards[2].global_position,
 			cfc.NMAP.discard.global_position,Vector2(2,2),
 			"Card 2 final position matches pile's position")

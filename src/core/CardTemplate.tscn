@@ -1,9 +1,10 @@
-[gd_scene load_steps=20 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
 [ext_resource path="res://assets/icons/view.svg" type="Texture" id=3]
 [ext_resource path="res://src/custom/CardBack.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/core/TokenDrawer.gd" type="Script" id=5]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 75, 120 )
@@ -98,6 +99,8 @@ font_data = ExtResource( 1 )
 bg_color = Color( 0.584314, 0.6, 0.647059, 1 )
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
+
+[sub_resource type="RectangleShape2D" id=16]
 
 [sub_resource type="DynamicFont" id=14]
 font_data = ExtResource( 1 )
@@ -300,6 +303,7 @@ __meta__ = {
 [node name="Pulse" type="Tween" parent="Control/Back"]
 
 [node name="Tokens" type="Node2D" parent="Control"]
+script = ExtResource( 5 )
 
 [node name="Drawer" type="PanelContainer" parent="Control/Tokens"]
 self_modulate = Color( 1, 1, 1, 0 )
@@ -320,6 +324,13 @@ mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Area2D" type="Area2D" parent="Control/Tokens/Drawer"]
+collision_layer = 2148007936
+collision_mask = 524288
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Control/Tokens/Drawer/Area2D"]
+shape = SubResource( 16 )
 
 [node name="Tween" type="Tween" parent="Control/Tokens"]
 
@@ -401,3 +412,44 @@ collision_mask = 2
 [node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TargetLine/ArrowHead/Area2D"]
 position = Vector2( -32, -8 )
 polygon = PoolVector2Array( 16, 24, 32, 8, 16, -8 )
+
+[node name="Debug" type="VBoxContainer" parent="."]
+visible = false
+margin_left = 150.0
+margin_top = -40.0
+margin_right = 190.0
+mouse_filter = 2
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="id" type="Label" parent="Debug"]
+margin_right = 40.0
+margin_bottom = 14.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="state" type="Label" parent="Debug"]
+margin_right = 40.0
+margin_bottom = 14.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="index" type="Label" parent="Debug"]
+margin_top = 18.0
+margin_right = 40.0
+margin_bottom = 32.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="parent" type="Label" parent="Debug"]
+margin_top = 36.0
+margin_right = 40.0
+margin_bottom = 50.0
+__meta__ = {
+"_edit_use_anchors_": false
+}

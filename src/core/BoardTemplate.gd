@@ -4,6 +4,7 @@
 class_name Board
 extends Node2D
 
+
 # Simulated mouse position for Unit Testing
 var _UT_mouse_position := Vector2(0,0)
 # Simulated mouse position for Unit Testing
@@ -18,11 +19,18 @@ var _UT_interpolation_requested := false
 # Used for interpolating
 var _t = 0
 
+onready var mouse_pointer := preload("res://src/core/MousePointer.tscn").instance()
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass
+	add_child(mouse_pointer)
 
 
+
+func _process(_delta: float) -> void:
+	mouse_pointer.global_position = \
+			mouse_pointer.determine_global_mouse_pos()
+	
 func _physics_process(delta) -> void:
 	if _UT_interpolation_requested:
 		if _UT_mouse_position != _UT_target_mouse_position:
