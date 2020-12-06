@@ -18,7 +18,7 @@ signal tasks_completed
 # has costs that need to be paid, before the effects take place.
 var costs_dry_run := false
 # This is set to true whenever we're doing a cost dry-run
-# and any task marked "is_cost" wil lnot be able to manipulate the
+# and any task marked "is_cost" will not be able to manipulate the
 # game state as required, either because the board is already at the
 # requested state, or because something prevents it.
 var can_all_costs_be_paid := true
@@ -39,6 +39,7 @@ func _init(card_owner: Card,
 	costs_dry_run = check_costs
 	run_next_script(card_owner,
 			scripts_queue.duplicate())
+
 
 # The main engine starts here.
 # It receives array with all the scripts to execute,
@@ -69,7 +70,8 @@ func run_next_script(card_owner: Card,
 		var script := ScriptTask.new(
 				card_owner,
 				scripts_queue.pop_front(),
-				prev_subjects)
+				prev_subjects,
+				costs_dry_run)
 		# In case the task involves targetting, we need to wait on further
 		# execution until targetting has completed
 		if not script.has_init_completed:
@@ -90,8 +92,24 @@ func run_next_script(card_owner: Card,
 						or (costs_dry_run and script.get(SP.KEY_IS_COST))):
 				#print(script.is_valid,':',costs_dry_run)
 				var retcode = call(script.task_name, script)
-				if costs_dry_run and retcode != Card._ReturnCode.CHANGED:
-					can_all_costs_be_paid = false
+				if costs_dry_run:
+					if retcode != Card._ReturnCode.CHANGED:
+						can_all_costs_be_paid = false
+					else:
+						# We check for confirmation of optional cost tasks
+						# only after checking that they are feasible
+						# because there's no point in asking the player
+						# about a task they cannot perform anyway.
+						var confirm_return = CardFrameworkUtils.confirm(
+							script.properties,
+							card_owner.card_name,
+							script.task_name)
+						if confirm_return is GDScriptFunctionState: # Still working.
+							confirm_return = yield(confirm_return, "completed")
+							# If the player chooses not to play an optional cost
+							# We consider the whole cost dry run unsuccesful
+							if not confirm_return:
+								can_all_costs_be_paid = false
 		else:
 			 # If card has a script but it's null, it probably not coded yet. Just go on...
 			print("[WARN] Found empty script. Ignoring...")

@@ -36,12 +36,19 @@ func _on_FancyMovementToggle_toggled(_button_pressed) -> void:
 	cfc.fancy_movement = $FancyMovementToggle.pressed
 
 
+func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
+	cfc.hand_use_oval_shape = $OvalHandToggle.pressed
+	for c in cfc.NMAP.hand.get_all_cards():
+		c.reorganizeSelf()
+
 # Reshuffles all Card objects created back into the deck
 func _on_ReshuffleAll_pressed() -> void:
-	for c in allCards:
+	for c in get_tree().get_nodes_in_group("cards"):
 		if c.get_parent() != cfc.NMAP.deck:
 			c.move_to(cfc.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
+	yield(get_tree().create_timer(1), "timeout")
+	cfc.NMAP.deck.shuffle_cards()
 
 
 # Button to change focus mode
@@ -76,3 +83,4 @@ func load_test_cards() -> void:
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		#card.modulate.a = 0 # We use this for a nice transition effect
 	$Deck.reorganize_stack()
+

@@ -44,7 +44,7 @@ Click on the 'F' button to exchange between these two states
 
 ### Card Scripts
 
-The first three cards you will draw from your deck each have different prepared automation. You can double click any of them in the hand or board to see their effects. 
+The first four cards you will draw from your deck each have different prepared automation. You can double click any of them in the hand or board to see their effects. 
 
 Some of them have also effects that trigger off of other effects.
 
@@ -200,25 +200,35 @@ The game comes with some sample scripted cards which can be found under `res://s
 
 ## Provided features
 
+* **Complete card text and rules enforcement** via provided Scripting Engine! (see scripting features below)
 * Tween animations that look good for card movements.
 * Customizable card highlights
-* Oval shaped hand shape
+* Choice between Oval or Straight hand shape
 * Automatic focus-in on cards when moused over in-hand.
 * Automatic re-arranging of hand as cards are added or removed.
-* Drag & Drop
-* Option for multiple hands and piles
+* Drag & Drop of cards on table and between containers
+* Possibility for multiple hands and piles
 * Piles of cards represent their size visually.
 * Larger image of card when moving mouse cursor over it
 * Pop-up buttons for predefined functions on cards and card containers
 * Option to look inside the piles and choose cards to move out
 * Cards can rotate on the table
 * Cards can attach to other cards and move together as a group.
-* Cards can target other cards with a draggable arrow (demo with right-mouse drag & drop)
+* Cards can target other cards with a draggable arrow
 * Can flip cards face-down and view them while in that state
-* Can add tokens on cards
-* Complete Card Text Scripting Capability
+* Can add tokens on cards. Tokens expand in the own drawer for more info.
 * Ability to define cards in standard json
 * Ability to split card definitions into sets
+* Automatically resizing text inside cards to fit the card size.
+
+### Scripting Engine Features
+
+* Can define card scripts in plain text, using simple json
+* Can set cards to trigger off of any booard manipulation
+* Can filter the triggers based on card properties, or a special subset
+* Can define optional abilities
+* Can define multiple-choice abilities
+* Very easily extensible to your own game's special requirements
 
 ## Contributing
 

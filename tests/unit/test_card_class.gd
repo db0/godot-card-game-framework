@@ -11,7 +11,7 @@ func after_all():
 
 func before_each():
 	setup_board()
-	card = cfc.NMAP.deck.get_card(0)
+	card = cfc.NMAP.deck.get_top_card()
 
 func test_methods():
 	assert_eq('Card',card.get_class(), 'class name returns correct value')
@@ -93,3 +93,10 @@ func test_card_name_setget():
 
 func test_CardDefinition_properties():
 	pending("Array property should use the separator")
+
+func test_font_size():
+	var text_node = card.get_node("Control/Front/CardText/Abilities")
+	var labels_rect = card.get_node("Control/Front/CardText").rect_size
+	var lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed vitae laoreet nunc. Etiam vitae tempus ligula. Vestibulum pellentesque mauris vel ultricies pharetra. Curabitur iaculis dolor vitae leo aliquet viverra sit amet vitae eros. Nulla eros turpis, mollis non elit eget, iaculis porta magna. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Nulla sem dui, consectetur ut nulla ut, vestibulum venenatis dui. Fusce sollicitudin bibendum quam, at scelerisque risus fringilla eu. Curabitur elementum sem sed nisi malesuada molestie. Nulla finibus, eros quis volutpat vehicula, dui mauris dictum metus, quis pellentesque sem quam eget mi. Vivamus convallis massa non ex laoreet pharetra. Proin sed leo at dui varius dapibus sit amet ac purus."
+	card._set_label_text(text_node, lorem)
+	assert_eq(card.get_node("Control/Front/CardText").rect_size,labels_rect)

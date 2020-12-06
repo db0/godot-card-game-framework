@@ -96,6 +96,7 @@ func test_multiple_costs():
 			"set_faceup": false}]}}
 	yield(table_move(target, Vector2(100,200)), "completed")
 	target.is_faceup = false
+	yield(yield_to(card._flip_tween, "tween_all_completed", 0.5), YIELD)
 	card.execute_scripts()
 	yield(target_card(card,target), "completed")
 	yield(yield_to(card._flip_tween, "tween_all_completed", 0.5), YIELD)

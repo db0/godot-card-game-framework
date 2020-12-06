@@ -4,6 +4,9 @@
 class_name CardFrameworkUtils
 extends Reference
 
+const _CARD_OPTIONAL_CONFIRM = \
+		preload("res://src/core/OptionalConfirmation.tscn")
+
 # Randomize array through our own seed
 static func shuffle_array(array: Array) -> void:
 	var n = array.size()
@@ -83,3 +86,24 @@ static func find_card_script(card_name, trigger) -> Dictionary:
 		if not card_script.empty():
 			break
 	return(card_script)
+
+
+# Creates a ConfirmationDialog for the player to approve the 
+# Use of an optional script or task.
+static func confirm(
+		script: Dictionary, 
+		card_name: String,
+		task_name: String,
+		type := "task") -> bool:
+	var is_accepted := true
+	if script.get(SP.KEY_IS_OPTIONAL + type):
+		var confirm = _CARD_OPTIONAL_CONFIRM.instance()
+		confirm.prep(card_name,task_name)
+		# We have to wait until the player has finished selecting an option
+		yield(confirm,"selected")
+		# If the player selected "No", we don't execute anything
+		if not confirm.is_accepted:
+			is_accepted = false
+		# Garbage cleanup
+		confirm.queue_free()
+	return(is_accepted)

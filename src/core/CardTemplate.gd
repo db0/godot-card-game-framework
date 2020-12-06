@@ -517,25 +517,29 @@ func setup(cname: String) -> void:
 	# The properties of the card should be already stored in cfc
 	set_card_name(cname)
 	properties = cfc.card_definitions.get(cname)
-
 	for label in properties.keys():
 		# These are standard properties which is simple a String to add to the
 		# label.text field
 		if label in CardConfig.PROPERTIES_STRINGS:
-			$Control/Front/CardText.get_node(label).text = properties[label]
+			_set_label_text($Control/Front/CardText.get_node(label),
+					properties[label])
+			# $Control/Front/CardText.get_node(label).text = properties[label]
+			if properties[label]=="":
+				$Control/Front/CardText.get_node(label).visible = false
 		# These are int or float properties which need to be converted
 		# to a string with some formatting.
 		#
 		# In this demo, the format is defined as: "labelname: value"
 		elif label in CardConfig.PROPERTIES_NUMBERS:
-			$Control/Front/CardText.get_node(label).text = \
-					label + ": " + str(properties[label])
+			_set_label_text($Control/Front/CardText.get_node(label),label
+					+ ": " + str(properties[label]))
 		# These are arrays of properties which are put in a label with a simple
 		# Join character
 		elif label in CardConfig.PROPERTIES_ARRAYS:
-			$Control/Front/CardText.get_node(label).text = \
+			_set_label_text($Control/Front/CardText.get_node(label),
 					CardFrameworkUtils.array_join(properties[label],
-					cfc.ARRAY_PROPERTY_JOIN)
+					cfc.ARRAY_PROPERTY_JOIN))
+
 
 # Setter for _is_attachment
 func set_is_attachment(value: bool) -> void:
@@ -670,7 +674,8 @@ func get_is_viewed() -> bool:
 # Setter for card_name
 # Also changes the card label and the node name
 func set_card_name(value : String) -> void:
-	$Control/Front/CardText/Name.text = value
+	var name_label = $Control/Front/CardText/Name
+	_set_label_text(name_label,value)
 	name = value
 	card_name = value
 
@@ -900,7 +905,7 @@ func move_to(targetHost: Node2D,
 			else:
 				_determine_target_position_from_mouse()
 				raise()
-			state = DROPPING_TO_BOARD
+			state = ON_PLAY_BOARD
 	# Just in case there's any leftover potential host highlights
 	if len(_potential_cards):
 		for card in _potential_cards:
@@ -918,7 +923,8 @@ func execute_scripts(
 		signal_details: Dictionary = {}):
 	var card_scripts
 	var sceng = null
-	# If scripts have been defined directly in this object
+
+	# If scripts have been defined directly in this Card object
 	# They take precedence over CardScriptDefinitions.gd
 	#
 	# This allows us to modify a card's scripts during runtime
@@ -928,6 +934,7 @@ func execute_scripts(
 	else:
 		# CardScriptDefinitions.gd should contain scripts for all defined cards
 		card_scripts = CardFrameworkUtils.find_card_script(card_name, trigger)
+
 	# We check the trigger against the filter defined
 	# If it does not match, then we don't pass any scripts for this trigger.
 	if not SP.filter_trigger(
@@ -938,15 +945,34 @@ func execute_scripts(
 		card_scripts.clear()
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state
+	var state_exec := "NONE"
 	match state:
 		ON_PLAY_BOARD,FOCUSED_ON_BOARD:
 			# We assume only faceup cards can execute scripts on the board
 			if is_faceup:
-				state_scripts = card_scripts.get("board", [])
+				state_exec ="board"
 		IN_HAND,FOCUSED_IN_HAND:
-			state_scripts = card_scripts.get("hand", [])
+				state_exec ="hand"
 		IN_POPUP,FOCUSED_IN_POPUP:
-			state_scripts = card_scripts.get("pile", [])
+				state_exec ="pile"
+	state_scripts = card_scripts.get(state_exec, [])
+
+	# Here we check for confirmation of optional trigger effects
+	# There should be an SP.KEY_IS_OPTIONAL definition per state
+	# E.g. if board scripts are optional, but hand scripts are not
+	# Then you'd include an "is_optional_board" key at the same level as "board"
+	var confirm_return = CardFrameworkUtils.confirm(
+		card_scripts,
+		card_name,
+		trigger,
+		state_exec)
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
+		# If the player chooses not to play an optional cost
+		# We consider the whole cost dry run unsuccesful
+		if not confirm_return:
+			state_scripts = []
+
 	# If the state_scripts return a dictionary entry
 	# it means it's a multiple choice between two scripts
 	if typeof(state_scripts) == TYPE_DICTIONARY:
@@ -961,6 +987,8 @@ func execute_scripts(
 		else: state_scripts = []
 		# Garbage cleanup
 		choices_menu.queue_free()
+
+
 	# To avoid unnecessary operations
 	# we evoce the ScriptingEngine only if we have something to execute
 	if len(state_scripts):
@@ -987,26 +1015,6 @@ func execute_scripts(
 					self,
 					state_scripts)
 	return(sceng)
-
-
-
-		
-# Ensures that all filters requested by the script are respected
-#
-# Will set is_valid to false if any filter does not match reality
-func _filter_signal_trigger(card_scripts, trigger_card: Card) -> bool:
-	var is_valid = true
-	# Here we check that the trigger matches the _request_ for trigger
-	# A trigger which requires "another" card, should not trigger
-	# when itself causes the effect.
-	# For example, a card which rotates itself whenever another card
-	# is rotated, should not automatically rotate when itself rotates.
-	var trigger = card_scripts.get("trigger", "any")
-	if trigger == "self" and trigger_card != self:
-		is_valid = false
-	if trigger == "another" and trigger_card == self:
-		is_valid = false
-	return(is_valid)
 
 
 # Handles the card becoming an attachment for a specified host Card object
@@ -1285,7 +1293,7 @@ func complete_targeting() -> void:
 #
 # * When set to false, card cannot receive inputs anymore
 #    (this is useful when card is in motion or in a pile)
-# * When set to false, card can receive inputs again
+# * When set to true, card can receive inputs again
 func set_mouse_filters(value = true) -> void:
 	var control_filter := 0
 	var all_filter := 1
@@ -1683,8 +1691,8 @@ func _stop_pulse():
 
 # Card rotation animation
 func _add_tween_rotation(
-		expected_rotation: int,
-		target_rotation: int,
+		expected_rotation: float,
+		target_rotation: float,
 		runtime := 0.3,
 		trans_type = Tween.TRANS_BACK,
 		ease_type = Tween.EASE_IN_OUT):
@@ -1692,7 +1700,11 @@ func _add_tween_rotation(
 	$Tween.interpolate_property($Control,'rect_rotation',
 			expected_rotation, target_rotation, runtime,
 			trans_type, ease_type)
-
+	# We ensure the card_rotation value is also kept up to date
+	# But onlf it it's one of the expected multiples
+	if int(target_rotation) != card_rotation \
+			and int(target_rotation) in [0,90,180,270]:
+		card_rotation = int(target_rotation)
 
 # Card position animation
 func _add_tween_position(
@@ -1740,6 +1752,7 @@ func _add_tween_scale(
 func _process_card_state() -> void:
 	match state:
 		IN_HAND:
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1751,8 +1764,12 @@ func _process_card_state() -> void:
 				set_card_rotation(0)
 			else:
 				set_card_rotation(0)
+
 		FOCUSED_IN_HAND:
 			# Used when card is focused on by the mouse hovering over it.
+			# We increase the z_index to allow the focused card appear
+			# always over its neighbours
+			z_index = 1
 			set_focus(true)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1803,15 +1820,15 @@ func _process_card_state() -> void:
 				_focus_completed = true
 				# We don't change state yet, only when the focus is removed
 				# from this card
+
 		MOVING_TO_CONTAINER:
 			# Used when moving card between places
 			# (i.e. deck to hand, hand to discard etc)
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(false)
 			# warning-ignore:return_value_discarded
 			# set_card_rotation(0,false,false)
-
-
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
 				if not scale.is_equal_approx(Vector2(1,1)):
@@ -1876,8 +1893,10 @@ func _process_card_state() -> void:
 					yield($Tween, "tween_all_completed")
 					_determine_idle_state()
 				_fancy_move_second_part = false
+
 		REORGANIZING:
 			# Used when reorganizing the cards in the hand
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1889,11 +1908,12 @@ func _process_card_state() -> void:
 					_add_tween_scale(scale, Vector2(1,1),0.4)
 				_target_rotation  = _recalculate_rotation()
 				_add_tween_rotation($Control.rect_rotation,_target_rotation)
-#				_tween_interpolate_visibility(1,0.4)
 				$Tween.start()
 				state = IN_HAND
+
 		PUSHED_ASIDE:
 			# Used when card is being pushed aside due to the focusing of a neighbour.
+			z_index = 0
 			set_focus(false)
 			set_mouse_filters(true)
 			# warning-ignore:return_value_discarded
@@ -1907,6 +1927,7 @@ func _process_card_state() -> void:
 				$Tween.start()
 				# We don't change state yet,
 				# only when the focus is removed from the neighbour
+
 		DRAGGED:
 			# Used when the card is dragged around the game with the mouse
 			set_mouse_filters(true)
@@ -1929,6 +1950,7 @@ func _process_card_state() -> void:
 			# We want to keep the token drawer closed during movement
 			if _is_drawer_open:
 				_token_drawer(false)
+
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			set_focus(false)
@@ -1949,6 +1971,7 @@ func _process_card_state() -> void:
 						Tween.TRANS_SINE, Tween.EASE_IN)
 				_buttons_tween.start()
 			_organize_attachments()
+
 		DROPPING_TO_BOARD:
 			set_mouse_filters(true)
 			# Used when dropping the cards to the table
@@ -1963,13 +1986,19 @@ func _process_card_state() -> void:
 #				if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y > get_viewport().size.y:
 #					_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y
 				_add_tween_position(position, _target_position, 0.25)
-				_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
+				# The below ensures a card dropped from the hand will not
+				# retain a slight rotation.
+				# We check if the card already has been rotated to a different
+				# card_cotation
+				if not int($Control.rect_rotation) in [0,90,180,270]:
+					_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
 				# We want cards on the board to be slightly smaller than in hand.
 				if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
 					_add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.5,
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = ON_PLAY_BOARD
+
 		FOCUSED_ON_BOARD:
 			# Used when card is focused on by the mouse hovering over it while it is on the board.
 			# The below tween shows the container manipulation buttons when you hover over them
@@ -2015,6 +2044,7 @@ func _process_card_state() -> void:
 #				_determine_idle_state()
 #				_fancy_move_second_part = false
 #				state = IN_PILE
+
 		IN_PILE:
 			set_focus(false)
 			set_mouse_filters(false)
@@ -2022,6 +2052,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
+
 		IN_POPUP:
 			# We make sure that a card in a popup stays in its position
 			# Unless moved
@@ -2035,11 +2066,13 @@ func _process_card_state() -> void:
 				scale = Vector2(0.75,0.75)
 			if position != Vector2(0,0):
 				position = Vector2(0,0)
+
 		FOCUSED_IN_POPUP:
 			# Used when the card is displayed in the popup grid container
 			set_focus(true)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
+
 		VIEWPORT_FOCUS:
 			set_focus(false)
 			set_mouse_filters(false)
@@ -2133,7 +2166,7 @@ func _get_angle_by_index(index_diff = null):
 	var card_angle = max(min(60/hand_size,card_angle_max),card_angle_min)
 	if index_diff != null:
 		return 90 + (half - index) * card_angle \
-				- sign(index_diff) * (-index_diff*index_diff + 5)
+				- sign(index_diff) * (- index_diff * index_diff + 10)
 	else:
 		return 90 + (half - index) * card_angle
 
@@ -2168,7 +2201,7 @@ func _recalculate_position_use_oval(index_diff = null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	var parent_control = get_parent().get_node('Control')
-	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.5
+	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.7
 	var ver_rad: float = parent_control.rect_size.y * 1.5
 	var angle = _get_angle_by_index(index_diff)
 	var rad_angle = deg2rad(angle)
@@ -2225,11 +2258,65 @@ func _recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 		return(Vector2(card_position_x,card_position_y))
 
 
-# Calculate the rotation
+# Calculates the rotation the card should have based on its parent.
 func _recalculate_rotation(index_diff = null)-> float:
-	if get_parent() == cfc.NMAP.hand:
-		if cfc.hand_use_oval_shape:
-			return 90.0 - _get_oval_angle_by_index(null, index_diff)
-		return(0.0)
-	else:
-		return(0.0)
+	var calculated_rotation := float(card_rotation)
+	if get_parent() == cfc.NMAP.hand and cfc.hand_use_oval_shape:
+		calculated_rotation = 90.0 - _get_oval_angle_by_index(null, index_diff)
+	return(calculated_rotation)
+
+
+# Set a label node's text.
+# As the string becomes longer, the font size becomes smaller
+func _set_label_text(node, value):
+	# We do not want some fields, like the name, to be too small.
+	# see CardConfig.TEXT_EXPANSION_MULTIPLIER documentation
+	var allowed_expansion = CardConfig.TEXT_EXPANSION_MULTIPLIER.get(node.name,1)
+	var label_size = node.rect_size
+	var label_font = node.get("custom_fonts/font").duplicate()
+	var line_height = label_font.get_height()
+	# line_spacing should be calculated into rect_size
+	var line_spacing = node.get("custom_constants/line_spacing")
+	if not line_spacing:
+		line_spacing = 3
+	# This calculates the amount of vertical pixels the text would take
+	# once it was word-wrapped.
+	var label_rect_y = label_font.get_wordwrap_string_size(
+			value, label_size.x).y \
+			/ line_height \
+			* (line_height + line_spacing) \
+			- line_spacing
+	# If the y-size of the wordwrapped text would be bigger than the current
+	# available y-size foir this label, we reduce the text, until we
+	# it's small enough to stay within the boundaries
+	while label_rect_y > label_size.y * allowed_expansion:
+		label_font.size = label_font.size - 1
+		if label_font.size < 3:
+			label_font.size = 2
+			break
+		label_rect_y = label_font.get_wordwrap_string_size(
+				value,label_size.x).y \
+				/ line_height \
+				* (line_height + line_spacing) \
+				- line_spacing
+	node.set("custom_fonts/font", label_font)
+	node.rect_min_size = label_size
+	node.text = value
+
+
+# Ensures that all filters requested by the script are respected
+#
+# Will set is_valid to false if any filter does not match reality
+func _filter_signal_trigger(card_scripts, trigger_card: Card) -> bool:
+	var is_valid = true
+	# Here we check that the trigger matches the _request_ for trigger
+	# A trigger which requires "another" card, should not trigger
+	# when itself causes the effect.
+	# For example, a card which rotates itself whenever another card
+	# is rotated, should not automatically rotate when itself rotates.
+	var trigger = card_scripts.get("trigger", "any")
+	if trigger == "self" and trigger_card != self:
+		is_valid = false
+	if trigger == "another" and trigger_card == self:
+		is_valid = false
+	return(is_valid)

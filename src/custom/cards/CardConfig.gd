@@ -16,3 +16,18 @@ const META := ["_template"]
 # This property matches the name of the scene file (without the .tcsn file) 
 # which is used as a template For this card.
 const SCENE_PROPERTY = "Type"
+# This dictionary defines how much more a text field is allowed
+# to expand their rect in order to fit its text before shrinking it.
+#
+# The defaults of 1 means the text will shrink until it all fits within
+# the defined rect of the label.
+#
+# This is useful for things like card names, where it's preferable to expand
+# The title rect, instead of reducing the name's font size too much.
+#
+# You have to be careful with this field, as allowing too much expansion will
+# lead to cards with a lot of text, having it overflow their boundaries
+const TEXT_EXPANSION_MULTIPLIER := {
+	"Name": 2,
+	"Tags": 1.2
+}
