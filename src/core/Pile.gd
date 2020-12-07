@@ -189,41 +189,49 @@ func _slot_card_into_popup(card: Card) -> void:
 	card.state = card.IN_POPUP
 
 # Randomly rearranges the order of the [Card] nodes.
+# Pile shuffling includes a fancy animation
 func shuffle_cards() -> void:
-	.shuffle_cards()
-	reorganize_stack()
-	_shuffle_card_animation()
-
-# Just do the animation when shuffling, this time the sorting has been changed
-func _shuffle_card_animation() -> void:
-	if not $Tween.is_active():
+	if not $Tween.is_active() and not cfc.UT:
+		var last_card: Card
+		# We move the pile to a more central location to see the anim
 		_add_tween_position(position,shuffle_position,0.2)
 		_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
 		$Tween.start()
 		yield($Tween, "tween_all_completed")
-		if get_card_count()>1:
-			var card = get_card(get_card_count()/2)
-			var center_card_position = card.position
-			var center_card_pop_position = center_card_position+Vector2(0,card.get_node("Control").rect_size.y)
-			card._add_tween_position(center_card_position,center_card_pop_position,0.2)
-			card.get_node("Tween").start()
-			yield(card.get_node("Tween"), "tween_all_completed")
-			card.position = center_card_position
-			var top_card = get_top_card()
-			var top_card_position = top_card.position
-			var top_card_pop_position = top_card.position+Vector2(0,top_card.get_node("Control").rect_size.y)
-			top_card.position = center_card_pop_position
-			top_card._add_tween_position(center_card_pop_position,top_card_pop_position,0.03)
-			top_card.get_node("Tween").start()
-			yield(top_card.get_node("Tween"), "tween_all_completed")
-			top_card._add_tween_position(top_card_pop_position,top_card_position,0.2)
-			top_card.get_node("Tween").start()
-			yield(top_card.get_node("Tween"), "tween_all_completed")
+		if get_card_count() > 1:
+			var random_cards = get_all_cards().duplicate()
+			CardFrameworkUtils.shuffle_array(random_cards)
+			last_card = random_cards.back()
+			for card in random_cards:
+				_anim_shuffle_card(card)
+				yield(get_tree().create_timer(0.05), "timeout")
+		# This is where the shuffle actually happens
+		# The effect looks like the cards shuffle in the middle of their
+		# animations
+		.shuffle_cards()
+		yield(last_card._tween, "tween_all_completed")
 		_add_tween_position(position,init_position,0.2)
 		_add_tween_rotation(rotation_degrees,0,0.2)
 		$Tween.start()
 		yield($Tween, "tween_all_completed")
+	else:
+		# if we're already running another animation, just shuffle
+		.shuffle_cards()
+	reorganize_stack()
 
+# Animates a card semi-randomly to make it looks like it's being shuffled
+# Then it returns it to its original location
+func _anim_shuffle_card(card: Card) -> void:
+	var starting_card_position = card.position
+	var csize = card.get_node("Control").rect_size/2
+	var random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
+	var random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
+	var center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
+	card._add_tween_position(starting_card_position,center_card_pop_position,0.2)
+	card._tween.start()
+	yield(card._tween, "tween_all_completed")
+	card._add_tween_position(center_card_pop_position,starting_card_position,0.2)
+	card._tween.start()
 
 # Card rotation animation
 func _add_tween_rotation(

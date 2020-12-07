@@ -27,9 +27,17 @@ static func shuffle_array(array: Array) -> void:
 static func randi() -> int:
 	return cfc.game_rng.randi()
 
+# Mapping randf function
+static func randf() -> float:
+	return cfc.game_rng.randf()
+
 # Mapping randi_range function
 static func randi_range(from: int, to: int) -> int:
 	return cfc.game_rng.randi_range(from, to)
+
+# Mapping randf_range function
+static func randf_range(from: float, to: float) -> float:
+	return cfc.game_rng.randf_range(from, to)
 
 
 # Returns a string of all elements in the array, separared by the
