@@ -448,6 +448,7 @@ func test_card_targeted():
 	cards[4].initiate_targeting()
 	yield(target_card(cards[4], target), "completed")
 	yield(yield_for(0.1), YIELD)
+	
 	assert_signal_emitted_with_parameters(
 				target,"card_targeted",
 				[target,"card_targeted",

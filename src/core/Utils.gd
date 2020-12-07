@@ -107,3 +107,10 @@ static func confirm(
 		# Garbage cleanup
 		confirm.queue_free()
 	return(is_accepted)
+
+
+# Used with sort_custom to find the highest child index among multiple cards
+static func sort_index_ascending(c1, c2):
+	if c1.get_my_card_index() < c2.get_my_card_index():
+		return true
+	return false

@@ -30,7 +30,7 @@ func test_table_hand_z_index():
 	cards.append(hand.draw_card())
 	yield(yield_for(0.7), YIELD)
 	yield(drag_drop(cards[1],Vector2(300,600)), 'completed')
-	yield(yield_for(0.7), YIELD)
+	yield(move_mouse(Vector2(0,0)), 'completed')
 	assert_eq(8,hand.get_card_count(),"Correct amount of cards in hand")
 	for c in cards:
 		if c.get_parent() == cfc.NMAP.hand:

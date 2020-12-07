@@ -123,8 +123,9 @@ func get_class():
 func get_all_cards() -> Array:
 	var cardsArray := []
 	for obj in get_children():
-		# This comparison will return null if obj is not a Card class.
-		if obj as Card:
+		# We want dragged cards to not be taken into account
+		# when reorganizing the hand (so that their gap closes immediately)
+		if obj as Card and obj != cfc.card_drag_ongoing:
 			cardsArray.append(obj)
 	return cardsArray
 

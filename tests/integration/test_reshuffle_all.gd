@@ -12,20 +12,8 @@ func after_each():
 
 func test_fancy_reshuffle_all():
 	cfc.fancy_movement = true
-	cards[0]._on_Card_mouse_entered()
-	click_card(cards[0])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(300,300),cards[0].global_position)
-	yield(yield_for(0.6), YIELD)
-	drop_card(cards[0],board._UT_mouse_position)
-	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	cards[4]._on_Card_mouse_entered()
-	click_card(cards[4])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(1000,10),cards[0].global_position)
-	yield(yield_for(0.6), YIELD)
-	drop_card(cards[4],board._UT_mouse_position)
-	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(cards[0], Vector2(300,300)), "completed")
+	yield(drag_drop(cards[4], Vector2(1000,10)), "completed")
 	board._on_ReshuffleAll_pressed()
 	yield(yield_for(0.02), YIELD)
 	assert_almost_eq(Vector2(300, 300),cards[0].global_position,Vector2(10,10), 
@@ -36,20 +24,8 @@ func test_fancy_reshuffle_all():
 
 func test_basic_reshuffle_all():
 	cfc.fancy_movement = false
-	cards[0]._on_Card_mouse_entered()
-	click_card(cards[0])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(300,300),cards[0].global_position)
-	yield(yield_for(0.6), YIELD)
-	drop_card(cards[0],board._UT_mouse_position)
-	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	cards[4]._on_Card_mouse_entered()
-	click_card(cards[4])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(1000,10),cards[0].global_position)
-	yield(yield_for(0.6), YIELD)
-	drop_card(cards[4],board._UT_mouse_position)
-	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
+	yield(drag_drop(cards[0], Vector2(300,300)), "completed")
+	yield(drag_drop(cards[4], Vector2(1000,10)), "completed")
 	board._on_ReshuffleAll_pressed()
 	yield(yield_for(0.018), YIELD)
 	assert_almost_eq(Vector2(300, 300),cards[0].global_position,Vector2(10,10), 

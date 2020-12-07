@@ -14,6 +14,8 @@ enum FocusStyle {
 	BOTH					#2
 }
 
+
+
 #-----------------------------------------------------------------------------
 # BEGIN Behaviour Constants
 # Change the below to change how all cards behave to match your game.
@@ -153,7 +155,7 @@ var piles: Array
 var hands: Array
 # The card actively being dragged
 var card_drag_ongoing: Card = null
-
+var debug := false
 # Game random number generator
 var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
@@ -169,6 +171,7 @@ func _ready() -> void:
 	# The below takes care that we adjust some settings when testing via Gut
 	if get_tree().get_root().has_node('Gut'):
 		UT = true
+		debug = true
 	# The below code allows us to quickly refer to nodes meant to host cards
 	# (i.e. parents) using an human-readable name
 	if get_tree().get_root().has_node('Main'):
