@@ -1009,7 +1009,6 @@ func execute_scripts(
 		IN_POPUP, FOCUSED_IN_POPUP:
 				state_exec ="pile"
 	state_scripts = card_scripts.get(state_exec, [])
-	if state_exec == "pile": print_debug("aaa")
 	# Here we check for confirmation of optional trigger effects
 	# There should be an SP.KEY_IS_OPTIONAL definition per state
 	# E.g. if board scripts are optional, but hand scripts are not
@@ -1487,7 +1486,6 @@ func _start_dragging() -> void:
 			if c != self:
 				c.interruptTweening()
 				c.reorganizeSelf()
-				print(c)
 
 
 # Determines the state a card should have,
