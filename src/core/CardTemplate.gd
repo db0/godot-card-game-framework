@@ -297,20 +297,18 @@ func _on_Card_mouse_entered() -> void:
 
 
 func _input(event) -> void:
-	if event is InputEventMouseButton and \
-			event.get_button_index() == 1 and \
-			not event.is_pressed() \
-			and not _are_buttons_hovered():
+	if event is InputEventMouseButton and not event.is_pressed():
 		if _is_targetting:
 			complete_targeting()
-		# On depressed left mouse click anywhere on the board
-		# We stop all attempts at dragging this card
-		# We cannot do this in gui_input, because some thing
-		# like the targetting arrow, will trigger dragging
-		# because the click depress will not trigger on the card for some reason
-		Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
-		$Control.set_default_cursor_shape(Input.CURSOR_ARROW)
-		cfc.card_drag_ongoing = null
+		if  event.get_button_index() == 1:
+			# On depressed left mouse click anywhere on the board
+			# We stop all attempts at dragging this card
+			# We cannot do this in gui_input, because some thing
+			# like the targetting arrow, will trigger dragging
+			# because the click depress will not trigger on the card for some reason
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+			$Control.set_default_cursor_shape(Input.CURSOR_ARROW)
+			cfc.card_drag_ongoing = null
 
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
@@ -326,7 +324,8 @@ func _on_Card_gui_input(event) -> void:
 		# or a long click
 		elif event.is_pressed() \
 				and event.get_button_index() == 1 \
-				and not _are_buttons_hovered():
+				and not _are_buttons_hovered() \
+				and not _is_drawer_hovered():
 			# If it's a double-click, then it's not a card drag
 			# But rather it's script execution
 			if event.doubleclick:
@@ -1283,7 +1282,10 @@ func set_highlight(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) ->
 
 # Returns the Card's index position among other card objects
 func get_my_card_index() -> int:
-	return get_parent().get_card_index(self)
+	if "CardPopUpSlot" in get_parent().name:
+		return(0)
+	else:
+		return get_parent().get_card_index(self)
 
 
 # Goes through all the potential cards we're currently hovering onto with a card

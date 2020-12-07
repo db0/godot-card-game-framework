@@ -20,7 +20,9 @@ var overlaps := []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	# warning-ignore:return_value_discarded
 	connect("area_entered",self,"_on_MousePointer_area_entered")
+	# warning-ignore:return_value_discarded
 	connect("area_exited",self,"_on_MousePointer_area_exited")
 	if cfc.debug:
 		$DebugShape.visible = true
