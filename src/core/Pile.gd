@@ -9,7 +9,11 @@ export var faceup_cards := false
 
 # Popup View button for Piles
 onready var view_button := $Control/ManipulationButtons/View
-
+var init_position
+# Position of the container when shuffling
+var shuffle_position
+# Angle of the container when shuffling
+var shuffle_rotation
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# warning-ignore:return_value_discarded
@@ -105,7 +109,7 @@ func reorganize_stack() -> void:
 				-1 * get_card_index(c)):
 			c.position = Vector2(0.5 * get_card_index(c),
 					-1 * get_card_index(c))
-					
+
 
 # Override the godot builtin move_child() method,
 # to make sure the $Control node is always drawn on top of Card nodes
@@ -188,3 +192,60 @@ func _slot_card_into_popup(card: Card) -> void:
 func shuffle_cards() -> void:
 	.shuffle_cards()
 	reorganize_stack()
+	_shuffle_card_animation()
+
+# Just do the animation when shuffling, this time the sorting has been changed
+func _shuffle_card_animation() -> void:
+	if not $Tween.is_active():
+		_add_tween_position(position,shuffle_position,0.2)
+		_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
+		$Tween.start()
+		yield($Tween, "tween_all_completed")
+		if get_card_count()>1:
+			var card = get_card(get_card_count()/2)
+			var center_card_position = card.position
+			var center_card_pop_position = center_card_position+Vector2(0,card.get_node("Control").rect_size.y)
+			card._add_tween_position(center_card_position,center_card_pop_position,0.2)
+			card.get_node("Tween").start()
+			yield(card.get_node("Tween"), "tween_all_completed")
+			card.position = center_card_position
+			var top_card = get_top_card()
+			var top_card_position = top_card.position
+			var top_card_pop_position = top_card.position+Vector2(0,top_card.get_node("Control").rect_size.y)
+			top_card.position = center_card_pop_position
+			top_card._add_tween_position(center_card_pop_position,top_card_pop_position,0.03)
+			top_card.get_node("Tween").start()
+			yield(top_card.get_node("Tween"), "tween_all_completed")
+			top_card._add_tween_position(top_card_pop_position,top_card_position,0.2)
+			top_card.get_node("Tween").start()
+			yield(top_card.get_node("Tween"), "tween_all_completed")
+		_add_tween_position(position,init_position,0.2)
+		_add_tween_rotation(rotation_degrees,0,0.2)
+		$Tween.start()
+		yield($Tween, "tween_all_completed")
+
+
+# Card rotation animation
+func _add_tween_rotation(
+		expected_rotation: float,
+		target_rotation: float,
+		runtime := 0.3,
+		trans_type = Tween.TRANS_BACK,
+		ease_type = Tween.EASE_IN_OUT):
+	$Tween.remove(self,'rotation_degrees')
+	$Tween.interpolate_property(self,'rotation_degrees',
+			expected_rotation, target_rotation, runtime,
+			trans_type, ease_type)
+
+
+# Card position animation
+func _add_tween_position(
+		expected_position: Vector2,
+		target_position: Vector2,
+		runtime := 0.3,
+		trans_type = Tween.TRANS_CUBIC,
+		ease_type = Tween.EASE_OUT):
+	$Tween.remove(self,'position')
+	$Tween.interpolate_property(self,'position',
+			expected_position, target_position, runtime,
+			trans_type, ease_type)

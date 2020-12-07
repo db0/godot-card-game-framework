@@ -14,11 +14,11 @@ func test_methods():
 
 func test_get_card_methods():
 	var container : Pile = cfc.NMAP.deck
-	assert_eq(container.get_child(2),container.get_all_cards()[0],
+	assert_eq(container.get_child(3),container.get_all_cards()[0],
 			"get_all_cards() works")
-	assert_eq(container.get_child(12),container.get_card(10),
+	assert_eq(container.get_child(13),container.get_card(10),
 			"get_card works")
-	assert_eq(5,container.get_card_index(container.get_child(7)),
+	assert_eq(4,container.get_card_index(container.get_child(7)),
 			"get_card_index works")
 	assert_eq(15,container.get_card_count(),
 			"get_card_count() works")
@@ -63,5 +63,3 @@ func test_update_manipulation_buttons():
 	var deck : Pile = cfc.NMAP.deck
 	assert_eq(2,deck.all_manipulation_buttons.size(),
 				"Expected number of manipulation buttons are there")
-
-

@@ -273,8 +273,7 @@ func _process(delta) -> void:
 		$Debug/parent.text = "PARENT: " + str(get_parent().name)
 
 
-
-
+# Triggers the focus-in effect on the card
 func _on_Card_mouse_entered() -> void:
 	# This triggers the focus-in effect on the card
 	#print(state,":enter:",get_index(), ":", _are_buttons_hovered()) # Debug
