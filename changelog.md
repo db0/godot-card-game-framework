@@ -10,6 +10,7 @@
 * Scripting Engine now supports cards with optional abilities
 * Hand shape can now be oval (default) - Contribution by [@vmjcv](https://github.com/vmjcv).
 * Font-size will decrease when it amount of chars is too large, in order to stay within the defined label rectangle - Contribution by [@vmjcv](https://github.com/vmjcv).
+* Pile shuffle is now animated - Contribution by [@vmjcv](https://github.com/vmjcv).
 
 ### Bugfixes
 

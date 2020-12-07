@@ -223,14 +223,17 @@ func shuffle_cards() -> void:
 # Then it returns it to its original location
 func _anim_shuffle_card(card: Card) -> void:
 	var starting_card_position = card.position
-	var csize = card.get_node("Control").rect_size/2
+	var csize = card.get_node("Control").rect_size * 0.65
 	var random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 	var random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
+	var random_rot = CardFrameworkUtils.randf_range(-20, 20)
 	var center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
 	card._add_tween_position(starting_card_position,center_card_pop_position,0.2)
+	card._add_tween_rotation(0,random_rot,0.2)
 	card._tween.start()
 	yield(card._tween, "tween_all_completed")
 	card._add_tween_position(center_card_pop_position,starting_card_position,0.2)
+	card._add_tween_rotation(random_rot,0,0.2)
 	card._tween.start()
 
 # Card rotation animation
