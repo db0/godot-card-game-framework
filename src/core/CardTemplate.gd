@@ -1410,19 +1410,19 @@ func recalculate_position(index_diff = null) -> Vector2:
 
 # Animates a card semi-randomly to make it looks like it's being shuffled
 # Then it returns it to its original location
-func animate_shuffle() -> void:
+func animate_shuffle(anim_speed) -> void:
 	var starting_card_position = position
 	var csize = $Control.rect_size * 0.65
 	var random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 	var random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
 	var random_rot = CardFrameworkUtils.randf_range(-20, 20)
 	var center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
-	_add_tween_position(starting_card_position,center_card_pop_position,0.2)
-	_add_tween_rotation(0,random_rot,0.2)
+	_add_tween_position(starting_card_position,center_card_pop_position,anim_speed)
+	_add_tween_rotation(0,random_rot,anim_speed)
 	_tween.start()
 	yield(_tween, "tween_all_completed")
-	_add_tween_position(center_card_pop_position,starting_card_position,0.2)
-	_add_tween_rotation(random_rot,0,0.2)
+	_add_tween_position(center_card_pop_position,starting_card_position,anim_speed)
+	_add_tween_rotation(random_rot,0,anim_speed)
 	_tween.start()
 
 
