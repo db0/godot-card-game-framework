@@ -4,7 +4,7 @@ extends Reference
 # This fuction returns all the scripts of the specified card name.
 #
 # if no scripts have been defined, an empty dictionary is returned instead.
-func get_scripts(card_name: String, trigger: String) -> Dictionary:
+func get_scripts(card_name: String) -> Dictionary:
 	var scripts := {
 		"Test Card 3": {
 			"manual": {
@@ -80,4 +80,4 @@ func get_scripts(card_name: String, trigger: String) -> Dictionary:
 		},
 	}
 	# We return only the scripts that match the card name and trigger
-	return(scripts.get(card_name,{}).get(trigger,{}))
+	return(scripts.get(card_name,{}))

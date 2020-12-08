@@ -69,31 +69,12 @@ static func list_files_in_directory(path: String, prepend_needed := "") -> Array
 	dir.list_dir_end()
 	return files
 
-
-# Returns the combined Card definitions of all set files
-static func load_card_definitions() -> Dictionary:
-	var set_definitions := list_files_in_directory(
-				"res://src/custom/cards/sets/", "SetDefinition_")
-	var combined_sets := {}
-	for set_file in set_definitions:
-		var set_dict = load("res://src/custom/cards/sets/" + set_file).CARDS
-		for dict_entry in set_dict:
-			combined_sets[dict_entry] = set_dict[dict_entry]
-	return(combined_sets)
-
-
 # Seeks in the script definitions of all sets, and returns the script for
 # the requested card
 static func find_card_script(card_name, trigger) -> Dictionary:
-	var set_definitions := list_files_in_directory(
-				"res://src/custom/cards/sets/", "SetScripts_")
-	var card_script := {}
-	for set_file in set_definitions:
-		var set_scripts = load("res://src/custom/cards/sets/" + set_file).new()
-		card_script = set_scripts.get_scripts(card_name, trigger)
-		if not card_script.empty():
-			break
-	return(card_script)
+	var card_script : Dictionary = cfc.set_scripts.get(card_name,{})
+	var trigger_script : Dictionary = card_script.get(trigger,{})
+	return(trigger_script)
 
 
 # Creates a ConfirmationDialog for the player to approve the

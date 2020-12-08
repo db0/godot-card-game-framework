@@ -143,6 +143,7 @@ var hand_use_oval_shape := true
 
 # This will store all card properties which are placed in the card labels
 var card_definitions := {}
+var set_scripts := {}
 # A class to propagate script triggers to all cards.
 var signal_propagator = SignalPropagator.new()
 # Unit Testing flag
@@ -200,7 +201,8 @@ func _ready() -> void:
 		hands.append(NMAP[name])
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
-	card_definitions = CardFrameworkUtils.load_card_definitions()
+	card_definitions = load_card_definitions()
+	set_scripts = load_script_definitions()
 
 
 
@@ -219,6 +221,34 @@ func instance_card(card_name: String) -> Card:
 	var card = template.instance()
 	card.setup(card_name)
 	return(card)
+
+# Returns the combined Card definitions of all set files
+func load_card_definitions() -> Dictionary:
+	var set_definitions := CardFrameworkUtils.list_files_in_directory(
+				"res://src/custom/cards/sets/", "SetDefinition_")
+	var combined_sets := {}
+	for set_file in set_definitions:
+		var set_dict = load("res://src/custom/cards/sets/" + set_file).CARDS
+		for dict_entry in set_dict:
+			combined_sets[dict_entry] = set_dict[dict_entry]
+	return(combined_sets)
+
+
+# Seeks in the script definitions of all sets, and returns the script for
+# the requested card
+func load_script_definitions() -> Dictionary:
+	var script_definitions := CardFrameworkUtils.list_files_in_directory(
+				"res://src/custom/cards/sets/", "SetScripts_")
+	var combined_scripts := {}
+	for card_name in card_definitions.keys():
+		for script_file in script_definitions:
+			if combined_scripts.get(card_name):
+				break
+			var scripts_obj = load("res://src/custom/cards/sets/" + script_file).new()
+			var card_script = scripts_obj.get_scripts(card_name)
+			if not card_script.empty():
+				combined_scripts[card_name] = card_script
+	return(combined_scripts)
 
 # The SignalPropagator is responsible for collecting all card signals
 # and asking all cards to check if there's any automation they need to perform
