@@ -208,16 +208,25 @@ func shuffle_cards(animate = true) -> void:
 		$Tween.start()
 		var next_card_speed: float
 		var anim_speed: float
-		if cfc.shuffle_style == "corgi":
+		var anim_style: String
+		var card_count = get_card_count()
+		if cfc.shuffle_style == "auto":
+			if card_count <= 30:
+				anim_style = "corgi"
+			else:
+				anim_style = "wash"
+		else:
+			anim_style = cfc.shuffle_style
+		if anim_style == "corgi":
 			# We move the pile to a more central location to see the anim
 			yield($Tween, "tween_all_completed")
-			next_card_speed = 0.05 - 0.002 * get_card_count()
+			next_card_speed = 0.05 - 0.002 * card_count
 			if next_card_speed < 0.01:
 				next_card_speed = 0.01
-			anim_speed = 0.4 - 0.005 * get_card_count()
+			anim_speed = 0.4 - 0.005 * card_count
 			if anim_speed < 0.05:
 				anim_speed = 0.05
-			if get_card_count() > 1:
+			if card_count > 1:
 				var random_cards = get_all_cards().duplicate()
 				CardFrameworkUtils.shuffle_array(random_cards)
 				for card in random_cards:
@@ -228,7 +237,7 @@ func shuffle_cards(animate = true) -> void:
 			# animations
 			.shuffle_cards()
 			yield(get_tree().create_timer(anim_speed * 2), "timeout")
-		elif cfc.shuffle_style == "wash":
+		elif anim_style == "wash":
 			# We move the pile to a more central location to see the anim
 			yield($Tween, "tween_all_completed")
 			next_card_speed = 0.001

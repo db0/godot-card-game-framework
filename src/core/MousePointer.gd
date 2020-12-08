@@ -24,7 +24,7 @@ func _ready() -> void:
 	connect("area_entered",self,"_on_MousePointer_area_entered")
 	# warning-ignore:return_value_discarded
 	connect("area_exited",self,"_on_MousePointer_area_exited")
-	if cfc.debug:
+	if cfc._debug:
 		$DebugShape.visible = true
 
 
@@ -41,7 +41,7 @@ func _process(_delta: float) -> void:
 			current_focused_card.state = Card.FOCUSED_IN_HAND
 		if cfc.card_drag_ongoing and cfc.card_drag_ongoing != current_focused_card:
 			current_focused_card = cfc.card_drag_ongoing
-	if cfc.debug:
+	if cfc._debug:
 		$DebugShape/current_focused_card.text = "MOUSE: " + str(current_focused_card)
 
 func _on_MousePointer_area_entered(area: Area2D) -> void:

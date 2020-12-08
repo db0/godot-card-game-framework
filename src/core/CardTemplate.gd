@@ -250,7 +250,7 @@ func _process(delta) -> void:
 		_draw_targeting_arrow()
 	_process_card_state()
 	# Having to do all these checks due to godotengine/godot#16854
-	if cfc.debug and not get_parent() in cfc.piles:
+	if cfc._debug and not get_parent() in cfc.piles:
 		var stateslist = [
 			"IN_HAND",
 			"FOCUSED_IN_HAND",

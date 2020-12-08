@@ -138,9 +138,11 @@ var game_rng_seed := "CFC Random Seed" setget set_seed
 # horizontally aligned
 var hand_use_oval_shape := true
 # Options:
-# * corgi
-# * wash
-var shuffle_style := "corgi"
+# * corgi: Looks better on a medium amount of cards (0 to 30)
+# * wash: Looks better on a larger amount of cards (30+)
+# * auto: Will choose a shuffle animation depending on the amount of
+#   cards in the pile
+var shuffle_style := "auto"
 
 
 #-----------------------------------------------------------------------------
@@ -149,6 +151,7 @@ var shuffle_style := "corgi"
 
 # This will store all card properties which are placed in the card labels
 var card_definitions := {}
+# This will store all card scripts
 var set_scripts := {}
 # A class to propagate script triggers to all cards.
 var signal_propagator = SignalPropagator.new()
@@ -162,7 +165,8 @@ var piles: Array
 var hands: Array
 # The card actively being dragged
 var card_drag_ongoing: Card = null
-var debug := false
+# Switch used for seeing debug info
+var _debug := false
 # Game random number generator
 var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
@@ -178,7 +182,7 @@ func _ready() -> void:
 	# The below takes care that we adjust some settings when testing via Gut
 	if get_tree().get_root().has_node('Gut'):
 		UT = true
-		debug = true
+		_debug = true
 	# The below code allows us to quickly refer to nodes meant to host cards
 	# (i.e. parents) using an human-readable name
 	if get_tree().get_root().has_node('Main'):
