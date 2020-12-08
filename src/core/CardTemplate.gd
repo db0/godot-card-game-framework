@@ -1410,31 +1410,46 @@ func recalculate_position(index_diff = null) -> Vector2:
 
 # Animates a card semi-randomly to make it looks like it's being shuffled
 # Then it returns it to its original location
-func animate_shuffle(anim_speed : float, style := "corgi") -> void:
+func animate_shuffle(anim_speed : float, style : int) -> void:
 	var starting_card_position = position
 	var csize : Vector2
 	var random_x : float
 	var random_y : float
 	var random_rot : float
 	var center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
-	if style == "corgi":
+	var start_pos_anim
+	var end_pos_anim
+	var rot_anim
+	var pos_speed := anim_speed
+	var rot_speed := anim_speed
+	if style == cfc.SHUFFLE_SYLE.corgi:
 		csize = $Control.rect_size * 0.65
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
 		random_rot = CardFrameworkUtils.randf_range(-20, 20)
 		center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
-	elif style == "wash":
+		start_pos_anim = Tween.TRANS_CIRC
+		end_pos_anim = Tween.TRANS_CIRC
+		rot_anim = Tween.TRANS_CIRC
+	# 2 is splash
+	elif style == cfc.SHUFFLE_SYLE.splash:
 		csize = $Control.rect_size * 0.85
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
-		random_rot = CardFrameworkUtils.randf_range(-90, 90)
+		random_rot = CardFrameworkUtils.randf_range(-180, 180)
 		center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
-	_add_tween_position(starting_card_position,center_card_pop_position,anim_speed)
-	_add_tween_rotation(0,random_rot,anim_speed,Tween.TRANS_CIRC,Tween.EASE_OUT)
+		start_pos_anim = Tween.TRANS_ELASTIC
+		end_pos_anim = Tween.TRANS_QUAD
+		rot_anim = Tween.TRANS_CIRC
+		pos_speed = pos_speed
+	_add_tween_position(starting_card_position,center_card_pop_position,
+			pos_speed,start_pos_anim,Tween.EASE_OUT)
+	_add_tween_rotation(0,random_rot,rot_speed,rot_anim,Tween.EASE_OUT)
 	_tween.start()
 	yield(_tween, "tween_all_completed")
-	_add_tween_position(center_card_pop_position,starting_card_position,anim_speed)
-	_add_tween_rotation(random_rot,0,anim_speed,Tween.TRANS_CIRC,Tween.EASE_IN)
+	_add_tween_position(center_card_pop_position,starting_card_position,
+			pos_speed,end_pos_anim,Tween.EASE_IN)
+	_add_tween_rotation(random_rot,0,rot_speed,rot_anim,Tween.EASE_IN)
 	_tween.start()
 
 
@@ -1721,7 +1736,8 @@ func _draw_targeting_arrow() -> void:
 	$TargetLine.clear_points()
 	# The final position is the mouse position,
 	# but we offset it by the position of the card center on the map
-	var final_point =  cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos() - (position + $Control.rect_size/2)
+	var final_point =  cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos() \
+			- (position + $Control.rect_size/2)
 	var curve = Curve2D.new()
 #		var middle_point = centerpos + (get_global_mouse_position() - centerpos)/2
 #		var middle_dir_to_vpcenter = middle_point.direction_to(get_viewport().size/2)

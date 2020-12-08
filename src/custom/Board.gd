@@ -13,22 +13,12 @@ func _ready() -> void:
 	# This way any they will work with any size of viewport in a game.
 	# Discard pile goes bottom right
 
-	$DiscardPile.init_position = Vector2(get_viewport().size.x
+	$DiscardPile.position = Vector2(get_viewport().size.x
 			- $DiscardPile/Control.rect_size.x - 10,get_viewport().size.y
 			- $DiscardPile/Control.rect_size.y)
-	$DiscardPile.shuffle_position = Vector2(get_viewport().size.x * 0.75
-			- $DiscardPile/Control.rect_size.x - 10,get_viewport().size.y * 0.5
-			- $DiscardPile/Control.rect_size.y)
-	$DiscardPile.shuffle_rotation = -10
-	$DiscardPile.position = $DiscardPile.init_position
 	# Deck goes bottom left
-
-	$Deck.init_position = Vector2(0,get_viewport().size.y
+	$Deck.position = Vector2(0,get_viewport().size.y
 			- $Deck/Control.rect_size.y)
-	$Deck.shuffle_position = Vector2(get_viewport().size.x * 0.25,get_viewport().size.y*0.5
-			- $Deck/Control.rect_size.y)
-	$Deck.shuffle_rotation = 10
-	$Deck.position = $Deck.init_position
 	# Hand goes in the middle of the two
 	$Hand.position = Vector2(150,get_viewport().size.y
 			- $Hand/Control.rect_size.y + $Hand.bottom_margin)

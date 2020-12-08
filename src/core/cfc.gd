@@ -9,11 +9,23 @@ extends Node
 # * VIEWPORT means that a larger version of the card appears when mousing over it
 # * BOTH means SCALED + VIEWPORT
 enum FocusStyle {
-	SCALED					#0
-	VIEWPORT				#1
-	BOTH					#2
+	SCALED
+	VIEWPORT
+	BOTH
 }
-
+# Options for pile shuffle styles.
+# * corgi: Looks better on a medium amount of cards (0 to 30)
+# * splash: Looks better on a larger amount of cards (30+)
+# * auto: Will choose a shuffle animation depending on the amount of
+#	cards in the pile
+# * random: Will choose a random shuffle style each time a shuffle is requested.
+# * none: No shuffle animation for this pile.
+enum SHUFFLE_SYLE {
+	auto,
+	none,
+	random,
+	corgi,
+	splash }
 
 
 #-----------------------------------------------------------------------------
@@ -137,12 +149,7 @@ var game_rng_seed := "CFC Random Seed" setget set_seed
 # If set to false, the hand will be presented with all cards
 # horizontally aligned
 var hand_use_oval_shape := true
-# Options:
-# * corgi: Looks better on a medium amount of cards (0 to 30)
-# * wash: Looks better on a larger amount of cards (30+)
-# * auto: Will choose a shuffle animation depending on the amount of
-#   cards in the pile
-var shuffle_style := "auto"
+
 
 
 #-----------------------------------------------------------------------------
