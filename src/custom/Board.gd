@@ -84,7 +84,7 @@ func load_test_cards() -> void:
 	for ckey in cfc.card_definitions.keys():
 		test_cards.append(ckey)
 	var test_card_array := []
-	for _i in range(100):
+	for _i in range(11):
 		var random_card_name = \
 				test_cards[CardFrameworkUtils.randi() % len(test_cards)]
 		test_card_array.append(cfc.instance_card(random_card_name))
