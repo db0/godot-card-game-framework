@@ -52,13 +52,18 @@ func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
 	for c in cfc.NMAP.hand.get_all_cards():
 		c.reorganizeSelf()
 
+
 # Reshuffles all Card objects created back into the deck
 func _on_ReshuffleAll_pressed() -> void:
 	for c in get_tree().get_nodes_in_group("cards"):
 		if c.get_parent() != cfc.NMAP.deck:
 			c.move_to(cfc.NMAP.deck)
 			yield(get_tree().create_timer(0.1), "timeout")
-	yield(get_tree().create_timer(1), "timeout")
+	# Last card in, is the top card of the pile
+	var last_card : Card = cfc.NMAP.deck.get_top_card()
+	if last_card._tween.is_active():
+		yield(last_card._tween, "tween_all_completed")
+	yield(get_tree().create_timer(0.2), "timeout")
 	cfc.NMAP.deck.shuffle_cards()
 
 
