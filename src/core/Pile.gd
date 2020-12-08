@@ -203,33 +203,52 @@ func _slot_card_into_popup(card: Card) -> void:
 # Pile shuffling includes a fancy animation
 func shuffle_cards(animate = true) -> void:
 	if not $Tween.is_active() and animate:
-		var last_card: Card
-		# We move the pile to a more central location to see the anim
 		_add_tween_position(position,shuffle_position,0.2)
 		_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
 		$Tween.start()
-		yield($Tween, "tween_all_completed")
-		var next_card_speed = 0.05 - 0.002 * get_card_count()
-		if next_card_speed < 0.01:
-			next_card_speed = 0.01
-		var anim_speed = 0.5 - 0.005 * get_card_count()
-		if anim_speed < 0.05:
-			anim_speed = 0.05
-		if get_card_count() > 1:
-			var random_cards = get_all_cards().duplicate()
-			CardFrameworkUtils.shuffle_array(random_cards)
-			last_card = random_cards.back()
-			for card in random_cards:
-				card.animate_shuffle(anim_speed)
-				yield(get_tree().create_timer(next_card_speed), "timeout")
-		# This is where the shuffle actually happens
-		# The effect looks like the cards shuffle in the middle of their
-		# animations
-		.shuffle_cards()
+		var next_card_speed: float
+		var anim_speed: float
+		if cfc.shuffle_style == "corgi":
+			# We move the pile to a more central location to see the anim
+			yield($Tween, "tween_all_completed")
+			next_card_speed = 0.05 - 0.002 * get_card_count()
+			if next_card_speed < 0.01:
+				next_card_speed = 0.01
+			anim_speed = 0.4 - 0.005 * get_card_count()
+			if anim_speed < 0.05:
+				anim_speed = 0.05
+			if get_card_count() > 1:
+				var random_cards = get_all_cards().duplicate()
+				CardFrameworkUtils.shuffle_array(random_cards)
+				for card in random_cards:
+					card.animate_shuffle(anim_speed)
+					yield(get_tree().create_timer(next_card_speed), "timeout")
+			# This is where the shuffle actually happens
+			# The effect looks like the cards shuffle in the middle of their
+			# animations
+			.shuffle_cards()
+			yield(get_tree().create_timer(anim_speed * 2), "timeout")
+		elif cfc.shuffle_style == "wash":
+			# We move the pile to a more central location to see the anim
+			yield($Tween, "tween_all_completed")
+			next_card_speed = 0.001
+			anim_speed = 0.7
+			if anim_speed < 0.05:
+				anim_speed = 0.05
+			if get_card_count() > 1:
+				var random_cards = get_all_cards().duplicate()
+				CardFrameworkUtils.shuffle_array(random_cards)
+				for card in random_cards:
+					card.animate_shuffle(anim_speed, "wash")
+			# This is where the shuffle actually happens
+			# The effect looks like the cards shuffle in the middle of their
+			# animations
+			yield(get_tree().create_timer(anim_speed), "timeout")
+			.shuffle_cards()
+			yield(get_tree().create_timer(anim_speed * 1.1), "timeout")
 		_add_tween_position(position,init_position,0.2)
 		_add_tween_rotation(rotation_degrees,0,0.2)
 		$Tween.start()
-		yield(get_tree().create_timer(anim_speed * 2), "timeout")
 	else:
 		# if we're already running another animation, just shuffle
 		.shuffle_cards()

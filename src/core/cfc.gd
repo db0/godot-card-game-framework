@@ -137,6 +137,12 @@ var game_rng_seed := "CFC Random Seed" setget set_seed
 # If set to false, the hand will be presented with all cards
 # horizontally aligned
 var hand_use_oval_shape := true
+# Options:
+# * corgi
+# * wash
+var shuffle_style := "corgi"
+
+
 #-----------------------------------------------------------------------------
 # END Behaviour Constants
 #-----------------------------------------------------------------------------
