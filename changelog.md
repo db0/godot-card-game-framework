@@ -6,6 +6,7 @@
 ### New Features
 
 * Pile shuffle is now animated like a corgi shuffle - Contribution by [@vmjcv](https://github.com/vmjcv).
+* More types of pile shuffle animation and ability to select a different one per pile
 * Piles and Hand will highlight when a dragged card hovers over them to display where the card will be dropped when released.
 
 ### Bugfixes

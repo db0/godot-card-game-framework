@@ -23,6 +23,7 @@ func _ready() -> void:
 	$Hand.position = Vector2(150,get_viewport().size.y
 			- $Hand/Control.rect_size.y + $Hand.bottom_margin)
 	$FancyMovementToggle.pressed = cfc.fancy_movement
+	$OvalHandToggle.pressed = cfc.hand_use_oval_shape
 	$ScalingFocusOptions.selected = cfc.focus_style
 	# Fill up the deck for demo purposes
 	if not get_tree().get_root().has_node('Gut'):
@@ -69,18 +70,20 @@ func _on_EnableAttach_toggled(_button_pressed: bool) -> void:
 
 
 # Loads a sample set of cards to use for testing
-func load_test_cards() -> void:
+func load_test_cards(extras := 11) -> void:
 	var test_cards := []
 	for ckey in cfc.card_definitions.keys():
 		test_cards.append(ckey)
 	var test_card_array := []
-	for _i in range(11):
+	for _i in range(extras):
 		var random_card_name = \
 				test_cards[CardFrameworkUtils.randi() % len(test_cards)]
 		test_card_array.append(cfc.instance_card(random_card_name))
+	# 11 is the cards GUT expects. It's the testing standard
+	if extras == 11:
 	# I ensure there's of each test card, for use in GUT
-	for card_name in test_cards:
-		test_card_array.append(cfc.instance_card(card_name))
+		for card_name in test_cards:
+			test_card_array.append(cfc.instance_card(card_name))
 	for card in test_card_array:
 		$Deck.add_child(card)
 		# warning-ignore:return_value_discarded

@@ -60,10 +60,6 @@ func test_move_from_board_to_deck_to_hand():
 			card.global_position,Vector2(2,2),
 			"Card finished move to hand from deck from board")
 
-
-func test_pile_functions():
-	pending("Shuffle really does shuffle")
-
 func test_pile_facing():
 	var card: Card = cfc.NMAP.deck.get_top_card()
 	card.move_to(cfc.NMAP.discard)
@@ -142,3 +138,25 @@ func test_stacking():
 	deck.shuffle_cards(false)
 	assert_eq(deck.get_stack_position(card),card.position,
 			"Reshuffle, restacks cards correctly.")
+
+func test_shuffle_rng():
+	var rng_threshold: int = 0
+	var card = deck.get_bottom_card()
+	var prev_index = card.get_my_card_index()
+	deck.shuffle_cards()
+	yield(yield_for(1), YIELD)
+	if prev_index == card.get_my_card_index():
+		rng_threshold += 1
+	prev_index = card.get_my_card_index()
+	deck.shuffle_cards()
+	yield(yield_for(1), YIELD)
+	if prev_index == card.get_my_card_index():
+		rng_threshold += 1
+	prev_index = card.get_my_card_index()
+	deck.shuffle_cards()
+	yield(yield_for(1), YIELD)
+	if prev_index == card.get_my_card_index():
+		rng_threshold += 1
+	prev_index = card.get_my_card_index()
+	assert_gt(2,rng_threshold,
+		"Card should not fall in he same spot too many times")

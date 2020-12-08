@@ -11,10 +11,10 @@ const MOUSE_SPEED := {
 
 
 var main
-var board
-var hand
-var deck
-var discard
+var board: Board
+var hand: Hand
+var deck: Pile
+var discard: Pile
 
 func fake_click(pressed,position, flags=0) -> InputEvent:
 	var ev := InputEventMouseButton.new()
