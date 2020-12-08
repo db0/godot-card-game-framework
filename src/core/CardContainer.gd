@@ -184,3 +184,12 @@ func translate_card_index_to_node_index(index: int) -> int:
 		var card_at_index = all_cards[index]
 		node_index = card_at_index.get_index()
 	return node_index
+
+# Changes card highlight colour.
+func set_highlight(requestedFocus: bool, hoverColour = cfc.TARGET_HOVER_COLOUR) -> void:
+	$Control/Highlight.visible = requestedFocus
+	if requestedFocus:
+		$Control/Highlight.modulate = hoverColour
+	else:
+		$Control/Highlight.modulate = cfc.TARGET_HOVER_COLOUR
+

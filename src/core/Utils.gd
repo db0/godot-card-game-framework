@@ -96,10 +96,10 @@ static func find_card_script(card_name, trigger) -> Dictionary:
 	return(card_script)
 
 
-# Creates a ConfirmationDialog for the player to approve the 
+# Creates a ConfirmationDialog for the player to approve the
 # Use of an optional script or task.
 static func confirm(
-		script: Dictionary, 
+		script: Dictionary,
 		card_name: String,
 		task_name: String,
 		type := "task") -> bool:
@@ -118,7 +118,28 @@ static func confirm(
 
 
 # Used with sort_custom to find the highest child index among multiple cards
-static func sort_index_ascending(c1, c2):
+static func sort_index_ascending(c1, c2) -> bool:
+	# Cards with higher index get moved to the back of the Array
+	# When this comparison is true, c2 is moved
+	# further back in the array
 	if c1.get_my_card_index() < c2.get_my_card_index():
 		return true
 	return false
+
+# Used with sort_custom to find the highest child index among multiple cards
+static func sort_card_containers(c1, c2) -> bool:
+	var ret: bool
+	if (c1.is_in_group("hands") and c2.is_in_group("hands")) \
+			or (c1.is_in_group("piles") and c2.is_in_group("piles")):
+		if c1.get_index() < c2.get_index():
+			ret = true
+		else:
+			ret = false
+	else:
+		# We want the hand to have a lower priority than piles
+		# because it has a larger drop area
+		if c2.is_in_group("hands"):
+			ret = false
+		else:
+			ret = true
+	return(ret)

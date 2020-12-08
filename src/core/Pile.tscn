@@ -1,7 +1,8 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/Pile.gd" type="Script" id=2]
+[ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 1, 1, 1, 1 )
@@ -16,18 +17,22 @@ font_data = ExtResource( 1 )
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 78, 123 )
 
-[node name="Pile" type="Area2D"]
+[node name="Pile" type="Area2D" groups=[
+"piles",
+]]
 script = ExtResource( 2 )
 
 [node name="Control" type="Panel" parent="."]
 self_modulate = Color( 1, 1, 1, 0 )
-margin_right = 156.0
-margin_bottom = 246.0
+margin_right = 150.0
+margin_bottom = 240.0
 mouse_filter = 1
 custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="Highlight" parent="Control" instance=ExtResource( 3 )]
 
 [node name="CenterContainer" type="CenterContainer" parent="Control"]
 visible = false
