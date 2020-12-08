@@ -190,8 +190,8 @@ func _slot_card_into_popup(card: Card) -> void:
 
 # Randomly rearranges the order of the [Card] nodes.
 # Pile shuffling includes a fancy animation
-func shuffle_cards() -> void:
-	if not $Tween.is_active() and not cfc.UT:
+func shuffle_cards(animate = true) -> void:
+	if not $Tween.is_active() and animate:
 		var last_card: Card
 		# We move the pile to a more central location to see the anim
 		_add_tween_position(position,shuffle_position,0.2)

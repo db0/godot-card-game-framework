@@ -139,6 +139,6 @@ func test_stacking():
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
 	assert_eq(deck.get_stack_position(card),card.position,
 			"Card moved in, placed in stack position")
-	deck.shuffle_cards()
+	deck.shuffle_cards(false)
 	assert_eq(deck.get_stack_position(card),card.position,
 			"Reshuffle, restacks cards correctly.")
