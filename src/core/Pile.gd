@@ -103,12 +103,23 @@ func add_child(node, _legible_unique_name=false) -> void:
 		# we move them automatically to the viewpopup grid.
 		_slot_card_into_popup(node)
 
+
+# Rearranges the position of the contained cards slightly
+# so that they appear to be stacked on top of each other
 func reorganize_stack() -> void:
 	for c in get_all_cards():
 		if c.position != Vector2(0.5 * get_card_index(c),
-				-1 * get_card_index(c)):
+				-get_card_index(c)):
 			c.position = Vector2(0.5 * get_card_index(c),
-					-1 * get_card_index(c))
+					-get_card_index(c))
+	#The size of the panel has to be modified to be as large as the size of the cardd
+	# TODO: This logic has to be adapted depending on where on the viewport
+	# This pile is anchored. The below calculations assume bottom-left.
+	$Control.rect_size = Vector2(156 + 0.5 * get_card_count(), 246 + get_card_count())
+	$Control/Highlight.rect_size = $Control.rect_size
+	# The highlight has to also be shifted higher or else it will just extend
+	# below the viewport
+	$Control/Highlight.rect_position.y = -get_card_count()
 
 
 # Override the godot builtin move_child() method,
