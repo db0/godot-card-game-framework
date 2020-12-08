@@ -203,7 +203,7 @@ func shuffle_cards(animate = true) -> void:
 			CardFrameworkUtils.shuffle_array(random_cards)
 			last_card = random_cards.back()
 			for card in random_cards:
-				_anim_shuffle_card(card)
+				card.animate_shuffle()
 				yield(get_tree().create_timer(0.05), "timeout")
 		# This is where the shuffle actually happens
 		# The effect looks like the cards shuffle in the middle of their
@@ -219,22 +219,6 @@ func shuffle_cards(animate = true) -> void:
 		.shuffle_cards()
 	reorganize_stack()
 
-# Animates a card semi-randomly to make it looks like it's being shuffled
-# Then it returns it to its original location
-func _anim_shuffle_card(card: Card) -> void:
-	var starting_card_position = card.position
-	var csize = card.get_node("Control").rect_size * 0.65
-	var random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
-	var random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
-	var random_rot = CardFrameworkUtils.randf_range(-20, 20)
-	var center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
-	card._add_tween_position(starting_card_position,center_card_pop_position,0.2)
-	card._add_tween_rotation(0,random_rot,0.2)
-	card._tween.start()
-	yield(card._tween, "tween_all_completed")
-	card._add_tween_position(center_card_pop_position,starting_card_position,0.2)
-	card._add_tween_rotation(random_rot,0,0.2)
-	card._tween.start()
 
 # Card rotation animation
 func _add_tween_rotation(

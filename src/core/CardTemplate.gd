@@ -1385,6 +1385,23 @@ func recalculate_position(index_diff = null) -> Vector2:
 		return _recalculate_position_use_oval(index_diff)
 	return _recalculate_position_use_rectangle(index_diff)
 
+# Animates a card semi-randomly to make it looks like it's being shuffled
+# Then it returns it to its original location
+func animate_shuffle() -> void:
+	var starting_card_position = position
+	var csize = $Control.rect_size * 0.65
+	var random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
+	var random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
+	var random_rot = CardFrameworkUtils.randf_range(-20, 20)
+	var center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
+	_add_tween_position(starting_card_position,center_card_pop_position,0.2)
+	_add_tween_rotation(0,random_rot,0.2)
+	_tween.start()
+	yield(_tween, "tween_all_completed")
+	_add_tween_position(center_card_pop_position,starting_card_position,0.2)
+	_add_tween_rotation(random_rot,0,0.2)
+	_tween.start()
+
 
 # Makes attachments always move with their parent around the board
 func _organize_attachments() -> void:
@@ -2263,7 +2280,7 @@ func _recalculate_position_use_oval(index_diff = null)-> Vector2:
 	var card_position_x: float = 0.0
 	var card_position_y: float = 0.0
 	var parent_control = get_parent().get_node('Control')
-	# Oval hor rad, rect_size.x*0.5*1.5 it’s an empirical formula, 
+	# Oval hor rad, rect_size.x*0.5*1.5 it’s an empirical formula,
 	# that's been tested to feel good.
 	var hor_rad: float = parent_control.rect_size.x * 0.5 * 1.5
 	# Oval ver rad, rect_size.y * 1.5 it’s an empirical formula,
@@ -2275,12 +2292,12 @@ func _recalculate_position_use_oval(index_diff = null)-> Vector2:
 	# Get the direction vector of a point on the oval
 	var oval_angle_vector = Vector2(hor_rad * cos(rad_angle),
 			- ver_rad * sin(rad_angle))
-	# Take the center point of the card as the starting point, the coordinates 
+	# Take the center point of the card as the starting point, the coordinates
 	# of the top left corner of the card
 	var left_top = Vector2(- $Control.rect_size.x/2, - $Control.rect_size.y/2)
 	# Place the top center of the card on the oval point
 	var center_top = Vector2(0, - $Control.rect_size.y/2)
-	# Get the angle of the card, which is different from the oval angle, 
+	# Get the angle of the card, which is different from the oval angle,
 	# the card angle is the normal angle of a certain point
 	var card_angle = _get_oval_angle_by_index(angle, null, hor_rad,ver_rad)
 	# Displacement offset due to card rotation
