@@ -1,5 +1,17 @@
 # Changelog
 
+
+## 0.13 (Ongoing)
+
+### New Features
+
+* Pile shuffle is now animated like a corgi shuffle - Contribution by [@vmjcv](https://github.com/vmjcv).
+
+### Bugfixes
+
+* Refactored how mouse detection works. Should avoid clicking or highlighting the wrong card
+* Now clicking on buttons or tokens too long should not try to drag the card. Likewise clicking them too fast shouldn't try to execute scripts
+
 ## 0.12
 
 ### New Features
@@ -10,7 +22,6 @@
 * Scripting Engine now supports cards with optional abilities
 * Hand shape can now be oval (default) - Contribution by [@vmjcv](https://github.com/vmjcv).
 * Font-size will decrease when it amount of chars is too large, in order to stay within the defined label rectangle - Contribution by [@vmjcv](https://github.com/vmjcv).
-* Pile shuffle is now animated - Contribution by [@vmjcv](https://github.com/vmjcv).
 
 ### Bugfixes
 

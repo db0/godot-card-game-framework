@@ -201,7 +201,7 @@ The game comes with some sample scripted cards which can be found under `res://s
 ## Provided features
 
 * **Complete card text and rules enforcement** via provided Scripting Engine! (see scripting features below)
-* Tween animations that look good for card movements.
+* Tween & GDScript-based animations that look good for card movements.
 * Customizable card highlights
 * Choice between Oval or Straight hand shape
 * Automatic focus-in on cards when moused over in-hand.
