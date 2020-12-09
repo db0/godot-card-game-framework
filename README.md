@@ -13,6 +13,38 @@ Once we hit v1.0 things should become more stable.
 
 Pull requests are more than welcome ;)
 
+## Provided features
+
+* **Complete card text and rules enforcement** via provided Scripting Engine! (see scripting features below)
+* Tween & GDScript-based animations that look good for card movements.
+* Customizable card highlights
+* Choice between Oval or Straight hand shape
+* Automatic focus-in on cards when moused over in-hand.
+* Automatic re-arranging of hand as cards are added or removed.
+* Drag & Drop of cards on table and between containers
+* Possibility for multiple hands and piles
+* Piles of cards represent their size visually.
+* Larger image of card when moving mouse cursor over it
+* Pop-up buttons for predefined functions on cards and card containers
+* Option to look inside the piles and choose cards to move out
+* Cards can rotate on the table
+* Cards can attach to other cards and move together as a group.
+* Cards can target other cards with a draggable arrow
+* Can flip cards face-down and view them while in that state
+* Can add tokens on cards. Tokens expand in the own drawer for more info.
+* Ability to define cards in standard json
+* Ability to split card definitions into sets
+* Automatically resizing text inside cards to fit the card size.
+
+### Scripting Engine Features
+
+* Can define card scripts in plain text, using simple json
+* Can set cards to trigger off of any booard manipulation
+* Can filter the triggers based on card properties, or a special subset
+* Can define optional abilities
+* Can define multiple-choice abilities
+* Very easily extensible to your own game's special requirements
+
 ## Usage
 
 Most of the card manipulation functionalities work without any extra work, as long as the relevant scenes have been setup correctly (see #Installation section). For example, the code which handles moving cards around or focusing on them etc should work out of the box.
@@ -218,37 +250,6 @@ Please see the [ScriptDefinitions](https://github.com/db0/godot-card-gaming/wiki
 The game comes with some sample scripted cards which can be found under `res://src/custom/cards/sets`.
 
 
-## Provided features
-
-* **Complete card text and rules enforcement** via provided Scripting Engine! (see scripting features below)
-* Tween & GDScript-based animations that look good for card movements.
-* Customizable card highlights
-* Choice between Oval or Straight hand shape
-* Automatic focus-in on cards when moused over in-hand.
-* Automatic re-arranging of hand as cards are added or removed.
-* Drag & Drop of cards on table and between containers
-* Possibility for multiple hands and piles
-* Piles of cards represent their size visually.
-* Larger image of card when moving mouse cursor over it
-* Pop-up buttons for predefined functions on cards and card containers
-* Option to look inside the piles and choose cards to move out
-* Cards can rotate on the table
-* Cards can attach to other cards and move together as a group.
-* Cards can target other cards with a draggable arrow
-* Can flip cards face-down and view them while in that state
-* Can add tokens on cards. Tokens expand in the own drawer for more info.
-* Ability to define cards in standard json
-* Ability to split card definitions into sets
-* Automatically resizing text inside cards to fit the card size.
-
-### Scripting Engine Features
-
-* Can define card scripts in plain text, using simple json
-* Can set cards to trigger off of any booard manipulation
-* Can filter the triggers based on card properties, or a special subset
-* Can define optional abilities
-* Can define multiple-choice abilities
-* Very easily extensible to your own game's special requirements
 
 ## Contributing
 
