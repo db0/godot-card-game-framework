@@ -157,10 +157,11 @@ The below instructions will set up your game to use the `Pile` class as a framew
 
 2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the custom Deck.tcsn node for a sample of such a signal)
 
-If you want to customize the `Hand.tcsn`, the following nodes are fairly safe to manipulate
+If you want to customize the `Pile.tcsn`, the following nodes are fairly safe to manipulate
 
 * The `$Control` rect_size property
 * Everything under `$Control/ManipulationButtons` except `$Control/ManipulationButtons/Tween`
+* `$CenterContainer`
 
 Like with Card, the node layout is tightly woven in the code. Amend at your own responsibility.
 
