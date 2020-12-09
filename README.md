@@ -94,7 +94,9 @@ The below instructions will set up your game to use the `Card` class as a framew
 2. If you're going to add extra code for your own game in the card scenes, then:
 	* If it's relevant to all cards in your game:
 		1. Modify the CardTemplate.gd by removing its `CardTemplate.gd` as script and adding a new script instead, that extends Card. Give it a new class_name.
-		   ```extends Card```
+		
+		   `extends Card`
+		   
 		2. Make sure any extra scripts for different types of cards, extend your new card's class.
 	* If it's only relevant to a specific type of card, remove the script attached to that type's scene, and add a new script. Make that script extend from the Card class or from your own new card class_name.
 
@@ -147,7 +149,9 @@ The below instructions will set up your game to use the `Pile` class as a framew
 4. If you want to customize the code for your own pile functions then:
 	* If it's relevant to all piles in your game
 		1. Modify the Pile.gd by removing its `Pile.gd` as script and adding a new script instead, that extends Pile. Give it a new class_name.
-		```extends Pile```
+		
+		`extends Pile`
+		
 	* If it's only relevant to a specific type of pile (e.g. deck, or discard), remove the script attached to that type's scene, and add a new script.
 		Make that script extend from the Pile class or from your own new pile class_name if you've made one.
 
