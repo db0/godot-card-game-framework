@@ -98,7 +98,8 @@ The below instructions will set up your game to use the `Card` class as a framew
 		2. Make sure any extra scripts for different types of cards, extend your new card's class.
 	* If it's only relevant to a specific type of card, remove the script attached to that type's scene, and add a new script. Make that script extend from the Card class or from your own new card class_name.
 
-If you want to customize the `CardTemplate.tcsn`, the following nodes are fairly safe to manipulate
+If you want to customize the `CardTemplate.tcsn`, the following nodes are fairly safe to manipulate:
+
 	* The `$Control` rect_size property
 	* The `$Control/Front` node type, as long as it remains a Control type node.
 	* All children nodes of `$Control/Front`. The labels there are used to populate your card. You'll need to adjust setup() and the Card Definitions if you change their names and positions.
