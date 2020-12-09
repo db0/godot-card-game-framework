@@ -116,7 +116,7 @@ _global_script_class_icons={
 
 [application]
 
-config/name="Card Gaming Framework"
+config/name="Card Game Framework"
 run/main_scene="res://src/core/Main.tscn"
 config/icon="res://icon.png"
 
