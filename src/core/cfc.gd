@@ -16,6 +16,7 @@ enum FocusStyle {
 # Options for pile shuffle styles.
 # * corgi: Looks better on a medium amount of cards (0 to 30)
 # * splash: Looks better on a larger amount of cards (30+)
+# * snap: For serious people with no time to waste.
 # * auto: Will choose a shuffle animation depending on the amount of
 #	cards in the pile
 # * random: Will choose a random shuffle style each time a shuffle is requested.
