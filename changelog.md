@@ -11,6 +11,7 @@
    * splash
    * snap - Contribution by [@vmjcv](https://github.com/vmjcv).
 * Piles and Hand will highlight when a dragged card hovers over them to display where the card will be dropped when released.
+* source directories can now be renamed or moved.
 
 ### Bugfixes
 

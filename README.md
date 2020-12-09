@@ -92,7 +92,7 @@ Mind that their script effect change, depending on whether they're in the hand o
 
 ## Installation
 
-Please see the [Install Guide](INSTALL.md]
+Please see the [Install Guide](INSTALL.md)
 
 ## Scripting Engine
 
