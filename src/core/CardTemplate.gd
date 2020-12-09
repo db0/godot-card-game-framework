@@ -1426,7 +1426,8 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
 		random_rot = CardFrameworkUtils.randf_range(-20, 20)
-		center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
+		center_card_pop_position = starting_card_position \
+				+ Vector2(random_x, random_y)
 		start_pos_anim = Tween.TRANS_CIRC
 		end_pos_anim = Tween.TRANS_CIRC
 		rot_anim = Tween.TRANS_CIRC
@@ -1436,19 +1437,30 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
 		random_rot = CardFrameworkUtils.randf_range(-180, 180)
-		center_card_pop_position = starting_card_position+Vector2(random_x,random_y)
+		center_card_pop_position = starting_card_position \
+				+ Vector2(random_x, random_y)
 		start_pos_anim = Tween.TRANS_ELASTIC
 		end_pos_anim = Tween.TRANS_QUAD
 		rot_anim = Tween.TRANS_CIRC
 		pos_speed = pos_speed
+	elif style == cfc.SHUFFLE_STYLE.snap:
+		csize = $Control.rect_size
+		center_card_pop_position.y = starting_card_position.y \
+				+ $Control.rect_size.y
+		start_pos_anim = Tween.TRANS_ELASTIC
+		end_pos_anim = Tween.TRANS_ELASTIC
+		rot_anim = null
+		pos_speed = pos_speed
 	_add_tween_position(starting_card_position,center_card_pop_position,
 			pos_speed,start_pos_anim,Tween.EASE_OUT)
-	_add_tween_rotation(0,random_rot,rot_speed,rot_anim,Tween.EASE_OUT)
+	if rot_anim:
+		_add_tween_rotation(0,random_rot,rot_speed,rot_anim,Tween.EASE_OUT)
 	_tween.start()
 	yield(_tween, "tween_all_completed")
 	_add_tween_position(center_card_pop_position,starting_card_position,
 			pos_speed,end_pos_anim,Tween.EASE_IN)
-	_add_tween_rotation(random_rot,0,rot_speed,rot_anim,Tween.EASE_IN)
+	if rot_anim:
+		_add_tween_rotation(random_rot,0,rot_speed,rot_anim,Tween.EASE_IN)
 	_tween.start()
 
 

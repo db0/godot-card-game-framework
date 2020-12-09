@@ -25,7 +25,9 @@ enum SHUFFLE_STYLE {
 	none,
 	random,
 	corgi,
-	splash }
+	splash,
+	snap,
+}
 
 
 #-----------------------------------------------------------------------------

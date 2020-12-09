@@ -207,7 +207,9 @@ func shuffle_cards(animate = true) -> void:
 	# class, as that would cause a cyclic dependency on the parser
 	# So we've placed it in cfc instead.
 	if not $Tween.is_active() \
-			and animate and shuffle_style != cfc.SHUFFLE_STYLE.none:
+			and animate \
+			and shuffle_style != cfc.SHUFFLE_STYLE.none\
+			and get_card_count() > 1:
 		# The placement of this container in respect to the board.
 		var init_position = position
 		# The following calculation figures out the direction
@@ -260,12 +262,11 @@ func shuffle_cards(animate = true) -> void:
 			anim_speed = 0.4 - 0.005 * card_count
 			if anim_speed < 0.05:
 				anim_speed = 0.05
-			if card_count > 1:
-				var random_cards = get_all_cards().duplicate()
-				CardFrameworkUtils.shuffle_array(random_cards)
-				for card in random_cards:
-					card.animate_shuffle(anim_speed,cfc.SHUFFLE_STYLE.corgi)
-					yield(get_tree().create_timer(next_card_speed), "timeout")
+			var random_cards = get_all_cards().duplicate()
+			CardFrameworkUtils.shuffle_array(random_cards)
+			for card in random_cards:
+				card.animate_shuffle(anim_speed,cfc.SHUFFLE_STYLE.corgi)
+				yield(get_tree().create_timer(next_card_speed), "timeout")
 			# This is where the shuffle actually happens
 			# The effect looks like the cards shuffle in the middle of their
 			# animations
@@ -277,25 +278,29 @@ func shuffle_cards(animate = true) -> void:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
 			$Tween.start()
-			# We move the pile to a more central location to see the anim
 			yield($Tween, "tween_all_completed")
 			# The animation speeds have been empirically tested to look good
 			anim_speed = 0.6
-			if anim_speed < 0.05:
-				anim_speed = 0.05
-			if get_card_count() > 1:
-				var random_cards = get_all_cards().duplicate()
-				CardFrameworkUtils.shuffle_array(random_cards)
-				for card in random_cards:
-					card.animate_shuffle(anim_speed, cfc.SHUFFLE_STYLE.splash)
+			for card in get_all_cards():
+				card.animate_shuffle(anim_speed, cfc.SHUFFLE_STYLE.splash)
 			# This has been timed to "splash" the cards at the exact moment
 			# The shuffle happens, which makes the z-index change
-			# invisible
+			# unnoticeable to the player
 			yield(get_tree().create_timer(anim_speed - 0.5), "timeout")
 			.shuffle_cards()
 			# The extra time is to give the cards enough time to return
 			# To the starting location, and let reorganize_stack() do its magic
 			yield(get_tree().create_timer(anim_speed + 0.6), "timeout")
+		elif style == cfc.SHUFFLE_STYLE.snap:
+			_add_tween_position(position,shuffle_position,0.2)
+			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
+			$Tween.start()
+			yield($Tween, "tween_all_completed")
+			anim_speed = 0.2
+			var card = get_random_card()
+			card.animate_shuffle(anim_speed, cfc.SHUFFLE_STYLE.snap)
+			yield(get_tree().create_timer(anim_speed * 2.5), "timeout")
+			.shuffle_cards()
 		if position != init_position:
 			_add_tween_position(position,init_position,0.2)
 			_add_tween_rotation(rotation_degrees,0,0.2)
