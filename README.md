@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework 0.12
+# Godot Card Game Framework [0.12](CHANGELOG.md)
 
 ![Codot Card Game Framework preview image](preview.png "Codot Card Game Framework preview image")
 
@@ -110,7 +110,7 @@ The game comes with some sample scripted cards which can be found under `res://s
 
 ## Contributing
 
-Please see the [Contribution Guide](contributing.md)
+Please see the [Contribution Guide](CONTRIBUTING.md)
 
 You can also join us on Discord with this invite code: https://discord.gg/AjZMFY7jD4
 
