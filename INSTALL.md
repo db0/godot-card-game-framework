@@ -39,9 +39,12 @@ The below instructions will set up your game to use the `Card` class as a framew
 
 2. If you're going to add extra code for your own game in the card scenes, then:
 	* If it's relevant to all cards in your game:
-		1. Modify the CardTemplate.gd by removing its `CardTemplate.gd` as script and adding a new script instead, that extends Card. Give it a new class_name.
+		1. Modify the `CardTemplate.tcsn` by removing its `CardTemplate.gd` script and adding a new script that extends Card. Give it a new class_name.
 		
-		   `extends Card`
+		```
+		class_name MyCustomCard
+		extends Card
+		```
 		   
 		2. Make sure any extra scripts for different types of cards, extend your new card's class.
 	* If it's only relevant to a specific type of card, remove the script attached to that type's scene, and add a new script. Make that script extend from the Card class or from your own new card class_name.
@@ -67,12 +70,15 @@ You now need to populate your Card Definitions:
 
 The below instructions will set up your game to use the `Hand` class as a framework for hand handling.
 
-1. Instance a scene based on `Hand.tcsn`. Adjust its position on your board with code or visually
+1. Instance in your board scene, a scene based on `Hand.tcsn`. Adjust its position on your board with code or visually
 
 2. If you want to customize the code for your own hand functions,
-	modify the Hand.gd by removing its `Hand.gd` as script and adding a new script instead, that extends Hand. Give it a new class_name.
+	modify the `Hand.tcsn` by removing its `Hand.gd` script and adding a new script that extends Hand. Give it a new class_name.
 
-   `extends Hand`
+	```
+	class_name MyCustomHand
+	extends Hand
+	```
 
 2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the custom Deck.tcsn node for a sample of such a signal)
 
@@ -87,16 +93,19 @@ Like with Card, the node layout is tightly woven in the code. Amend at your own 
 
 The below instructions will set up your game to use the `Pile` class as a framework for pile handling.
 
-1. Instance as many scenes as needed, based on `Pile.tcsn`. Adjust their position on your board with code or visually
+1. Instance in your board scene, as many pile scenes as needed, based on `Pile.tcsn`. Adjust their position on your board with code or visually
 
-2. For each pile, decide which shuffle style you want to use. Default it "auto"
+2. For each pile, decide which shuffle style you want to use. Default is "auto"
 3. For each pile, decide if the cards inside are by default face-up or face-down. Check the "Faceup Cards" accordingly.
 
 4. If you want to customize the code for your own pile functions then:
 	* If it's relevant to all piles in your game
-		1. Modify the Pile.gd by removing its `Pile.gd` as script and adding a new script instead, that extends Pile. Give it a new class_name.
+		1. Modify the `Pile.tcsn` by removing its `Pile.gd` script and adding a new script that extends Pile. Give it a new class_name.
 		
-		`extends Pile`
+		```
+		class_name MyCustomPle
+		extends Pile
+		```
 		
 	* If it's only relevant to a specific type of pile (e.g. deck, or discard), remove the script attached to that type's scene, and add a new script.
 		Make that script extend from the Pile class or from your own new pile class_name if you've made one.
@@ -122,7 +131,7 @@ The below instructions will set up your game to use the `Board` class as a frame
 
    `extends Board`
 
-1. If you're not using the provided Board.tcsn, then all you need to do is add a Node2D in the root of your game.
+1. If you're not using the provided `Board.tcsn`, then all you need to do is add a Node2D in the root of your scene.
 
 Of course without instancing a few Hand or Pile objects, there won't be anything you can do.
 
@@ -132,15 +141,17 @@ The framework includes two forms of showing details about a card. One is simply 
 
 By default the game has both active, but the viewport focus requires a bit more extensive setup to be usable by your game. Specifically you need to setup a parent scene which utilizes multiple viewports.
 
-If you do not already have anything like this, you can simply use the Main.tcsn scene as a template and modify accordingly. The framework will utilize it automatically if it detects a Main.tcsn as the root.
+If you do not already have anything like this, you can simply use the `Main.tcsn` scene as a template and modify accordingly. The framework will utilize it automatically if it detects a Main.tcsn as the root.
 
-If you want to use your own root scene, then you can simply extend it from the ViewportCardFocus class to inherit all the required methods
+If you want to use your own root scene, then you can simply extend it from the ViewportCardFocus class to inherit all the required methods. 
+The Main.tcsn has a fairly simple layout, however it's still not recommended to replace it, but instead to tweak it what has already been provided.
 
-If you do not want or need the viewport focus, then simply ignore it. However you'll need to make sure table cards are legible as they are since there's no other good way to get a closeup of them without viewports
+If you do not want or need the viewport focus, then you can simply ignore it. 
+However you'll need to make sure table cards are legible as they are since there's no other good way to get a closeup of them without viewports
 
 ## Unit Testing
 
-Do the following if you want to use/import the provided unit tests
+Do the following if you want to use/import the provided unit tests.
 
 1. [install Gut](https://github.com/bitwes/Gut/wiki/Install) and do the relevant setup, if you don't have it already.
   **Important:** Due to https://github.com/bitwes/Gut/issues/239 I had to modify the gut tests for assert_almost_eq and assert_almost_ne to work with Vector2. If you install the offical version, you will start seeing a lot of failures.
