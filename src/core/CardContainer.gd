@@ -186,10 +186,10 @@ func translate_card_index_to_node_index(index: int) -> int:
 	return node_index
 
 # Changes card highlight colour.
-func set_highlight(requestedFocus: bool, hoverColour = cfc.TARGET_HOVER_COLOUR) -> void:
+func set_highlight(requestedFocus: bool, hoverColour = CFConst.TARGET_HOVER_COLOUR) -> void:
 	$Control/Highlight.visible = requestedFocus
 	if requestedFocus:
 		$Control/Highlight.modulate = hoverColour
 	else:
-		$Control/Highlight.modulate = cfc.TARGET_HOVER_COLOUR
+		$Control/Highlight.modulate = CFConst.TARGET_HOVER_COLOUR
 

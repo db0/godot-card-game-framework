@@ -34,5 +34,5 @@ func _on_CardChoices_id_pressed(id: int) -> void:
 # leave yields waiting
 func _on_CardChoices_popup_hide() -> void:
 	# We also allow Unit Tests to send the signal through this function
-	if not id_selected or cfc.UT:
+	if not id_selected or cfc.ut:
 		emit_signal("id_pressed", id_selected)

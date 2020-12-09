@@ -14,7 +14,7 @@ func test_fancy_reshuffle_all():
 	cfc.fancy_movement = true
 	yield(drag_drop(cards[0], Vector2(300,300)), "completed")
 	yield(drag_drop(cards[4], Vector2(1000,10)), "completed")
-	board._on_ReshuffleAll_pressed()
+	board.reshuffle_all_in_pile()
 	yield(yield_for(0.02), YIELD)
 	assert_almost_eq(Vector2(300, 300),cards[0].global_position,Vector2(10,10), 
 			"Card is not being teleported from where is expect by Tween")
@@ -26,7 +26,7 @@ func test_basic_reshuffle_all():
 	cfc.fancy_movement = false
 	yield(drag_drop(cards[0], Vector2(300,300)), "completed")
 	yield(drag_drop(cards[4], Vector2(1000,10)), "completed")
-	board._on_ReshuffleAll_pressed()
+	board.reshuffle_all_in_pile()
 	yield(yield_for(0.018), YIELD)
 	assert_almost_eq(Vector2(300, 300),cards[0].global_position,Vector2(10,10), 
 			"Card is not being teleported from where is expected by Tween")

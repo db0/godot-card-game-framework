@@ -1,8 +1,6 @@
 # Code for a sample playspace, you're expected to provide your own ;)
 extends Board
 
-var cardTemplate = load(cfc.PATH_CORE + "CardTemplate.tscn")
-
 var allCards := [] # A pseudo-deck array to hold the card objects we want to pull
 
 
@@ -52,7 +50,7 @@ func _on_ReshuffleAllDeck_pressed() -> void:
 func _on_ReshuffleAllDiscard_pressed() -> void:
 	reshuffle_all_in_pile(cfc.NMAP.discard)
 
-func reshuffle_all_in_pile(pile: Pile):
+func reshuffle_all_in_pile(pile = cfc.NMAP.deck):
 	for c in get_tree().get_nodes_in_group("cards"):
 		if c.get_parent() != pile:
 			c.move_to(pile)

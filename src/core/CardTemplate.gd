@@ -72,11 +72,14 @@ signal card_unattached(card,trigger,details)
 signal card_targeted(card,trigger,details)
 
 
-var scripting_engine = load(cfc.PATH_CORE + "ScriptingEngine.gd")
+var scripting_engine = load(CFConst.PATH_CORE + "ScriptingEngine.gd")
 
-# Used to add new token instances to cards
-var _TOKEN_SCENE = load(cfc.PATH_CORE + "Token.tscn")
-var _CARD_CHOICES_SCENE = load(cfc.PATH_CORE + "CardChoices.tscn")
+# Used to add new token instances to cards. We have to add the consts
+# together before passing to the preload, or the parser complains
+const _TOKEN_SCENE_FILE = CFConst.PATH_CORE + "Token.tscn"
+const _TOKEN_SCENE = preload(_TOKEN_SCENE_FILE)
+const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
+const _CARD_CHOICES_SCENE = preload(_CARD_CHOICES_SCENE_FILE)
 
 export var properties :=  {}
 # We export this variable to the editor to allow us to add scripts to each card
@@ -174,8 +177,8 @@ func _ready() -> void:
 	$Control/FocusHighlight.rect_size = $Control.rect_size + Vector2(6,6)
 	$Control/FocusHighlight.rect_position = Vector2(-3,-3)
 	# We set the targetting arrow modulation to match our config specification
-	$TargetLine.default_color = cfc.TARGETTING_ARROW_COLOUR
-	$TargetLine/ArrowHead.color = cfc.TARGETTING_ARROW_COLOUR
+	$TargetLine.default_color = CFConst.TARGETTING_ARROW_COLOUR
+	$TargetLine/ArrowHead.color = CFConst.TARGETTING_ARROW_COLOUR
 	# warning-ignore:return_value_discarded
 	connect("area_entered", self, "_on_Card_area_entered")
 	# warning-ignore:return_value_discarded
@@ -237,7 +240,7 @@ func _init_card_name():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta) -> void:
-	if $Tween.is_active() and not cfc.UT: # Debug code for catch potential Tween deadlocks
+	if $Tween.is_active() and not cfc.ut: # Debug code for catch potential Tween deadlocks
 		_tween_stuck_time += delta
 		if _tween_stuck_time > 5 and int(fmod(_tween_stuck_time,3)) == 2 :
 			print("Tween Stuck for ",_tween_stuck_time,
@@ -334,7 +337,7 @@ func _on_Card_gui_input(event) -> void:
 			# If it's a long click it might be because
 			# they want to drag the card
 			else:
-				if (cfc.focus_style != cfc.FocusStyle.VIEWPORT and
+				if (cfc.focus_style != CFConst.FocusStyle.VIEWPORT and
 						(state == FOCUSED_IN_HAND
 						or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
 					# But first we check if the player does a long-press.
@@ -481,14 +484,14 @@ func _on_Card_area_entered(area: Area2D) -> void:
 			_potential_cards.sort_custom(CardFrameworkUtils,"sort_index_ascending")
 			# Finally we use a method which  handles changing highlights on the
 			# top index card
-			highlight_potential_card(cfc.HOST_HOVER_COLOUR)
+			highlight_potential_card(CFConst.HOST_HOVER_COLOUR)
 	if area.get_class() == "CardContainer" \
 			and not area in _potential_containers \
 			and state == DRAGGED:
 		var container = area
 		_potential_containers.append(container)
 		_potential_containers.sort_custom(CardFrameworkUtils,"sort_card_containers")
-		highlight_potential_container(cfc.TARGET_HOVER_COLOUR)
+		highlight_potential_container(CFConst.TARGET_HOVER_COLOUR)
 
 
 # Triggers when a card stops hovering over another
@@ -509,14 +512,14 @@ func _on_Card_area_exited(area: Area2D) -> void:
 			# it anymore
 			card.set_highlight(false)
 			# Finally, we make sure we highlight any other cards we're still hovering
-			highlight_potential_card(cfc.HOST_HOVER_COLOUR)
+			highlight_potential_card(CFConst.HOST_HOVER_COLOUR)
 	if area.get_class() == "CardContainer" \
 			and area in _potential_containers \
 			and state == DRAGGED:
 		var container = area
 		_potential_containers.erase(container)
 		container.set_highlight(false)
-		highlight_potential_container(cfc.TARGET_HOVER_COLOUR)
+		highlight_potential_container(CFConst.TARGET_HOVER_COLOUR)
 
 
 # Triggers when a targetting arrow hovers over another card while being dragged
@@ -526,7 +529,7 @@ func _on_ArrowHead_area_entered(card: Card) -> void:
 	if card and not card in _potential_cards:
 		_potential_cards.append(card)
 		_potential_cards.sort_custom(CardFrameworkUtils,"sort_index_ascending")
-		highlight_potential_card(cfc.TARGET_HOVER_COLOUR)
+		highlight_potential_card(CFConst.TARGET_HOVER_COLOUR)
 
 
 # Triggers when a targetting arrow stops hovering over a card
@@ -539,7 +542,7 @@ func _on_ArrowHead_area_exited(card: Card) -> void:
 		# And we explicitly hide its cards focus since we don't care about it anymore
 		card.set_highlight(false)
 		# Finally, we make sure we highlight any other cards we're still hovering
-		highlight_potential_card(cfc.TARGET_HOVER_COLOUR)
+		highlight_potential_card(CFConst.TARGET_HOVER_COLOUR)
 
 
 # Reverses the card back pulse and starts it again
@@ -579,7 +582,7 @@ func setup(cname: String) -> void:
 		elif label in CardConfig.PROPERTIES_ARRAYS:
 			_set_label_text($Control/Front/CardText.get_node(label),
 					CardFrameworkUtils.array_join(properties[label],
-					cfc.ARRAY_PROPERTY_JOIN))
+					CFConst.ARRAY_PROPERTY_JOIN))
 
 
 # Setter for _is_attachment
@@ -963,7 +966,7 @@ func move_to(targetHost: Node2D,
 				_target_position = (current_host_card.global_position
 						+ Vector2(0,(attach_index + 1)
 						* $Control.rect_size.y
-						* cfc.ATTACHMENT_OFFSET))
+						* CFConst.ATTACHMENT_OFFSET))
 			else:
 				_determine_target_position_from_mouse()
 				raise()
@@ -1118,7 +1121,7 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 		_target_position = (current_host_card.global_position
 				+ Vector2(0,(attach_index + 1)
 				* $Control.rect_size.y
-				* cfc.ATTACHMENT_OFFSET))
+				* CFConst.ATTACHMENT_OFFSET))
 		emit_signal("card_attached",
 				self,
 				"card_attached",
@@ -1175,7 +1178,7 @@ func interruptTweening() ->void:
 func set_focus(requestedFocus: bool) -> void:
 	 # We use an if to avoid performing constant operations in _process
 	if $Control/FocusHighlight.visible != requestedFocus and \
-			$Control/FocusHighlight.modulate == cfc.FOCUS_HOVER_COLOUR:
+			$Control/FocusHighlight.modulate == CFConst.FOCUS_HOVER_COLOUR:
 		$Control/FocusHighlight.visible = requestedFocus
 	if cfc.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
@@ -1211,7 +1214,7 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false, check := fals
 	var retcode : int
 	# If the player requested a token name that has not been defined by the game
 	# we return a failure
-	if not cfc.TOKENS_MAP.get(token_name, null):
+	if not CFConst.TOKENS_MAP.get(token_name, null):
 		retcode = _ReturnCode.FAILED
 	else:
 		var token : Token = get_all_tokens().get(token_name, null)
@@ -1283,12 +1286,12 @@ func get_token(token_name: String) -> Token:
 
 
 # Changes card highlight colour.
-func set_highlight(requestedFocus: bool, hoverColour = cfc.HOST_HOVER_COLOUR) -> void:
+func set_highlight(requestedFocus: bool, hoverColour = CFConst.HOST_HOVER_COLOUR) -> void:
 	$Control/FocusHighlight.visible = requestedFocus
 	if requestedFocus:
 		$Control/FocusHighlight.modulate = hoverColour
 	else:
-		$Control/FocusHighlight.modulate = cfc.FOCUS_HOVER_COLOUR
+		$Control/FocusHighlight.modulate = CFConst.FOCUS_HOVER_COLOUR
 
 
 # Returns the Card's index position among other card objects
@@ -1394,7 +1397,7 @@ func set_manipulation_button_mouse_filters(value = true) -> void:
 	# with a tarteting arrow.
 	# We do not want to activate the buttons when a player is trying to
 	# select the card for an effect.
-	if not value or $Control/FocusHighlight.modulate == cfc.TARGET_HOVER_COLOUR:
+	if not value or $Control/FocusHighlight.modulate == CFConst.TARGET_HOVER_COLOUR:
 		button_filter = 2
 	# We do a comparison first, to make sure we avoid unnecessary operations
 	for button in $Control/ManipulationButtons.get_children():
@@ -1423,7 +1426,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	var rot_anim
 	var pos_speed := anim_speed
 	var rot_speed := anim_speed
-	if style == cfc.SHUFFLE_STYLE.corgi:
+	if style == CFConst.SHUFFLE_STYLE.corgi:
 		csize = $Control.rect_size * 0.65
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
@@ -1434,7 +1437,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		end_pos_anim = Tween.TRANS_CIRC
 		rot_anim = Tween.TRANS_CIRC
 	# 2 is splash
-	elif style == cfc.SHUFFLE_STYLE.splash:
+	elif style == CFConst.SHUFFLE_STYLE.splash:
 		csize = $Control.rect_size * 0.85
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
@@ -1445,7 +1448,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		end_pos_anim = Tween.TRANS_QUAD
 		rot_anim = Tween.TRANS_CIRC
 		pos_speed = pos_speed
-	elif style == cfc.SHUFFLE_STYLE.snap:
+	elif style == CFConst.SHUFFLE_STYLE.snap:
 		csize = $Control.rect_size
 		center_card_pop_position.y = starting_card_position.y \
 				+ $Control.rect_size.y
@@ -1453,7 +1456,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		end_pos_anim = Tween.TRANS_ELASTIC
 		rot_anim = null
 		pos_speed = pos_speed
-	elif style == cfc.SHUFFLE_STYLE.overhand:
+	elif style == CFConst.SHUFFLE_STYLE.overhand:
 		csize = $Control.rect_size * 1.1
 		random_x = CardFrameworkUtils.randf_range(- csize.x/10, csize.x/10)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, - csize.y/2)
@@ -1503,7 +1506,7 @@ func _organize_attachments() -> void:
 				card.global_position = global_position + \
 						Vector2(0,(attach_index + 1) \
 						* $Control.rect_size.y \
-						* cfc.ATTACHMENT_OFFSET)
+						* CFConst.ATTACHMENT_OFFSET)
 
 
 # Returns the global mouse position but ensures it does not exit the
@@ -1529,16 +1532,16 @@ func _determine_board_position_from_mouse() -> Vector2:
 func _determine_target_position_from_mouse() -> void:
 	_target_position = _determine_board_position_from_mouse()
 	# The below ensures the card doesn't leave the viewport dimentions
-	if _target_position.x + $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x \
+	if _target_position.x + $Control.rect_size.x * CFConst.PLAY_AREA_SCALE.x \
 			> get_viewport().size.x:
 		_target_position.x = get_viewport().size.x \
 				- $Control.rect_size.x \
-				* cfc.PLAY_AREA_SCALE.x
-	if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y \
+				* CFConst.PLAY_AREA_SCALE.x
+	if _target_position.y + $Control.rect_size.y * CFConst.PLAY_AREA_SCALE.y \
 			> get_viewport().size.y:
 		_target_position.y = get_viewport().size.y \
 				- $Control.rect_size.y \
-				* cfc.PLAY_AREA_SCALE.y
+				* CFConst.PLAY_AREA_SCALE.y
 
 
 # Instructs the card to move aside for another card enterring focus
@@ -1556,7 +1559,7 @@ func _start_dragging() -> void:
 	# due to godotengine/godot#30215
 	# This is caused because we're using a viewport node and scaling the game
 	# in full-creen.
-	if not cfc.UT:
+	if not cfc.ut:
 		if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
 			get_tree().current_scene.get_viewport().warp_mouse(global_position + Vector2(5,5))
 		# However the above messes things if we don't have stretch mode,
@@ -1910,7 +1913,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not _focus_completed and \
-					cfc.focus_style != cfc.FocusStyle.VIEWPORT:
+					cfc.focus_style != CFConst.FocusStyle.VIEWPORT:
 				var expected_position: Vector2 = recalculate_position()
 				var expected_rotation: float = _recalculate_rotation()
 				# We figure out our neighbours by their index
@@ -2082,7 +2085,7 @@ func _process_card_state() -> void:
 			# because if the player drags the cursor outside the window and unclicks
 			# The control will not receive the mouse input
 			# and this will stay dragging forever
-			if not cfc.UT:
+			if not cfc.ut:
 				Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 			$Control.set_default_cursor_shape(Input.CURSOR_CROSS)
 			# We set the card to be centered on the mouse cursor to allow
@@ -2099,8 +2102,8 @@ func _process_card_state() -> void:
 			set_control_mouse_filters(true)
 			set_manipulation_button_mouse_filters(true)
 			if not $Tween.is_active() and \
-					not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
-				_add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.3,
+					not scale.is_equal_approx(CFConst.PLAY_AREA_SCALE):
+				_add_tween_scale(scale, CFConst.PLAY_AREA_SCALE, 0.3,
 						Tween.TRANS_SINE, Tween.EASE_OUT)
 				$Tween.start()
 			# This tween hides the container manipulation buttons
@@ -2125,10 +2128,10 @@ func _process_card_state() -> void:
 				$Tween.remove(self,'position') # We make sure to remove other tweens of the same type to avoid a deadlock
 #				_target_position = _determine_board_position_from_mouse()
 #				# The below ensures the card doesn't leave the viewport dimentions
-#				if _target_position.x + $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x > get_viewport().size.x:
-#					_target_position.x = get_viewport().size.x - $Control.rect_size.x * cfc.PLAY_AREA_SCALE.x
-#				if _target_position.y + $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y > get_viewport().size.y:
-#					_target_position.y = get_viewport().size.y - $Control.rect_size.y * cfc.PLAY_AREA_SCALE.y
+#				if _target_position.x + $Control.rect_size.x * CFConst.PLAY_AREA_SCALE.x > get_viewport().size.x:
+#					_target_position.x = get_viewport().size.x - $Control.rect_size.x * CFConst.PLAY_AREA_SCALE.x
+#				if _target_position.y + $Control.rect_size.y * CFConst.PLAY_AREA_SCALE.y > get_viewport().size.y:
+#					_target_position.y = get_viewport().size.y - $Control.rect_size.y * CFConst.PLAY_AREA_SCALE.y
 				_add_tween_position(position, _target_position, 0.25)
 				# The below ensures a card dropped from the hand will not
 				# retain a slight rotation.
@@ -2137,8 +2140,8 @@ func _process_card_state() -> void:
 				if not int($Control.rect_rotation) in [0,90,180,270]:
 					_add_tween_rotation($Control.rect_rotation, _target_rotation, 0.25)
 				# We want cards on the board to be slightly smaller than in hand.
-				if not scale.is_equal_approx(cfc.PLAY_AREA_SCALE):
-					_add_tween_scale(scale, cfc.PLAY_AREA_SCALE, 0.5,
+				if not scale.is_equal_approx(CFConst.PLAY_AREA_SCALE):
+					_add_tween_scale(scale, CFConst.PLAY_AREA_SCALE, 0.5,
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				state = ON_PLAY_BOARD
@@ -2423,7 +2426,7 @@ func _recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 	card_position_y = 0
 	if index_diff!=null:
 		return(Vector2(card_position_x, card_position_y)
-				+ Vector2($Control.rect_size.x / index_diff * cfc.NEIGHBOUR_PUSH, 0))
+				+ Vector2($Control.rect_size.x / index_diff * CFConst.NEIGHBOUR_PUSH, 0))
 	else:
 		return(Vector2(card_position_x,card_position_y))
 

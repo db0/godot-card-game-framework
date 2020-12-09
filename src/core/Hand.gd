@@ -8,7 +8,7 @@ extends CardContainer
 const hand_size := 12
 
 # Offsets the hand position based on the configuration
-onready var bottom_margin: float = $Control.rect_size.y * cfc.BOTTOM_MARGIN_MULTIPLIER
+onready var bottom_margin: float = $Control.rect_size.y * CFConst.BOTTOM_MARGIN_MULTIPLIER
 
 
 func _ready() -> void:
