@@ -100,12 +100,12 @@ The below instructions will set up your game to use the `Card` class as a framew
 
 If you want to customize the `CardTemplate.tcsn`, the following nodes are fairly safe to manipulate:
 
-	* The `$Control` rect_size property
-	* The `$Control/Front` node type, as long as it remains a Control type node.
-	* All children nodes of `$Control/Front`. The labels there are used to populate your card. You'll need to adjust setup() and the Card Definitions if you change their names and positions.
-	* Everything under `$Control/Back/VBoxContainer` except `$Control/Back/VBoxContainer/CenterContainer` as that is needed to show the viewed status.
-	* Everything under `$Control/ManipulationButtons`
-	* `$Debug`
+* The `$Control` rect_size property
+* The `$Control/Front` node type, as long as it remains a Control type node.
+* All children nodes of `$Control/Front`. The labels there are used to populate your card. You'll need to adjust setup() and the Card Definitions if you change their names and positions.
+* Everything under `$Control/Back/VBoxContainer` except `$Control/Back/VBoxContainer/CenterContainer` as that is needed to show the viewed status.
+* Everything under `$Control/ManipulationButtons`
+* `$Debug`
 
 If you want a different node setup for the card scene, be aware that the current layout is very tightly wound in the code.
 You may need to do extensive modifications to make sure the code can find the modified node names and positions.
@@ -130,8 +130,8 @@ The below instructions will set up your game to use the `Hand` class as a framew
 
 If you want to customize the `Hand.tcsn`, the following nodes are fairly safe to manipulate
 
-	* The `$Control` rect_size property
-	* Everything under `$Control/ManipulationButtons` except `$Control/ManipulationButtons/Tween`
+* The `$Control` rect_size property
+* Everything under `$Control/ManipulationButtons` except `$Control/ManipulationButtons/Tween`
 
 Like with Card, the node layout is tightly woven in the code. Amend at your own responsibility.
 
@@ -155,8 +155,8 @@ The below instructions will set up your game to use the `Pile` class as a framew
 
 If you want to customize the `Hand.tcsn`, the following nodes are fairly safe to manipulate
 
-	* The `$Control` rect_size property
-	* Everything under `$Control/ManipulationButtons` except `$Control/ManipulationButtons/Tween`
+* The `$Control` rect_size property
+* Everything under `$Control/ManipulationButtons` except `$Control/ManipulationButtons/Tween`
 
 Like with Card, the node layout is tightly woven in the code. Amend at your own responsibility.
 
