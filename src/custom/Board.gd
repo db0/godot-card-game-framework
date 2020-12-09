@@ -45,17 +45,24 @@ func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
 
 
 # Reshuffles all Card objects created back into the deck
-func _on_ReshuffleAll_pressed() -> void:
+func _on_ReshuffleAllDeck_pressed() -> void:
+	reshuffle_all_in_pile(cfc.NMAP.deck)
+
+
+func _on_ReshuffleAllDiscard_pressed() -> void:
+	reshuffle_all_in_pile(cfc.NMAP.discard)
+
+func reshuffle_all_in_pile(pile: Pile):
 	for c in get_tree().get_nodes_in_group("cards"):
-		if c.get_parent() != cfc.NMAP.deck:
-			c.move_to(cfc.NMAP.deck)
+		if c.get_parent() != pile:
+			c.move_to(pile)
 			yield(get_tree().create_timer(0.1), "timeout")
 	# Last card in, is the top card of the pile
-	var last_card : Card = cfc.NMAP.deck.get_top_card()
+	var last_card : Card = pile.get_top_card()
 	if last_card._tween.is_active():
 		yield(last_card._tween, "tween_all_completed")
 	yield(get_tree().create_timer(0.2), "timeout")
-	cfc.NMAP.deck.shuffle_cards()
+	pile.shuffle_cards()
 
 
 # Button to change focus mode

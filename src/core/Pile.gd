@@ -241,8 +241,10 @@ func shuffle_cards(animate = true) -> void:
 		if shuffle_style == cfc.SHUFFLE_STYLE.auto:
 			if card_count <= 30:
 				style = cfc.SHUFFLE_STYLE.corgi
-			else:
+			elif card_count <= 60:
 				style = cfc.SHUFFLE_STYLE.splash
+			else:
+				style = cfc.SHUFFLE_STYLE.overhand
 		# if the style is random, we select a random shuffle animation among
 		# the predefined ones.
 		elif shuffle_style == cfc.SHUFFLE_STYLE.random:
@@ -313,8 +315,7 @@ func shuffle_cards(animate = true) -> void:
 				# The shuffle after every jump in a face-up pile
 				# really sells it :)
 				.shuffle_cards()
-			# We wait until the cards calmed down to restack
-			yield(get_tree().create_timer(anim_speed), "timeout")
+				reorganize_stack()
 		if position != init_position:
 			_add_tween_position(position,init_position,0.2)
 			_add_tween_rotation(rotation_degrees,0,0.2)
