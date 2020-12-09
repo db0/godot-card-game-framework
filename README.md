@@ -45,6 +45,12 @@ Pull requests are more than welcome ;)
 * Can define multiple-choice abilities
 * Very easily extensible to your own game's special requirements
 
+## Easy Customation
+
+The classes provide some easy customization options, such as how the card move, where they appear etc
+Check the "Behaviour Constants" header at the start of the cfc singleton.
+For more fine customization, you'll need to modify manually
+
 ## Usage
 
 Most of the card manipulation functionalities work without any extra work, as long as the relevant scenes have been setup correctly (see #Installation section). For example, the code which handles moving cards around or focusing on them etc should work out of the box.
@@ -52,6 +58,7 @@ Most of the card manipulation functionalities work without any extra work, as lo
 However some effects require some trigger, such as targeting of cards etc. The method calls to perform these are available to use and some demo functions have been provided to understand how it works, but it is expected that each game will provide their own logic in their own scripts to call the relevant methods.
 
 You can find documentation about all the provided methods [in the wiki](https://github.com/db0/godot-card-gaming/wiki)
+
 
 ### Demonstrations
 
@@ -234,12 +241,6 @@ Do the following if you want to use/import the provided unit tests
 2. If you followed the standard Gut instructions, you should have already have created the tests folder, copy the test_*.gd from /tests/unit inside your own `res://tests/unit`.
 3. Edit TestVars.gd and modify the boardScene const to point to the root board (i.e. where the cards are played) of your game.
 4. You need to use the Board class on the root of your game or you need to copy the code inside BoardTemplate.tcsn into your own board (at there's necessary Unit Testing code in there)
-
-## Easy Customation
-
-The classes provide some easy customization options, such as how the card move, where they appear etc
-Check the "Behaviour Constants" header at the start of the cfc singleton.
-For more fine customization, you'll need to modify manually
 
 ## Scripting Engine
 
