@@ -4,12 +4,12 @@
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=3]
 
-[sub_resource type="StyleBoxEmpty" id=3]
+[sub_resource type="StyleBoxEmpty" id=1]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="DynamicFont" id=2]
 font_data = ExtResource( 2 )
 
-[sub_resource type="RectangleShape2D" id=2]
+[sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 490, 120 )
 
 [node name="Hand" type="Area2D" groups=[
@@ -23,7 +23,7 @@ anchor_bottom = 1.0
 margin_right = 980.0
 margin_bottom = 240.0
 mouse_filter = 1
-custom_styles/panel = SubResource( 3 )
+custom_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -42,7 +42,7 @@ __meta__ = {
 margin_right = 24.0
 margin_bottom = 26.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "S"
 
 [node name="DiscardRandom" type="Button" parent="Control/ManipulationButtons" groups=[
@@ -52,11 +52,11 @@ margin_left = 28.0
 margin_right = 52.0
 margin_bottom = 26.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "R"
 
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 490, 120 )
-shape = SubResource( 2 )
+shape = SubResource( 3 )

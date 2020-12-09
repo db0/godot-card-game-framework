@@ -18,7 +18,7 @@ func get_scripts(card_name: String) -> Dictionary:
 				"hand": [
 					{
 						"name": "spawn_card",
-						"card_scene": "res://src/core/CardTemplate.tscn",
+						"card_scene": cfc.PATH_CORE + "CardTemplate.tscn",
 						"board_position": Vector2(500,200),
 					}
 				]

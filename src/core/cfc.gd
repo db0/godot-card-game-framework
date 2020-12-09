@@ -14,13 +14,13 @@ enum FocusStyle {
 	BOTH
 }
 # Options for pile shuffle styles.
+# * auto: Will choose a shuffle animation depending on the amount of
+#	cards in the pile
+# * none: No shuffle animation for this pile.
+# * random: Will choose a random shuffle style each time a shuffle is requested.
 # * corgi: Looks better on a medium amount of cards (0 to 30)
 # * splash: Looks better on a larger amount of cards (30+)
 # * snap: For serious people with no time to waste.
-# * auto: Will choose a shuffle animation depending on the amount of
-#	cards in the pile
-# * random: Will choose a random shuffle style each time a shuffle is requested.
-# * none: No shuffle animation for this pile.
 enum SHUFFLE_STYLE {
 	auto,
 	none,
@@ -36,6 +36,30 @@ enum SHUFFLE_STYLE {
 # Change the below to change how all cards behave to match your game.
 #-----------------------------------------------------------------------------
 
+# The path where the Card Game Framework core files exist.
+# (i.e. mandatory scenes and scripts)
+const PATH_CORE := "res://src/core/"
+# The path where scenes and scripts customized for this specific game exist
+# (e.g. board, card back etc)
+const PATH_CUSTOM := "res://src/custom/"
+# The path where card template scenes exist. 
+# These is usually one scene per type of card in the game
+const PATH_CARDS := PATH_CUSTOM + "cards/"
+# The path where the set definitions exist.
+# This includes Card definition and card script definitions.
+const PATH_SETS := PATH_CARDS + "sets/"
+# The path where assets needed by this game are placed
+# such as token images
+const PATH_ASSETS := "res://assets/"
+# The text which is prepended to files to signify the contain
+# Card definitions for a specific set
+const CARD_SET_NAME_PREPEND := "SetDefinition_"
+# The text which is prepended to files to signify the contain
+# script definitions for a specific set
+const SCRRIPT_SET_NAME_PREPEND := "SetScripts_"
+# This specifies the location of your token images.
+# Tokens are always going to be seeked at this location
+const PATH_TOKENS := PATH_ASSETS + "tokens/"
 # The amount of distance neighboring cards are pushed during card focus
 #
 # It's based on the card width. Bigger percentage means larger push.
@@ -95,7 +119,7 @@ const ARRAY_PROPERTY_JOIN := ' - '
 # The key is the name of the token as it will appear in your scene and labels
 #
 # The value is the filename which contains your token image. The full path will
-# be constructed using the token_assets_path variable
+# be constructed using the PATH_TOKENS variable
 #
 # This allows us to reuse a token image for more than 1 token type
 const TOKENS_MAP := {
@@ -108,9 +132,6 @@ const TOKENS_MAP := {
 	'gold coin': 'yellow.svg',
 	'void': 'black.svg',
 }
-# This specifies the location of your token images.
-# Tokens are always going to be seeked at this location
-const TOKEN_ASSETS_PATH = "res://assets/tokens/"
 # The below vars predefine the position in your node structure
 # to reach the nodes relevant to the cards.
 #
@@ -181,7 +202,6 @@ var _debug := false
 var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 
 
-
 func _ready() -> void:
 	# We reset our node mapping variables every time
 	# as they repopulate during unit testing many times.
@@ -225,8 +245,7 @@ func _ready() -> void:
 	set_scripts = load_script_definitions()
 
 
-
-# Setter for seed.
+# Setter for the ranom seed.
 func set_seed(_seed: String) -> void:
 	game_rng_seed = _seed
 	game_rng.set_seed(hash(game_rng_seed))
@@ -236,35 +255,39 @@ func set_seed(_seed: String) -> void:
 func instance_card(card_name: String) -> Card:
 	# We discover the template from the "Type"  property defined
 	# in each card. Any property can be used
-	var template = load("res://src/custom/cards/"
+	var template = load(PATH_CARDS
 			+ card_definitions[card_name][CardConfig.SCENE_PROPERTY] + ".tscn")
 	var card = template.instance()
 	card.setup(card_name)
 	return(card)
 
-# Returns the combined Card definitions of all set files
+
+# Returns a Dictionary with the combined Card definitions of all set files
 func load_card_definitions() -> Dictionary:
 	var set_definitions := CardFrameworkUtils.list_files_in_directory(
-				"res://src/custom/cards/sets/", "SetDefinition_")
+				PATH_SETS, CARD_SET_NAME_PREPEND)
 	var combined_sets := {}
 	for set_file in set_definitions:
-		var set_dict = load("res://src/custom/cards/sets/" + set_file).CARDS
+		var set_dict = load(PATH_SETS + set_file).CARDS
 		for dict_entry in set_dict:
 			combined_sets[dict_entry] = set_dict[dict_entry]
 	return(combined_sets)
 
 
-# Seeks in the script definitions of all sets, and returns the script for
-# the requested card
+# Returns a Dictionary with the combined Script definitions of all set files
 func load_script_definitions() -> Dictionary:
 	var script_definitions := CardFrameworkUtils.list_files_in_directory(
-				"res://src/custom/cards/sets/", "SetScripts_")
+				PATH_SETS, SCRRIPT_SET_NAME_PREPEND)
 	var combined_scripts := {}
 	for card_name in card_definitions.keys():
 		for script_file in script_definitions:
 			if combined_scripts.get(card_name):
 				break
-			var scripts_obj = load("res://src/custom/cards/sets/" + script_file).new()
+			var scripts_obj = load(PATH_SETS + script_file).new()
+			# scripts are not defined as constants, as we want to be
+			# able to refer specific variables inside them
+			# such as cfc.deck etc. Instead they contain a
+			# method which returns the script for the requested card name
 			var card_script = scripts_obj.get_scripts(card_name)
 			if not card_script.empty():
 				combined_scripts[card_name] = card_script

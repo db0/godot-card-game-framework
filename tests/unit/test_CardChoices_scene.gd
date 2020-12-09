@@ -1,5 +1,6 @@
 extends "res://tests/UTcommon.gd"
 
+const _CARD_CHOICES_SCENE = preload("res://src/core/CardChoices.tscn")
 var cards := []
 var card: Card
 var choices: Dictionary
@@ -13,7 +14,7 @@ func after_all():
 
 func before_each():
 	setup_board()
-	menu = Card._CARD_CHOICES_SCENE.instance()
+	menu = _CARD_CHOICES_SCENE.instance()
 	choices = {"Test Choice 1": "Test1", "Test Choice 2": "Test2"}
 
 func test_title_and_signal():

@@ -1,5 +1,6 @@
 extends "res://tests/UTcommon.gd"
 
+const _CARD_OPTIONAL_CONFIRM = preload("res://src/core/OptionalConfirmation.tscn")
 var cards := []
 var card: Card
 var test_script: Dictionary
@@ -13,7 +14,7 @@ func after_all():
 
 func before_each():
 	setup_board()
-	confirm = CardFrameworkUtils._CARD_OPTIONAL_CONFIRM.instance()
+	confirm = _CARD_OPTIONAL_CONFIRM.instance()
 	
 func test_titlel_anb_buttons():
 	confirm.prep("UT Card","UT Execution")

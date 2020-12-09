@@ -40,11 +40,6 @@ _global_script_classes=[ {
 "path": "res://src/core/Utils.gd"
 }, {
 "base": "Reference",
-"class": "CardScriptDefinitions",
-"language": "GDScript",
-"path": "res://src/custom/cards/SetScripts_Demo1.gd"
-}, {
-"base": "Reference",
 "class": "CustomScripts",
 "language": "GDScript",
 "path": "res://src/custom/cards/CustomScripts.gd"
@@ -101,7 +96,6 @@ _global_script_class_icons={
 "CardContainer": "",
 "CardFrameworkConfiguration": "",
 "CardFrameworkUtils": "",
-"CardScriptDefinitions": "",
 "CustomScripts": "",
 "Hand": "",
 "MousePointer": "",

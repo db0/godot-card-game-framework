@@ -54,7 +54,7 @@ func test_board_tokens():
 			"get_all_tokens() returns correct dict keys")
 	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
 # Below doesn' seem to work. Always returns emptry string
-#	assert_eq(cfc.TOKEN_ASSETS_PATH + cfc.TOKENS_MAP["tech"],
+#	assert_eq(cfc.PATH_TOKENS + cfc.TOKENS_MAP["tech"],
 #			tech_token.get_node("CenterContainer/TokenIcon").texture.resource_path,
 #			"New token texture uses the correct file")
 

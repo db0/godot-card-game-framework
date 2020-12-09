@@ -1,7 +1,7 @@
 # Code for a sample playspace, you're expected to provide your own ;)
 extends Board
 
-const cardTemplate = preload("res://src/core/CardTemplate.tscn")
+var cardTemplate = load(cfc.PATH_CORE + "CardTemplate.tscn")
 
 var allCards := [] # A pseudo-deck array to hold the card objects we want to pull
 

@@ -32,16 +32,3 @@ func test_load_card_definitions():
 	assert_eq(["Test Card 1", "Test Card 2", "Test Card 3", "Multiple Choices Test Card"], defs.keys(),
 			"Card Definitions should be loaded from all sets")
 
-func test_find_card_script():
-	var card_script := CardFrameworkUtils.find_card_script("Test Card 1", "manual")
-	var script_file = load("res://src/custom/cards/sets/SetScripts_Demo1.gd").new()
-	# We compary dictionary hashes, because otherwise it tries to compare
-	# references
-	assert_true(card_script["hand"].hash() ==
-			script_file.get_scripts("Test Card 1")["manual"]["hand"].hash(),
-			"Card scripts sought in all sets")
-	card_script = CardFrameworkUtils.find_card_script("Test Card 3", "card_rotated")
-	script_file = load("res://src/custom/cards/sets/SetScripts_Demo2.gd").new()
-	assert_eq(card_script["board"].hash(),
-			script_file.get_scripts("Test Card 3")["card_rotated"]["board"].hash(),
-			"Card scripts retrieved for correct trigger")

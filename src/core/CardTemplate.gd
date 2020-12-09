@@ -72,11 +72,11 @@ signal card_unattached(card,trigger,details)
 signal card_targeted(card,trigger,details)
 
 
-var scripting_engine = load("res://src/core/ScriptingEngine.gd")
+var scripting_engine = load(cfc.PATH_CORE + "ScriptingEngine.gd")
 
 # Used to add new token instances to cards
-const _TOKEN_SCENE = preload("res://src/core/Token.tscn")
-const _CARD_CHOICES_SCENE = preload("res://src/core/CardChoices.tscn")
+var _TOKEN_SCENE = load(cfc.PATH_CORE + "Token.tscn")
+var _CARD_CHOICES_SCENE = load(cfc.PATH_CORE + "CardChoices.tscn")
 
 export var properties :=  {}
 # We export this variable to the editor to allow us to add scripts to each card
@@ -993,8 +993,10 @@ func execute_scripts(
 	if not scripts.empty():
 		card_scripts = scripts.get(trigger,{}).duplicate()
 	else:
-		# CardScriptDefinitions.gd should contain scripts for all defined cards
-		card_scripts = CardFrameworkUtils.find_card_script(card_name, trigger)
+		# This retrieves all the script from the card, stored in cfc
+		# The seeks in them the specific trigger we're using in this
+		# execution
+		card_scripts = cfc.set_scripts.get(card_name,{}).get(trigger,{})
 
 	# We check the trigger against the filter defined
 	# If it does not match, then we don't pass any scripts for this trigger.

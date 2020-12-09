@@ -4,9 +4,6 @@
 class_name CardFrameworkUtils
 extends Reference
 
-const _CARD_OPTIONAL_CONFIRM = \
-		preload("res://src/core/OptionalConfirmation.tscn")
-
 # Randomize array through our own seed
 static func shuffle_array(array: Array) -> void:
 	var n = array.size()
@@ -69,13 +66,6 @@ static func list_files_in_directory(path: String, prepend_needed := "") -> Array
 	dir.list_dir_end()
 	return files
 
-# Seeks in the script definitions of all sets, and returns the script for
-# the requested card
-static func find_card_script(card_name, trigger) -> Dictionary:
-	var card_script : Dictionary = cfc.set_scripts.get(card_name,{})
-	var trigger_script : Dictionary = card_script.get(trigger,{})
-	return(trigger_script)
-
 
 # Creates a ConfirmationDialog for the player to approve the
 # Use of an optional script or task.
@@ -84,6 +74,7 @@ static func confirm(
 		card_name: String,
 		task_name: String,
 		type := "task") -> bool:
+	var _CARD_OPTIONAL_CONFIRM = load(cfc.PATH_CORE + "OptionalConfirmation.tscn")
 	var is_accepted := true
 	if script.get(SP.KEY_IS_OPTIONAL + type):
 		var confirm = _CARD_OPTIONAL_CONFIRM.instance()
@@ -106,6 +97,7 @@ static func sort_index_ascending(c1, c2) -> bool:
 	if c1.get_my_card_index() < c2.get_my_card_index():
 		return true
 	return false
+
 
 # Used with sort_custom to find the highest child index among multiple cards
 static func sort_card_containers(c1, c2) -> bool:
