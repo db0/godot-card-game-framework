@@ -301,6 +301,20 @@ func shuffle_cards(animate = true) -> void:
 			card.animate_shuffle(anim_speed, cfc.SHUFFLE_STYLE.snap)
 			yield(get_tree().create_timer(anim_speed * 2.5), "timeout")
 			.shuffle_cards()
+		elif style == cfc.SHUFFLE_STYLE.overhand:
+			anim_speed = 0.15
+			for _i in range(3):
+				var random_cards = get_all_cards().duplicate()
+				CardFrameworkUtils.shuffle_array(random_cards)
+				random_cards.resize(random_cards.size()/3)
+				for card in random_cards:
+					card.animate_shuffle(anim_speed, cfc.SHUFFLE_STYLE.overhand)
+				yield(get_tree().create_timer(anim_speed * 2.3), "timeout")
+				# The shuffle after every jump in a face-up pile
+				# really sells it :)
+				.shuffle_cards()
+			# We wait until the cards calmed down to restack
+			yield(get_tree().create_timer(anim_speed), "timeout")
 		if position != init_position:
 			_add_tween_position(position,init_position,0.2)
 			_add_tween_rotation(rotation_degrees,0,0.2)
