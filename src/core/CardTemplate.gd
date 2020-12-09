@@ -1422,7 +1422,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	var rot_anim
 	var pos_speed := anim_speed
 	var rot_speed := anim_speed
-	if style == cfc.SHUFFLE_SYLE.corgi:
+	if style == cfc.SHUFFLE_STYLE.corgi:
 		csize = $Control.rect_size * 0.65
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
@@ -1432,7 +1432,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		end_pos_anim = Tween.TRANS_CIRC
 		rot_anim = Tween.TRANS_CIRC
 	# 2 is splash
-	elif style == cfc.SHUFFLE_SYLE.splash:
+	elif style == cfc.SHUFFLE_STYLE.splash:
 		csize = $Control.rect_size * 0.85
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)

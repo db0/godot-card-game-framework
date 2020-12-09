@@ -20,7 +20,7 @@ enum FocusStyle {
 #	cards in the pile
 # * random: Will choose a random shuffle style each time a shuffle is requested.
 # * none: No shuffle animation for this pile.
-enum SHUFFLE_SYLE {
+enum SHUFFLE_STYLE {
 	auto,
 	none,
 	random,

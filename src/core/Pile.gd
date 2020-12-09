@@ -4,8 +4,8 @@ class_name Pile
 extends  CardContainer
 
 
-# The shuffle style chosen for this pile. See cfc.SHUFFLE_SYLE documentation.
-export(cfc.SHUFFLE_SYLE) var shuffle_style = cfc.SHUFFLE_SYLE.auto
+# The shuffle style chosen for this pile. See cfc.SHUFFLE_STYLE documentation.
+export(cfc.SHUFFLE_STYLE) var shuffle_style = cfc.SHUFFLE_STYLE.auto
 
 
 
@@ -202,12 +202,12 @@ func _slot_card_into_popup(card: Card) -> void:
 # Randomly rearranges the order of the [Card] nodes.
 # Pile shuffling includes a fancy animation
 func shuffle_cards(animate = true) -> void:
-	# Normally the cfc.SHUFFLE_SYLE enum should be defined in this class
+	# Normally the cfc.SHUFFLE_STYLE enum should be defined in this class
 	# but if we did so, we would not be able to refer to it from the Card
 	# class, as that would cause a cyclic dependency on the parser
 	# So we've placed it in cfc instead.
 	if not $Tween.is_active() \
-			and animate and shuffle_style != cfc.SHUFFLE_SYLE.none:
+			and animate and shuffle_style != cfc.SHUFFLE_STYLE.none:
 		# The placement of this container in respect to the board.
 		var init_position = position
 		# The following calculation figures out the direction
@@ -236,18 +236,18 @@ func shuffle_cards(animate = true) -> void:
 		var card_count = get_card_count()
 		# If the style is auto, we've predefined some animations that fit
 		# The amount of cards in the deck
-		if shuffle_style == cfc.SHUFFLE_SYLE.auto:
+		if shuffle_style == cfc.SHUFFLE_STYLE.auto:
 			if card_count <= 30:
-				style = cfc.SHUFFLE_SYLE.corgi
+				style = cfc.SHUFFLE_STYLE.corgi
 			else:
-				style = cfc.SHUFFLE_SYLE.splash
+				style = cfc.SHUFFLE_STYLE.splash
 		# if the style is random, we select a random shuffle animation among
 		# the predefined ones.
-		elif shuffle_style == cfc.SHUFFLE_SYLE.random:
-			style = CardFrameworkUtils.randi_range(3, len(cfc.SHUFFLE_SYLE) - 1)
+		elif shuffle_style == cfc.SHUFFLE_STYLE.random:
+			style = CardFrameworkUtils.randi_range(3, len(cfc.SHUFFLE_STYLE) - 1)
 		else:
 			style = shuffle_style
-		if style == cfc.SHUFFLE_SYLE.corgi:
+		if style == cfc.SHUFFLE_STYLE.corgi:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
 			$Tween.start()
@@ -264,7 +264,7 @@ func shuffle_cards(animate = true) -> void:
 				var random_cards = get_all_cards().duplicate()
 				CardFrameworkUtils.shuffle_array(random_cards)
 				for card in random_cards:
-					card.animate_shuffle(anim_speed,cfc.SHUFFLE_SYLE.corgi)
+					card.animate_shuffle(anim_speed,cfc.SHUFFLE_STYLE.corgi)
 					yield(get_tree().create_timer(next_card_speed), "timeout")
 			# This is where the shuffle actually happens
 			# The effect looks like the cards shuffle in the middle of their
@@ -273,7 +273,7 @@ func shuffle_cards(animate = true) -> void:
 			# This wait gives the carde enough time to return to
 			# their original position.
 			yield(get_tree().create_timer(anim_speed * 2.5), "timeout")
-		elif style == cfc.SHUFFLE_SYLE.splash:
+		elif style == cfc.SHUFFLE_STYLE.splash:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
 			$Tween.start()
@@ -287,7 +287,7 @@ func shuffle_cards(animate = true) -> void:
 				var random_cards = get_all_cards().duplicate()
 				CardFrameworkUtils.shuffle_array(random_cards)
 				for card in random_cards:
-					card.animate_shuffle(anim_speed, cfc.SHUFFLE_SYLE.splash)
+					card.animate_shuffle(anim_speed, cfc.SHUFFLE_STYLE.splash)
 			# This has been timed to "splash" the cards at the exact moment
 			# The shuffle happens, which makes the z-index change
 			# invisible
