@@ -21,6 +21,7 @@ enum FocusStyle {
 # * corgi: Looks better on a medium amount of cards (0 to 30)
 # * splash: Looks better on a larger amount of cards (30+)
 # * snap: For serious people with no time to waste.
+# * overhand: Shuffles deck in 3 vertical raises.
 enum SHUFFLE_STYLE {
 	auto,
 	none,
@@ -28,6 +29,7 @@ enum SHUFFLE_STYLE {
 	corgi,
 	splash,
 	snap,
+	overhand,
 }
 
 

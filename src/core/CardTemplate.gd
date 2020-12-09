@@ -1453,6 +1453,16 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		end_pos_anim = Tween.TRANS_ELASTIC
 		rot_anim = null
 		pos_speed = pos_speed
+	elif style == cfc.SHUFFLE_STYLE.overhand:
+		csize = $Control.rect_size * 1.1
+		random_x = CardFrameworkUtils.randf_range(- csize.x/10, csize.x/10)
+		random_y = CardFrameworkUtils.randf_range(- csize.y, - csize.y/2)
+		random_rot = CardFrameworkUtils.randf_range(-10, 10)
+		center_card_pop_position = starting_card_position \
+				+ Vector2(random_x,random_y)
+		start_pos_anim = Tween.TRANS_CIRC
+		end_pos_anim = Tween.TRANS_SINE
+		rot_anim = Tween.TRANS_ELASTIC
 	_add_tween_position(starting_card_position,center_card_pop_position,
 			pos_speed,start_pos_anim,Tween.EASE_OUT)
 	if rot_anim:
