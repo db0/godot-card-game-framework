@@ -52,7 +52,7 @@ For more fine customization, you'll need to modify manually
 
 ## Usage
 
-Most of the card manipulation functionalities work without any extra work, as long as the relevant scenes have been setup correctly (see #Installation section). For example, the code which handles moving cards around or focusing on them etc should work out of the box.
+Most of the card manipulation functionalities work without any extra work, as long as the relevant scenes have been setup correctly (see [Installation](INSTALL)). For example, the code which handles moving cards around or focusing on them etc should work out of the box.
 
 However some effects require some trigger, such as targeting of cards etc. The method calls to perform these are available to use and some demo functions have been provided to understand how it works, but it is expected that each game will provide their own logic in their own scripts to call the relevant methods.
 
@@ -60,9 +60,13 @@ You can find documentation about all the provided methods [in the wiki](https://
 
 ### Demonstrations
 
+#### Card Manipulation buttons
+
+Hover over the card to reveal its manipulation buttons. 
+
 #### Targeting
 
-Right-click and hold on a a card to begin dragging a targeting arrow. Release right-click on top of a card to target it. A print will inform you of the target name and container
+Right-click and hold on a a card to begin dragging a targeting arrow. Release right-click on top of a card to target it.
 
 #### Attachments
 
@@ -70,13 +74,13 @@ Click on the "Enable Attachment" toggle to make all cards act as attachments and
 
 ### Card Rotation
 
-Click on either the 'T' or '@' buttons. Click again the same button to revert to  0 degrees.
+Click on either the 'T' or '@' buttons. Click again the same button to revert to 0 degrees.
 
 ### Tokens/Counters
 
-Click on the 'O' Button, to start adding random tokens to the card.
+Click on the 'O' Button, to start adding one of four random tokens to the card.
 
-Click on the +/- buttons next to each Token to add/remove that specifically
+Click on the +/- buttons next to each Token to add/remove that token specifically
 
 ### Card Flip Face-Up/Face-Down
 
@@ -84,11 +88,13 @@ Click on the 'F' button to exchange between these two states
 
 ### Card Scripts
 
-The first four cards you will draw from your deck each have different prepared automation. You can double click any of them in the hand or board to see their effects.
+The first four cards you will draw from your deck each have different prepared automations. 
+Their text explains these effects.
+You can double click any of them in the hand or board to see their scripts in action.
 
 Some of them have also effects that trigger off of other effects.
 
-Mind that their script effect change, depending on whether they're in the hand or board
+Mind that their script effect change, depending on whether they're in the hand or board, so make sure you move them to the board first if you want to see those scripts in action.
 
 ## Installation
 
