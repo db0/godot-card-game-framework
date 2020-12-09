@@ -361,13 +361,12 @@ func _on_Card_gui_input(event) -> void:
 				DRAGGED:
 					# if the card was being dragged, it's index is very high
 					# to always draw above other objects
-					# We need to reset it either to the default of 0
-					# Or if the card was left overlapping with other cards,
-					# the higher index among them
+					# We need to reset it to the default of 0
 					z_index = 0
 					var destination = cfc.NMAP.board
 					if not _potential_containers.empty():
 						destination = _potential_containers.back()
+						_potential_containers.back().set_highlight(false)
 					move_to(destination)
 					_focus_completed = false
 					#emit_signal("card_dropped",self)

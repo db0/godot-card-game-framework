@@ -8,27 +8,28 @@ func before_each():
 	yield(yield_for(1), YIELD)
 
 func test_single_card_focus():
-	yield(yield_for(1), YIELD)
-	cards[0]._on_Card_mouse_entered()
+	var card : Card = cards[0]
+	yield(move_mouse(card.global_position), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	var focus_dupe = main._previously_focused_cards[0]
 	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),
 			"Duplicate card has been added for viewport focus")
-	assert_eq(Vector2(1.5,1.5),main._previously_focused_cards[0].scale,
-			"Duplicate card has is scaled correctly")
-	cards[0]._on_Card_mouse_exited()
+	assert_eq(Vector2(1.5,1.5),focus_dupe.scale,
+			"Duplicate card is scaled correctly")
+	assert_eq(0.0,focus_dupe.get_node("Control").rect_rotation,
+			"Duplicate card is rotated correctly")
+	assert_false(focus_dupe.is_in_group("cards"),
+			"Duplicate card does not belong to the 'cards' group")
+	assert_false(focus_dupe.get_node("Control/FocusHighlight").visible,
+			"Duplicate card does not have visible highlight")
+	yield(move_mouse(Vector2(0,0)), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
 			"Duplicate card has been removed from focus")
-	pending("Test that the focus object is always drawn with 0 rotation")
 
 func test_for_leftover_focus_objects():
-	cards[2]._on_Card_mouse_entered()
-	click_card(cards[2])
-	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(cfc.NMAP.discard.position,cards[2].position)
-	yield(yield_for(0.6), YIELD) # Wait to allow dragging to start
-	drop_card(cards[2],board._UT_mouse_position)
-	yield(yield_for(1), YIELD)
+	var card : Card = cards[2]
+	yield(drag_drop(card,cfc.NMAP.discard.position), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
 			"Duplicate card has been removed from focus")
