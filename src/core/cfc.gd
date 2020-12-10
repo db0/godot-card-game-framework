@@ -6,48 +6,50 @@ extends Node
 
 #-----------------------------------------------------------------------------
 # BEGIN Control Variables
-# Change the below to change how all cards behave to match your game.
+# These variables change the way the cards behave.
+# They initiate with the value from CFConst, but they can be modified
+# during runtime as well
 #-----------------------------------------------------------------------------
 
 # Switch this off to disable fancy movement of cards during draw/discard
-var fancy_movement := true
-# The below scales down cards down while being dragged.
-#
-# if you don't want this behaviour, change it to Vector2(1,1)
-var card_scale_while_dragging := Vector2(0.4, 0.4)
+var fancy_movement := CFConst.FANCY_MOVEMENT
 # If true, then the game will use the card focusing method
 # where it scales up the card itself.
 #
 # It will also mean you cannot focus on card on the table.
-var focus_style = CFConst.FocusStyle.BOTH
-# If this is set to false, tokens on cards
-# will not be removed when they exit the board
-var tokens_only_on_board := true
-# If true, each token will have a convenient +/- button when expanded
-# to allow the player to add a remove more of the same
-var show_token_buttons = false
-# The games initial Random Number Generator seed.
-# When this stays the same, the game randomness will always play the predictable.
-var game_rng_seed := "CFC Random Seed" setget set_seed
+var focus_style := CFConst.FOCUS_STYLE
 # If set to true, the hand will be presented in the form of an oval shape
 # If set to false, the hand will be presented with all cards
 # horizontally aligned
-var hand_use_oval_shape := true
-
+var hand_use_oval_shape := CFConst.HAND_USE_OVAL_SHAPE
 
 
 #-----------------------------------------------------------------------------
-# END Behaviour Constants
+# END Control Variables
 #-----------------------------------------------------------------------------
 
+#-----------------------------------------------------------------------------
+# BEGIN Unit Testing Variables
+#-----------------------------------------------------------------------------
+
+# Unit Testing flag
+var ut := false
+var _ut_tokens_only_on_board := true
+var _ut_show_token_buttons := true
+
+#-----------------------------------------------------------------------------
+# END Unit Testing Variables
+#-----------------------------------------------------------------------------
+
+# The games initial Random Number Generator seed.
+# When this stays the same, the game randomness will always play the predictable.
+var game_rng_seed := "CFC Random Seed" setget set_seed
 # This will store all card properties which are placed in the card labels
 var card_definitions := {}
 # This will store all card scripts
 var set_scripts := {}
 # A class to propagate script triggers to all cards.
 var signal_propagator = SignalPropagator.new()
-# Unit Testing flag
-var ut := false
 # A dictionary of all our container nodes for easy access
 var NMAP: Dictionary
 # All our pile nodes

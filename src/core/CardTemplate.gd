@@ -943,7 +943,8 @@ func move_to(targetHost: Node2D,
 			_clear_attachment_status()
 			# If the card has tokens, and tokens_only_on_board is true
 			# we remove all tokens
-			if cfc.tokens_only_on_board:
+			# (The cfc._ut_tokens_only_on_board is there for unit testing)
+			if CFConst.TOKENS_ONLY_ON_BOARD or cfc._ut_tokens_only_on_board:
 				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
 					token.queue_free()
 			# We also make sure the card buttons don't stay visible or enabled
@@ -1426,7 +1427,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	var rot_anim
 	var pos_speed := anim_speed
 	var rot_speed := anim_speed
-	if style == CFConst.SHUFFLE_STYLE.corgi:
+	if style == CFConst.ShuffleStyle.CORGI:
 		csize = $Control.rect_size * 0.65
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
@@ -1437,7 +1438,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		end_pos_anim = Tween.TRANS_CIRC
 		rot_anim = Tween.TRANS_CIRC
 	# 2 is splash
-	elif style == CFConst.SHUFFLE_STYLE.splash:
+	elif style == CFConst.ShuffleStyle.SPLASH:
 		csize = $Control.rect_size * 0.85
 		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
@@ -1448,7 +1449,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		end_pos_anim = Tween.TRANS_QUAD
 		rot_anim = Tween.TRANS_CIRC
 		pos_speed = pos_speed
-	elif style == CFConst.SHUFFLE_STYLE.snap:
+	elif style == CFConst.ShuffleStyle.SNAP:
 		csize = $Control.rect_size
 		center_card_pop_position.y = starting_card_position.y \
 				+ $Control.rect_size.y
@@ -1456,7 +1457,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		end_pos_anim = Tween.TRANS_ELASTIC
 		rot_anim = null
 		pos_speed = pos_speed
-	elif style == CFConst.SHUFFLE_STYLE.overhand:
+	elif style == CFConst.ShuffleStyle.OVERHAND:
 		csize = $Control.rect_size * 1.1
 		random_x = CardFrameworkUtils.randf_range(- csize.x/10, csize.x/10)
 		random_y = CardFrameworkUtils.randf_range(- csize.y, - csize.y/2)
@@ -2076,9 +2077,9 @@ func _process_card_state() -> void:
 			set_control_mouse_filters(true)
 			set_manipulation_button_mouse_filters(false)
 			if (not $Tween.is_active() and
-				not scale.is_equal_approx(cfc.card_scale_while_dragging) and
+				not scale.is_equal_approx(CFConst.CARD_SCALE_WHILE_DRAGGING) and
 				get_parent() != cfc.NMAP.board):
-				_add_tween_scale(scale, cfc.card_scale_while_dragging, 0.2,
+				_add_tween_scale(scale, CFConst.CARD_SCALE_WHILE_DRAGGING, 0.2,
 						Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
 			# We need to capture the mouse cursos in the window while dragging

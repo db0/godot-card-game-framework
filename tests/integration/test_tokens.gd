@@ -165,8 +165,8 @@ func test_board_tokens():
 
 
 func test_off_board_tokens():
-	cfc.tokens_only_on_board = false
-	cfc.show_token_buttons = false
+	cfc._ut_tokens_only_on_board = false
+	cfc._ut_show_token_buttons = false
 	var card : Card
 	card = cards[3]
 	yield(table_move(card, Vector2(1000,100)), 'completed')
@@ -191,7 +191,6 @@ func test_off_board_tokens():
 	card.move_to(cfc.NMAP.discard)
 	yield(yield_for(0.8), YIELD)
 	assert_false(card.get_all_tokens().empty(),
-			"Tokens not removed when card leaves with cfc.tokens_only_on_board == false")
-	cfc.tokens_only_on_board = true
-	# warning-ignore:standalone_expression
-	cfc.show_token_buttons = true
+			"Tokens not removed when card leaves with tokens_only_on_board == false")
+	cfc._ut_tokens_only_on_board = true
+	cfc._ut_show_token_buttons = true

@@ -1,4 +1,8 @@
-# Card Gaming Framework global constants
+# Card Gaming Framework global behaviour constants
+#
+# This class contains constants which handle how all the framework behaves.
+#
+# Tweak the values to match your game requirements.
 class_name CFConst
 extends Reference
 
@@ -20,22 +24,28 @@ enum FocusStyle {
 # * splash: Looks better on a moderate amount of cards (30+)
 # * snap: For serious people with no time to waste.
 # * overhand: Shuffles deck in 3 vertical raises. Best fit for massive amounts (60+)
-enum SHUFFLE_STYLE {
-	auto,
-	none,
-	random,
-	corgi,
-	splash,
-	snap,
-	overhand,
+enum ShuffleStyle {
+	AUTO,
+	NONE,
+	RANDOM,
+	CORGI,
+	SPLASH,
+	SNAP,
+	OVERHAND,
 }
 
-
-#-----------------------------------------------------------------------------
-# BEGIN Behaviour Constants
-# Change the below to change how all cards behave to match your game.
-#-----------------------------------------------------------------------------
-
+# Switch this off to disable fancy movement of cards during draw/discard
+const FANCY_MOVEMENT := true
+# The focus style selected for this game. See enum `FocusStyle`
+const FOCUS_STYLE = FocusStyle.BOTH
+# If set to true, the hand will be presented in the form of an oval shape
+# If set to false, the hand will be presented with all cards
+# horizontally aligned
+const HAND_USE_OVAL_SHAPE := true
+# The below scales down cards down while being dragged.
+#
+# if you don't want this behaviour, change it to Vector2(1,1)
+const CARD_SCALE_WHILE_DRAGGING := Vector2(0.4, 0.4)
 # The path where the Card Game Framework core files exist.
 # (i.e. mandatory scenes and scripts)
 const PATH_CORE := "res://src/core/"
@@ -121,6 +131,12 @@ const TARGETTING_ARROW_COLOUR := TARGET_HOVER_COLOUR
 #
 # The below const defines what string to put between these elements.
 const ARRAY_PROPERTY_JOIN := ' - '
+# If this is set to false, tokens on cards
+# will not be removed when they exit the board
+const TOKENS_ONLY_ON_BOARD := true
+# If true, each token will have a convenient +/- button when expanded
+# to allow the player to add a remove more of the same
+const SHOW_TOKEN_BUTTONS := false
 # This dictionary contains your defined tokens for cards
 #
 # The key is the name of the token as it will appear in your scene and labels
@@ -155,7 +171,3 @@ const NODES_MAP := {
 	}
 const pile_names = ['deck','discard']
 const hand_names = ['hand']
-
-#-----------------------------------------------------------------------------
-# END Behaviour Constants
-#-----------------------------------------------------------------------------

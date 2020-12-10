@@ -4,8 +4,8 @@ class_name Pile
 extends CardContainer
 
 
-# The shuffle style chosen for this pile. See CFConst.SHUFFLE_STYLE documentation.
-export(CFConst.SHUFFLE_STYLE) var shuffle_style = CFConst.SHUFFLE_STYLE.auto
+# The shuffle style chosen for this pile. See CFConst.ShuffleStyle documentation.
+export(CFConst.ShuffleStyle) var shuffle_style = CFConst.ShuffleStyle.AUTO
 
 
 
@@ -202,13 +202,13 @@ func _slot_card_into_popup(card: Card) -> void:
 # Randomly rearranges the order of the [Card] nodes.
 # Pile shuffling includes a fancy animation
 func shuffle_cards(animate = true) -> void:
-	# Optimally the CFConst.SHUFFLE_STYLE enum should be defined in this class
+	# Optimally the CFConst.ShuffleStyle enum should be defined in this class
 	# but if we did so, we would not be able to refer to it from the Card
 	# class, as that would cause a cyclic dependency on the parser
 	# So we've placed it in CFConst instead.
 	if not $Tween.is_active() \
 			and animate \
-			and shuffle_style != CFConst.SHUFFLE_STYLE.none\
+			and shuffle_style != CFConst.ShuffleStyle.NONE \
 			and get_card_count() > 1:
 		# The placement of this container in respect to the board.
 		var init_position = position
@@ -238,20 +238,20 @@ func shuffle_cards(animate = true) -> void:
 		var card_count = get_card_count()
 		# If the style is auto, we've predefined some animations that fit
 		# The amount of cards in the deck
-		if shuffle_style == CFConst.SHUFFLE_STYLE.auto:
+		if shuffle_style == CFConst.ShuffleStyle.AUTO:
 			if card_count <= 30:
-				style = CFConst.SHUFFLE_STYLE.corgi
+				style = CFConst.ShuffleStyle.CORGI
 			elif card_count <= 60:
-				style = CFConst.SHUFFLE_STYLE.splash
+				style = CFConst.ShuffleStyle.SPLASH
 			else:
-				style = CFConst.SHUFFLE_STYLE.overhand
+				style = CFConst.ShuffleStyle.OVERHAND
 		# if the style is random, we select a random shuffle animation among
 		# the predefined ones.
-		elif shuffle_style == CFConst.SHUFFLE_STYLE.random:
-			style = CardFrameworkUtils.randi_range(3, len(CFConst.SHUFFLE_STYLE) - 1)
+		elif shuffle_style == CFConst.ShuffleStyle.RANDOM:
+			style = CardFrameworkUtils.randi_range(3, len(CFConst.ShuffleStyle) - 1)
 		else:
 			style = shuffle_style
-		if style == CFConst.SHUFFLE_STYLE.corgi:
+		if style == CFConst.ShuffleStyle.CORGI:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
 			$Tween.start()
@@ -267,7 +267,7 @@ func shuffle_cards(animate = true) -> void:
 			var random_cards = get_all_cards().duplicate()
 			CardFrameworkUtils.shuffle_array(random_cards)
 			for card in random_cards:
-				card.animate_shuffle(anim_speed,CFConst.SHUFFLE_STYLE.corgi)
+				card.animate_shuffle(anim_speed,CFConst.ShuffleStyle.CORGI)
 				yield(get_tree().create_timer(next_card_speed), "timeout")
 			# This is where the shuffle actually happens
 			# The effect looks like the cards shuffle in the middle of their
@@ -276,7 +276,7 @@ func shuffle_cards(animate = true) -> void:
 			# This wait gives the carde enough time to return to
 			# their original position.
 			yield(get_tree().create_timer(anim_speed * 2.5), "timeout")
-		elif style == CFConst.SHUFFLE_STYLE.splash:
+		elif style == CFConst.ShuffleStyle.SPLASH:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
 			$Tween.start()
@@ -284,7 +284,7 @@ func shuffle_cards(animate = true) -> void:
 			# The animation speeds have been empirically tested to look good
 			anim_speed = 0.6
 			for card in get_all_cards():
-				card.animate_shuffle(anim_speed, CFConst.SHUFFLE_STYLE.splash)
+				card.animate_shuffle(anim_speed, CFConst.ShuffleStyle.SPLASH)
 			# This has been timed to "splash" the cards at the exact moment
 			# The shuffle happens, which makes the z-index change
 			# unnoticeable to the player
@@ -293,24 +293,24 @@ func shuffle_cards(animate = true) -> void:
 			# The extra time is to give the cards enough time to return
 			# To the starting location, and let reorganize_stack() do its magic
 			yield(get_tree().create_timer(anim_speed + 0.6), "timeout")
-		elif style == CFConst.SHUFFLE_STYLE.snap:
+		elif style == CFConst.ShuffleStyle.SNAP:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
 			$Tween.start()
 			yield($Tween, "tween_all_completed")
 			anim_speed = 0.2
 			var card = get_random_card()
-			card.animate_shuffle(anim_speed, CFConst.SHUFFLE_STYLE.snap)
+			card.animate_shuffle(anim_speed, CFConst.ShuffleStyle.SNAP)
 			yield(get_tree().create_timer(anim_speed * 2.5), "timeout")
 			.shuffle_cards()
-		elif style == CFConst.SHUFFLE_STYLE.overhand:
+		elif style == CFConst.ShuffleStyle.OVERHAND:
 			anim_speed = 0.15
 			for _i in range(3):
 				var random_cards = get_all_cards().duplicate()
 				CardFrameworkUtils.shuffle_array(random_cards)
 				random_cards.resize(random_cards.size()/10)
 				for card in random_cards:
-					card.animate_shuffle(anim_speed, CFConst.SHUFFLE_STYLE.overhand)
+					card.animate_shuffle(anim_speed, CFConst.ShuffleStyle.OVERHAND)
 				yield(get_tree().create_timer(anim_speed * 2.3), "timeout")
 				# The shuffle after every jump in a face-up pile
 				# really sells it :)
