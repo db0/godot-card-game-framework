@@ -248,7 +248,7 @@ func shuffle_cards(animate = true) -> void:
 		# if the style is random, we select a random shuffle animation among
 		# the predefined ones.
 		elif shuffle_style == CFConst.ShuffleStyle.RANDOM:
-			style = CardFrameworkUtils.randi_range(3, len(CFConst.ShuffleStyle) - 1)
+			style = CFUtils.randi_range(3, len(CFConst.ShuffleStyle) - 1)
 		else:
 			style = shuffle_style
 		if style == CFConst.ShuffleStyle.CORGI:
@@ -265,7 +265,7 @@ func shuffle_cards(animate = true) -> void:
 			if anim_speed < 0.05:
 				anim_speed = 0.05
 			var random_cards = get_all_cards().duplicate()
-			CardFrameworkUtils.shuffle_array(random_cards)
+			CFUtils.shuffle_array(random_cards)
 			for card in random_cards:
 				card.animate_shuffle(anim_speed,CFConst.ShuffleStyle.CORGI)
 				yield(get_tree().create_timer(next_card_speed), "timeout")
@@ -307,7 +307,7 @@ func shuffle_cards(animate = true) -> void:
 			anim_speed = 0.15
 			for _i in range(3):
 				var random_cards = get_all_cards().duplicate()
-				CardFrameworkUtils.shuffle_array(random_cards)
+				CFUtils.shuffle_array(random_cards)
 				random_cards.resize(random_cards.size()/10)
 				for card in random_cards:
 					card.animate_shuffle(anim_speed, CFConst.ShuffleStyle.OVERHAND)

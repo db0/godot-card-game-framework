@@ -47,7 +47,7 @@ Pull requests are more than welcome ;)
 ## Easy Customation
 
 The classes provide some easy customization options, such as how the card move, where they appear etc
-Check the "Behaviour Constants" header at the start of the cfc singleton.
+Check the "Behaviour Constants" header at the start of the CFControl singleton.
 For more fine customization, you'll need to modify manually
 
 ## Usage

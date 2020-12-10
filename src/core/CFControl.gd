@@ -34,8 +34,8 @@ var hand_use_oval_shape := CFConst.HAND_USE_OVAL_SHAPE
 
 # Unit Testing flag
 var ut := false
-var _ut_tokens_only_on_board := true
-var _ut_show_token_buttons := true
+var _ut_tokens_only_on_board := CFConst.TOKENS_ONLY_ON_BOARD
+var _ut_show_token_buttons := CFConst.SHOW_TOKEN_BUTTONS
 
 #-----------------------------------------------------------------------------
 # END Unit Testing Variables
@@ -126,7 +126,7 @@ func instance_card(card_name: String) -> Card:
 
 # Returns a Dictionary with the combined Card definitions of all set files
 func load_card_definitions() -> Dictionary:
-	var set_definitions := CardFrameworkUtils.list_files_in_directory(
+	var set_definitions := CFUtils.list_files_in_directory(
 				CFConst.PATH_SETS, CFConst.CARD_SET_NAME_PREPEND)
 	var combined_sets := {}
 	for set_file in set_definitions:
@@ -138,7 +138,7 @@ func load_card_definitions() -> Dictionary:
 
 # Returns a Dictionary with the combined Script definitions of all set files
 func load_script_definitions() -> Dictionary:
-	var script_definitions := CardFrameworkUtils.list_files_in_directory(
+	var script_definitions := CFUtils.list_files_in_directory(
 				CFConst.PATH_SETS, CFConst.SCRRIPT_SET_NAME_PREPEND)
 	var combined_scripts := {}
 	for card_name in card_definitions.keys():

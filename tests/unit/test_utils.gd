@@ -14,14 +14,14 @@ func before_each():
 func test_array_join():
 	var test_arr := ['a','b','c','d']
 	assert_eq("a - b - c - d",
-			CardFrameworkUtils.array_join(test_arr,' - '),
+			CFUtils.array_join(test_arr,' - '),
 			"Array joined into string with separator")
 
 func test_list_files_in_directory():
-	var list := CardFrameworkUtils.list_files_in_directory(
+	var list := CFUtils.list_files_in_directory(
 			"res://src/custom/cards/sets/")
 	assert_eq(5,len(list), "There should be 5 set files")
-	list = CardFrameworkUtils.list_files_in_directory(
+	list = CFUtils.list_files_in_directory(
 			"res://src/custom/cards/sets/", "SetScripts_")
 	assert_eq(2,len(list), "There should be 2 set files")
 	assert_eq(["SetScripts_Demo1.gd","SetScripts_Demo2.gd"],

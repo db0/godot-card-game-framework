@@ -3,7 +3,7 @@
 Simply copy the src folder to your project.
 
 You can rename the folder or any subfolders as you wish to fit your directory structure, just make sure you do it within Godot to allow it to rename all instanced scenes.
-However if you do so, you'll also need to adjust the variables starting with `PATH_` inside `cfc.gd`.
+However if you do so, you'll also need to adjust the variables starting with `PATH_` inside `CFControl.gd`.
 
 Strictly speaking, the tcsn files inside are optional but **highly recommended** as they come preset with all the node configuration needed to run all interactions defined in the code properly.
 
@@ -21,11 +21,12 @@ Just remember to adjust Main.tcsn to instance your own Board scene under Viewpor
 
 ## Global configuration
 
-The framework uses a common singleton called cfc to control overall configuration.
+The framework uses a common singleton called CFControl to control overall configuration. 
+It also uses a core reference class called CFControl which defines the behaviour of the framework
 
-1. Add cfc.gd as an autoloaded singleton with name 'cfc'
+1. Add CFControl.gd as an autoloaded singleton with name 'cfc'
 
-2. Edit the `var nodes_map` in cfc.gd in the "Behaviour Constants" section, to point to your board and other container scenes (Deck, discard etc)
+2. Edit the `var nodes_map` in CFConst.gd in the "Behaviour Constants" section, to point to your board and other container scenes (Deck, discard etc)
 
 4. Edit the pile_names and hand_names arrays with the names of your respective piles (deck, discard etc) and hand(s).
 

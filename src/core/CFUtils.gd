@@ -1,7 +1,7 @@
 # Card Gaming Framework Utilities
 #
 # This is a library of static functions.
-class_name CardFrameworkUtils
+class_name CFUtils
 extends Reference
 
 # The path to the optional confirm scene. This has to be defined explicitly
@@ -21,7 +21,7 @@ static func shuffle_array(array: Array) -> void:
 	var tmp
 	for i in range(n-1,1,-1):
 		# Because there is a problem with the calling sequence of static classes,
-		# if you call randi directly, you will not call CardFrameworkUtils.randi
+		# if you call randi directly, you will not call CFUtils.randi
 		# but call math.randi, so we call cfc.game_rng.randi() directly
 		j = cfc.game_rng.randi()%(i+1)
 		tmp = array[j]

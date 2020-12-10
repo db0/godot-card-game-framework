@@ -455,7 +455,7 @@ func _on_Flip_pressed() -> void:
 func _on_AddToken_pressed() -> void:
 	var valid_tokens := ['tech','gold coin','blood','plasma']
 	# warning-ignore:return_value_discarded
-	mod_token(valid_tokens[CardFrameworkUtils.randi() % len(valid_tokens)], 1)
+	mod_token(valid_tokens[CFUtils.randi() % len(valid_tokens)], 1)
 
 
 # Hover button which allows the player to view a facedown card
@@ -481,7 +481,7 @@ func _on_Card_area_entered(area: Area2D) -> void:
 			# We add the card to the list which tracks out simultaneous hovers
 			_potential_cards.append(card)
 			# We sort all potential cards by their index
-			_potential_cards.sort_custom(CardFrameworkUtils,"sort_index_ascending")
+			_potential_cards.sort_custom(CFUtils,"sort_index_ascending")
 			# Finally we use a method which  handles changing highlights on the
 			# top index card
 			highlight_potential_card(CFConst.HOST_HOVER_COLOUR)
@@ -490,7 +490,7 @@ func _on_Card_area_entered(area: Area2D) -> void:
 			and state == DRAGGED:
 		var container = area
 		_potential_containers.append(container)
-		_potential_containers.sort_custom(CardFrameworkUtils,"sort_card_containers")
+		_potential_containers.sort_custom(CFUtils,"sort_card_containers")
 		highlight_potential_container(CFConst.TARGET_HOVER_COLOUR)
 
 
@@ -528,7 +528,7 @@ func _on_Card_area_exited(area: Area2D) -> void:
 func _on_ArrowHead_area_entered(card: Card) -> void:
 	if card and not card in _potential_cards:
 		_potential_cards.append(card)
-		_potential_cards.sort_custom(CardFrameworkUtils,"sort_index_ascending")
+		_potential_cards.sort_custom(CFUtils,"sort_index_ascending")
 		highlight_potential_card(CFConst.TARGET_HOVER_COLOUR)
 
 
@@ -581,7 +581,7 @@ func setup(cname: String) -> void:
 		# Join character
 		elif label in CardConfig.PROPERTIES_ARRAYS:
 			_set_label_text($Control/Front/CardText.get_node(label),
-					CardFrameworkUtils.array_join(properties[label],
+					CFUtils.array_join(properties[label],
 					CFConst.ARRAY_PROPERTY_JOIN))
 
 
@@ -1027,7 +1027,7 @@ func execute_scripts(
 	# There should be an SP.KEY_IS_OPTIONAL definition per state
 	# E.g. if board scripts are optional, but hand scripts are not
 	# Then you'd include an "is_optional_board" key at the same level as "board"
-	var confirm_return = CardFrameworkUtils.confirm(
+	var confirm_return = CFUtils.confirm(
 		card_scripts,
 		card_name,
 		trigger,
@@ -1429,9 +1429,9 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	var rot_speed := anim_speed
 	if style == CFConst.ShuffleStyle.CORGI:
 		csize = $Control.rect_size * 0.65
-		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
-		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
-		random_rot = CardFrameworkUtils.randf_range(-20, 20)
+		random_x = CFUtils.randf_range(- csize.x, csize.x)
+		random_y = CFUtils.randf_range(- csize.y, csize.y)
+		random_rot = CFUtils.randf_range(-20, 20)
 		center_card_pop_position = starting_card_position \
 				+ Vector2(random_x, random_y)
 		start_pos_anim = Tween.TRANS_CIRC
@@ -1440,9 +1440,9 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	# 2 is splash
 	elif style == CFConst.ShuffleStyle.SPLASH:
 		csize = $Control.rect_size * 0.85
-		random_x = CardFrameworkUtils.randf_range(- csize.x, csize.x)
-		random_y = CardFrameworkUtils.randf_range(- csize.y, csize.y)
-		random_rot = CardFrameworkUtils.randf_range(-180, 180)
+		random_x = CFUtils.randf_range(- csize.x, csize.x)
+		random_y = CFUtils.randf_range(- csize.y, csize.y)
+		random_rot = CFUtils.randf_range(-180, 180)
 		center_card_pop_position = starting_card_position \
 				+ Vector2(random_x, random_y)
 		start_pos_anim = Tween.TRANS_ELASTIC
@@ -1459,9 +1459,9 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		pos_speed = pos_speed
 	elif style == CFConst.ShuffleStyle.OVERHAND:
 		csize = $Control.rect_size * 1.1
-		random_x = CardFrameworkUtils.randf_range(- csize.x/10, csize.x/10)
-		random_y = CardFrameworkUtils.randf_range(- csize.y, - csize.y/2)
-		random_rot = CardFrameworkUtils.randf_range(-10, 10)
+		random_x = CFUtils.randf_range(- csize.x/10, csize.x/10)
+		random_y = CFUtils.randf_range(- csize.y, - csize.y/2)
+		random_rot = CFUtils.randf_range(-10, 10)
 		center_card_pop_position = starting_card_position \
 				+ Vector2(random_x,random_y)
 		start_pos_anim = Tween.TRANS_CIRC

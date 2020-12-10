@@ -90,7 +90,7 @@ func _discover_focus() -> void:
 			potential_cards.append(c)
 	if not potential_cards.empty():
 		# We sort the potential cards by their index on the board
-		potential_cards.sort_custom(CardFrameworkUtils,"sort_index_ascending")
+		potential_cards.sort_custom(CFUtils,"sort_index_ascending")
 		# The candidate always has the highest index as it's drawn on top of
 		# others.
 		var card : Card = potential_cards.back()

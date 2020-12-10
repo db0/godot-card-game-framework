@@ -17,12 +17,17 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "CFConst",
 "language": "GDScript",
-"path": "res://src/core/Constants.gd"
+"path": "res://src/core/CFConst.gd"
 }, {
 "base": "Node",
 "class": "CFControl",
 "language": "GDScript",
-"path": "res://src/core/cfc.gd"
+"path": "res://src/core/CFControl.gd"
+}, {
+"base": "Reference",
+"class": "CFUtils",
+"language": "GDScript",
+"path": "res://src/core/CFUtils.gd"
 }, {
 "base": "Area2D",
 "class": "Card",
@@ -38,11 +43,6 @@ _global_script_classes=[ {
 "class": "CardContainer",
 "language": "GDScript",
 "path": "res://src/core/CardContainer.gd"
-}, {
-"base": "Reference",
-"class": "CardFrameworkUtils",
-"language": "GDScript",
-"path": "res://src/core/Utils.gd"
 }, {
 "base": "Reference",
 "class": "CustomScripts",
@@ -98,10 +98,10 @@ _global_script_class_icons={
 "Board": "",
 "CFConst": "",
 "CFControl": "",
+"CFUtils": "",
 "Card": "",
 "CardConfig": "",
 "CardContainer": "",
-"CardFrameworkUtils": "",
 "CustomScripts": "",
 "Hand": "",
 "MousePointer": "",
@@ -122,7 +122,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
-cfc="*res://src/core/cfc.gd"
+cfc="*res://src/core/CFControl.gd"
 
 [display]
 

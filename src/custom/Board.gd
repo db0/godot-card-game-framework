@@ -82,7 +82,7 @@ func load_test_cards(extras := 11) -> void:
 	var test_card_array := []
 	for _i in range(extras):
 		var random_card_name = \
-				test_cards[CardFrameworkUtils.randi() % len(test_cards)]
+				test_cards[CFUtils.randi() % len(test_cards)]
 		test_card_array.append(cfc.instance_card(random_card_name))
 	# 11 is the cards GUT expects. It's the testing standard
 	if extras == 11:

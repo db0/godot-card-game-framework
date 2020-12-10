@@ -63,7 +63,7 @@ func _init(card: Card,
 		# We check if the player confirms it, before looking for targets
 		# We check for optional confirmations only during
 		# The normal run (i.e. not in a cost dry-run)
-		var confirm_return = CardFrameworkUtils.confirm(
+		var confirm_return = CFUtils.confirm(
 				properties,
 				owner.card_name,
 				task_name)
