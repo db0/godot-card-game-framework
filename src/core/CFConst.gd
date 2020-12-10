@@ -1,10 +1,11 @@
-# Card Gaming Framework global behaviour constants
+# Card Gaming Framework global Behaviour Constants
 #
 # This class contains constants which handle how all the framework behaves.
 #
 # Tweak the values to match your game requirements.
 class_name CFConst
 extends Reference
+
 
 # The focus style used by the engine
 # * SCALED means that the cards simply scale up when moused over in the hand

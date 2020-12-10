@@ -1,4 +1,4 @@
-# Card Gaming Framework global config and control singleton
+# Card Gaming Framework Control Singleton
 #
 # Add it to your autoloads with the name 'cfc'
 class_name CFControl
@@ -23,11 +23,9 @@ var focus_style := CFConst.FOCUS_STYLE
 # horizontally aligned
 var hand_use_oval_shape := CFConst.HAND_USE_OVAL_SHAPE
 
-
 #-----------------------------------------------------------------------------
 # END Control Variables
 #-----------------------------------------------------------------------------
-
 #-----------------------------------------------------------------------------
 # BEGIN Unit Testing Variables
 #-----------------------------------------------------------------------------
@@ -154,6 +152,7 @@ func load_script_definitions() -> Dictionary:
 			if not card_script.empty():
 				combined_scripts[card_name] = card_script
 	return(combined_scripts)
+
 
 # The SignalPropagator is responsible for collecting all card signals
 # and asking all cards to check if there's any automation they need to perform
