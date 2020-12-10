@@ -7,9 +7,6 @@ extends Reference
 # The path to the optional confirm scene. This has to be defined explicitly
 # here, in order to use it in its preload, otherwise the parser gives an error
 const _PATH_OPTIONAL_CONFIRM = CFConst.PATH_CORE + "OptionalConfirmation.tscn"
-# The optional confirm scene. Normally we would define this inside utils.gd
-# where it's being used. But the parser gives an error when trying to set
-# a const using cfc consts.
 const OPTIONAL_CONFIRM = preload(_PATH_OPTIONAL_CONFIRM)
 
 # Randomize array through our own seed
