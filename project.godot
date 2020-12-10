@@ -14,6 +14,21 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/BoardTemplate.gd"
 }, {
+"base": "Reference",
+"class": "CFConst",
+"language": "GDScript",
+"path": "res://src/core/CFConst.gd"
+}, {
+"base": "Node",
+"class": "CFControl",
+"language": "GDScript",
+"path": "res://src/core/CFControl.gd"
+}, {
+"base": "Reference",
+"class": "CFUtils",
+"language": "GDScript",
+"path": "res://src/core/CFUtils.gd"
+}, {
 "base": "Area2D",
 "class": "Card",
 "language": "GDScript",
@@ -28,16 +43,6 @@ _global_script_classes=[ {
 "class": "CardContainer",
 "language": "GDScript",
 "path": "res://src/core/CardContainer.gd"
-}, {
-"base": "Node",
-"class": "CardFrameworkConfiguration",
-"language": "GDScript",
-"path": "res://src/core/cfc.gd"
-}, {
-"base": "Reference",
-"class": "CardFrameworkUtils",
-"language": "GDScript",
-"path": "res://src/core/Utils.gd"
 }, {
 "base": "Reference",
 "class": "CustomScripts",
@@ -91,11 +96,12 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Board": "",
+"CFConst": "",
+"CFControl": "",
+"CFUtils": "",
 "Card": "",
 "CardConfig": "",
 "CardContainer": "",
-"CardFrameworkConfiguration": "",
-"CardFrameworkUtils": "",
 "CustomScripts": "",
 "Hand": "",
 "MousePointer": "",
@@ -116,7 +122,7 @@ config/icon="res://icon.png"
 
 [autoload]
 
-cfc="*res://src/core/cfc.gd"
+cfc="*res://src/core/CFControl.gd"
 
 [display]
 

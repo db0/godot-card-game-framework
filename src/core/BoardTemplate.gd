@@ -20,7 +20,7 @@ var _UT_interpolation_requested := false
 var _t = 0
 
 onready var mouse_pointer = \
-	load(cfc.PATH_CORE + "MousePointer.tscn").instance()
+	load(CFConst.PATH_CORE + "MousePointer.tscn").instance()
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:

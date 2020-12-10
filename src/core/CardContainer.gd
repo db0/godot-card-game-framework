@@ -151,7 +151,7 @@ func get_random_card() -> Card:
 		return null
 	else:
 		var cardsArray := get_all_cards()
-		return cardsArray[CardFrameworkUtils.randi() % len(cardsArray)]
+		return cardsArray[CFUtils.randi() % len(cardsArray)]
 
 
 # Randomly rearranges the order of the Card nodes.
@@ -159,7 +159,7 @@ func shuffle_cards() -> void:
 	var cardsArray := []
 	for card in get_all_cards():
 		cardsArray.append(card)
-	CardFrameworkUtils.shuffle_array(cardsArray)
+	CFUtils.shuffle_array(cardsArray)
 	for card in cardsArray:
 		move_child(card, cardsArray.find(card))
 
@@ -186,10 +186,10 @@ func translate_card_index_to_node_index(index: int) -> int:
 	return node_index
 
 # Changes card highlight colour.
-func set_highlight(requestedFocus: bool, hoverColour = cfc.TARGET_HOVER_COLOUR) -> void:
+func set_highlight(requestedFocus: bool, hoverColour = CFConst.TARGET_HOVER_COLOUR) -> void:
 	$Control/Highlight.visible = requestedFocus
 	if requestedFocus:
 		$Control/Highlight.modulate = hoverColour
 	else:
-		$Control/Highlight.modulate = cfc.TARGET_HOVER_COLOUR
+		$Control/Highlight.modulate = CFConst.TARGET_HOVER_COLOUR
 

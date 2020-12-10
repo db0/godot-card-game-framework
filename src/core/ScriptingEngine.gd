@@ -100,7 +100,7 @@ func run_next_script(card_owner: Card,
 						# only after checking that they are feasible
 						# because there's no point in asking the player
 						# about a task they cannot perform anyway.
-						var confirm_return = CardFrameworkUtils.confirm(
+						var confirm_return = CFUtils.confirm(
 							script.properties,
 							card_owner.card_name,
 							script.task_name)

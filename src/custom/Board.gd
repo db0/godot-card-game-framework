@@ -1,8 +1,6 @@
 # Code for a sample playspace, you're expected to provide your own ;)
 extends Board
 
-var cardTemplate = load(cfc.PATH_CORE + "CardTemplate.tscn")
-
 var allCards := [] # A pseudo-deck array to hold the card objects we want to pull
 
 
@@ -45,17 +43,24 @@ func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
 
 
 # Reshuffles all Card objects created back into the deck
-func _on_ReshuffleAll_pressed() -> void:
+func _on_ReshuffleAllDeck_pressed() -> void:
+	reshuffle_all_in_pile(cfc.NMAP.deck)
+
+
+func _on_ReshuffleAllDiscard_pressed() -> void:
+	reshuffle_all_in_pile(cfc.NMAP.discard)
+
+func reshuffle_all_in_pile(pile = cfc.NMAP.deck):
 	for c in get_tree().get_nodes_in_group("cards"):
-		if c.get_parent() != cfc.NMAP.deck:
-			c.move_to(cfc.NMAP.deck)
+		if c.get_parent() != pile:
+			c.move_to(pile)
 			yield(get_tree().create_timer(0.1), "timeout")
 	# Last card in, is the top card of the pile
-	var last_card : Card = cfc.NMAP.deck.get_top_card()
+	var last_card : Card = pile.get_top_card()
 	if last_card._tween.is_active():
 		yield(last_card._tween, "tween_all_completed")
 	yield(get_tree().create_timer(0.2), "timeout")
-	cfc.NMAP.deck.shuffle_cards()
+	pile.shuffle_cards()
 
 
 # Button to change focus mode
@@ -77,7 +82,7 @@ func load_test_cards(extras := 11) -> void:
 	var test_card_array := []
 	for _i in range(extras):
 		var random_card_name = \
-				test_cards[CardFrameworkUtils.randi() % len(test_cards)]
+				test_cards[CFUtils.randi() % len(test_cards)]
 		test_card_array.append(cfc.instance_card(random_card_name))
 	# 11 is the cards GUT expects. It's the testing standard
 	if extras == 11:

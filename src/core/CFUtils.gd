@@ -1,8 +1,13 @@
 # Card Gaming Framework Utilities
 #
 # This is a library of static functions.
-class_name CardFrameworkUtils
+class_name CFUtils
 extends Reference
+
+# The path to the optional confirm scene. This has to be defined explicitly
+# here, in order to use it in its preload, otherwise the parser gives an error
+const _PATH_OPTIONAL_CONFIRM = CFConst.PATH_CORE + "OptionalConfirmation.tscn"
+const OPTIONAL_CONFIRM = preload(_PATH_OPTIONAL_CONFIRM)
 
 # Randomize array through our own seed
 static func shuffle_array(array: Array) -> void:
@@ -13,7 +18,7 @@ static func shuffle_array(array: Array) -> void:
 	var tmp
 	for i in range(n-1,1,-1):
 		# Because there is a problem with the calling sequence of static classes,
-		# if you call randi directly, you will not call CardFrameworkUtils.randi
+		# if you call randi directly, you will not call CFUtils.randi
 		# but call math.randi, so we call cfc.game_rng.randi() directly
 		j = cfc.game_rng.randi()%(i+1)
 		tmp = array[j]
@@ -74,10 +79,10 @@ static func confirm(
 		card_name: String,
 		task_name: String,
 		type := "task") -> bool:
-	var _CARD_OPTIONAL_CONFIRM = load(cfc.PATH_CORE + "OptionalConfirmation.tscn")
+
 	var is_accepted := true
 	if script.get(SP.KEY_IS_OPTIONAL + type):
-		var confirm = _CARD_OPTIONAL_CONFIRM.instance()
+		var confirm = OPTIONAL_CONFIRM.instance()
 		confirm.prep(card_name,task_name)
 		# We have to wait until the player has finished selecting an option
 		yield(confirm,"selected")
