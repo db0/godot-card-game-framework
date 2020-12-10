@@ -308,7 +308,12 @@ func shuffle_cards(animate = true) -> void:
 			for _i in range(3):
 				var random_cards = get_all_cards().duplicate()
 				CFUtils.shuffle_array(random_cards)
-				random_cards.resize(random_cards.size()/10)
+				# This calulcation prevents us from trying to tween too many
+				# cards at the same time,when the deck is too big
+				# The bigger the deck, the smallest the percentage of cards
+				# in it, that will bounce
+				var resize_div: float = 2 + 0.1 * random_cards.size()
+				random_cards.resize(random_cards.size() / resize_div)
 				for card in random_cards:
 					card.animate_shuffle(anim_speed, CFConst.ShuffleStyle.OVERHAND)
 				yield(get_tree().create_timer(anim_speed * 2.3), "timeout")
