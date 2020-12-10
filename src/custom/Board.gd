@@ -23,6 +23,7 @@ func _ready() -> void:
 	$FancyMovementToggle.pressed = cfc.fancy_movement
 	$OvalHandToggle.pressed = cfc.hand_use_oval_shape
 	$ScalingFocusOptions.selected = cfc.focus_style
+	$Debug.pressed = cfc._debug
 	# Fill up the deck for demo purposes
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
@@ -73,6 +74,9 @@ func _on_EnableAttach_toggled(_button_pressed: bool) -> void:
 	for c in allCards:
 		c.is_attachment = $EnableAttach.pressed
 
+
+func _on_Debug_toggled(button_pressed: bool) -> void:
+	cfc._debug = $Debug.pressed
 
 # Loads a sample set of cards to use for testing
 func load_test_cards(extras := 11) -> void:

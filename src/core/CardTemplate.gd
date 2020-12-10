@@ -337,9 +337,7 @@ func _on_Card_gui_input(event) -> void:
 			# If it's a long click it might be because
 			# they want to drag the card
 			else:
-				if (cfc.focus_style != CFConst.FocusStyle.VIEWPORT and
-						(state == FOCUSED_IN_HAND
-						or state == FOCUSED_ON_BOARD)) or cfc.focus_style:
+				if state in [FOCUSED_IN_HAND, FOCUSED_ON_BOARD, FOCUSED_IN_POPUP]:
 					# But first we check if the player does a long-press.
 					# We don't want to start dragging the card immediately.
 					cfc.card_drag_ongoing = self
@@ -2311,17 +2309,22 @@ func _token_drawer(drawer_state := true) -> void:
 func _get_angle_by_index(index_diff = null):
 	var index = get_my_card_index()
 	var hand_size = get_parent().get_card_count()
+	# This to prevent div/0 errors because the card will not be
+	# reported when it's being dragged
+	if hand_size == 0:
+		hand_size = 1
 	var half
 	half = (hand_size - 1) / 2.0
 	var card_angle_max: float = 15
 	var card_angle_min: float = 5
 	# Angle between cards
-	var card_angle = max(min(60/hand_size,card_angle_max),card_angle_min)
+	var card_angle = max(min(60 / hand_size, card_angle_max), card_angle_min)
 	# When foucs hand, the card needs to be offset by a certain angle
 	# The current practice is just to find a suitable expression function, if there is a better function, please replace this function: - sign(index_diff) * (1.95-0.3*index_diff*index_diff) * min(card_angle,5)
 	if index_diff != null:
 		return 90 + (half - index) * card_angle \
-				- sign(index_diff) * (1.95-0.3*index_diff*index_diff) * min(card_angle,5)
+				- sign(index_diff) * (1.95 - 0.3 * index_diff * index_diff) \
+				* min(card_angle, 5)
 	else:
 		return 90 + (half - index) * card_angle
 

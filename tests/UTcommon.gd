@@ -18,13 +18,14 @@ var hand: Hand
 var deck: Pile
 var discard: Pile
 
-func fake_click(pressed,position, flags=0) -> InputEvent:
+func fake_click(pressed, position, use_fake_mouse := true, flags=0) -> InputEvent:
 	var ev := InputEventMouseButton.new()
 	ev.button_index=BUTTON_LEFT
 	ev.pressed = pressed
 	ev.position = position
 	ev.meta = flags
-	board._UT_mouse_position = position
+	if use_fake_mouse:
+		board._UT_mouse_position = position
 	return ev
 
 
@@ -56,8 +57,8 @@ func draw_test_cards(count: int) -> Array:
 		cards.append(hand.draw_card())
 	return cards
 
-func click_card(card: Card) -> void:
-	var fc:= fake_click(true, card.global_position)
+func click_card(card: Card, use_fake_mouse := true) -> void:
+	var fc:= fake_click(true, card.global_position, use_fake_mouse)
 	card._on_Card_gui_input(fc)
 
 func unclick_card(card: Card) -> void:
