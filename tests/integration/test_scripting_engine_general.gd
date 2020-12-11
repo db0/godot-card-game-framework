@@ -218,6 +218,17 @@ func test_subject_tutor():
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq("Red",target.properties["Type"],
 			"Card of the correct type should be placed on the board")
+	card.scripts = {"manual": {"hand": [
+			{"name": "move_card_cont_to_board",
+			"subject": "tutor",
+			"src_container":  cfc.NMAP.deck,
+			"filter_properties_tutor": {"Name": "Multiple Choices Test Card"},
+			"board_position":  Vector2(100,200)}]}}
+	card.execute_scripts()
+	target = cfc.NMAP.board.get_card(1)
+	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq("Multiple Choices Test Card",target.card_name,
+			"Card of the correct name should be placed on the board")
 
 func test_subject_index():
 	target = cfc.NMAP.deck.get_card(5)

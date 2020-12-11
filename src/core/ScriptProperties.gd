@@ -253,7 +253,11 @@ const TRIGGER_HOST = "token_name"
 # Some filter check signals against constants. They are defined below
 #---------------------------------------------------------------------
 
+# Value is sent by trigger when new token count is higher than old token count.
+# Compared against FILTER_TOKEN_DIFFERENCE
 const TRIGGER_V_TOKENS_INCREASED := "increased"
+# Value is sent by trigger when new token count is lower than old token count.
+# Compared against FILTER_TOKEN_DIFFERENCE
 const TRIGGER_V_TOKENS_DECREASED := "decreased"
 
 
@@ -374,9 +378,12 @@ static func check_properties(card, card_scripts, type := "trigger") -> bool:
 				# of that array to check against the card properties
 				if not prop_limits[property] in card.properties[property]:
 					card_matches = false
+			# The card's name is not stored in the properties dictionary
+			# But rather in the card_name variable
+			elif property == "Name":
+				if prop_limits[property] != card.card_name:
+					card_matches = false
 			else:
-				#print(type,prop_limits[property], card.properties[property])
 				if prop_limits[property] != card.properties[property]:
 					card_matches = false
-#	if card.card_name == "Test Card 2":
 	return(card_matches)
