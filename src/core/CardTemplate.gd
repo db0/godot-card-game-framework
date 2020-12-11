@@ -142,12 +142,14 @@ onready var _flip_tween = $Control/FlipTween
 
 onready var _control = $Control
 onready var _card_text = $Control/Front/CardText
-onready var _buttons = $Control/ManipulationButtons
 onready var _highlight = $Control/FocusHighlight
 onready var _card_back = $Control/Back
+# The node which hosts all manipulation buttons belonging to this card
+# as well as methods to hide/show them, and connect them to this card.
+onready var buttons: ManipulationButtons = $Control/ManipulationButtons
 # The node which hosts all tokens belonging to this card
-# As well as the methods retrieve them and to to hide/show their drawer.
-onready var tokens = $Control/Tokens
+# as well as the methods retrieve them and to to hide/show their drawer.
+onready var tokens : TokenDrawer = $Control/Tokens
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -245,11 +247,8 @@ func _process(delta) -> void:
 # Triggers the focus-in effect on the card
 func _on_Card_mouse_entered() -> void:
 	# This triggers the focus-in effect on the card
-	#print(state,":enter:",get_index(), ":", _are_buttons_hovered()) # Debug
+	#print(state,":enter:",get_index(), ":", buttons._are_hovered()) # Debug
 	#print($Control/Tokens/Drawer/VBoxContainer.rect_size) # debug
-	# We use this variable to check if mouse thinks it changed nodes because
-	# it just entered a child node
-	#if not _is_drawer_hovered():
 	match state:
 		IN_HAND, REORGANIZING, PUSHED_ASIDE:
 			if not cfc.card_drag_ongoing:
@@ -292,8 +291,8 @@ func _on_Card_gui_input(event) -> void:
 		# or a long click
 		elif event.is_pressed() \
 				and event.get_button_index() == 1 \
-				and not _are_buttons_hovered() \
-				and not _is_drawer_hovered():
+				and not buttons.are_hovered() \
+				and not tokens.are_hovered():
 			# If it's a double-click, then it's not a card drag
 			# But rather it's script execution
 			if event.doubleclick:
@@ -349,10 +348,7 @@ func _on_Card_mouse_exited() -> void:
 	# If it did, then that button will immediately set a variable to let us know
 	# not to restart the focus
 	#print(state,":exit:",get_index()) # debug
-	#print(_are_buttons_hovered()) # debug
-	# We use this variable to check if mouse thinks it changed nodes
-	# because it just entered a child node
-	#if not _is_drawer_hovered():
+	#print(buttons.are_hovered()) # debug
 	match state:
 		FOCUSED_IN_HAND:
 			#_focus_completed = false
@@ -556,7 +552,7 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 			_flip_card($Control/Back, $Control/Front,instant)
 			# We need this check, as this node might not be ready
 			# Yet when a viewport focus dupe is instancing
-			_buttons.set_button_visible("View", false)
+			buttons.set_button_visible("View", false)
 			_card_back.stop_card_back_animation()
 			# When we flip face up, we also want to show the dupe card
 			# in the focus viewport
@@ -574,7 +570,7 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 					_flip_card(dupe_back, dupe_front, true)
 		else:
 			_flip_card($Control/Front, $Control/Back,instant)
-			_buttons.set_button_visible("View", true)
+			buttons.set_button_visible("View", true)
 #			if get_parent() == cfc.NMAP.board:
 			_card_back.start_card_back_animation()
 			# When we flip face down, we also want to hide the dupe card
@@ -1461,22 +1457,6 @@ func _clear_attachment_status() -> void:
 		yield(get_tree().create_timer(0.1), "timeout")
 	attachments.clear()
 
-
-# Returns true when the mouse is still hovering over the buttons area.
-func _are_buttons_hovered() -> bool:
-	return(_buttons.are_buttons_hovered())
-
-
-# Detects when the mouse is still hovering over the tokens area.
-#
-# We need to detect this extra, for the same reasons as the targetting buttons
-# If we do not, the buttons continuously try to open and close.
-#
-# Returns true if the mouse is hovering over the token drawer, else false
-func _is_drawer_hovered() -> bool:
-	return($Control/Tokens._is_hovered())
-
-
 # Detects when the mouse is still hovering over the card
 #
 # We need to detect this extra, for the same reasons as the targetting buttons
@@ -1669,7 +1649,7 @@ func _process_card_state() -> void:
 			z_index = 0
 			set_focus(false)
 			set_control_mouse_filters(true)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			set_card_rotation(0)
 			# warning-ignore:return_value_discarded
 			# When we have an oval shape, we ensure the cards stay
@@ -1688,7 +1668,7 @@ func _process_card_state() -> void:
 			z_index = 1
 			set_focus(true)
 			set_control_mouse_filters(true)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
@@ -1748,7 +1728,7 @@ func _process_card_state() -> void:
 			z_index = 0
 			set_focus(false)
 			set_control_mouse_filters(false)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			# set_card_rotation(0,false,false)
 			if not $Tween.is_active():
@@ -1820,7 +1800,7 @@ func _process_card_state() -> void:
 			z_index = 0
 			set_focus(false)
 			set_control_mouse_filters(true)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active():
@@ -1837,7 +1817,7 @@ func _process_card_state() -> void:
 			z_index = 0
 			set_focus(false)
 			set_control_mouse_filters(true)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			if not $Tween.is_active() and \
 					not position.is_equal_approx(_target_position):
@@ -1854,7 +1834,7 @@ func _process_card_state() -> void:
 			# Used when the card is dragged around the game with the mouse
 			set_focus(true)
 			set_control_mouse_filters(true)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			if (not $Tween.is_active() and
 				not scale.is_equal_approx(CFConst.CARD_SCALE_WHILE_DRAGGING) and
 				get_parent() != cfc.NMAP.board):
@@ -1879,7 +1859,7 @@ func _process_card_state() -> void:
 			# Used when the card is idle on the board
 			set_focus(false)
 			set_control_mouse_filters(true)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			if not $Tween.is_active() and \
 					not scale.is_equal_approx(CFConst.PLAY_AREA_SCALE):
 				_add_tween_scale(scale, CFConst.PLAY_AREA_SCALE, 0.3,
@@ -1889,7 +1869,7 @@ func _process_card_state() -> void:
 
 		DROPPING_TO_BOARD:
 			set_control_mouse_filters(true)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			# Used when dropping the cards to the table
 			# When dragging the card, the card is slightly behind the mouse cursor
 			# so we tween it to the right location
@@ -1919,13 +1899,13 @@ func _process_card_state() -> void:
 			# Used when card is focused on by the mouse hovering over it while it is on the board.
 			set_focus(true)
 			set_control_mouse_filters(true)
-			_buttons.set_active(true)
+			buttons.set_active(true)
 			# We don't change state yet, only when the focus is removed from this card
 
 		IN_PILE:
 			set_focus(false)
 			set_control_mouse_filters(false)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			if scale != Vector2(1,1):
@@ -1937,7 +1917,7 @@ func _process_card_state() -> void:
 			# Unless moved
 			set_focus(false)
 			set_control_mouse_filters(true)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			if modulate[3] != 1:
@@ -1956,7 +1936,7 @@ func _process_card_state() -> void:
 		VIEWPORT_FOCUS:
 			set_focus(false)
 			set_control_mouse_filters(false)
-			_buttons.set_active(false)
+			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			$Control.rect_rotation = 0

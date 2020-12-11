@@ -102,8 +102,8 @@ func _discover_focus() -> void:
 			if not (current_focused_card
 					and current_focused_card.state == Card.DRAGGED) \
 				and not (current_focused_card
-					and current_focused_card._is_drawer_hovered()
-					and current_focused_card._is_drawer_open):
+					and current_focused_card.tokens.are_hovered()
+					and current_focused_card.tokens.is_drawer_open):
 				# If we already highlighted a card that is lower in index
 				# we remove it's focus state
 				if current_focused_card:
@@ -118,7 +118,7 @@ func _discover_focus() -> void:
 	# We make sure we don't try to change the current_focused_card while
 	# in the process of dragging one.
 	elif current_focused_card and current_focused_card.state != Card.DRAGGED:
-		if not current_focused_card._is_drawer_hovered() \
+		if not current_focused_card.tokens.are_hovered() \
 				or not current_focused_card.tokens.is_drawer_open:
 			current_focused_card._on_Card_mouse_exited()
 			current_focused_card = null

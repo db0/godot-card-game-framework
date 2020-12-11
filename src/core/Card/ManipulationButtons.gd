@@ -1,3 +1,4 @@
+class_name ManipulationButtons
 extends VBoxContainer
 
 onready var _tween = $Tween
@@ -23,7 +24,7 @@ func _ready() -> void:
 # https://github.com/godotengine/godot/issues/16854
 #
 # Returns true if the mouse is hovering any of the buttons, else false
-func are_buttons_hovered() -> bool:
+func are_hovered() -> bool:
 	var ret = false
 	for button in get_children():
 		if button as Button \

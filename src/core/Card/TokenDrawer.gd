@@ -178,7 +178,7 @@ func get_token(token_name: String) -> Token:
 # Returns true, when the mouse cursor is over the drawer.
 # This is used to retain focus on the card
 # while the player is manipulating tokens.
-func _is_hovered() -> bool:
+func are_hovered() -> bool:
 	var is_hovered = false
 	if cfc.NMAP.board.mouse_pointer in $Drawer/Area2D.get_overlapping_areas():
 		is_hovered = true
