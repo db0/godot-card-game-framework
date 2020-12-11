@@ -35,8 +35,7 @@ enum{
 const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
 const _CARD_CHOICES_SCENE = preload(_CARD_CHOICES_SCENE_FILE)
 
-# Emitted whenever the card spawns a targeting arrow.
-signal initiated_targeting
+
 # Emitted whenever the card is rotated
 # The signal must send its name as well (in the trigger var)
 # Because it's sent by the SignalPropagator to all cards and they use it
@@ -53,6 +52,7 @@ signal card_moved_to_pile(card,trigger,details)
 # Emited whenever the card is moved to a hand
 signal card_moved_to_hand(card,trigger,details)
 # Emited whenever the card's tokens are modified
+# warning-ignore:unused_signal
 signal card_token_modified(card,trigger,details)
 # Emited whenever the card attaches to another
 signal card_attached(card,trigger,details)
@@ -84,8 +84,6 @@ export var scripts := {}
 # their host around the table. The card will always return to its host
 # when dragged away
 export var is_attachment := false setget set_is_attachment, get_is_attachment
-# If true, the card will be displayed faceup. If false, it will be facedown
-var is_faceup := true setget set_is_faceup, get_is_faceup
 # If true, the card front will be displayed when mouse hovers over the card
 # while it's face-down
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
@@ -106,7 +104,8 @@ var attachments := []
 # If this card is set as an attachment to another card,
 # this tracks who its host is.
 var current_host_card : Card = null
-
+# If true, the card will be displayed faceup. If false, it will be facedown
+var is_faceup := true setget set_is_faceup, get_is_faceup
 # Used for animating the card.
 var _target_position: Vector2
 # Used for animating the card.
@@ -128,8 +127,9 @@ onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
 onready var _control = $Control
 onready var _card_text = $Control/Front/CardText
-onready var _highlight = $Control/FocusHighlight
-onready var _card_back = $Control/Back
+# The node which has the image of the card back
+# And the methods which are used for its potential animation.
+onready var card_back = $Control/Back
 # The node which hosts all manipulation buttons belonging to this card
 # as well as methods to hide/show them, and connect them to this card.
 onready var buttons= $Control/ManipulationButtons
@@ -138,6 +138,8 @@ onready var buttons= $Control/ManipulationButtons
 onready var tokens = $Control/Tokens
 # The node which controls the targeting arrow.
 onready var targeting_arrow = $TargetLine
+# The node which manipulates the highlight borders.
+onready var highlight = $Control/Highlight
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -153,8 +155,8 @@ func _ready() -> void:
 	# We set the card's Highlight to always extend 3 pixels over
 	# Either side of the card. This way its border will appear
 	# correctly when hovering over the card.
-	$Control/FocusHighlight.rect_size = $Control.rect_size + Vector2(6,6)
-	$Control/FocusHighlight.rect_position = Vector2(-3,-3)
+	highlight.rect_size = $Control.rect_size + Vector2(6,6)
+	highlight.rect_position = Vector2(-3,-3)
 	# warning-ignore:return_value_discarded
 	connect("area_entered", self, "_on_Card_area_entered")
 	# warning-ignore:return_value_discarded
@@ -311,7 +313,7 @@ func _on_Card_gui_input(event) -> void:
 					var destination = cfc.NMAP.board
 					if not _potential_containers.empty():
 						destination = _potential_containers.back()
-						_potential_containers.back().set_highlight(false)
+						_potential_containers.back().highlight.set_highlight(false)
 					move_to(destination)
 					_focus_completed = false
 					#emit_signal("card_dropped",self)
@@ -397,14 +399,16 @@ func _on_Card_area_entered(area: Area2D) -> void:
 			_potential_cards.sort_custom(CFUtils,"sort_index_ascending")
 			# Finally we use a method which  handles changing highlights on the
 			# top index card
-			highlight_potential_card(CFConst.HOST_HOVER_COLOUR, _potential_cards)
+			highlight.highlight_potential_card(CFConst.HOST_HOVER_COLOUR,
+					_potential_cards)
 	if area.get_class() == "CardContainer" \
 			and not area in _potential_containers \
 			and state == DRAGGED:
 		var container = area
 		_potential_containers.append(container)
 		_potential_containers.sort_custom(CFUtils,"sort_card_containers")
-		highlight_potential_container(CFConst.TARGET_HOVER_COLOUR)
+		highlight.highlight_potential_container(CFConst.TARGET_HOVER_COLOUR,
+				_potential_containers)
 
 
 # Triggers when a card stops hovering over another
@@ -423,16 +427,18 @@ func _on_Card_area_exited(area: Area2D) -> void:
 			_potential_cards.erase(card)
 			# And we explicitly hide its cards focus since we don't care about
 			# it anymore
-			card.set_highlight(false)
+			card.highlight.set_highlight(false)
 			# Finally, we make sure we highlight any other cards we're still hovering
-			highlight_potential_card(CFConst.HOST_HOVER_COLOUR, _potential_cards)
+			highlight.highlight_potential_card(CFConst.HOST_HOVER_COLOUR,
+					_potential_cards)
 	if area.get_class() == "CardContainer" \
 			and area in _potential_containers \
 			and state == DRAGGED:
 		var container = area
 		_potential_containers.erase(container)
-		container.set_highlight(false)
-		highlight_potential_container(CFConst.TARGET_HOVER_COLOUR)
+		container.highlight.set_highlight(false)
+		highlight.highlight_potential_container(CFConst.TARGET_HOVER_COLOUR,
+				_potential_containers)
 
 
 
@@ -501,7 +507,7 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 			# We need this check, as this node might not be ready
 			# Yet when a viewport focus dupe is instancing
 			buttons.set_button_visible("View", false)
-			_card_back.stop_card_back_animation()
+			card_back.stop_card_back_animation()
 			# When we flip face up, we also want to show the dupe card
 			# in the focus viewport
 			# However we also need to protect this call from the dupe itself
@@ -520,7 +526,7 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 			_flip_card($Control/Front, $Control/Back,instant)
 			buttons.set_button_visible("View", true)
 #			if get_parent() == cfc.NMAP.board:
-			_card_back.start_card_back_animation()
+			card_back.start_card_back_animation()
 			# When we flip face down, we also want to hide the dupe card
 			# in the focus viewport
 			# However we also need to protect this call from the dupe itself
@@ -850,7 +856,7 @@ func move_to(targetHost: Node2D,
 	# Just in case there's any leftover potential host highlights
 	if len(_potential_cards):
 		for card in _potential_cards:
-			card.set_highlight(false)
+			card.highlight.set_highlight(false)
 		_potential_cards.clear()
 
 
@@ -981,7 +987,7 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 		# Once we selected the host, we don't need anything in the array anymore
 		_potential_cards.clear()
 		# We also clear the highlights on our new host
-		current_host_card.set_highlight(false)
+		current_host_card.highlight.set_highlight(false)
 		# We set outselves as an attachment on the target host for easy iteration
 		current_host_card.attachments.append(self)
 		#print(current_host_card.attachments)
@@ -1053,9 +1059,9 @@ func interruptTweening() ->void:
 # Changes card focus (highlighted and put on the focus viewport)
 func set_focus(requestedFocus: bool) -> void:
 	 # We use an if to avoid performing constant operations in _process
-	if $Control/FocusHighlight.visible != requestedFocus and \
-			$Control/FocusHighlight.modulate == CFConst.FOCUS_HOVER_COLOUR:
-		$Control/FocusHighlight.visible = requestedFocus
+	if highlight.visible != requestedFocus and \
+			highlight.modulate == CFConst.FOCUS_HOVER_COLOUR:
+		highlight.visible = requestedFocus
 	if cfc.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
 			cfc.NMAP.main.focus_card(self)
@@ -1082,13 +1088,7 @@ func get_focus() -> bool:
 
 
 
-# Changes card highlight colour.
-func set_highlight(requestedFocus: bool, hoverColour = CFConst.HOST_HOVER_COLOUR) -> void:
-	$Control/FocusHighlight.visible = requestedFocus
-	if requestedFocus:
-		$Control/FocusHighlight.modulate = hoverColour
-	else:
-		$Control/FocusHighlight.modulate = CFConst.FOCUS_HOVER_COLOUR
+
 
 
 # Returns the Card's index position among other card objects
@@ -1097,32 +1097,6 @@ func get_my_card_index() -> int:
 		return(0)
 	else:
 		return get_parent().get_card_index(self)
-
-
-# Goes through all the potential cards we're currently hovering onto with a card
-# or targetting arrow, and highlights the one with the highest index among
-# their common parent.
-# It also colours the highlight with the provided colour
-func highlight_potential_card(colour : Color, potential_cards: Array) -> void:
-	for idx in range(0,len(potential_cards)):
-			# The last card in the sorted array is always the highest index
-		if idx == len(potential_cards) - 1:
-			potential_cards[idx].set_highlight(true,colour)
-		else:
-			potential_cards[idx].set_highlight(false)
-
-
-# Goes through all the potential cards we're currently hovering onto with a card
-# or targetting arrow, and highlights the one with the highest index among
-# their common parent.
-# It also colours the highlight with the provided colour
-func highlight_potential_container(colour : Color) -> void:
-	for idx in range(0,len(_potential_containers)):
-		if idx == len(_potential_containers) - 1:
-			_potential_containers[idx].set_highlight(true,colour)
-		else:
-			_potential_containers[idx].set_highlight(false)
-
 
 
 
@@ -1407,7 +1381,7 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 		pass
 	else:
 		# We clear existing tweens to avoid a deadlocks
-		for n in [$Control/Front, $Control/Back, $Control/FocusHighlight]:
+		for n in [$Control/Front, $Control/Back, highlight]:
 			_flip_tween.remove(n,'rect_scale')
 			_flip_tween.remove(n,'rect_position')
 		_flip_tween.interpolate_property(to_invisible,'rect_scale',
@@ -1417,15 +1391,15 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 				to_invisible.rect_position, Vector2(
 				to_invisible.rect_size.x/2,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
-		_flip_tween.interpolate_property($Control/FocusHighlight,'rect_scale',
-				$Control/FocusHighlight.rect_scale, Vector2(0,1), 0.4,
+		_flip_tween.interpolate_property(highlight,'rect_scale',
+				highlight.rect_scale, Vector2(0,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
 		# The highlight is larger than the card size, but also offet a big
 		# so that it's still centered. This way its borders only extend
 		# over the card borders. We need to offest to the right location.
-		_flip_tween.interpolate_property($Control/FocusHighlight,'rect_position',
-				$Control/FocusHighlight.rect_position, Vector2(
-				($Control/FocusHighlight.rect_size.x-3)/2,0), 0.4,
+		_flip_tween.interpolate_property(highlight,'rect_position',
+				highlight.rect_position, Vector2(
+				(highlight.rect_size.x-3)/2,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
 		_flip_tween.start()
 		yield(_flip_tween, "tween_all_completed")
@@ -1437,11 +1411,11 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 		_flip_tween.interpolate_property(to_visible,'rect_position',
 				to_visible.rect_position, Vector2(0,0), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		_flip_tween.interpolate_property($Control/FocusHighlight,'rect_scale',
-				$Control/FocusHighlight.rect_scale, Vector2(1,1), 0.4,
+		_flip_tween.interpolate_property(highlight,'rect_scale',
+				highlight.rect_scale, Vector2(1,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
-		_flip_tween.interpolate_property($Control/FocusHighlight,'rect_position',
-				$Control/FocusHighlight.rect_position, Vector2(-3,-3), 0.4,
+		_flip_tween.interpolate_property(highlight,'rect_position',
+				highlight.rect_position, Vector2(-3,-3), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
 		_flip_tween.start()
 

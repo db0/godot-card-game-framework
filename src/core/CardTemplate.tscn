@@ -8,7 +8,7 @@
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/core/Card/ManipulationButtons.gd" type="Script" id=7]
 [ext_resource path="res://src/core/Card/CardBackGlow.gd" type="Script" id=8]
-[ext_resource path="res://src/core/Card/Targeting.gd" type="Script" id=9]
+[ext_resource path="res://src/core/Card/TargetingArrow.gd" type="Script" id=9]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 75, 120 )
@@ -104,7 +104,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="FocusHighlight" parent="Control" instance=ExtResource( 6 )]
+[node name="Highlight" parent="Control" instance=ExtResource( 6 )]
 
 [node name="Front" type="Panel" parent="Control"]
 anchor_right = 1.0

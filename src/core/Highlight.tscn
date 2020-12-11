@@ -1,4 +1,6 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/core/Highlight.gd" type="Script" id=1]
 
 [sub_resource type="StyleBoxFlat" id=1]
 content_margin_left = 6.0
@@ -37,6 +39,7 @@ margin_top = -3.0
 margin_right = 3.0
 margin_bottom = 3.00002
 mouse_filter = 2
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_group_": true,
 "_edit_use_anchors_": false

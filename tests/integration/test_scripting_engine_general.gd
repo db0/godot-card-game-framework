@@ -125,7 +125,7 @@ func test_subject_target():
 	var scripting_engine = card.execute_scripts()
 	yield(yield_for(0.1), YIELD)
 	if scripting_engine is GDScriptFunctionState: # Still seeking...
-		yield(card, "initiated_targeting")
+		yield(card.targeting_arrow, "initiated_targeting")
 	#watch_signals(scripting_engine)
 	yield(target_card(card,card), "completed")
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)

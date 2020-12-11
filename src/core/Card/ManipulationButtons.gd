@@ -2,6 +2,7 @@ class_name ManipulationButtons
 extends VBoxContainer
 
 onready var _tween = $Tween
+# Hold the node which owns this node.
 onready var owner_node = get_parent().get_parent()
 
 func _ready() -> void:
@@ -45,7 +46,7 @@ func set_active(value = true) -> void:
 	# with a tarteting arrow.
 	# We do not want to activate the buttons when a player is trying to
 	# select the card for an effect.
-	if not value or owner_node._highlight.modulate == CFConst.TARGET_HOVER_COLOUR:
+	if not value or owner_node.highlight.modulate == CFConst.TARGET_HOVER_COLOUR:
 		button_filter = 2
 	# We do a comparison first, to make sure we avoid unnecessary operations
 	for button in get_children():

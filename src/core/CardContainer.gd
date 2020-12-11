@@ -2,6 +2,10 @@
 # and arrange their indexing and visibility
 class_name CardContainer
 extends Area2D
+
+# Cache control button
+var all_manipulation_buttons := [] setget ,get_all_manipulation_buttons
+
 # ManipulationButtons node
 onready var manipulation_buttons := $Control/ManipulationButtons
 # ManipulationButtons tween node
@@ -10,8 +14,7 @@ onready var manipulation_buttons_tween := $Control/ManipulationButtons/Tween
 onready var control := $Control
 # Shuffle button
 onready var shuffle_button := $Control/ManipulationButtons/Shuffle
-# Cache control button
-var all_manipulation_buttons := [] setget ,get_all_manipulation_buttons
+onready var highlight := $Control/Highlight
 
 
 # Called when the node enters the scene tree for the first time.
@@ -184,12 +187,3 @@ func translate_card_index_to_node_index(index: int) -> int:
 		var card_at_index = all_cards[index]
 		node_index = card_at_index.get_index()
 	return node_index
-
-# Changes card highlight colour.
-func set_highlight(requestedFocus: bool, hoverColour = CFConst.TARGET_HOVER_COLOUR) -> void:
-	$Control/Highlight.visible = requestedFocus
-	if requestedFocus:
-		$Control/Highlight.modulate = hoverColour
-	else:
-		$Control/Highlight.modulate = CFConst.TARGET_HOVER_COLOUR
-
