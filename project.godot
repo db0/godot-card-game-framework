@@ -94,6 +94,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/ScriptingEngine.gd"
 }, {
+"base": "Reference",
+"class": "TargetingArrow",
+"language": "GDScript",
+"path": "res://src/core/Card/Targeting.gd"
+}, {
 "base": "HBoxContainer",
 "class": "Token",
 "language": "GDScript",
@@ -132,6 +137,7 @@ _global_script_class_icons={
 "SP": "",
 "ScriptTask": "",
 "ScriptingEngine": "",
+"TargetingArrow": "",
 "Token": "",
 "TokenDrawer": "",
 "UTCommon": "",

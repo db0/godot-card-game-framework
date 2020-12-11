@@ -37,8 +37,6 @@ const _CARD_CHOICES_SCENE = preload(_CARD_CHOICES_SCENE_FILE)
 
 # Emitted whenever the card spawns a targeting arrow.
 signal initiated_targeting
-# Emitted whenever the card has selected a target.
-signal target_selected(card)
 # Emitted whenever the card is rotated
 # The signal must send its name as well (in the trigger var)
 # Because it's sent by the SignalPropagator to all cards and they use it
@@ -100,13 +98,6 @@ export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_ca
 # to the human-readable value of the "name" node property.
 export var card_name : String setget set_card_name, get_card_name
 
-# Used to store a card succesfully targeted.
-# It should be cleared from whichever effect requires a target.
-# once it is used
-var target_card : Card = null setget set_targetcard, get_targetcard
-# Used to store a card targeted via the cost-dry-run mechanism.
-# it is reset to null every time the properties check is not valid
-var target_dry_run_card : Card = null
 # Starting state for each card
 var state := IN_PILE
 # If this card is hosting other cards,
@@ -115,11 +106,7 @@ var attachments := []
 # If this card is set as an attachment to another card,
 # this tracks who its host is.
 var current_host_card : Card = null
-# To track that this card attempting to target another card.
-var _is_targetting := false
-# Used when completing targeting to know whether to put the target
-# into target_dry_run_card or target_card
-var _cost_dry_run := false
+
 # Used for animating the card.
 var _target_position: Vector2
 # Used for animating the card.
@@ -139,17 +126,18 @@ var _tween_stuck_time = 0
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
-
 onready var _control = $Control
 onready var _card_text = $Control/Front/CardText
 onready var _highlight = $Control/FocusHighlight
 onready var _card_back = $Control/Back
 # The node which hosts all manipulation buttons belonging to this card
 # as well as methods to hide/show them, and connect them to this card.
-onready var buttons: ManipulationButtons = $Control/ManipulationButtons
+onready var buttons= $Control/ManipulationButtons
 # The node which hosts all tokens belonging to this card
 # as well as the methods retrieve them and to to hide/show their drawer.
-onready var tokens : TokenDrawer = $Control/Tokens
+onready var tokens = $Control/Tokens
+# The node which controls the targeting arrow.
+onready var targeting_arrow = $TargetLine
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -167,17 +155,11 @@ func _ready() -> void:
 	# correctly when hovering over the card.
 	$Control/FocusHighlight.rect_size = $Control.rect_size + Vector2(6,6)
 	$Control/FocusHighlight.rect_position = Vector2(-3,-3)
-	# We set the targetting arrow modulation to match our config specification
-	$TargetLine.default_color = CFConst.TARGETTING_ARROW_COLOUR
-	$TargetLine/ArrowHead.color = CFConst.TARGETTING_ARROW_COLOUR
 	# warning-ignore:return_value_discarded
 	connect("area_entered", self, "_on_Card_area_entered")
 	# warning-ignore:return_value_discarded
 	connect("area_exited", self, "_on_Card_area_exited")
-	# warning-ignore:return_value_discarded
-	$TargetLine/ArrowHead/Area2D.connect("area_entered", self, "_on_ArrowHead_area_entered")
-	# warning-ignore:return_value_discarded
-	$TargetLine/ArrowHead/Area2D.connect("area_exited", self, "_on_ArrowHead_area_exited")
+
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
 
@@ -216,8 +198,6 @@ func _process(delta) -> void:
 			_tween_stuck_time = 0
 	else:
 		_tween_stuck_time = 0
-	if _is_targetting:
-		_draw_targeting_arrow()
 	_process_card_state()
 	# Having to do all these checks due to godotengine/godot#16854
 	if cfc._debug and not get_parent() in cfc.piles:
@@ -265,8 +245,8 @@ func _on_Card_mouse_entered() -> void:
 
 func _input(event) -> void:
 	if event is InputEventMouseButton and not event.is_pressed():
-		if _is_targetting:
-			complete_targeting()
+		if targeting_arrow.is_targeting:
+			targeting_arrow.complete_targeting()
 		if  event.get_button_index() == 1:
 			# On depressed left mouse click anywhere on the board
 			# We stop all attempts at dragging this card
@@ -336,9 +316,9 @@ func _on_Card_gui_input(event) -> void:
 					_focus_completed = false
 					#emit_signal("card_dropped",self)
 		elif event.is_pressed() and event.get_button_index() == 2:
-			initiate_targeting()
+			targeting_arrow.initiate_targeting()
 		elif not event.is_pressed() and event.get_button_index() == 2:
-			complete_targeting()
+			targeting_arrow.complete_targeting()
 
 
 # Triggers the focus-out effect on the card
@@ -417,7 +397,7 @@ func _on_Card_area_entered(area: Area2D) -> void:
 			_potential_cards.sort_custom(CFUtils,"sort_index_ascending")
 			# Finally we use a method which  handles changing highlights on the
 			# top index card
-			highlight_potential_card(CFConst.HOST_HOVER_COLOUR)
+			highlight_potential_card(CFConst.HOST_HOVER_COLOUR, _potential_cards)
 	if area.get_class() == "CardContainer" \
 			and not area in _potential_containers \
 			and state == DRAGGED:
@@ -445,7 +425,7 @@ func _on_Card_area_exited(area: Area2D) -> void:
 			# it anymore
 			card.set_highlight(false)
 			# Finally, we make sure we highlight any other cards we're still hovering
-			highlight_potential_card(CFConst.HOST_HOVER_COLOUR)
+			highlight_potential_card(CFConst.HOST_HOVER_COLOUR, _potential_cards)
 	if area.get_class() == "CardContainer" \
 			and area in _potential_containers \
 			and state == DRAGGED:
@@ -455,27 +435,6 @@ func _on_Card_area_exited(area: Area2D) -> void:
 		highlight_potential_container(CFConst.TARGET_HOVER_COLOUR)
 
 
-# Triggers when a targetting arrow hovers over another card while being dragged
-#
-# It takes care to highlight potential cards which can serve as targets.
-func _on_ArrowHead_area_entered(card: Card) -> void:
-	if card and not card in _potential_cards:
-		_potential_cards.append(card)
-		_potential_cards.sort_custom(CFUtils,"sort_index_ascending")
-		highlight_potential_card(CFConst.TARGET_HOVER_COLOUR)
-
-
-# Triggers when a targetting arrow stops hovering over a card
-#
-# It clears potential highlights and adjusts potential cards as targets
-func _on_ArrowHead_area_exited(card: Card) -> void:
-	if card and card in _potential_cards:
-		# We remove the card we stopped hovering from the _potential_cards
-		_potential_cards.erase(card)
-		# And we explicitly hide its cards focus since we don't care about it anymore
-		card.set_highlight(false)
-		# Finally, we make sure we highlight any other cards we're still hovering
-		highlight_potential_card(CFConst.TARGET_HOVER_COLOUR)
 
 
 # This function handles filling up the card's labels according to its
@@ -516,17 +475,6 @@ func set_is_attachment(value: bool) -> void:
 # Getter for _is_attachment
 func get_is_attachment() -> bool:
 	return is_attachment
-
-
-# Setter for target_card
-func set_targetcard(card: Card) -> void:
-	target_card = card
-
-
-# Getter for target_card
-func get_targetcard() -> Card:
-	return target_card
-
 
 # Setter for is_faceup
 #
@@ -1155,13 +1103,13 @@ func get_my_card_index() -> int:
 # or targetting arrow, and highlights the one with the highest index among
 # their common parent.
 # It also colours the highlight with the provided colour
-func highlight_potential_card(colour : Color) -> void:
-	for idx in range(0,len(_potential_cards)):
+func highlight_potential_card(colour : Color, potential_cards: Array) -> void:
+	for idx in range(0,len(potential_cards)):
 			# The last card in the sorted array is always the highest index
-		if idx == len(_potential_cards) - 1:
-			_potential_cards[idx].set_highlight(true,colour)
+		if idx == len(potential_cards) - 1:
+			potential_cards[idx].set_highlight(true,colour)
 		else:
-			_potential_cards[idx].set_highlight(false)
+			potential_cards[idx].set_highlight(false)
 
 
 # Goes through all the potential cards we're currently hovering onto with a card
@@ -1176,48 +1124,7 @@ func highlight_potential_container(colour : Color) -> void:
 			_potential_containers[idx].set_highlight(false)
 
 
-# Will generate a targeting arrow on the card which will follow the mouse cursor.
-# The top card hovered over by the mouse cursor will be highlighted
-# and will become the target when complete_targeting() is called
-func initiate_targeting(dry_run := false) -> void:
-	_cost_dry_run = dry_run
-	_is_targetting = true
-	$TargetLine/ArrowHead.visible = true
-	$TargetLine/ArrowHead/Area2D.monitoring = true
-	emit_signal("initiated_targeting")
 
-
-# Will end the targeting process.
-#
-# The top card which is hovered (if any) will become the target and inserted
-# into the target_card property for future use.
-func complete_targeting() -> void:
-	if len(_potential_cards) and _is_targetting:
-		var tc = _potential_cards.back()
-		# We don't want to emit a signal, if the card is a dummy viewport card
-		# or we already selected a target during dry-run
-		if get_parent() != null and get_parent().name != "Viewport" \
-				and not target_dry_run_card:
-			# We make the targeted card also emit a targeting signal for automation
-			tc.emit_signal("card_targeted", tc, "card_targeted",
-					{"targeting_source": self})
-		# We use the _cost_dry_run variable when the targeting is happening
-		# as part of the checking for costs. We store the target card
-		# in a different variable, which is reused during the normal execution
-		# of the script, instead of looking for a target again
-		if _cost_dry_run:
-			target_dry_run_card = tc
-		else:
-			target_card = tc
-#		print("Targeting Demo: ",
-#				self.name," targeted ",
-#				target_card.name, " in ",
-#				target_card.get_parent().name)
-		emit_signal("target_selected",target_card)
-	_is_targetting = false
-	$TargetLine.clear_points()
-	$TargetLine/ArrowHead.visible = false
-	$TargetLine/ArrowHead/Area2D.monitoring = false
 
 # Changes the hosted Control nodes filters
 #
@@ -1537,50 +1444,6 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 				$Control/FocusHighlight.rect_position, Vector2(-3,-3), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_OUT)
 		_flip_tween.start()
-
-# Draws a curved arrow, from the center of a card, to the mouse pointer
-func _draw_targeting_arrow() -> void:
-	# This variable calculates the card center's position on the whole board
-	var centerpos = global_position + $Control.rect_size/2*scale
-	# We want the line to be drawn anew every frame
-	$TargetLine.clear_points()
-	# The final position is the mouse position,
-	# but we offset it by the position of the card center on the map
-	var final_point =  cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos() \
-			- (position + $Control.rect_size/2)
-	var curve = Curve2D.new()
-#		var middle_point = centerpos + (get_global_mouse_position() - centerpos)/2
-#		var middle_dir_to_vpcenter = middle_point.direction_to(get_viewport().size/2)
-#		var offmid = middle_point + middle_dir_to_vpcenter * 50
-	# Our starting point has to be translated to the local position of the Line2D node
-	# The out control point is the direction to the screen center,
-	# with a magnitude that I found via trial and error to look good
-	curve.add_point($TargetLine.to_local(centerpos),
-			Vector2(0,0),
-			centerpos.direction_to(get_viewport().size/2) * 75)
-#		curve.add_point($TargetLine.to_local(offmid), Vector2(0,0), Vector2(0,0))
-	# Our end point also has to be translated to the local position of the Line2D node
-	# The in control point is likewise the direction to the screen center
-	# with a magnitude that I found via trial and error to look good
-	curve.add_point($TargetLine.to_local(position +
-			$Control.rect_size/2 + final_point),
-			Vector2(0, 0), Vector2(0, 0))
-	# Finally we use the Curve2D object to get the points which will be drawn
-	# by our lined2D
-	$TargetLine.set_points(curve.get_baked_points())
-	# We place the arrowhead to start from the last point in the line2D
-	$TargetLine/ArrowHead.position = $TargetLine.get_point_position(
-			$TargetLine.get_point_count( ) - 1)
-	# We delete the last 3 Line2D points, because the arrowhead will
-	# be covering those areas
-	for _del in range(1,3):
-		$TargetLine.remove_point($TargetLine.get_point_count( ) - 1)
-	# We setup the angle the arrowhead is pointing by finding the angle of
-	# the last point on the line towards the mouse position
-	$TargetLine/ArrowHead.rotation = $TargetLine.get_point_position(
-				$TargetLine.get_point_count( ) - 1).direction_to(
-				$TargetLine.to_local(
-				position + $Control.rect_size/2 + final_point)).angle()
 
 
 # Card rotation animation
@@ -1940,7 +1803,7 @@ func _process_card_state() -> void:
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			$Control.rect_rotation = 0
-			complete_targeting()
+			targeting_arrow.complete_targeting()
 			$Control/Tokens.visible = false
 			# We scale the card dupe to allow the player a better viewing experience
 			scale = Vector2(1.5,1.5)

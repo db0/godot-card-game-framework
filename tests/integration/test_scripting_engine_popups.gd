@@ -91,7 +91,7 @@ func test_task_confirm_dialog() -> void:
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	assert_false(target.is_faceup,
 			"Card should be face-down after even afer other optional task cancelled")
-	assert_false(target._is_targetting,
+	assert_false(target.targeting_arrow.is_targeting,
 			"Card did not start targeting since dialogue cancelled")
 
 
@@ -113,7 +113,7 @@ func test_task_confirm_cost_dialog_cancelled_target() -> void:
 	yield(yield_to(card._flip_tween, "tween_all_completed", 0.5), YIELD)
 	assert_true(card.is_faceup,
 			"Card should not be face-down with a cancelled cost dialog")
-	assert_false(card._is_targetting,
+	assert_false(card.targeting_arrow.is_targeting,
 			"Card should not start targeting once cost dialogue cancelled")
 
 
@@ -133,7 +133,7 @@ func test_task_confirm_cost_dialogue_accepted_target() -> void:
 	confirm._on_OptionalConfirmation_confirmed()
 	confirm.hide()
 	yield(yield_for(0.5), YIELD)
-	assert_true(card._is_targetting,
+	assert_true(card.targeting_arrow.is_targeting,
 			"Card started targeting once dialogue accepted")
 	yield(target_card(card,target), "completed")
 	yield(yield_to(card._flip_tween, "tween_all_completed", 0.5), YIELD)

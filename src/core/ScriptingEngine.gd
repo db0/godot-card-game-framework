@@ -48,20 +48,21 @@ func _init(card_owner: Card,
 func run_next_script(card_owner: Card,
 		scripts_queue: Array,
 		prev_subjects := []) -> void:
+	var ta: TargetingArrow = card_owner.targeting_arrow
 	if scripts_queue.empty():
 		#print('Scripting: All done!') # Debug
 		# If we're doing a try run, we don't clean the targeting
 		# as we will re-use it in the targeting phase.
 		# We do clear it though if all the costs cannot be paid.
 		if not costs_dry_run or (costs_dry_run and not can_all_costs_be_paid):
-			card_owner.target_card = null
+			ta.target_card = null
 		if not costs_dry_run:
-			card_owner.target_dry_run_card = null
+			ta.target_dry_run_card = null
 		all_tasks_completed = true
 		emit_signal("tasks_completed")
 	# checking costs on multiple targeted cards in the same script,
 	# is not supported at the moment due to the exponential complexities
-	elif costs_dry_run and card_owner.target_dry_run_card and \
+	elif costs_dry_run and ta.target_dry_run_card and \
 				scripts_queue[0].get(SP.KEY_SUBJECT) == "target":
 			scripts_queue.pop_front()
 			run_next_script(card_owner,
@@ -78,9 +79,9 @@ func run_next_script(card_owner: Card,
 			yield(script,"completed_init")
 		#print("Scripting: " + str(script.properties)) # Debug
 		#print("Scripting Subjects: " + str(script.subjects)) # Debug
-		if costs_dry_run and card_owner.target_card:
-			card_owner.target_dry_run_card = card_owner.target_card
-			card_owner.target_card = null
+		if costs_dry_run and ta.target_card:
+			ta.target_dry_run_card = ta.target_card
+			ta.target_card = null
 		if script.task_name == "custom_script":
 			# This class contains the customly defined scripts for each
 			# card.
@@ -250,11 +251,11 @@ func shuffle_container(script: ScriptTask) -> void:
 # Task from making the owner card an attachment to another card
 func attach_to_card(script: ScriptTask) -> void:
 	for card in script.subjects:
-		script.owner.attach_to_host(card)
+		script.owner_card.attach_to_host(card)
 
 
 # Task for attaching another card to the owner
 func host_card(script: ScriptTask) -> void:
 	# host_card can only ever have one subject
 	var card: Card = script.subjects[0]
-	card.attach_to_host(script.owner)
+	card.attach_to_host(script.owner_card)

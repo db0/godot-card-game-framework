@@ -11,7 +11,7 @@ signal completed_init
 
 
 # The card which owns this Task
-var owner: Card
+var owner_card: Card
 # The card which triggered this Task.
 #
 # It is typically `"self"` during manual execution,
@@ -43,7 +43,7 @@ func _init(card: Card,
 		prev_subjects: Array,
 		cost_dry_run: bool) -> void:
 	# We store the card which executes this task
-	owner = card
+	owner_card = card
 	# We store all the task properties in our own dictionary
 	properties = script
 	# The function name to be called gets its own var
@@ -65,7 +65,7 @@ func _init(card: Card,
 		# The normal run (i.e. not in a cost dry-run)
 		var confirm_return = CFUtils.confirm(
 				properties,
-				owner.card_name,
+				owner_card.card_name,
 				task_name)
 		if confirm_return is GDScriptFunctionState: # Still working.
 			is_accepted = yield(confirm_return, "completed")
@@ -104,13 +104,13 @@ func _find_subjects(prev_subjects := []) -> Card:
 		SP.KEY_SUBJECT_V_PREVIOUS:
 			subjects_array = prev_subjects
 		SP.KEY_SUBJECT_V_TARGET:
-			if owner.target_dry_run_card:
+			if owner_card.targeting_arrow.target_dry_run_card:
 				is_valid = SP.check_properties(
-						owner.target_dry_run_card,
+						owner_card.targeting_arrow.target_dry_run_card,
 						properties,
 						"subject")
-				subjects_array.append(owner.target_dry_run_card)
-				owner.target_dry_run_card = null
+				subjects_array.append(owner_card.targeting_arrow.target_dry_run_card)
+				owner_card.targeting_arrow.target_dry_run_card = null
 			else:
 				var c = _initiate_card_targeting()
 				if c is GDScriptFunctionState: # Still working.
@@ -135,7 +135,7 @@ func _find_subjects(prev_subjects := []) -> Card:
 			var src_container: CardContainer = get(SP.KEY_SRC_CONTAINER)
 			subjects_array.append(src_container.get_card(index))
 		SP.KEY_SUBJECT_V_SELF:
-			subjects_array.append(owner)
+			subjects_array.append(owner_card)
 		_:
 			subjects_array = []
 	subjects = subjects_array
@@ -150,10 +150,10 @@ func _initiate_card_targeting() -> Card:
 	# We wait a centisecond, to prevent the card's _input function from seeing
 	# The double-click which started the script and immediately triggerring
 	# the target completion
-	yield(owner.get_tree().create_timer(0.1), "timeout")
-	owner.initiate_targeting()
+	yield(owner_card.get_tree().create_timer(0.1), "timeout")
+	owner_card.targeting_arrow.initiate_targeting()
 	# We wait until the targetting has been completed to continue
-	yield(owner,"target_selected")
-	var target = owner.target_card
-	#owner.target_card = null
+	yield(owner_card.targeting_arrow,"target_selected")
+	var target = owner_card.targeting_arrow.target_card
+	#owner_card.target_card = null
 	return(target)

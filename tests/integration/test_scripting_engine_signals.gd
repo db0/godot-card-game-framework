@@ -114,7 +114,7 @@ func test_card_properties_filter():
 	yield(table_move(target2, Vector2(900,100)), "completed")
 	target.card_rotation = 90
 	yield(yield_for(0.5), YIELD)
-	assert_false(card._is_targetting,
+	assert_false(card.targeting_arrow.is_targeting,
 			"Card did not start targeting since filter_properties_trigger"
 			+ "  did not match even though filter_properties_subject matched")
 	yield(target_card(cards[6],target2), "completed")
@@ -135,10 +135,10 @@ func test_card_properties_filter():
 			+ " even though filter_properties_trigger does not match")
 	target2.card_rotation = 90
 	yield(yield_for(0.5), YIELD)
-	assert_true(cards[7]._is_targetting,
+	assert_true(cards[7].targeting_arrow.is_targeting,
 			"Card started targeting since filter_properties_trigger "
 			+ "match even though filter_properties_subject don't match")
-	assert_false(cards[6]._is_targetting,
+	assert_false(cards[6].targeting_arrow.is_targeting,
 			"Card did not start targeting since filter_properties_trigger"
 			+ "  did not match even though filter_properties_subject matched")
 	yield(target_card(cards[7],target), "completed")
@@ -445,7 +445,7 @@ func test_card_targeted():
 				"subject": "self",
 				"set_faceup": false}],
 			"trigger": "another"}}
-	cards[4].initiate_targeting()
+	cards[4].targeting_arrow.initiate_targeting()
 	yield(target_card(cards[4], target), "completed")
 	yield(yield_for(0.1), YIELD)
 

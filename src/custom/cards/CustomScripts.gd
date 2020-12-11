@@ -16,12 +16,12 @@ func _init(dry_run_req) -> void:
 #
 # You can pass a predefined subject, but it's optional.
 func custom_script(script: ScriptTask) -> void:
-	var card: Card = script.owner
+	var card: Card = script.owner_card
 	var subjects: Array = script.subjects
 	# I don't like the extra indent caused by this if, 
 	# But not all object will be Card
 	# So I can't be certain the "card_name" var will exist
-	match script.owner.card_name:
+	match script.owner_card.card_name:
 		"Test Card 2":
 			# No demo cost-based custom scripts
 			if not costs_dry_run:
