@@ -163,5 +163,5 @@ func test_token_cost():
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(180,card.card_rotation,
 			"Card not rotated because negative token cost could not  be be paid")
-	assert_eq(1,card.get_token("bio").count,
+	assert_eq(1,card.tokens.get_token("bio").count,
 			"Token count that could not be paid remains the same")

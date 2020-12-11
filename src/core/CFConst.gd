@@ -7,6 +7,16 @@ class_name CFConst
 extends Reference
 
 
+# The possible return codes a function can return
+#
+# * OK is returned when the function did not end up doing any changes
+# * CHANGE is returned when the function modified the card properties in some way
+# * FAILED is returned when the function failed to modify the card for some reason
+enum ReturnCode {
+	OK,
+	CHANGED,
+	FAILED,
+}
 # The focus style used by the engine
 # * SCALED means that the cards simply scale up when moused over in the hand
 # * VIEWPORT means that a larger version of the card appears when mousing over it

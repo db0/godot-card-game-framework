@@ -349,7 +349,7 @@ func test_card_moved_to_pile():
 
 func test_card_token_modified():
 	# warning-ignore:return_value_discarded
-	target.mod_token("void",5)
+	target.tokens.mod_token("void",5)
 	yield(yield_for(0.1), YIELD)
 	watch_signals(target)
 	# This card should turn face-down since there's no limit
@@ -413,7 +413,7 @@ func test_card_token_modified():
 			"filter_token_name": "Tech",
 			"trigger": "another"}}
 	# warning-ignore:return_value_discarded
-	target.mod_token("void", -5)
+	target.tokens.mod_token("void", -5)
 	yield(yield_for(0.1), YIELD)
 	assert_signal_emitted_with_parameters(
 				target,"card_token_modified",
@@ -448,7 +448,7 @@ func test_card_targeted():
 	cards[4].initiate_targeting()
 	yield(target_card(cards[4], target), "completed")
 	yield(yield_for(0.1), YIELD)
-	
+
 	assert_signal_emitted_with_parameters(
 				target,"card_targeted",
 				[target,"card_targeted",

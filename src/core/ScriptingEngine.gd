@@ -93,7 +93,7 @@ func run_next_script(card_owner: Card,
 				#print(script.is_valid,':',costs_dry_run)
 				var retcode = call(script.task_name, script)
 				if costs_dry_run:
-					if retcode != Card._ReturnCode.CHANGED:
+					if retcode != CFConst.ReturnCode.CHANGED:
 						can_all_costs_be_paid = false
 					else:
 						# We check for confirmation of optional cost tasks
@@ -220,7 +220,7 @@ func mod_tokens(script: ScriptTask) -> int:
 	var modification: int = script.get(SP.KEY_TOKEN_MODIFICATION)
 	var set_to_mod: bool = script.get(SP.KEY_TOKEN_SET_TO_MOD)
 	for card in script.subjects:
-		retcode = card.mod_token(token_name,modification,set_to_mod,costs_dry_run)
+		retcode = card.tokens.mod_token(token_name,modification,set_to_mod,costs_dry_run)
 	return(retcode)
 
 

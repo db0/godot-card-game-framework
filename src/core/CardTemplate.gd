@@ -30,17 +30,12 @@ enum{
 	VIEWPORT_FOCUS			#13
 }
 
-# The possible return codes a function can return
-#
-# * OK is returned when the function did not end up doing any changes
-# * CHANGE is returned when the function modified the card properties in some way
-# * FAILED is returned when the function failed to modify the card for some reason
-enum _ReturnCode {
-	OK,
-	CHANGED,
-	FAILED,
-}
+# Used to spawn CardChoices. We have to add the consts together
+# before passing to the preload, or the parser complains.
+const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
+const _CARD_CHOICES_SCENE = preload(_CARD_CHOICES_SCENE_FILE)
 
+# Emitted whenever the card spawns a targeting arrow.
 signal initiated_targeting
 # Emitted whenever the card has selected a target.
 signal target_selected(card)
@@ -71,15 +66,12 @@ signal card_unattached(card,trigger,details)
 # warning-ignore:unused_signal
 signal card_targeted(card,trigger,details)
 
-
+# We cannot preload the scripting engine as a const for the same reason
+# We cannot refer to it via class name.
+#
+# If we do, it is parsed by the compiler who then considers it
+# a cyclic reference as the scripting engine refers back to the Card class.
 var scripting_engine = load(CFConst.PATH_CORE + "ScriptingEngine.gd")
-
-# Used to add new token instances to cards. We have to add the consts
-# together before passing to the preload, or the parser complains
-const _TOKEN_SCENE_FILE = CFConst.PATH_CORE + "Token.tscn"
-const _TOKEN_SCENE = preload(_TOKEN_SCENE_FILE)
-const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
-const _CARD_CHOICES_SCENE = preload(_CARD_CHOICES_SCENE_FILE)
 
 export var properties :=  {}
 # We export this variable to the editor to allow us to add scripts to each card
@@ -123,9 +115,6 @@ var attachments := []
 # If this card is set as an attachment to another card,
 # this tracks who its host is.
 var current_host_card : Card = null
-# A dictionary holding all the tokens placed on this card.
-var tokens := {} setget ,get_all_tokens
-
 # To track that this card attempting to target another card.
 var _is_targetting := false
 # Used when completing targeting to know whether to put the target
@@ -147,8 +136,7 @@ var _potential_containers := []
 # The multipliers have to be small, as even small changes increase
 # brightness a lot
 var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
-# A flag on whether the token drawer is currently open
-var _is_drawer_open := false
+
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
@@ -157,9 +145,13 @@ onready var _flip_tween = $Control/FlipTween
 onready var _pulse_tween = $Control/Back/Pulse
 onready var _tokens_tween = $Control/Tokens/Tween
 
+onready var _control = $Control
 onready var _card_text = $Control/Front/CardText
 onready var _buttons = $Control/ManipulationButtons
 onready var _highlight = $Control/FocusHighlight
+# The node which hosts all tokens belonging to this card
+# As well as the methods retrieve them and to to hide/show their drawer.
+onready var tokens = $Control/Tokens
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -189,13 +181,7 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	$TargetLine/ArrowHead/Area2D.connect("area_exited", self, "_on_ArrowHead_area_exited")
 	# warning-ignore:return_value_discarded
-	#$Control.connect("mouse_entered", self, "_on_Card_mouse_entered")
-	# warning-ignore:return_value_discarded
-	#$Control.connect("mouse_exited", self, "_on_Card_mouse_exited")
-	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
-	# warning-ignore:return_value_discarded
-	$Control/Tokens/Drawer/VBoxContainer.connect("sort_children", self, "_on_VBoxContainer_sort_children")
 	# We want to allow anyone to remove the Pulse node if wanted
 	# So we check if it exists before we connect
 	if $Control/Back.has_node('Pulse'):
@@ -392,18 +378,6 @@ func _on_Card_mouse_exited() -> void:
 		FOCUSED_IN_POPUP:
 			state = IN_POPUP
 
-
-# Resizes Token Drawer to min size whenever a token is removed completely.
-#
-# Without this, the token drawer would stay at the highest size it reached.
-func _on_VBoxContainer_sort_children() -> void:
-	$Control/Tokens/Drawer/VBoxContainer.rect_size = \
-			$Control/Tokens/Drawer/VBoxContainer.rect_min_size
-	# We need to resize it's parent too
-	$Control/Tokens/Drawer.rect_size = \
-			$Control/Tokens/Drawer.rect_min_size
-
-
 # Hover button which rotates the card 90 degrees
 func _on_Rot90_pressed() -> void:
 # warning-ignore:return_value_discarded
@@ -426,7 +400,7 @@ func _on_Flip_pressed() -> void:
 func _on_AddToken_pressed() -> void:
 	var valid_tokens := ['tech','gold coin','blood','plasma']
 	# warning-ignore:return_value_discarded
-	mod_token(valid_tokens[CFUtils.randi() % len(valid_tokens)], 1)
+	tokens.mod_token(valid_tokens[CFUtils.randi() % len(valid_tokens)], 1)
 
 
 # Hover button which allows the player to view a facedown card
@@ -580,26 +554,27 @@ func get_targetcard() -> Card:
 #
 # Flips the card face-up/face-down
 #
-# * Returns _ReturnCode.CHANGED if the card actually changed rotation
-# * Returns _ReturnCode.OK if the card was already in the correct rotation
+# * Returns CFConst.ReturnCode.CHANGED if the card actually changed rotation
+# * Returns CFConst.ReturnCode.OK if the card was already in the correct rotation
 func set_is_faceup(value: bool, instant := false, check := false) -> int:
 	var retcode: int
 	if value == is_faceup:
-		retcode = _ReturnCode.OK
-	elif not check:
-		if _is_drawer_open:
-			_token_drawer(false)
+		retcode = CFConst.ReturnCode.OK
+	# We check if the parent is a valid instance
+	# If it is not, this is a viewport dupe card that has not finished
+	# it's ready() process
+	elif not check and is_instance_valid(get_parent()):
+		tokens.is_drawer_open = false
 		# We make sure to remove other tweens of the same type to avoid a deadlock
 		is_faceup = value
 		# When we change faceup state, we reset the is_viewed to false
-		if set_is_viewed(false) == _ReturnCode.FAILED:
+		if set_is_viewed(false) == CFConst.ReturnCode.FAILED:
 			print("ERROR: Something went unexpectedly in set_is_faceup")
 		if value:
 			_flip_card($Control/Back, $Control/Front,instant)
 			# We need this check, as this node might not be ready
 			# Yet when a viewport focus dupe is instancing
-			if _buttons:
-				_buttons.set_button_visible("View", false)
+			_buttons.set_button_visible("View", false)
 			_stop_pulse()
 			# When we flip face up, we also want to show the dupe card
 			# in the focus viewport
@@ -617,8 +592,7 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 					_flip_card(dupe_back, dupe_front, true)
 		else:
 			_flip_card($Control/Front, $Control/Back,instant)
-			if _buttons:
-				_buttons.set_button_visible("View", true)
+			_buttons.set_button_visible("View", true)
 #			if get_parent() == cfc.NMAP.board:
 			_start_pulse()
 			# When we flip face down, we also want to hide the dupe card
@@ -633,11 +607,11 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 					var dupe_front = dupe_card.get_node("Control/Front")
 					var dupe_back = dupe_card.get_node("Control/Back")
 					_flip_card(dupe_front, dupe_back, true)
-		retcode = _ReturnCode.CHANGED
+		retcode = CFConst.ReturnCode.CHANGED
 		emit_signal("card_flipped", self, "card_flipped", {"is_faceup": value})
 	# If we're doing a check, then we just report CHANGED.
 	else:
-		retcode = _ReturnCode.CHANGED
+		retcode = CFConst.ReturnCode.CHANGED
 	return retcode
 
 
@@ -650,17 +624,17 @@ func get_is_faceup() -> bool:
 #
 # Flips the card face-up/face-down
 #
-# * Returns _ReturnCode.CHANGED if the card actually changed view status
-# * Returns _ReturnCode.OK if the card was already in the correct view status
-# * Returns _ReturnCode.FAILED if changing the status is now allowed
+# * Returns CFConst.ReturnCode.CHANGED if the card actually changed view status
+# * Returns CFConst.ReturnCode.OK if the card was already in the correct view status
+# * Returns CFConst.ReturnCode.FAILED if changing the status is now allowed
 func set_is_viewed(value: bool) -> int:
 	var retcode: int
 	if value == true:
 		if is_faceup == true:
 			# Players can already see faceup cards
-			retcode = _ReturnCode.FAILED
+			retcode = CFConst.ReturnCode.FAILED
 		elif value == is_viewed:
-			retcode = _ReturnCode.OK
+			retcode = CFConst.ReturnCode.OK
 		else:
 			is_viewed = true
 			if get_parent() != null and get_tree().get_root().has_node('Main'):
@@ -668,20 +642,20 @@ func set_is_viewed(value: bool) -> int:
 				var dupe_back = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Back")
 				_flip_card(dupe_back, dupe_front, true)
 			$Control/Back/VBoxContainer/CenterContainer/Viewed.visible = true
-			retcode = _ReturnCode.CHANGED
+			retcode = CFConst.ReturnCode.CHANGED
 			# We only emit a signal when we view the card
 			# not when we unview it as that happens naturally
 			emit_signal("card_viewed", self, "card_viewed",  {"is_viewed": true})
 	else:
 		if value == is_viewed:
-			retcode = _ReturnCode.OK
+			retcode = CFConst.ReturnCode.OK
 		elif is_faceup == true:
-			retcode = _ReturnCode.CHANGED
+			retcode = CFConst.ReturnCode.CHANGED
 			is_viewed = false
 			$Control/Back/VBoxContainer/CenterContainer/Viewed.visible = false
 		else:
 			# We don't allow players to unview cards
-			retcode = _ReturnCode.FAILED
+			retcode = CFConst.ReturnCode.FAILED
 	return retcode
 
 
@@ -720,22 +694,22 @@ func set_name(value : String) -> void:
 # and they have enabled the toggle flag,
 # then we just reset the card to 0 degrees.
 #
-# * Returns _ReturnCode.CHANGED if the card actually changed rotation.
-# * Returns _ReturnCode.OK if the card was already in the correct rotation.
-# * Returns _ReturnCode.FAILED if an invalid rotation was specified.
+# * Returns CFConst.ReturnCode.CHANGED if the card actually changed rotation.
+# * Returns CFConst.ReturnCode.OK if the card was already in the correct rotation.
+# * Returns CFConst.ReturnCode.FAILED if an invalid rotation was specified.
 func set_card_rotation(value: int, toggle := false, start_tween := true, check := false) -> int:
 	var retcode
 	# For cards we only allow orthogonal degrees of rotation
 	# If it's not, we consider the request failed
 	if not value in [0,90,180,270]:
-		retcode = _ReturnCode.FAILED
+		retcode = CFConst.ReturnCode.FAILED
 	# We only allow rotating card while they're on the board
 	elif value != 0 and get_parent() != cfc.NMAP.board:
-		retcode = _ReturnCode.FAILED
+		retcode = CFConst.ReturnCode.FAILED
 	# If the card is already in the specified rotation
 	# and a toggle was not requested, we consider we did nothing
 	elif value == card_rotation and not toggle:
-		retcode = _ReturnCode.OK
+		retcode = CFConst.ReturnCode.OK
 		# We add this check because hand oval rotation
 		# does not change the card_rotation property
 		# so we ensure that the displayed rotation of a card
@@ -778,7 +752,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 			# We report that it changed.
 			emit_signal("card_rotated", self, "card_rotated",  {"degrees": value})
 
-		retcode = _ReturnCode.CHANGED
+		retcode = CFConst.ReturnCode.CHANGED
 	return retcode
 
 
@@ -806,8 +780,7 @@ func move_to(targetHost: Node2D,
 	# We need to store the parent, because we won't be able to know it later
 	var parentHost = get_parent()
 	# We want to keep the token drawer closed during movement
-	if _is_drawer_open:
-		_token_drawer(false)
+	tokens.is_drawer_open = false
 	if targetHost != parentHost:
 		# When changing parent, it resets the position of the child it seems
 		# So we store it to know where the card used to be, before moving it
@@ -845,7 +818,7 @@ func move_to(targetHost: Node2D,
 				if c != self:
 					c.interruptTweening()
 					c.reorganizeSelf()
-			if set_is_faceup(true) == _ReturnCode.FAILED:
+			if set_is_faceup(true) == CFConst.ReturnCode.FAILED:
 				print("ERROR: Something went unexpectedly in set_is_faceup")
 		elif targetHost in cfc.piles:
 			# The below checks if the container we're moving is in popup
@@ -873,7 +846,7 @@ func move_to(targetHost: Node2D,
 						self,
 						"card_moved_to_pile",
 						{"destination": targetHost, "source": parentHost})
-				if set_is_faceup(targetHost.faceup_cards) == _ReturnCode.FAILED:
+				if set_is_faceup(targetHost.faceup_cards) == CFConst.ReturnCode.FAILED:
 					print("ERROR: Something went unexpectedly in set_is_faceup")
 				# If we have fancy movement, we need to wait for 2 tweens to finish
 				# before we reorganize the stack.
@@ -920,7 +893,7 @@ func move_to(targetHost: Node2D,
 			# we remove all tokens
 			# (The cfc._ut_tokens_only_on_board is there for unit testing)
 			if CFConst.TOKENS_ONLY_ON_BOARD or cfc._ut_tokens_only_on_board:
-				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
+				for token in tokens.get_all_tokens().values():
 					token.queue_free()
 
 
@@ -1162,8 +1135,9 @@ func set_focus(requestedFocus: bool) -> void:
 			cfc.NMAP.main.unfocus(self)
 	# Tokens drawer is an optional node, so we check if it exists
 	# We also generally only have tokens on the table
-	if $Control.has_node("Tokens"):
-		_token_drawer(requestedFocus)
+	if $Control.has_node("Tokens") \
+			and state in [ON_PLAY_BOARD, FOCUSED_ON_BOARD]:
+		tokens.is_drawer_open = requestedFocus
 #		if name == "Card" and get_parent() == cfc.NMAP.board:
 #			print(requestedFocus)
 
@@ -1178,86 +1152,6 @@ func get_focus() -> bool:
 			focusState = true
 	return(focusState)
 
-
-# Adds a token to the card
-#
-# If the token of that name doesn't exist, it creates it according to the config.
-#
-# If the amount of existing tokens of that type drops to 0 or lower,
-# the token node is also removed.
-func mod_token(token_name : String, mod := 1, set_to_mod := false, check := false) -> int:
-	var retcode : int
-	# If the player requested a token name that has not been defined by the game
-	# we return a failure
-	if not CFConst.TOKENS_MAP.get(token_name, null):
-		retcode = _ReturnCode.FAILED
-	else:
-		var token : Token = get_all_tokens().get(token_name, null)
-		# If the token does not exist in the card, we add its node
-		# and set it to 1
-		if not token and mod > 0:
-			token = _TOKEN_SCENE.instance()
-			token.setup(token_name)
-			$Control/Tokens/Drawer/VBoxContainer.add_child(token)
-		# If the token node of this name has already been added to the card
-		# We just increment it by 1
-		if not token and mod == 0:
-			retcode = _ReturnCode.OK
-		# For cost dry-runs, we don't want to modify the tokens at all.
-		# Just check if we could.
-		elif check:
-			# For a  cost dry run, we can only return FAILED
-			# when removing tokens as it's always possible to add new ones
-			if mod < 0:
-				# If the current tokens are equal or higher, then we can
-				# remove the requested amount and therefore return CHANGED.
-				if token.count + mod >= 0:
-					retcode = _ReturnCode.CHANGED
-				# If we cannot remove the full amount requested
-				# we return FAILED
-				else:
-					retcode = _ReturnCode.FAILED
-			else:
-				retcode = _ReturnCode.CHANGED
-		else:
-			var prev_value = token.count
-			# The set_to_mod value means that we want to set the tokens to the
-			# exact value specified
-			if set_to_mod:
-				token.count = mod
-			else:
-				token.count += mod
-			# We store the count in a new variable, to be able to use it
-			# in the signal even after the token is deinstanced.
-			var new_value = token.count
-			if token.count == 0:
-				token.queue_free()
-		# if the drawer has already been opened, we need to make sure
-		# the new token name will also appear
-			elif _is_drawer_open:
-				token.expand()
-			retcode = _ReturnCode.CHANGED
-			emit_signal("card_token_modified", self, "card_token_modified",
-					{"token_name": token.get_token_name(),
-					"previous_token_value": prev_value,
-					"new_token_value": new_value})
-	return(retcode)
-
-
-# Returns a dictionary of card tokens on this card.
-#
-# * Key is the name of the token.
-# * Value is the token scene.
-func get_all_tokens() -> Dictionary:
-	var found_tokens := {}
-	for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
-		found_tokens[token.name] = token
-	return found_tokens
-
-
-# Returns the token node of the provided name or null if not found.
-func get_token(token_name: String) -> Token:
-	return(get_all_tokens().get(token_name,null))
 
 
 # Changes card highlight colour.
@@ -2019,8 +1913,7 @@ func _process_card_state() -> void:
 			global_position = _determine_board_position_from_mouse() - Vector2(5,5)
 			_organize_attachments()
 			# We want to keep the token drawer closed during movement
-			if _is_drawer_open:
-				_token_drawer(false)
+			tokens.is_drawer_open = false
 
 		ON_PLAY_BOARD:
 			# Used when the card is idle on the board
@@ -2120,66 +2013,6 @@ func _process_card_state() -> void:
 					# As its enlarged state makes it glow too much
 					var current_colour = $Control/Back.modulate
 					$Control/Back.modulate = current_colour * 0.95
-
-# Reveals or Hides the token drawer
-#
-# The drawer will not appear while another animation is ongoing
-# and it will appear only while the card is on the board.
-func _token_drawer(drawer_state := true) -> void:
-	# I use these vars to avoid writing it all the time and to improve readability
-	var tween : Tween = _tokens_tween
-	var td := $Control/Tokens/Drawer
-	# We want to keep the drawer closed during the flip and movement
-	if not tween.is_active() and \
-			not _flip_tween.is_active() and \
-			not $Tween.is_active():
-		# We don't open the drawer if we don't have any tokens at all
-		if drawer_state == true and \
-				$Control/Tokens/Drawer/VBoxContainer.get_child_count() and \
-				(state == ON_PLAY_BOARD or state == FOCUSED_ON_BOARD):
-			if not _is_drawer_open:
-				_is_drawer_open = true
-				# To avoid tween deadlocks
-				# warning-ignore:return_value_discarded
-				tween.remove_all()
-				# warning-ignore:return_value_discarded
-				tween.interpolate_property(
-						td,'rect_position', td.rect_position,
-						Vector2($Control.rect_size.x,td.rect_position.y),
-						0.3, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
-				# We make all tokens display names
-				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
-					token.expand()
-				# Normally the drawer is invisible. We make it visible now
-				$Control/Tokens/Drawer.self_modulate[3] = 1
-#				 warning-ignore:return_value_discarded
-				# warning-ignore:return_value_discarded
-				tween.start()
-				# We need to make our tokens appear on top of other cards on the table
-				$Control/Tokens.z_index = 99
-		else:
-			if _is_drawer_open:
-				# warning-ignore:return_value_discarded
-				tween.remove_all()
-				# warning-ignore:return_value_discarded
-				tween.interpolate_property(
-						td,'rect_position', td.rect_position,
-						Vector2($Control.rect_size.x - 35,
-						td.rect_position.y),
-						0.2, Tween.TRANS_ELASTIC, Tween.EASE_IN)
-				# warning-ignore:return_value_discarded
-				tween.start()
-				# We want to consider the drawer closed
-				# only when the animation finished
-				# Otherwise it might start to open immediately again
-				yield(tween, "tween_all_completed")
-				# When it's closed, we hide token names
-				for token in $Control/Tokens/Drawer/VBoxContainer.get_children():
-					token.retract()
-				$Control/Tokens/Drawer.self_modulate[3] = 0
-				_is_drawer_open = false
-				$Control/Tokens.z_index = 0
-
 
 # Get the angle on the ellipse
 func _get_angle_by_index(index_diff = null):

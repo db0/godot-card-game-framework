@@ -4,7 +4,7 @@
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
 [ext_resource path="res://assets/icons/view.svg" type="Texture" id=3]
 [ext_resource path="res://src/custom/CardBack.tscn" type="PackedScene" id=4]
-[ext_resource path="res://src/core/TokenDrawer.gd" type="Script" id=5]
+[ext_resource path="res://src/core/Card/TokenDrawer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/core/Card/ManipulationButtons.gd" type="Script" id=7]
 

@@ -94,15 +94,15 @@ func test_board_facedown():
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_true(view_button.visible,
 			"View button should be visible while card is face down")
-	assert_eq(card._ReturnCode.OK,card.set_is_viewed(false),
+	assert_eq(CFConst.ReturnCode.OK,card.set_is_viewed(false),
 			"View function returns OK requesting false when card is_viewed == false while facedown")
-	assert_eq(card._ReturnCode.CHANGED,card.set_is_viewed(true),
+	assert_eq(CFConst.ReturnCode.CHANGED,card.set_is_viewed(true),
 			"View function returns Changed when requesting true first time with card facedown")
 	assert_true(dupe_front.visible,
 			"Dupe is visible after pressing view button while still hovering the card")
-	assert_eq(card._ReturnCode.OK,card.set_is_viewed(true),
+	assert_eq(CFConst.ReturnCode.OK,card.set_is_viewed(true),
 			"View function returns OK when requesting true a second time with card facedown")
-	assert_eq(card._ReturnCode.FAILED,card.set_is_viewed(false),
+	assert_eq(CFConst.ReturnCode.FAILED,card.set_is_viewed(false),
 			"View function returns FAILED requesting false when card is_viewed == true while facedown")
 	assert_true(viewed_icon.visible,
 			"View icon is visible while card is is_viewed()")
@@ -119,11 +119,11 @@ func test_board_facedown():
 
 	card.is_faceup = true
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
-	assert_eq(card._ReturnCode.FAILED,card.set_is_viewed(true),
+	assert_eq(CFConst.ReturnCode.FAILED,card.set_is_viewed(true),
 			"View function returns FAILED when requesting true while card is faceup")
 	gut.p(card.is_viewed)
 	gut.p(card.is_faceup)
-	assert_eq(card._ReturnCode.OK,card.set_is_viewed(false),
+	assert_eq(CFConst.ReturnCode.OK,card.set_is_viewed(false),
 			"View function returns OK when requesting false and is_viewed == false")
 
 func test_off_board_facedown():

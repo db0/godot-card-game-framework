@@ -154,7 +154,7 @@ func test_mod_tokens():
 			"modification": 5,
 			"token_name":  "industry"}]}}
 	target.execute_scripts()
-	var industry_token: Token = target.get_token("industry")
+	var industry_token: Token = target.tokens.get_token("industry")
 	assert_eq(5,industry_token.count,"Token increased by specified amount")
 	card.scripts = {"manual": {"hand": [
 			{"name": "mod_tokens",

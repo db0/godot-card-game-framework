@@ -119,6 +119,6 @@ func _discover_focus() -> void:
 	# in the process of dragging one.
 	elif current_focused_card and current_focused_card.state != Card.DRAGGED:
 		if not current_focused_card._is_drawer_hovered() \
-				or not current_focused_card._is_drawer_open:
+				or not current_focused_card.tokens.is_drawer_open:
 			current_focused_card._on_Card_mouse_exited()
 			current_focused_card = null
