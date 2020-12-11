@@ -236,7 +236,7 @@ func spawn_card(script: ScriptTask) -> void:
 	var card: Card = load(card_scene).instance()
 	cfc.NMAP.board.add_child(card)
 	card.position = board_position
-	card.state = card.ON_PLAY_BOARD
+	card.state = Card.CardState.ON_PLAY_BOARD
 
 
 # Task from shuffling a CardContainer

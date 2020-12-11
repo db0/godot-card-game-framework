@@ -20,7 +20,7 @@ func test_single_card_focus():
 			"Duplicate card is rotated correctly")
 	assert_false(focus_dupe.is_in_group("cards"),
 			"Duplicate card does not belong to the 'cards' group")
-	assert_false(focus_dupe.get_node("Control/FocusHighlight").visible,
+	assert_false(focus_dupe.highlight.visible,
 			"Duplicate card does not have visible highlight")
 	yield(move_mouse(Vector2(0,0)), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)

@@ -24,9 +24,9 @@ func test_targetting():
 			"test that TargetLine has length higher than 1 while active")
 	assert_true(card.get_node("TargetLine/ArrowHead").visible,
 			"test that arrowhead is visible on once active")
-	assert_true(cards[4].get_node('Control/FocusHighlight').visible,
+	assert_true(cards[4].highlight.visible,
 			"Test that a card hovering over another with attachment flag on, highlights it")
-	assert_eq(cards[4].get_node('Control/FocusHighlight').modulate, CFConst.TARGET_HOVER_COLOUR,
+	assert_eq(cards[4].highlight.modulate, CFConst.TARGET_HOVER_COLOUR,
 			"Test that a hovered target has the right colour highlight")
 	card.targeting_arrow.complete_targeting()
 	assert_eq(card.targeting_arrow.target_card,cards[4],
@@ -35,7 +35,7 @@ func test_targetting():
 			"test that TargetLine has no points once inactive")
 	assert_false(card.get_node("TargetLine/ArrowHead").visible,
 			"test that arrowhead is not visible on once inactive")
-	assert_false(cards[4].get_node('Control/FocusHighlight').visible,
+	assert_false(cards[4].highlight.visible,
 			"Test that a highlights disappears once targetting ends")
 
 	yield(table_move(cards[3],Vector2(300,300)), 'completed')
@@ -43,9 +43,9 @@ func test_targetting():
 	card.targeting_arrow.initiate_targeting()
 	board._UT_interpolate_mouse_move(cards[2].global_position,card.global_position,3)
 	yield(yield_for(0.6), YIELD)
-	assert_true(cards[2].get_node('Control/FocusHighlight').visible,
+	assert_true(cards[2].highlight.visible,
 			"test that hovering over multiple cards selects the top one")
-	assert_false(cards[3].get_node('Control/FocusHighlight').visible,
+	assert_false(cards[3].highlight.visible,
 			"test that hovering over multiple cards does not highlight bottom ones")
 	card.targeting_arrow.complete_targeting()
 	assert_eq(card.targeting_arrow.target_card,cards[2],

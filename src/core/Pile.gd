@@ -79,7 +79,7 @@ func _on_ViewPopup_popup_hide() -> void:
 			# whatever is the default for the pile
 			if card.is_faceup != faceup_cards:
 				card.set_is_faceup(faceup_cards,true)
-			card.state = card.IN_PILE
+			card.state = card.CardState.IN_PILE
 	reorganize_stack()
 	# We prevent the button from being pressed twice while the popup is open
 	# as it will bug-out
@@ -197,7 +197,7 @@ func _slot_card_into_popup(card: Card) -> void:
 	# warning-ignore:return_value_discarded
 	card.set_is_faceup(true,true)
 	card.position = Vector2(0,0)
-	card.state = card.IN_POPUP
+	card.state = card.CardState.IN_POPUP
 
 # Randomly rearranges the order of the [Card] nodes.
 # Pile shuffling includes a fancy animation

@@ -19,9 +19,9 @@ func test_attaching_and_switching_parent():
 	yield(drag_drop(card,Vector2(300,300)), 'completed')
 	card = cards[1]
 	yield(drag_card(card, Vector2(310,310)), "completed")
-	assert_true(cards[0].get_node('Control/FocusHighlight').visible,
+	assert_true(cards[0].highlight.visible,
 			"Card hovering over another with attachment flag on, highlights it")
-	assert_eq(cards[0].get_node('Control/FocusHighlight').modulate,
+	assert_eq(cards[0].highlight.modulate,
 			CFConst.HOST_HOVER_COLOUR,
 			"Hovered host has the right colour highlight")
 	drop_card(card,board._UT_mouse_position)
@@ -37,7 +37,7 @@ func test_attaching_and_switching_parent():
 			"Card with hosted card has its children attachments array")
 	assert_eq(1,len(cards[0].attachments),
 			"Parent attachments array is the right size")
-	assert_eq(cards[0].get_node('Control/FocusHighlight').modulate, Color(1,1,1),
+	assert_eq(cards[0].highlight.modulate, Color(1,1,1),
 			"Attaching card turns attach highlights off")
 
 	card = cards[2]
@@ -80,7 +80,7 @@ func test_attaching_and_switching_parent():
 			"After attachment dragged, drop is placed correctly according to parent")
 	yield(drag_card(card, Vector2(100,100)), "completed")
 	for c in card.attachments:
-		assert_false(c.get_node('Control/FocusHighlight').visible,
+		assert_false(c.highlight.visible,
 		"No card has potential_host highlighted when their parent is moving onto them")
 	drop_card(card,board._UT_mouse_position)
 	card._on_Card_mouse_exited()
@@ -172,13 +172,13 @@ func test_multi_host_hover():
 	yield(drag_card(card, Vector2(150,100)), "completed")
 	board._UT_interpolate_mouse_move(Vector2(150,100),card.global_position,10)
 	yield(yield_for(0.3), YIELD)
-	assert_true(cards[2].get_node('Control/FocusHighlight').visible,
+	assert_true(cards[2].highlight.visible,
 			"Card hovering over two or more with attachment flag on, highlights only the top one")
 	board._UT_interpolate_mouse_move(Vector2(300,100),card.global_position,10)
 	yield(yield_for(0.3), YIELD)
-	assert_false(cards[2].get_node('Control/FocusHighlight').visible,
+	assert_false(cards[2].highlight.visible,
 			"Card leaving the hovering of a card, turns attach highlights off")
-	assert_true(cards[1].get_node('Control/FocusHighlight').visible,
+	assert_true(cards[1].highlight.visible,
 			"Potential host highlight changes as it changes hover areas")
 	drop_card(card,board._UT_mouse_position)
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)

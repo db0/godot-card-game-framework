@@ -54,7 +54,7 @@ func test_state_executions():
 	assert_false(card.is_faceup,
 		"Target should be face-down")
 	card.is_faceup = true
-	card.state = Card.PUSHED_ASIDE
+	card.state = Card.CardState.PUSHED_ASIDE
 	card.execute_scripts()
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
@@ -63,7 +63,7 @@ func test_state_executions():
 	card.is_faceup = true
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
-	card.state = Card.FOCUSED_IN_HAND
+	card.state = Card.CardState.FOCUSED_IN_HAND
 	card.execute_scripts()
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
@@ -85,7 +85,7 @@ func test_state_executions():
 	card.is_faceup = true
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
-	card.state = Card.FOCUSED_ON_BOARD
+	card.state = Card.CardState.FOCUSED_ON_BOARD
 	card.execute_scripts()
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
@@ -105,7 +105,7 @@ func test_state_executions():
 			"Card should have moved to specified position")
 	card.move_to(cfc.NMAP.discard)
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
-	card.state = Card.FOCUSED_IN_POPUP
+	card.state = Card.CardState.FOCUSED_IN_POPUP
 	card.execute_scripts()
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(Vector2(100,100),card.global_position,

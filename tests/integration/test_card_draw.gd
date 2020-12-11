@@ -169,7 +169,7 @@ func test_card_does_not_become_focused_during_movement():
 	var card = hand.draw_card()
 	yield(yield_for(0.2), YIELD)
 	card._on_Card_mouse_entered()
-	assert_eq(Card.MOVING_TO_CONTAINER, card.state, "Card state is still MovingToContainer")
+	assert_eq(Card.CardState.MOVING_TO_CONTAINER, card.state, "Card state is still MovingToContainer")
 
 
 func test_card_not_draggable_without_focus_first():
@@ -178,5 +178,5 @@ func test_card_not_draggable_without_focus_first():
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	click_card(card, false)
 	yield(yield_for(0.2), YIELD)
-	assert_eq(Card.IN_HAND, card.state,
+	assert_eq(Card.CardState.IN_HAND, card.state,
 			"Card state is still InHand because it wasn't focused first")

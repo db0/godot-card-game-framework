@@ -18,14 +18,14 @@ func test_methods():
 
 func test_focus_setget():
 	card.set_focus(true)
-	card.state = 1
-	assert_true(card.get_node('Control/FocusHighlight').visible,
+	card.state = Card.CardState.FOCUSED_IN_HAND
+	assert_true(card.highlight.visible,
 			'Highlight is set correctly to visible')
 	assert_true(card.get_focus(),
 			'get_focus returns true correct value correctly')
 	card.set_focus(false)
-	card.state = 0
-	assert_false(card.get_node('Control/FocusHighlight').visible,
+	card.state = Card.CardState.IN_HAND
+	assert_false(card.highlight.visible,
 			'Highlight is set correctly to invisible')
 	assert_false(card.get_focus(),
 			'get_focus returns false correct value correctly')

@@ -128,4 +128,4 @@ func test_card_hand_mouseslide():
 	yield(yield_for(YIELD_TIME), YIELD)
 	#cards[4]._on_Card_mouse_entered()
 	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
-	assert_eq(cards[4].state,1, "Card is in Focused")
+	assert_eq(cards[4].state,Card.CardState.FOCUSED_IN_HAND, "Card is Focused")

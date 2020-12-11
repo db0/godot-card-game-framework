@@ -180,7 +180,7 @@ func test_spawn_card():
 	card = cfc.NMAP.board.get_card(0)
 	assert_eq("res://src/core/CardTemplate.tscn",card.filename,
 		"Card of the correct scene spawned")
-	assert_eq(card.ON_PLAY_BOARD,card.state,
+	assert_eq(Card.CardState.ON_PLAY_BOARD,card.state,
 		"Spawned card left in correct state")
 
 

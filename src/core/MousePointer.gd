@@ -34,11 +34,11 @@ func _process(_delta: float) -> void:
 		# focused state. This check ensures that if the mouse hovers over
 		# the card still after the drag, we focus it again
 		if current_focused_card.get_parent() == cfc.NMAP.board \
-				and current_focused_card.state == Card.ON_PLAY_BOARD:
-			current_focused_card.state = Card.FOCUSED_ON_BOARD
+				and current_focused_card.state == Card.CardState.ON_PLAY_BOARD:
+			current_focused_card.state = Card.CardState.FOCUSED_ON_BOARD
 		if current_focused_card.get_parent() == cfc.NMAP.hand \
-				and current_focused_card.state == Card.IN_HAND:
-			current_focused_card.state = Card.FOCUSED_IN_HAND
+				and current_focused_card.state == Card.CardState.IN_HAND:
+			current_focused_card.state = Card.CardState.FOCUSED_IN_HAND
 		if cfc.card_drag_ongoing and cfc.card_drag_ongoing != current_focused_card:
 			current_focused_card = cfc.card_drag_ongoing
 	if cfc._debug:
@@ -100,7 +100,7 @@ func _discover_focus() -> void:
 			# a card around, or we're hovering over a previously
 			# focused card's token drawer.
 			if not (current_focused_card
-					and current_focused_card.state == Card.DRAGGED) \
+					and current_focused_card.state == Card.CardState.DRAGGED) \
 				and not (current_focused_card
 					and current_focused_card.tokens.are_hovered()
 					and current_focused_card.tokens.is_drawer_open):
@@ -117,7 +117,7 @@ func _discover_focus() -> void:
 	# Because sometimes the mouse moves faster than a dragged card,
 	# We make sure we don't try to change the current_focused_card while
 	# in the process of dragging one.
-	elif current_focused_card and current_focused_card.state != Card.DRAGGED:
+	elif current_focused_card and current_focused_card.state != Card.CardState.DRAGGED:
 		if not current_focused_card.tokens.are_hovered() \
 				or not current_focused_card.tokens.is_drawer_open:
 			current_focused_card._on_Card_mouse_exited()

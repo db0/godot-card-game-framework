@@ -53,7 +53,7 @@ func focus_card(card: Card) -> void:
 		_dupes_dict[dupe_focus] = card
 		# We display a "pure" version of the card
 		# This means we hide buttons, tokens etc
-		dupe_focus.state = dupe_focus.VIEWPORT_FOCUS
+		dupe_focus.state = Card.CardState.VIEWPORT_FOCUS
 		# We store all our previously focused cards in an array, and clean them
 		# up when they're not focused anymore
 		_previously_focused_cards.append(dupe_focus)
