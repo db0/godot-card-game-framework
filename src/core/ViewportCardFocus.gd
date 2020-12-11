@@ -48,16 +48,20 @@ func focus_card(card: Card) -> void:
 		# This way we can standardize its scale and look and not worry about
 		# what happens on the table.
 		var dupe_focus = card.duplicate()
-		dupe_focus.state = dupe_focus.VIEWPORT_FOCUS
 		dupe_focus.remove_from_group("cards")
 		_current_focus_source = card
 		_dupes_dict[dupe_focus] = card
 		# We display a "pure" version of the card
 		# This means we hide buttons, tokens etc
+		dupe_focus.state = dupe_focus.VIEWPORT_FOCUS
 		# We store all our previously focused cards in an array, and clean them
 		# up when they're not focused anymore
 		_previously_focused_cards.append(dupe_focus)
 		$Focus/Viewport.add_child(dupe_focus)
+		# We have to copy these internal vars because they are reset
+		# see https://github.com/godotengine/godot/issues/3393
+		dupe_focus.is_faceup = card.is_faceup
+		dupe_focus.is_viewed = card.is_viewed
 		# We make the viewport camera focus on it
 		$Focus/Viewport/Camera2D.position = dupe_focus.global_position
 		# We always make sure to clean tweening conflicts

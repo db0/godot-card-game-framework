@@ -34,6 +34,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/CardTemplate.gd"
 }, {
+"base": "Panel",
+"class": "CardBack",
+"language": "GDScript",
+"path": "res://src/core/Card/CardBack.gd"
+}, {
+"base": "CardBack",
+"class": "CardBackGlow",
+"language": "GDScript",
+"path": "res://src/core/Card/CardBackGlow.gd"
+}, {
 "base": "Reference",
 "class": "CardConfig",
 "language": "GDScript",
@@ -84,7 +94,7 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/Token.gd"
 }, {
-"base": "Reference",
+"base": "Node2D",
 "class": "TokenDrawer",
 "language": "GDScript",
 "path": "res://src/core/Card/TokenDrawer.gd"
@@ -105,6 +115,8 @@ _global_script_class_icons={
 "CFControl": "",
 "CFUtils": "",
 "Card": "",
+"CardBack": "",
+"CardBackGlow": "",
 "CardConfig": "",
 "CardContainer": "",
 "CustomScripts": "",

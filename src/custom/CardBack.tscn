@@ -1,4 +1,6 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/core/Card/CardBack.gd" type="Script" id=1]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.164706, 0.203922, 0.223529, 1 )
@@ -12,6 +14,7 @@ margin_right = 150.0
 margin_bottom = 240.0
 mouse_filter = 1
 custom_styles/panel = SubResource( 1 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -87,7 +87,7 @@ export var scripts := {}
 # when dragged away
 export var is_attachment := false setget set_is_attachment, get_is_attachment
 # If true, the card will be displayed faceup. If false, it will be facedown
-export var is_faceup  := true setget set_is_faceup, get_is_faceup
+var is_faceup := true setget set_is_faceup, get_is_faceup
 # If true, the card front will be displayed when mouse hovers over the card
 # while it's face-down
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
@@ -132,23 +132,19 @@ var _fancy_move_second_part := false
 # when our card is about to drop onto or target them
 var _potential_cards := []
 var _potential_containers := []
-# Used for looping between brighness scales for the Cardback glow
-# The multipliers have to be small, as even small changes increase
-# brightness a lot
-var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
+
 
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
-onready var _pulse_tween = $Control/Back/Pulse
-onready var _tokens_tween = $Control/Tokens/Tween
 
 onready var _control = $Control
 onready var _card_text = $Control/Front/CardText
 onready var _buttons = $Control/ManipulationButtons
 onready var _highlight = $Control/FocusHighlight
+onready var _card_back = $Control/Back
 # The node which hosts all tokens belonging to this card
 # As well as the methods retrieve them and to to hide/show their drawer.
 onready var tokens = $Control/Tokens
@@ -182,11 +178,7 @@ func _ready() -> void:
 	$TargetLine/ArrowHead/Area2D.connect("area_exited", self, "_on_ArrowHead_area_exited")
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
-	# We want to allow anyone to remove the Pulse node if wanted
-	# So we check if it exists before we connect
-	if $Control/Back.has_node('Pulse'):
-		# warning-ignore:return_value_discarded
-		_pulse_tween.connect("tween_all_completed", self, "_on_Pulse_completed")
+
 	cfc.signal_propagator.connect_new_card(self)
 
 
@@ -490,16 +482,6 @@ func _on_ArrowHead_area_exited(card: Card) -> void:
 		highlight_potential_card(CFConst.TARGET_HOVER_COLOUR)
 
 
-# Reverses the card back pulse and starts it again
-func _on_Pulse_completed() -> void:
-	# We only pulse the card if it's face-down and on the board
-	if not is_faceup: #and get_parent() == cfc.NMAP.board:
-		_pulse_values.invert()
-		_start_pulse()
-	else:
-		_stop_pulse()
-
-
 # This function handles filling up the card's labels according to its
 # card definition dictionary entry.
 func setup(cname: String) -> void:
@@ -575,7 +557,7 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 			# We need this check, as this node might not be ready
 			# Yet when a viewport focus dupe is instancing
 			_buttons.set_button_visible("View", false)
-			_stop_pulse()
+			_card_back.stop_card_back_animation()
 			# When we flip face up, we also want to show the dupe card
 			# in the focus viewport
 			# However we also need to protect this call from the dupe itself
@@ -594,7 +576,7 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 			_flip_card($Control/Front, $Control/Back,instant)
 			_buttons.set_button_visible("View", true)
 #			if get_parent() == cfc.NMAP.board:
-			_start_pulse()
+			_card_back.start_card_back_animation()
 			# When we flip face down, we also want to hide the dupe card
 			# in the focus viewport
 			# However we also need to protect this call from the dupe itself
@@ -638,8 +620,10 @@ func set_is_viewed(value: bool) -> int:
 		else:
 			is_viewed = true
 			if get_parent() != null and get_tree().get_root().has_node('Main'):
-				var dupe_front = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Front")
-				var dupe_back = cfc.NMAP.main._previously_focused_cards.back().get_node("Control/Back")
+				var dupe_front = cfc.NMAP.main._previously_focused_cards.back()\
+						.get_node("Control/Front")
+				var dupe_back = cfc.NMAP.main._previously_focused_cards.back()\
+						.get_node("Control/Back")
 				_flip_card(dupe_back, dupe_front, true)
 			$Control/Back/VBoxContainer/CenterContainer/Viewed.visible = true
 			retcode = CFConst.ReturnCode.CHANGED
@@ -1619,30 +1603,6 @@ func _draw_targeting_arrow() -> void:
 				position + $Control.rect_size/2 + final_point)).angle()
 
 
-# Triggers the looping card back pulse
-# The pulse increases and decreases the brightness of the glow
-func _start_pulse():
-	# We want to allow anyone to remove the Pulse node if wanted
-	# So we check if it exists
-	if $Control/Back.has_node('Pulse'):
-		#** CAREFUL **#
-		# This fails integration test when I replace it with _pulse_tween
-		# I need to investigate why.
-		$Control/Back/Pulse.interpolate_property($Control/Back,'modulate',
-				_pulse_values[0], _pulse_values[1], 2,
-				Tween.TRANS_LINEAR, Tween.EASE_IN_OUT)
-		$Control/Back/Pulse.start()
-
-
-# Disables the looping card back pulse
-func _stop_pulse():
-	# We want to allow anyone to remove the Pulse node if wanted
-	# So we check if it exists
-	if $Control/Back.has_node('Pulse'):
-		$Control/Back/Pulse.remove_all()
-		$Control/Back.modulate = Color(1,1,1)
-
-
 # Card rotation animation
 func _add_tween_rotation(
 		expected_rotation: float,
@@ -1970,6 +1930,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
+			set_is_faceup(get_parent().faceup_cards, true)
 
 		IN_POPUP:
 			# We make sure that a card in a popup stays in its position

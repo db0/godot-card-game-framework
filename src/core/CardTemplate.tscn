@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=23 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
@@ -7,6 +7,7 @@
 [ext_resource path="res://src/core/Card/TokenDrawer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/core/Card/ManipulationButtons.gd" type="Script" id=7]
+[ext_resource path="res://src/core/Card/CardBackGlow.gd" type="Script" id=8]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 75, 120 )
@@ -190,6 +191,7 @@ valign = 1
 [node name="Back" parent="Control" instance=ExtResource( 4 )]
 visible = false
 mouse_filter = 2
+script = ExtResource( 8 )
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/Back"]
 anchor_right = 1.0
