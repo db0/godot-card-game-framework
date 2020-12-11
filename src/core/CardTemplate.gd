@@ -202,7 +202,7 @@ func _process(delta) -> void:
 		_tween_stuck_time = 0
 	_process_card_state()
 	# Having to do all these checks due to godotengine/godot#16854
-	if cfc._debug and not get_parent() in cfc.piles:
+	if cfc._debug and not get_parent().is_in_group("piles"):
 		var stateslist = [
 			"IN_HAND",
 			"FOCUSED_IN_HAND",
@@ -337,7 +337,7 @@ func _on_Card_mouse_exited() -> void:
 		CardState.FOCUSED_IN_HAND:
 			#_focus_completed = false
 			# To avoid errors during fast player actions
-			if get_parent() in cfc.hands:
+			if get_parent().is_in_group("hands"):
 				for c in get_parent().get_all_cards():
 					# We need to make sure afterwards all card will return
 					# to their expected positions
@@ -733,7 +733,7 @@ func move_to(targetHost: Node2D,
 					targetHost.translate_card_index_to_node_index(index))
 		# Ensure card stays where it was before it changed parents
 		global_position = previous_pos
-		if targetHost in cfc.hands:
+		if targetHost.is_in_group("hands"):
 #			_tween_interpolate_visibility(1,0.3)
 			# We need to adjust the start position based on the global position
 			# coordinates as they would be inside the hand control node
@@ -756,7 +756,7 @@ func move_to(targetHost: Node2D,
 					c.reorganizeSelf()
 			if set_is_faceup(true) == CFConst.ReturnCode.FAILED:
 				print("ERROR: Something went unexpectedly in set_is_faceup")
-		elif targetHost in cfc.piles:
+		elif targetHost.is_in_group("piles"):
 			# The below checks if the container we're moving is in popup
 			# If the card is also in a popup, we assume we're moving back
 			# to the same container, so we do nothing
@@ -813,7 +813,7 @@ func move_to(targetHost: Node2D,
 					self,
 					"card_moved_to_board",
 					{"destination": targetHost, "source": parentHost})
-		if parentHost in cfc.hands:
+		if parentHost.is_in_group("hands"):
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
 				# But this time we don't want to rearrange ourselves, as we're
@@ -1284,7 +1284,7 @@ func _start_dragging() -> void:
 	# we don't miss any.
 	for obj in get_overlapping_areas():
 		_on_Card_area_entered(obj)
-	if get_parent() in cfc.hands:
+	if get_parent().is_in_group("hands"):
 		# While we're dragging the card from hand, we want the other cards
 		# to move to their expected position in hand
 		for c in get_parent().get_all_cards():
@@ -1299,11 +1299,11 @@ func _start_dragging() -> void:
 # This is needed because some states are generic
 # and don't always know the state the card should be afterwards
 func _determine_idle_state() -> void:
-	if get_parent() in cfc.hands:
+	if get_parent().is_in_group("hands"):
 		state = CardState.IN_HAND
 	# The extra if is in case the ViewPopup is currently active when the card
 	# is being moved into the container
-	elif get_parent() in cfc.piles:
+	elif get_parent().is_in_group("piles"):
 		state = CardState.IN_PILE
 	elif "CardPopUpSlot" in get_parent().name:
 		state = CardState.IN_POPUP

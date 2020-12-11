@@ -72,13 +72,6 @@ const PATH_SETS := PATH_CARDS + "sets/"
 # The path where assets needed by this game are placed
 # such as token images
 const PATH_ASSETS := "res://assets/"
-# The path to the optional confirm scene. This has to be defined explicitly
-# here, in order to use it in its preload, otherwise the parser gives an error
-const _PATH_OPTIONAL_CONFIRM = PATH_CORE + "OptionalConfirmation.tscn"
-# The optional confirm scene. Normally we would define this inside utils.gd
-# where it's being used. But the parser gives an error when trying to set
-# a const using cfc consts.
-const OPTIONAL_CONFIRM = preload(_PATH_OPTIONAL_CONFIRM)
 # The text which is prepended to files to signify the contain
 # Card definitions for a specific set
 const CARD_SET_NAME_PREPEND := "SetDefinition_"
@@ -180,5 +173,3 @@ const NODES_MAP := {
 	'deck': "Board/Deck",
 	'discard': "Board/DiscardPile"
 	}
-const pile_names = ['deck','discard']
-const hand_names = ['hand']

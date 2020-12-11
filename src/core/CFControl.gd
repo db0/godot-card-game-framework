@@ -50,10 +50,6 @@ var set_scripts := {}
 var signal_propagator = SignalPropagator.new()
 # A dictionary of all our container nodes for easy access
 var NMAP: Dictionary
-# All our pile nodes
-var piles: Array
-# All our hand nodes
-var hands: Array
 # The card actively being dragged
 var card_drag_ongoing: Card = null
 # Switch used for seeing debug info
@@ -66,8 +62,6 @@ func _ready() -> void:
 	# We reset our node mapping variables every time
 	# as they repopulate during unit testing many times.
 	NMAP = {}
-	piles = []
-	hands = []
 	card_drag_ongoing = null
 	# The below takes care that we adjust some settings when testing via Gut
 	if get_tree().get_root().has_node('Gut'):
@@ -95,10 +89,6 @@ func _ready() -> void:
 			NMAP.board.get_node("ScalingFocusOptions").disabled = true
 		# The below loops, populate two arrays which allows us to quickly
 		# figure out if a container is a pile or hand
-	for name in CFConst.pile_names:
-		piles.append(NMAP[name])
-	for name in CFConst.hand_names:
-		hands.append(NMAP[name])
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
