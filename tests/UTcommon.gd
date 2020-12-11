@@ -74,7 +74,11 @@ func unclick_card_anywhere(card: Card) -> void:
 func drag_card(card: Card, target_position: Vector2, interpolation_speed := "fast") -> void:
 	var mouse_speed = MOUSE_SPEED[interpolation_speed][0]
 	var mouse_yield_wait = MOUSE_SPEED[interpolation_speed][1]
-	board._UT_interpolate_mouse_move(card.global_position + Vector2(20,20),board._UT_mouse_position,mouse_speed)
+	var extra_offset = Vector2(20,20)
+	if card.card_rotation in [90,270]:
+		extra_offset = Vector2(10,60)
+	board._UT_interpolate_mouse_move(card.global_position + extra_offset,
+			board._UT_mouse_position,mouse_speed)
 	yield(yield_for(mouse_yield_wait), YIELD)
 	click_card(card)
 	if interpolation_speed == "debug":

@@ -49,7 +49,7 @@ func test_board_facedown():
 	assert_almost_eq(card_back.rect_position.x, card_front.rect_size.x/2, 0.1,
 			"Back rect_position.x == rect_size.x/2 when card is turned face up again")
 
-	card._on_Card_mouse_entered()
+	yield(move_mouse(card.global_position), 'completed')
 	yield(yield_for(0.1), YIELD) # Wait to allow dupe to be created
 	dupe = main._previously_focused_cards.back()
 	var dupe_front
@@ -106,10 +106,11 @@ func test_board_facedown():
 			"View function returns FAILED requesting false when card is_viewed == true while facedown")
 	assert_true(viewed_icon.visible,
 			"View icon is visible while card is is_viewed()")
-	card._on_Card_mouse_exited()
-	yield(yield_for(0.2), YIELD) # Wait to allow dupe to be destroyed
-	card._on_Card_mouse_entered()
-	yield(yield_for(0.2), YIELD) # Wait to allow dupe to be created
+
+	yield(move_mouse(card.global_position - Vector2(0,100)), 'completed')
+#	yield(yield_for(0.2), YIELD) # Wait to allow dupe to be destroyed
+	yield(move_mouse(card.global_position), 'completed')
+#	yield(yield_for(0.2), YIELD) # Wait to allow dupe to be created
 	dupe = main._previously_focused_cards.back()
 	dupe_front = dupe.get_node("Control/Front")
 	dupe_back = dupe.get_node("Control/Back")

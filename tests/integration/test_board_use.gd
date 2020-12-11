@@ -72,13 +72,12 @@ func test_card_table_drop_location_use_oval():
 	# messing with the tests
 	var card = cards[1]
 	yield(table_move(card, Vector2(100,200)), "completed")
-	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	card.card_rotation = 180
-	yield(drag_drop(card, Vector2(100,600)), 'completed')
+	yield(drag_drop(card, Vector2(400,600)), 'completed')
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_almost_eq(12.461,card.get_node("Control").rect_rotation,2.0,
-			"Rotation reset to a hand angle when card moved off board")
+			"Rotation reset to a hand angle when card moved back to hand")
 	cfc.hand_use_oval_shape = true
 
 

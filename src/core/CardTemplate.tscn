@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://src/custom/CardBack.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/core/TokenDrawer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/core/Card/ManipulationButtons.gd" type="Script" id=7]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 75, 120 )
@@ -282,6 +283,7 @@ margin_top = 16.0
 margin_right = 37.0
 margin_bottom = 102.0
 mouse_filter = 2
+script = ExtResource( 7 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
