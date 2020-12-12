@@ -58,6 +58,8 @@ signal card_token_modified(card,trigger,details)
 signal card_attached(card,trigger,details)
 # Emited whenever the card unattaches from another
 signal card_unattached(card,trigger,details)
+# Emited whenever the card properties are modified
+signal card_properties_modified(card,trigger,details)
 # Emited whenever the card is targeted by another card.
 # This signal is not fired by this card directly, but by the card
 # doing the targeting.
@@ -71,7 +73,7 @@ signal card_targeted(card,trigger,details)
 # a cyclic reference as the scripting engine refers back to the Card class.
 var scripting_engine = load(CFConst.PATH_CORE + "ScriptingEngine.gd")
 
-export var properties :=  {}
+export var properties : Dictionary
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
 #
@@ -79,7 +81,7 @@ export var properties :=  {}
 # found in `CardScriptDefinitions.gd`
 #
 # See `CardScriptDefinitions.gd` for the proper format of a scripts dictionary
-export var scripts := {}
+export var scripts : Dictionary
 # If true, the card can be attached to other cards and will follow
 # their host around the table. The card will always return to its host
 # when dragged away
@@ -119,7 +121,8 @@ var _fancy_move_second_part := false
 var _potential_cards := []
 var _potential_containers := []
 
-
+# Used for picking a card to start the compiler on
+var _debugger_hook := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
@@ -448,31 +451,59 @@ func _on_Card_area_exited(area: Area2D) -> void:
 # This function handles filling up the card's labels according to its
 # card definition dictionary entry.
 func setup(cname: String) -> void:
-	# The properties of the card should be already stored in cfc
+	# The card name is the most important aspect.
+	# We cannot use card_name as this var, as it's a global var
 	set_card_name(cname)
-	properties = cfc.card_definitions.get(cname)
-	for label in properties.keys():
-		# These are standard properties which is simple a String to add to the
-		# label.text field
-		if label in CardConfig.PROPERTIES_STRINGS:
-			_set_label_text($Control/Front/CardText.get_node(label),
-					properties[label])
-			# $Control/Front/CardText.get_node(label).text = properties[label]
-			if properties[label]=="":
-				$Control/Front/CardText.get_node(label).visible = false
-		# These are int or float properties which need to be converted
-		# to a string with some formatting.
-		#
-		# In this demo, the format is defined as: "labelname: value"
-		elif label in CardConfig.PROPERTIES_NUMBERS:
-			_set_label_text($Control/Front/CardText.get_node(label),label
-					+ ": " + str(properties[label]))
-		# These are arrays of properties which are put in a label with a simple
-		# Join character
-		elif label in CardConfig.PROPERTIES_ARRAYS:
-			_set_label_text($Control/Front/CardText.get_node(label),
-					CFUtils.array_join(properties[label],
-					CFConst.ARRAY_PROPERTY_JOIN))
+	# The properties of the card should be already stored in cfc
+	var read_properties = cfc.card_definitions.get(cname)
+	for property in read_properties.keys():
+		modify_property(property,read_properties[property], true)
+
+
+func modify_property(property: String, value, is_init = false, check := false) -> int:
+	var retcode: int
+	if not property in properties.keys() and not is_init:
+		retcode = CFConst.ReturnCode.FAILED
+	elif properties.get(property) == value:
+		retcode = CFConst.ReturnCode.OK
+	else:
+		# We store the values to send with the signal
+		var previous_value
+		if not is_init:
+			previous_value = properties[property]
+		retcode = CFConst.ReturnCode.CHANGED
+		if not check and property == "Name":
+			set_card_name(value)
+		elif not check:
+			properties[property] = value
+			if not is_init:
+				emit_signal("card_properties_modified",
+						self, "card_properties_modified",
+						{"property_name": property,
+						"new_property_value": value,
+						"previous_property_value": previous_value})
+			# These are standard properties which is simple a String to add to the
+			# label.text field
+			if property in CardConfig.PROPERTIES_STRINGS:
+				_set_label_text($Control/Front/CardText.get_node(property),
+						value)
+				# $Control/Front/CardText.get_node(label).text = properties[label]
+				if value == "" :
+					$Control/Front/CardText.get_node(property).visible = false
+			# These are int or float properties which need to be converted
+			# to a string with some formatting.
+			#
+			# In this demo, the format is defined as: "labelname: value"
+			elif property in CardConfig.PROPERTIES_NUMBERS:
+				_set_label_text($Control/Front/CardText.get_node(property),property
+						+ ": " + str(value))
+			# These are arrays of properties which are put in a label with a simple
+			# Join character
+			elif property in CardConfig.PROPERTIES_ARRAYS:
+				_set_label_text($Control/Front/CardText.get_node(property),
+						CFUtils.array_join(value,
+						CFConst.ARRAY_PROPERTY_JOIN))
+	return(retcode)
 
 
 # Setter for _is_attachment
@@ -607,6 +638,7 @@ func set_card_name(value : String) -> void:
 	_set_label_text(name_label,value)
 	name = value
 	card_name = value
+	properties["Name"] = value
 
 
 # Getter for card_name
@@ -884,7 +916,8 @@ func execute_scripts(
 		# The seeks in them the specific trigger we're using in this
 		# execution
 		card_scripts = cfc.set_scripts.get(card_name,{}).get(trigger,{})
-
+	if trigger == "card_properties_modified" and _debugger_hook:
+		pass
 	# We check the trigger against the filter defined
 	# If it does not match, then we don't pass any scripts for this trigger.
 	if not SP.filter_trigger(
@@ -1489,6 +1522,7 @@ func _process_card_state() -> void:
 			set_focus(false)
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
+			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
 			# warning-ignore:return_value_discarded
 			# When we have an oval shape, we ensure the cards stay

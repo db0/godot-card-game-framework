@@ -489,3 +489,33 @@ func test_card_un_attached():
 				{"host": host}])
 	assert_false(cards[3].is_faceup,
 			"Card turned face-down after signal trigger")
+
+func test_card_properties_modified():
+	watch_signals(target)
+	card.scripts = {"card_properties_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"filter_property_name": "Type",
+				"set_faceup": false}],
+			"trigger": "another"}}
+	cards[2].scripts = {"card_properties_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"filter_property_name": "Tag",
+				"set_faceup": false}],
+			"trigger": "another"}}
+	target.modify_property("Type", "Orange")
+	#cards[2]._debugger_hook = true
+	yield(yield_for(0.1), YIELD)
+	assert_signal_emitted_with_parameters(
+				target,"card_properties_modified",
+				[target,"card_properties_modified",
+				{"property_name": "Type",
+				"new_property_value": "Orange",
+				"previous_property_value": "Green"}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger match")
+	assert_true(cards[2].is_faceup,
+			"Card stayed face-up after signal trigger not matching")

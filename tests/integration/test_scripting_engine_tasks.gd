@@ -238,3 +238,15 @@ func test_host_card():
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(target.current_host_card,card,
 			"target has been hosted on the card")
+
+
+func test_modify_properties():
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Name": "GUT Test", "Type": "Orange"}}]}}
+	card.execute_scripts()
+	assert_eq("GUT Test",card.card_name,
+			"Card name should be changed")
+	assert_eq("GUT Test",card.card_name,
+			"Card type should be changed")

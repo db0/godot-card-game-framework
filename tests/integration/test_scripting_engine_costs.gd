@@ -165,3 +165,31 @@ func test_token_cost():
 			"Card not rotated because negative token cost could not  be be paid")
 	assert_eq(1,card.tokens.get_token("bio").count,
 			"Token count that could not be paid remains the same")
+
+func test_modify_properties_cost():
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"is_cost": true,
+			"set_properties": {"Type": card.properties["Type"]}},
+			{"name": "flip_card",
+			"subject": "self",
+			"set_faceup": false}]}}
+	card.execute_scripts()
+	yield(yield_to(card._flip_tween, "tween_all_completed", 0.4), YIELD)
+	assert_true(card.is_faceup,
+			"card should stay face-up because "
+			+ "property change cost could not be paid")
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"is_cost": true,
+			"set_properties": {"Type": "Orange"}},
+			{"name": "flip_card",
+			"subject": "self",
+			"set_faceup": false}]}}
+	card.execute_scripts()
+	yield(yield_to(card._flip_tween, "tween_all_completed", 0.4), YIELD)
+	assert_false(card.is_faceup,
+			"card should turn face-down because "
+			+ "property change cost could be paid")

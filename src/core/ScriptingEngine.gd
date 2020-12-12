@@ -259,3 +259,21 @@ func host_card(script: ScriptTask) -> void:
 	# host_card can only ever have one subject
 	var card: Card = script.subjects[0]
 	card.attach_to_host(script.owner_card)
+
+
+# Task for modifying a card's properties
+func modify_properties(script: ScriptTask) -> int:
+	var retcode: int = CFConst.ReturnCode.OK
+	for card in script.subjects:
+		var properties = script.get(SP.KEY_MODIFY_PROPERTIES)
+		for property in properties:
+			var ret_once = card.modify_property(
+					property,
+					properties[property],
+					false,
+					costs_dry_run)
+			if ret_once == CFConst.ReturnCode.CHANGED:
+				# We only need one of the properties requested to be
+				# modified before we consider that we changed something.
+				retcode = ret_once
+	return(retcode)

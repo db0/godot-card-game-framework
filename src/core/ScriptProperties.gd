@@ -73,6 +73,9 @@ const KEY_DEGREES := "degrees"
 # * true: The card will be set face-up
 # * false: The card will be set face-down
 const KEY_SET_FACEUP := "set_faceup"
+# Used when a script is using the modify_properties task.
+# The value is supposed to be a dictionary of `"property name": value` entries
+const KEY_MODIFY_PROPERTIES := "set_properties"
 # Used when a script is using one of the following tasks
 # * move_card_cont_to_cont
 # * move_card_cont_to_board
@@ -176,6 +179,7 @@ const KEY_IS_OPTIONAL := "is_optional_"
 # This is open ended in the end, as the check can be run either
 # against the trigger card, or the subjects card
 # see _check_properties()
+
 const FILTER_PROPERTIES := "filter_properties_"
 # Filter used in for checking against TRIGGER_DEGREES
 const FILTER_DEGREES := "filter_degrees"
@@ -193,6 +197,13 @@ const FILTER_TOKEN_COUNT := "filter_token_count"
 const FILTER_TOKEN_DIFFERENCE := "filter_token_difference"
 # Filter used for checking against TRIGGER_TOKEN_NAME
 const FILTER_TOKEN_NAME := "filter_token_name"
+# Filter used for checking against TRIGGER_NEW_TOKEN_VALUE
+const FILTER_MODIFIED_PROPERTY_NAME := "filter_property_name"
+# Filter used for checking against TRIGGER_NEW_PROPERTY_VALUE
+const FILTER_MODIFIED_PROPERTY_NEW_VALUE := "filter_property_new_value"
+# Filter used for checking against TRIGGER_PREV_PROPERTY_VALUE
+const FILTER_MODIFIED_PROPERTY_PREV_VALUE := "filter_property_previous_value"
+
 
 #---------------------------------------------------------------------
 # Signal Properties
@@ -213,6 +224,19 @@ const TRIGGER_DEGREES := "degrees"
 # * true: Trigger turned face-up
 # * false: Trigger turned face-down
 const TRIGGER_FACEUP := "is_faceup"
+# Filter value sent by the trigger Card `card_properties_modified` signal.
+#
+# This is the property name
+const TRIGGER_MODIFIED_PROPERTY_NAME := "property_name"
+# Filter value sent by the trigger Card `card_properties_modified` signal.
+#
+# This is the current value of the property.
+const TRIGGER_NEW_PROPERTY_VALUE := "new_property_value"
+# Filter value sent by the trigger Card `card_properties_modified` signal.
+#
+# This is the value the property had before it was modified
+const TRIGGER_PREV_PROPERTY_VALUE := "previous_property_value"
+
 # Filter value sent by one of the trigger Card's following signals:
 # * card_moved_to_board
 # * card_moved_to_pile
@@ -244,7 +268,7 @@ const TRIGGER_TOKEN_NAME = "token_name"
 # * card_unattached
 # It contains the host object onto which this card attached
 # of from which it unattached
-const TRIGGER_HOST = "token_name"
+const TRIGGER_HOST = "host"
 
 
 #---------------------------------------------------------------------
@@ -282,6 +306,8 @@ static func get_default(property: String):
 			default = 1
 		KEY_IS_OPTIONAL:
 			default = false
+		KEY_MODIFY_PROPERTIES:
+			default = {}
 		_:
 			default = null
 	return(default)
@@ -352,6 +378,18 @@ static func filter_trigger(
 			and card_scripts.get(FILTER_TOKEN_NAME) != \
 			signal_details.get(TRIGGER_TOKEN_NAME):
 		is_valid = false
+	if card_scripts.get(FILTER_MODIFIED_PROPERTY_NAME) \
+			and card_scripts.get(FILTER_MODIFIED_PROPERTY_NAME) != \
+			signal_details.get(TRIGGER_MODIFIED_PROPERTY_NAME):
+		is_valid = false
+	if card_scripts.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) \
+			and card_scripts.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) != \
+			signal_details.get(TRIGGER_NEW_PROPERTY_VALUE):
+		is_valid = false
+	if card_scripts.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) \
+			and card_scripts.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) != \
+			signal_details.get(TRIGGER_PREV_PROPERTY_VALUE):
+		is_valid = false
 	return(is_valid)
 
 
@@ -377,11 +415,6 @@ static func check_properties(card, card_scripts, type := "trigger") -> bool:
 				# If it's an array, we assume they passed on element
 				# of that array to check against the card properties
 				if not prop_limits[property] in card.properties[property]:
-					card_matches = false
-			# The card's name is not stored in the properties dictionary
-			# But rather in the card_name variable
-			elif property == "Name":
-				if prop_limits[property] != card.card_name:
 					card_matches = false
 			else:
 				if prop_limits[property] != card.properties[property]:

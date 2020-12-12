@@ -160,6 +160,7 @@ class SignalPropagator:
 		"card_attached",
 		"card_unattached",
 		"card_targeted",
+		"card_properties_modified",
 		]
 
 
