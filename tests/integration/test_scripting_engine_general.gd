@@ -148,10 +148,12 @@ func test_subject_boardseek():
 	card.scripts = {"manual": {"hand": [
 			{"name": "rotate_card",
 			"subject": "boardseek",
+			"subject_count": "all",
 			"filter_properties_seek": {"Type": ttype},
 			"degrees": 180},
 			{"name": "rotate_card",
 			"subject": "boardseek",
+			"subject_count": "all",
 			"filter_properties_seek": {"Type": ttype2},
 			"degrees": 90}]}}
 	var scripting_engine = card.execute_scripts()
@@ -193,6 +195,7 @@ func test_subject_boardseek_previous():
 	card.scripts = {"manual": {"hand": [
 			{"name": "rotate_card",
 			"subject": "boardseek",
+			"subject_count": "all",
 			"filter_properties_seek": {"Tags": "Tag 1"},
 			"degrees": 90},
 			{"name": "flip_card",

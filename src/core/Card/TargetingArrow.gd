@@ -34,7 +34,7 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	$ArrowHead/Area2D.connect("area_exited", self, "_on_ArrowHead_area_exited")
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if is_targeting:
 		_draw_targeting_arrow()
 

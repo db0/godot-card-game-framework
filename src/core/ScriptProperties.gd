@@ -31,7 +31,8 @@ const KEY_SUBJECT_V_TARGET := "target"
 const KEY_SUBJECT_V_SELF := "self"
 # * If this is the value of the "subject" key,
 # then we search all cards on the table
-# by node order, and return **all** candidates that match the filter
+# by node order, and return candidates equal to KEY_SUBJECT_COUNT
+# that match the filters
 #
 # This allows us to make tasks which will affect more than 1 card at
 # the same time (e.g. "All Soldiers")
@@ -47,6 +48,36 @@ const KEY_SUBJECT_V_INDEX := "index"
 # * If this is the value of the "subject" key,
 # then we use the subject specified in the previous task
 const KEY_SUBJECT_V_PREVIOUS := "previous"
+# Used when we're seeking a card
+# to limit the amount to retrieve to this amount
+# Work with the following task/key combinations:
+# * move_card_cont_to_board
+#   * KEY_SUBJECT_V_TUTOR
+#   * KEY_SUBJECT_V_INDEX
+# * move_card_cont_to_cont
+#   * KEY_SUBJECT_V_TUTOR
+#   * KEY_SUBJECT_V_INDEX
+# * move_card_to_container
+#   * KEY_SUBJECT_V_BOARDSEEK
+# * move_card_to_board
+#   * KEY_SUBJECT_V_BOARDSEEK
+# Default is to seek only 1 card.
+# when used in combination with KEY_SUBJECT_V_BOARDSEEK value can
+# also be KEY_SUBJECT_COUNT_V_ALL which will simply set all cards
+# that match the filters as subjects
+const KEY_SUBJECT_COUNT := "subject_count"
+# When specified as the value of KEY_SUBJECT_COUNT, will retrieve as many
+# cards as match the criteria.
+# Useful with the following KEY/VALUE combinations
+# * move_card_cont_to_board
+#   * KEY_SUBJECT_V_TUTOR
+# * move_card_cont_to_cont
+#   * KEY_SUBJECT_V_TUTOR
+# * move_card_to_container
+#   * KEY_SUBJECT_V_BOARDSEEK
+# * move_card_to_board
+#   * KEY_SUBJECT_V_BOARDSEEK
+const KEY_SUBJECT_COUNT_V_ALL := "all"
 # This key is used to mark a task as being a cost requirement before the
 # rest of the defined tasks can execute.
 #
@@ -57,6 +88,8 @@ const KEY_SUBJECT_V_PREVIOUS := "previous"
 # * rotate_card
 # * flip_card
 # * mod_tokens
+# * move_card_cont_to_cont
+# * move_card_cont_to_board
 const KEY_IS_COST := "is_cost"
 # Used when a script is triggered by a signal.
 #
@@ -96,6 +129,12 @@ const KEY_DEST_CONTAINER := "dest_container"
 #
 # Default is to seek card at index 0
 const KEY_SUBJECT_INDEX := "subject_index"
+# Special entry to be used with KEY_SUBJECT_INDEX instead of an integer
+# If specified, explicitly looks for the top "card" of a pile
+const KEY_SUBJECT_INDEX_V_TOP := "top"
+# Special entry to be used with KEY_SUBJECT_INDEX instead of an integer
+# If specified, explicitly looks for the "bottom" card of a pile
+const KEY_SUBJECT_INDEX_V_BOTTOM := "bottom"
 # Used when placing a card inside a [CardContainer]
 # in one of the follwing tasks
 # * move_card_to_container
@@ -128,6 +167,20 @@ const KEY_TOKEN_MODIFICATION := "modification"
 #
 # This is the path to the card template scene to use for this card
 const KEY_CARD_SCENE := "card_scene"
+# Used by the "ask_integer" task. Specifies the minimum value the number
+# needs to have
+const KEY_ASK_INTEGER_MIN := "ask_int_min"
+# Used by the "ask_integer" task. Specifies the maximum value the number
+# needs to have
+const KEY_ASK_INTEGER_MAX := "ask_int_max"
+# This is a versatile value that can be inserted into any various keys
+# when a task needs to use a previously inputed integer.
+# When detected ,the task will retrieve the stored number and use it as specified
+#
+# The following keys support this value
+# * KEY_TOKEN_MODIFICATION
+# * KEY_SUBJECT_COUNT (only for specific tasks, see documentation)
+const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
 # Specifies whether this script or task can be skipped by the owner.
 #
 # This value needs to be prepended and placed
@@ -357,6 +410,8 @@ static func get_default(property: String):
 			default = false
 		KEY_MODIFY_PROPERTIES:
 			default = {}
+		KEY_SUBJECT_COUNT:
+			default = 1
 		_:
 			default = null
 	return(default)

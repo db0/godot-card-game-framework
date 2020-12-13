@@ -57,6 +57,22 @@ func get_scripts(card_name: String) -> Dictionary:
 						}
 					]
 				},
+				"hand": [
+					{
+						"name": "ask_integer",
+						"subject": "self",
+						"ask_int_min": 1,
+						"ask_int_max": 5,
+					},
+					{
+						"name": "move_card_cont_to_cont",
+						"src_container": cfc.NMAP.deck,
+						"dest_container": cfc.NMAP.discard,
+						"subject": "index",
+						"subject_count": "retrieve_integer",
+						"subject_index": "top"
+					}
+				],
 			},
 #			"card_flipped": {
 #				"trigger": "another",

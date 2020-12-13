@@ -70,13 +70,13 @@ func _on_ScalingFocusOptions_item_selected(index) -> void:
 
 
 # Button to make all cards act as attachments
-func _on_EnableAttach_toggled(_button_pressed: bool) -> void:
+func _on_EnableAttach_toggled(button_pressed: bool) -> void:
 	for c in allCards:
-		c.is_attachment = $EnableAttach.pressed
+		c.is_attachment = button_pressed
 
 
 func _on_Debug_toggled(button_pressed: bool) -> void:
-	cfc._debug = $Debug.pressed
+	cfc._debug = button_pressed
 
 # Loads a sample set of cards to use for testing
 func load_test_cards(extras := 11) -> void:
