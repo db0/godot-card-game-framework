@@ -13,7 +13,8 @@
    * snap - Contribution by [@vmjcv](https://github.com/vmjcv).
    * overhand - Contribution by [@EasternMouse](https://github.com/EasternMouse).
 * Piles and Hand will highlight when a dragged card hovers over them to display where the card will be dropped when released.
-* source directories can now be renamed or moved.
+* Framework godot source directories can now be renamed or moved.
+* Added new Scripting Engine tassk "modify_properties", which allows scripts to change the card details.
 
 ### Bugfixes
 

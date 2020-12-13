@@ -157,6 +157,32 @@ func get_random_card() -> Card:
 		return cardsArray[CFUtils.randi() % len(cardsArray)]
 
 
+# Return the card with the lowest index
+func get_last_card() -> Card:
+	var card: Card = null
+	# prevents from trying to retrieve more cards
+	# than are in our deck and crashing godot.
+	if get_card_count():
+		# Counter intuitively, the "top" card in the pile
+		# is the last node in the node hierarchy, so
+		# to retrieve the last card placed, we choose the last index
+		card = get_all_cards().back()
+	return card # Returning the card object for unit testing
+
+
+# Teturn the card with the highest index
+func get_first_card() -> Card:
+	var card: Card = null
+	# prevents from trying to retrieve more cards
+	# than are in our deck and crashing godot.
+	if get_card_count():
+		# Counter intuitively, the "bottom" card in the pile
+		# as it appears on screen, is the first node in the node hierarchy, so
+		# to retrieve the last c
+		card = get_card(0)
+	return card # Returning the card object for unit testing
+
+
 # Randomly rearranges the order of the Card nodes.
 func shuffle_cards() -> void:
 	var cardsArray := []

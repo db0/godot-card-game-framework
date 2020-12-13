@@ -6,8 +6,8 @@ extends Reference
 
 # The path to the optional confirm scene. This has to be defined explicitly
 # here, in order to use it in its preload, otherwise the parser gives an error
-const _PATH_OPTIONAL_CONFIRM = CFConst.PATH_CORE + "OptionalConfirmation.tscn"
-const _OPTIONAL_CONFIRM = preload(_PATH_OPTIONAL_CONFIRM)
+const _OPTIONAL_CONFIRM_SCENE_FILE = CFConst.PATH_CORE + "OptionalConfirmation.tscn"
+const _OPTIONAL_CONFIRM_SCENE = preload(_OPTIONAL_CONFIRM_SCENE_FILE)
 
 
 # Randomize array through our own seed
@@ -82,7 +82,7 @@ static func confirm(
 		type := "task") -> bool:
 	var is_accepted := true
 	if script.get(SP.KEY_IS_OPTIONAL + type):
-		var confirm = _OPTIONAL_CONFIRM.instance()
+		var confirm = _OPTIONAL_CONFIRM_SCENE.instance()
 		confirm.prep(card_name,task_name)
 		# We have to wait until the player has finished selecting an option
 		yield(confirm,"selected")

@@ -19,7 +19,9 @@ const CARDS := {
 		"Type": "Blue",
 		"Tags": ["Tag 1","Tag 2"],
 		"Requirements": "",
-		"Abilities": "While on board, either rotate 90, or flip face-down.",
+		"Abilities": "While on board, either rotate 90, or flip face-down." \
+				+ "\n\nWhile on hand, discard up to 5 cards " \
+				+ "from the top of the deck",
 		"Cost": 0,
 	},
 }

@@ -145,30 +145,16 @@ func get_all_cards(scanViewPopup := true) -> Array:
 	return cardsArray
 
 
-# Return the top a [Card] object from the pile.
+# A wrapper for the CardContainer's get_last_card()
+# which make sense for the cards' index in a pile
 func get_top_card() -> Card:
-	var card: Card = null
-	# prevents from trying to retrieve more cards
-	# than are in our deck and crashing godot.
-	if get_card_count():
-		# Counter intuitively, the "top" card in the pile
-		# is the last node in the node hierarchy, so
-		# to retrieve the last card placed, we choose the last index
-		card = get_all_cards().back()
-	return card # Returning the card object for unit testing
+	return(get_last_card())
 
 
-# Teturn the bottom [Card] object from the pile.
+# A wrapper for the CardContainer's get_first_card()
+# which make sense for the cards' index in a pile
 func get_bottom_card() -> Card:
-	var card: Card = null
-	# prevents from trying to retrieve more cards
-	# than are in our deck and crashing godot.
-	if get_card_count():
-		# Counter intuitively, the "bottom" card in the pile
-		# as it appears on screen, is the first node in the node hierarchy, so
-		# to retrieve the last c
-		card = get_card(0)
-	return card # Returning the card object for unit testing
+	return(get_first_card())
 
 
 func get_stack_position(card: Card) -> Vector2:

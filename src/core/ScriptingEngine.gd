@@ -11,6 +11,9 @@
 class_name ScriptingEngine
 extends Reference
 
+const _ASK_INTEGER_SCENE_FILE = CFConst.PATH_CORE + "AskInteger.tscn"
+const _ASK_INTEGER_SCENE = preload(_ASK_INTEGER_SCENE_FILE)
+
 # Emitted when all tasks have been run succesfully
 signal tasks_completed
 
@@ -26,6 +29,12 @@ var can_all_costs_be_paid := true
 # to know when the cost dry-run has completed, so that it can
 # check the state of `can_all_costs_be_paid`.
 var all_tasks_completed := false
+# Stores the inputed integer from the ask_integer task
+var stored_integer: int
+# These task will require input from the player, so the subsequent task execution
+# needs to wait for their completion
+var wait_for_tasks = ["ask_integer"]
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -72,7 +81,8 @@ func run_next_script(card_owner: Card,
 				card_owner,
 				scripts_queue.pop_front(),
 				prev_subjects,
-				costs_dry_run)
+				costs_dry_run,
+				stored_integer)
 		# In case the task involves targetting, we need to wait on further
 		# execution until targetting has completed
 		if not script.has_init_completed:
@@ -93,6 +103,10 @@ func run_next_script(card_owner: Card,
 						or (costs_dry_run and script.get(SP.KEY_IS_COST))):
 				#print(script.is_valid,':',costs_dry_run)
 				var retcode = call(script.task_name, script)
+				# When
+				if script.task_name in wait_for_tasks \
+						and retcode is GDScriptFunctionState:
+					retcode = yield(retcode, "completed")
 				if costs_dry_run:
 					if retcode != CFConst.ReturnCode.CHANGED:
 						can_all_costs_be_paid = false
@@ -164,7 +178,7 @@ func move_card_to_container(script: ScriptTask) -> void:
 	var dest_index: int = script.get(SP.KEY_DEST_INDEX)
 	for card in script.subjects:
 		card.move_to(script.get(SP.KEY_DEST_CONTAINER), dest_index)
-
+		yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 
 # Task for moving card to the board
 #
@@ -173,7 +187,7 @@ func move_card_to_container(script: ScriptTask) -> void:
 func move_card_to_board(script: ScriptTask) -> void:
 	for card in script.subjects:
 		card.move_to(cfc.NMAP.board, -1, script.get(SP.KEY_BOARD_POSITION))
-
+		yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 
 # Task for moving card from one container to another
 #
@@ -187,25 +201,36 @@ func move_card_to_board(script: ScriptTask) -> void:
 # * index ==  -1 means last card in the CardContainer
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
-func move_card_cont_to_cont(script: ScriptTask) -> void:
-	var dest_container: CardContainer = script.get(SP.KEY_DEST_CONTAINER)
-	var dest_index: int = script.get(SP.KEY_DEST_INDEX)
-	for card in script.subjects:
-		card.move_to(dest_container,dest_index)
-
+func move_card_cont_to_cont(script: ScriptTask) -> int:
+	var retcode: int = CFConst.ReturnCode.CHANGED
+	if costs_dry_run:
+		if len(script.subjects) < script.requested_subjects:
+			retcode = CFConst.ReturnCode.FAILED
+	else:
+		var dest_container: CardContainer = script.get(SP.KEY_DEST_CONTAINER)
+		var dest_index: int = script.get(SP.KEY_DEST_INDEX)
+		for card in script.subjects:
+			card.move_to(dest_container,dest_index)
+			yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+	return(retcode)
 
 # Task for playing a card to the board from a container directly.
 #
 # Requires the following keys:
 # * "card_index": int
 # * "src_container": CardContainer
-func move_card_cont_to_board(script: ScriptTask) -> void:
-	var board_position = script.get(SP.KEY_BOARD_POSITION)
-	for card in script.subjects:
-		# We assume cards moving to board want to be face-up
-		card.move_to(cfc.NMAP.board, -1, board_position)
-		#card.is_faceup = true
-
+func move_card_cont_to_board(script: ScriptTask) -> int:
+	var retcode: int = CFConst.ReturnCode.CHANGED
+	if costs_dry_run:
+		if len(script.subjects) < script.requested_subjects:
+			retcode = CFConst.ReturnCode.FAILED
+	else:
+		var board_position = script.get(SP.KEY_BOARD_POSITION)
+		for card in script.subjects:
+			# We assume cards moving to board want to be face-up
+			card.move_to(cfc.NMAP.board, -1, board_position)
+			yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+	return(retcode)
 
 # Task from modifying tokens on a card
 #
@@ -217,8 +242,12 @@ func move_card_cont_to_board(script: ScriptTask) -> void:
 # * (Optional) "set_to_mod": bool
 func mod_tokens(script: ScriptTask) -> int:
 	var retcode: int
+	var modification: int
 	var token_name: String = script.get(SP.KEY_TOKEN_NAME)
-	var modification: int = script.get(SP.KEY_TOKEN_MODIFICATION)
+	if str(script.get(SP.KEY_TOKEN_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
+		modification = stored_integer
+	else:
+		modification = script.get(SP.KEY_TOKEN_MODIFICATION)
 	var set_to_mod: bool = script.get(SP.KEY_TOKEN_SET_TO_MOD)
 	for card in script.subjects:
 		retcode = card.tokens.mod_token(token_name,modification,set_to_mod,costs_dry_run)
@@ -277,3 +306,18 @@ func modify_properties(script: ScriptTask) -> int:
 				# modified before we consider that we changed something.
 				retcode = ret_once
 	return(retcode)
+
+
+# Requests the player input an integer, then stores it in a script-global
+# variable to be used by any subsequent task
+func ask_integer(script: ScriptTask) -> void:
+	var integer_dialog = _ASK_INTEGER_SCENE.instance()
+	# AskInteger tasks have to always provide a min and max value
+	var minimum = script.get(SP.KEY_ASK_INTEGER_MIN)
+	var maximum = script.get(SP.KEY_ASK_INTEGER_MAX)
+	integer_dialog.prep(script.owner_card.card_name, minimum, maximum)
+	# We have to wait until the player has finished selecting an option
+	yield(integer_dialog,"popup_hide")
+	stored_integer = integer_dialog.number
+	# Garbage cleanup
+	integer_dialog.queue_free()

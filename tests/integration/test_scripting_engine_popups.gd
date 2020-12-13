@@ -171,3 +171,53 @@ func test_script_confirm_dialog() -> void:
 			"Card execute all tasks properly after script confirm")
 	assert_eq(180, card.card_rotation,
 			"Card execute all tasks properly after script confirm")
+
+func test_ask_integer_with_card_moves():
+	target = deck.get_top_card()
+	card.scripts = {"manual": {
+			"hand": [
+				{
+					"name": "ask_integer",
+					"subject": "self",
+					"ask_int_min": 1,
+					"ask_int_max": 5,
+				},
+				{
+					"name": "move_card_cont_to_cont",
+					"src_container": cfc.NMAP.deck,
+					"dest_container": cfc.NMAP.discard,
+					"subject": "index",
+					"subject_count": "retrieve_integer",
+					"subject_index": "top"
+					}]}}
+	card.execute_scripts()
+	var ask_integer = board.get_node("AskInteger")
+	ask_integer.number = 2
+	ask_integer.hide()
+	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(2,discard.get_card_count(), "2 cards should have been discarded")
+
+func test_ask_integer_with_mod_tokens():
+	card.scripts = {"manual": {
+			"hand": [
+				{
+					"name": "ask_integer",
+					"subject": "self",
+					"ask_int_min": 1,
+					"ask_int_max": 5,
+				},
+				{
+					"name": "mod_tokens",
+					"src_container": cfc.NMAP.deck,
+					"modification": 'retrieve_integer',
+					"subject": "self",
+					"token_name":  "bio"
+					}]}}
+	card.execute_scripts()
+	var ask_integer = board.get_node("AskInteger")
+	ask_integer.number = 3
+	ask_integer.hide()
+	yield(yield_for(0.2), YIELD)
+	var bio_token: Token = card.tokens.get_token("bio")
+	assert_eq(3,bio_token.count,"Token increased by specified amount")

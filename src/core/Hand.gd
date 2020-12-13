@@ -35,6 +35,18 @@ func _on_DiscardRandom_Button_pressed() -> void:
 		card.move_to(cfc.NMAP.discard)
 
 
+# A wrapper for the CardContainer's get_last_card()
+# which make sense for the cards' index in a hand
+func get_rightmost_card() -> Card:
+	return(get_last_card())
+
+
+# A wrapper for the CardContainer's get_first_card()
+# which make sense for the cards' index in a hand
+func get_leftmost_card() -> Card:
+	return(get_first_card())
+
+
 # Visibly shuffles all cards in hand
 func shuffle_cards() -> void:
 	# When shuffling the hand, we also want to show the player

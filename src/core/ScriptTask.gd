@@ -36,25 +36,34 @@ var is_valid := true
 # If true if this task has been confirmed to run by the player
 # Only relevant for optional tasks (see [SP].KEY_IS_OPTIONAL)
 var is_accepted := true
+# This is passed from the [ScriptingEngine] and it stores a value retrieved
+# using an ask_integer task. This might be used in this task
+# when retrieving subjects if [SP].VALUE_RETRIEVE_INTEGER is used.
+var stored_integer : int
+# The amount of subjects card the script requested to modify
+# We use this to compare against costs during dry_runs
+var requested_subjects: int
 
 # prepares the properties needed by the task to function.
 func _init(card: Card,
 		script: Dictionary,
 		prev_subjects: Array,
-		cost_dry_run: bool) -> void:
+		cost_dry_run: bool,
+		sceng_stored_int) -> void:
 	# We store the card which executes this task
 	owner_card = card
 	# We store all the task properties in our own dictionary
 	properties = script
+	stored_integer = sceng_stored_int
 	# The function name to be called gets its own var
 	task_name = get("name")
 	if ((not cost_dry_run and not get(SP.KEY_IS_COST))
-			# This is the typical spot we're checking 
+			# This is the typical spot we're checking
 			# for non-cost optional confirmations.
 			# The only time we're testing here during a cost-dry-run
 			# is when its an "is_cost" task requiring targeting.
 			# We want to avoid targeting and THEN ask for confirmation.
-			# Non-targeting is_cost tasks are confirmed in the 
+			# Non-targeting is_cost tasks are confirmed in the
 			# ScriptingEngine loop
 			or (cost_dry_run
 			and get(SP.KEY_IS_COST)
@@ -118,22 +127,90 @@ func _find_subjects(prev_subjects := []) -> Card:
 				is_valid = SP.check_properties(c, properties, "subject")
 				subjects_array.append(c)
 		SP.KEY_SUBJECT_V_BOARDSEEK:
+			var subject_count = get(SP.KEY_SUBJECT_COUNT)
+			if str(subject_count) == SP.KEY_SUBJECT_COUNT_V_ALL:
+				# When the value is set to -1, the seek will retrieve as many
+				# cards as it can find, since the subject_count will
+				# never be 0
+				subject_count = -1
+			# If the script requests a number of subjects equal to a
+			# player-inputed number, we retrieve the integer
+			# stored from the previous ask_integer task.
+			elif str(subject_count) == SP.VALUE_RETRIEVE_INTEGER:
+				subject_count = stored_integer
+			requested_subjects = subject_count
 			for c in cfc.NMAP.board.get_all_cards():
 				if SP.check_properties(c, properties, "seek"):
 					subjects_array.append(c)
+				subject_count -= 1
+				if subject_count == 0:
+					break
 		SP.KEY_SUBJECT_V_TUTOR:
 			# When we're tutoring for a subjects, we expect a
 			# source CardContainer to have been provided.
+			var subject_count = get(SP.KEY_SUBJECT_COUNT)
+			if str(subject_count) == SP.KEY_SUBJECT_COUNT_V_ALL:
+				subject_count = -1
+			elif str(subject_count) == SP.VALUE_RETRIEVE_INTEGER:
+				subject_count = stored_integer
+			requested_subjects = subject_count
 			for c in get(SP.KEY_SRC_CONTAINER).get_all_cards():
 				if SP.check_properties(c, properties, "tutor"):
 					subjects_array.append(c)
-					break
+					subject_count -= 1
+					if subject_count == 0:
+						break
 		SP.KEY_SUBJECT_V_INDEX:
 			# When we're seeking for index, we expect a
 			# source CardContainer to have been provided.
-			var index: int = get(SP.KEY_SUBJECT_INDEX)
 			var src_container: CardContainer = get(SP.KEY_SRC_CONTAINER)
-			subjects_array.append(src_container.get_card(index))
+			var index = get(SP.KEY_SUBJECT_INDEX)
+			if str(index) == SP.KEY_SUBJECT_INDEX_V_TOP:
+				# We use the CardContainer functions, inctead of the Piles ones
+				# to allow this value to be used on Hand classes as well
+				index = src_container.get_card_index(src_container.get_last_card())
+			elif str(index) == SP.KEY_SUBJECT_INDEX_V_BOTTOM:
+				index = src_container.get_card_index(src_container.get_first_card())
+			elif str(index) == SP.VALUE_RETRIEVE_INTEGER:
+				index = stored_integer
+			# Just to prevent typos since we don't enforce integers on index
+			elif not str(index).is_valid_integer():
+				index = 0
+			var subject_count = get(SP.KEY_SUBJECT_COUNT)
+			# If the subject count is ALL, we retrieve as many cards as
+			# possible after the specified index
+			if str(subject_count) == SP.KEY_SUBJECT_COUNT_V_ALL:
+				# This variable is used to only retrieve as many cards
+				# Up to the maximum that exist below the specified index
+				var adjust_count = index
+				# If we're searching from the "top", then the card will
+				# have the last index. In that case the maximum would be
+				# the whole deck
+				# we have to ensure the value is a string, as KEY_SUBJECT_INDEX
+				# can contain either integers of strings
+				if str(get(SP.KEY_SUBJECT_INDEX)) == SP.KEY_SUBJECT_INDEX_V_TOP:
+					adjust_count = 0
+				subject_count = src_container.get_card_count() - adjust_count
+			elif str(subject_count) == SP.VALUE_RETRIEVE_INTEGER:
+				subject_count = stored_integer
+			requested_subjects = subject_count
+			# If KEY_SUBJECT_COUNT is more than 1, we seek a number
+			# of cards from this index equal to the amount
+			for iter in range(subject_count):
+				# Specifically when retrieving cards from the bottom
+				# we move up the pile, instead of down.
+				# This is useful for effects which mention something like:
+				# "...the last X cards from the deck"
+				if str(get(SP.KEY_SUBJECT_INDEX)) == SP.KEY_SUBJECT_INDEX_V_BOTTOM:
+					if index + iter > src_container.get_card_count():
+						break
+					subjects_array.append(src_container.get_card(index + iter))
+				# When retrieving cards from any other index,
+				# we always move down the pile from the starting index point.
+				else:
+					if index - iter < 0:
+						break
+					subjects_array.append(src_container.get_card(index - iter))
 		SP.KEY_SUBJECT_V_SELF:
 			subjects_array.append(owner_card)
 		_:

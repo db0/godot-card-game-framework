@@ -1,6 +1,5 @@
 extends "res://tests/UTcommon.gd"
 
-const _CARD_OPTIONAL_CONFIRM = preload("res://src/core/OptionalConfirmation.tscn")
 var cards := []
 var card: Card
 var test_script: Dictionary
@@ -14,9 +13,9 @@ func after_all():
 
 func before_each():
 	setup_board()
-	confirm = _CARD_OPTIONAL_CONFIRM.instance()
+	confirm = CFUtils._OPTIONAL_CONFIRM_SCENE.instance()
 	
-func test_titlel_anb_buttons():
+func test_title_and_buttons():
 	confirm.prep("UT Card","UT Execution")
 	assert_eq("Please Confirm...", confirm.window_title)
 	assert_eq("UT Card: Do you want to activate UT Execution?", confirm.dialog_text)
