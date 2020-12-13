@@ -496,18 +496,35 @@ func test_card_properties_modified():
 			"hand": [
 				{"name": "flip_card",
 				"subject": "self",
-				"filter_property_name": "Type",
 				"set_faceup": false}],
+			"filter_modified_properties": {"Type": {}},
 			"trigger": "another"}}
 	cards[2].scripts = {"card_properties_modified": {
 			"hand": [
 				{"name": "flip_card",
 				"subject": "self",
-				"filter_property_name": "Tag",
 				"set_faceup": false}],
+			"filter_modified_properties": {"Tag": {}},
+			"trigger": "another"}}
+	cards[3].scripts = {"card_properties_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_modified_properties": {"Type":
+				{"new_value": "Orange",
+				"previous_value": "Green"}},
+			"trigger": "another"}}
+	cards[4].scripts = {"card_properties_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_modified_properties": {"Type":
+				{"new_value": "Purple"}},
 			"trigger": "another"}}
 	target.modify_property("Type", "Orange")
-	#cards[2]._debugger_hook = true
+	cards[4]._debugger_hook = true
 	yield(yield_for(0.1), YIELD)
 	assert_signal_emitted_with_parameters(
 				target,"card_properties_modified",
@@ -519,3 +536,7 @@ func test_card_properties_modified():
 			"Card turned face-down after signal trigger match")
 	assert_true(cards[2].is_faceup,
 			"Card stayed face-up after signal trigger not matching")
+	assert_false(cards[3].is_faceup,
+			"Card turned face-down after all property filters match")
+	assert_true(cards[4].is_faceup,
+			"Card stayed face-up after after one property filters not matching")

@@ -916,8 +916,12 @@ func execute_scripts(
 		# The seeks in them the specific trigger we're using in this
 		# execution
 		card_scripts = cfc.set_scripts.get(card_name,{}).get(trigger,{})
-	if trigger == "card_properties_modified" and _debugger_hook:
+
+	# I use this spot to add a breakpoint when testing script behaviour
+	# especially on filters
+	if _debugger_hook:
 		pass
+
 	# We check the trigger against the filter defined
 	# If it does not match, then we don't pass any scripts for this trigger.
 	if not SP.filter_trigger(

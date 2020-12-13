@@ -197,12 +197,61 @@ const FILTER_TOKEN_COUNT := "filter_token_count"
 const FILTER_TOKEN_DIFFERENCE := "filter_token_difference"
 # Filter used for checking against TRIGGER_TOKEN_NAME
 const FILTER_TOKEN_NAME := "filter_token_name"
-# Filter used for checking against TRIGGER_NEW_TOKEN_VALUE
-const FILTER_MODIFIED_PROPERTY_NAME := "filter_property_name"
+# Filter key used for checking against card_properties_modified details.
+#
+# Checking for modified properties is a bit trickier than other filters
+# A signal emited from modified properties, will include as values the
+# property name changed, and its new and old values.
+#
+# The filter specified in the card script definition, will have
+# as the requested property filter, a dictionary inside the card_scripts
+# with the key "filter_modified_properties".
+#
+# Inside that dictionary will be another dictionary with one key per
+# property. That key inside will (optionally) have yet another dictionary
+# within, with specific values to filter. A sample filter script for triggering
+# only if a specific property was modified would look like this:
+# ```
+#{"card_properties_modified": {
+#	"hand": [{
+#		"name": "flip_card",
+#		"subject": "self",
+#		"set_faceup": false
+#	}],
+#	"filter_modified_properties":
+#		{
+#			"Type": {}
+#		},
+#	"trigger": "another"}
+#}
+# ```
+# The above example will trigger only if the "Type" property of another card
+# is modified. But it does not care to what value the Type property changed.
+#
+# A more advanced trigger might look like this:
+# ```
+#{"card_properties_modified": {
+#	"hand": [{
+#		"name": "flip_card",
+#		"subject": "self",
+#		"set_faceup": false
+#		}],
+#	"filter_modified_properties": {
+#		"Type": {
+#			"new_value": "Orange",
+#			"previous_value": "Green"
+#		}
+#	},
+#	"trigger": "another"}
+#}
+# ```
+# The above example will only trigger on the "Type" property changing on
+# another card, and only if it changed from "Green" to "Orange"
+const FILTER_MODIFIED_PROPERTIES := "filter_modified_properties"
 # Filter used for checking against TRIGGER_NEW_PROPERTY_VALUE
-const FILTER_MODIFIED_PROPERTY_NEW_VALUE := "filter_property_new_value"
+const FILTER_MODIFIED_PROPERTY_NEW_VALUE := "new_value"
 # Filter used for checking against TRIGGER_PREV_PROPERTY_VALUE
-const FILTER_MODIFIED_PROPERTY_PREV_VALUE := "filter_property_previous_value"
+const FILTER_MODIFIED_PROPERTY_PREV_VALUE := "previous_value"
 
 
 #---------------------------------------------------------------------
@@ -378,18 +427,41 @@ static func filter_trigger(
 			and card_scripts.get(FILTER_TOKEN_NAME) != \
 			signal_details.get(TRIGGER_TOKEN_NAME):
 		is_valid = false
-	if card_scripts.get(FILTER_MODIFIED_PROPERTY_NAME) \
-			and card_scripts.get(FILTER_MODIFIED_PROPERTY_NAME) != \
-			signal_details.get(TRIGGER_MODIFIED_PROPERTY_NAME):
-		is_valid = false
-	if card_scripts.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) \
-			and card_scripts.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) != \
-			signal_details.get(TRIGGER_NEW_PROPERTY_VALUE):
-		is_valid = false
-	if card_scripts.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) \
-			and card_scripts.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) != \
-			signal_details.get(TRIGGER_PREV_PROPERTY_VALUE):
-		is_valid = false
+	# Modified Property filter checks
+	# See FILTER_MODIFIED_PROPERTIES documentation
+	# If the trigger requires a filter on modified properties...
+	if card_scripts.get(FILTER_MODIFIED_PROPERTIES):
+		# Then the filter entry will always contain a dictionary.
+		# We extract that dictionary in mod_prop_dict.
+		var mod_prop_dict = card_scripts.get(FILTER_MODIFIED_PROPERTIES)
+		# Each signal for modified properties will provide the property name
+		# We store that in signal_modified_property
+		var signal_modified_property = signal_details.get(TRIGGER_MODIFIED_PROPERTY_NAME)
+		# If the property changed that is mentioned in the signal
+		# does not match any of the properties requested in the filter,
+		# then the trigger does not match
+		if not signal_modified_property in mod_prop_dict.keys():
+			is_valid = false
+		else:
+			# if the property changed that is mentioned in the signal
+			# matches the properties requested in the filter
+			# Then we also need to check if the filter specified
+			# filtering on specific new or old values as well
+			# To do that, we extract the possible new/old values needed
+			# in the filter into mod_prop_values.
+			# The key is signal_modified_property and it will contain another
+			# dict, with the old and new values
+			var mod_prop_values = mod_prop_dict.get(signal_modified_property)
+			# Finally we check if it requires a specific new or old property
+			# value. If it does, we check it against the signal details
+			if mod_prop_values.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) \
+					and mod_prop_values.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) != \
+					signal_details.get(TRIGGER_NEW_PROPERTY_VALUE):
+				is_valid = false
+			if mod_prop_values.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) \
+					and mod_prop_values.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) != \
+					signal_details.get(TRIGGER_PREV_PROPERTY_VALUE):
+				is_valid = false
 	return(is_valid)
 
 
