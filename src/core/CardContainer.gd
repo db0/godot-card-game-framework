@@ -6,7 +6,11 @@ extends Area2D
 # Cache control button
 var all_manipulation_buttons := [] setget ,get_all_manipulation_buttons
 
+# The various automatic placements possible on a card
+# None means the container will not be adjusted as the viewport changes
+# All other options will automatically adjust themselves.
 enum Placements{
+	NONE
 	TOP_RIGHT
 	TOP_MIDDLE
 	TOP_LEFT
@@ -17,7 +21,10 @@ enum Placements{
 	BOTTOM_LEFT
 }
 
+# This variable spefifies the position of the card on the game layout
+# This position will be retained as the window is resized.
 export(Placements) var placement
+
 # ManipulationButtons node
 onready var manipulation_buttons := $Control/ManipulationButtons
 # ManipulationButtons tween node
@@ -75,20 +82,6 @@ func _on_button_mouse_entered() -> void:
 	manipulation_buttons_tween.remove_all()
 	for button in all_manipulation_buttons:
 		button.modulate[3] = 1
-
-
-### Ugh, I will need to implement the same _are_buttons_hovered nosense
-### That I'm doing in [Card] to avoid the buttons sometimes staying visible
-#
-## Ensures the mouse is invisible on hover
-## Ensures that button it not trying to appear via previous animation
-##
-## This is necessary because sometimes the buttons stay visible
-## When the mouse exits the whole control area from their location
-#func _on_button_mouse_exited() -> void:
-#	manipulation_buttons_tween.remove_all()
-#	for button in all_manipulation_buttons:
-#		button.modulate[3] = 1
 
 
 # Triggers pile shuffling

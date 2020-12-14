@@ -7,8 +7,6 @@ extends CardContainer
 # The shuffle style chosen for this pile. See CFConst.ShuffleStyle documentation.
 export(CFConst.ShuffleStyle) var shuffle_style = CFConst.ShuffleStyle.AUTO
 
-
-
 # If this is set to true, cards on this stack will be placed face-up.
 # Otherwise they will be placed face-down.
 export var faceup_cards := false
