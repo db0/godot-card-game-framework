@@ -10,16 +10,6 @@ func _ready() -> void:
 	# instead of defining them on the scene.
 	# This way any they will work with any size of viewport in a game.
 	# Discard pile goes bottom right
-
-	$DiscardPile.position = Vector2(get_viewport().size.x
-			- $DiscardPile/Control.rect_size.x - 10,get_viewport().size.y
-			- $DiscardPile/Control.rect_size.y)
-	# Deck goes bottom left
-	$Deck.position = Vector2(0,get_viewport().size.y
-			- $Deck/Control.rect_size.y)
-	# Hand goes in the middle of the two
-	$Hand.position = Vector2(150,get_viewport().size.y
-			- $Hand/Control.rect_size.y + $Hand.bottom_margin)
 	$FancyMovementToggle.pressed = cfc.fancy_movement
 	$OvalHandToggle.pressed = cfc.hand_use_oval_shape
 	$ScalingFocusOptions.selected = cfc.focus_style
@@ -40,7 +30,7 @@ func _on_FancyMovementToggle_toggled(_button_pressed) -> void:
 func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
 	cfc.hand_use_oval_shape = $OvalHandToggle.pressed
 	for c in cfc.NMAP.hand.get_all_cards():
-		c.reorganizeSelf()
+		c.reorganize_self()
 
 
 # Reshuffles all Card objects created back into the deck

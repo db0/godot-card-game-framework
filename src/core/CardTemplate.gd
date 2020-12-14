@@ -348,7 +348,7 @@ func _on_Card_mouse_exited() -> void:
 					# Therefore we simply stop all tweens and reorganize the whole hand
 					c.interruptTweening()
 					# This will also set the state to IN_HAND afterwards
-					c.reorganizeSelf()
+					c.reorganize_self()
 		CardState.FOCUSED_ON_BOARD:
 			state = CardState.ON_PLAY_BOARD
 		CardState.FOCUSED_IN_POPUP:
@@ -786,7 +786,7 @@ func move_to(targetHost: Node2D,
 			for c in targetHost.get_all_cards():
 				if c != self:
 					c.interruptTweening()
-					c.reorganizeSelf()
+					c.reorganize_self()
 			if set_is_faceup(true) == CFConst.ReturnCode.FAILED:
 				print("ERROR: Something went unexpectedly in set_is_faceup")
 		elif targetHost.is_in_group("piles"):
@@ -853,7 +853,7 @@ func move_to(targetHost: Node2D,
 				# in a different container by now
 				if c != self and c.state != CardState.DRAGGED:
 					c.interruptTweening()
-					c.reorganizeSelf()
+					c.reorganize_self()
 		elif parentHost == cfc.NMAP.board:
 			# If the card was or had attachments and it is removed from the table,
 			# all attachments status is cleared
@@ -871,7 +871,7 @@ func move_to(targetHost: Node2D,
 		# to the same container
 		if parentHost == cfc.NMAP.hand:
 			state = CardState.IN_HAND
-			reorganizeSelf()
+			reorganize_self()
 		if parentHost == cfc.NMAP.board:
 			# Checking if this is an attachment and we're looking for a new host
 			if len(_potential_cards):
@@ -1060,7 +1060,7 @@ func get_class(): return "Card"
 #
 # It will also adjust the separation between cards depending on the amount
 # of cards in-hand
-func reorganizeSelf() ->void:
+func reorganize_self() ->void:
 	# We clear the card as being in-focus if we're asking it to be reorganized
 	_focus_completed = false
 	match state:
@@ -1328,7 +1328,7 @@ func _start_dragging() -> void:
 		for c in get_parent().get_all_cards():
 			if c != self:
 				c.interruptTweening()
-				c.reorganizeSelf()
+				c.reorganize_self()
 
 
 # Determines the state a card should have,
@@ -1577,7 +1577,7 @@ func _process_card_state() -> void:
 				for c in get_parent().get_all_cards():
 					if not c in neighbours and c != self:
 						c.interruptTweening()
-						c.reorganizeSelf()
+						c.reorganize_self()
 				# When zooming in, we also want to move the card higher,
 				# so that it's not under the screen's bottom edge.
 				_target_position = expected_position \

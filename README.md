@@ -34,6 +34,8 @@ Pull requests are more than welcome ;)
 * Ability to define cards in standard json
 * Ability to split card definitions into sets
 * Automatically resizing text inside cards to fit the card size.
+* Supports resizing the window, in all stretch modes (including disabled stretch)
+* Can select layout of your CardContainers from a simple drop-down menu.
 
 ### Scripting Engine Features
 

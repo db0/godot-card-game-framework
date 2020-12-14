@@ -6,6 +6,18 @@ extends Area2D
 # Cache control button
 var all_manipulation_buttons := [] setget ,get_all_manipulation_buttons
 
+enum Placements{
+	TOP_RIGHT
+	TOP_MIDDLE
+	TOP_LEFT
+	RIGHT_MIDDLE
+	LEFT_MIDDLE
+	BOTTOM_RIGHT
+	BOTTOM_MIDDLE
+	BOTTOM_LEFT
+}
+
+export(Placements) var placement
 # ManipulationButtons node
 onready var manipulation_buttons := $Control/ManipulationButtons
 # ManipulationButtons tween node
@@ -21,6 +33,7 @@ onready var highlight := $Control/Highlight
 func _ready() -> void:
 	_init_ui()
 	_init_signal()
+
 
 
 # Initialize some of the controls to ensure
@@ -41,6 +54,7 @@ func _init_signal() -> void:
 		button.connect("mouse_entered", self, "_on_button_mouse_entered")
 		#button.connect("mouse_exited", self, "_on_button_mouse_exited")
 	shuffle_button.connect("pressed", self, '_on_Shuffle_Button_pressed')
+	get_viewport().connect("size_changed",self,"_on_viewport_resized")
 
 # Hides the container manipulation buttons when you stop hovering over them
 func _on_Control_mouse_exited() -> void:
@@ -213,3 +227,35 @@ func translate_card_index_to_node_index(index: int) -> int:
 		var card_at_index = all_cards[index]
 		node_index = card_at_index.get_index()
 	return node_index
+
+
+# Adjusts the placement of the node, according to the placement var
+# So that it always stays in the same approximate location
+func re_place():
+		var place: Vector2
+		match placement:
+			Placements.TOP_RIGHT, Placements.RIGHT_MIDDLE, Placements.BOTTOM_RIGHT:
+				place.x = get_viewport().size.x - $Control.rect_size.x
+				add_to_group("right")
+			Placements.TOP_LEFT, Placements.LEFT_MIDDLE, Placements.BOTTOM_LEFT:
+				place.x = 0
+				add_to_group("left")
+			Placements.TOP_MIDDLE, Placements.BOTTOM_MIDDLE:
+				place.x = get_viewport().size.x / 2 - $Control.rect_size.x / 2
+		match placement:
+			Placements.TOP_LEFT, Placements.TOP_MIDDLE, Placements.TOP_RIGHT:
+				place.y = 0
+				add_to_group("top")
+			Placements.BOTTOM_LEFT, Placements.BOTTOM_MIDDLE, Placements.BOTTOM_RIGHT:
+				place.y = get_viewport().size.y - $Control.rect_size.y
+				add_to_group("bottom")
+			Placements.RIGHT_MIDDLE, Placements.LEFT_MIDDLE:
+				place.y = get_viewport().size.y / 2 - $Control.rect_size.y / 2
+#		if name == "Deck":
+#			print('view: ', get_viewport().size.y, ' size: ',$Control.rect_size,' pos: ',position,' place: ', place)
+		position = place
+
+
+func _on_viewport_resized() -> void:
+	if ProjectSettings.get("display/window/stretch/mode") == "disabled":
+		re_place()
