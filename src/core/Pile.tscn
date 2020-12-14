@@ -116,3 +116,27 @@ __meta__ = {
 [node name="Tween" type="Tween" parent="ViewPopup"]
 
 [node name="Tween" type="Tween" parent="."]
+
+[node name="Debug" type="VBoxContainer" parent="."]
+margin_left = 15.977
+margin_top = -84.0894
+margin_right = 55.977
+margin_bottom = -34.0894
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Position" type="Label" parent="Debug"]
+margin_right = 40.0
+margin_bottom = 14.0
+
+[node name="AreaPos" type="Label" parent="Debug"]
+margin_top = 18.0
+margin_right = 40.0
+margin_bottom = 32.0
+
+[node name="Size" type="Label" parent="Debug"]
+margin_top = 36.0
+margin_right = 40.0
+margin_bottom = 50.0

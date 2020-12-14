@@ -15,7 +15,8 @@ var _dupes_dict := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
-	get_viewport().connect("size_changed",self,"_on_viewport_resized")
+	# warning-ignore:return_value_discarded
+	get_viewport().connect("size_changed",self,"_on_Viewport_size_changed")
 	$ViewportContainer.rect_size = get_viewport().size
 
 
@@ -36,6 +37,12 @@ func _process(_delta) -> void:
 		if _current_focus_source != _dupes_dict[c] and not $Focus/Tween.is_active():
 			_previously_focused_cards.erase(c)
 			c.queue_free()
+
+
+# Takes care to resize the child viewport, when the main viewport is resized
+func _on_Viewport_size_changed() -> void:
+	if ProjectSettings.get("display/window/stretch/mode") == "disabled":
+		$ViewportContainer.rect_size = get_viewport().size
 
 
 # Displays the card closeup in the Focus viewport
@@ -82,9 +89,3 @@ func unfocus(card: Card) -> void:
 				$Focus.modulate, Color(1,1,1,0), 0.25,
 				Tween.TRANS_SINE, Tween.EASE_IN)
 		$Focus/Tween.start()
-
-
-# Takes care to resize the child viewport, when the main viewport is resized
-func _on_viewport_resized() -> void:
-	if ProjectSettings.get("display/window/stretch/mode") == "disabled":
-		$ViewportContainer.rect_size = get_viewport().size

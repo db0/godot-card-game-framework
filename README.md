@@ -1,27 +1,22 @@
 
-# Godot Card Game Framework [0.12](CHANGELOG.md)
+# Godot Card Game Framework [1.0](CHANGELOG.md)
 
 ![Codot Card Game Framework preview image](preview.png "Codot Card Game Framework preview image")
 
 This framework is meant to provide well designed, statically typed, and fully commented classes and scenes which you can plug into any potential card game to handle typical behaviour expected from cards in a game in a polished manner.
 
-**Important: This is still a pre-release and is subject to heavy changes as I figure things out.**
-You can still use it as is, but be aware that newer release might substantially rework how things work, thus requiring a new integration if you want to use them.
-
-Once we hit v1.0 things should become more stable.
-
 Pull requests are more than welcome ;)
 
 ## Provided features
 
-* **Complete card text and rules enforcement** via provided Scripting Engine! (see scripting features below)
+* **Complete card text and rules enforcement** capacity, via provided Scripting Engine! (see scripting engine features, below)
 * Tween & GDScript-based animations that look good for card movements.
 * Customizable card highlights
 * Choice between Oval or Straight hand shape
 * Automatic focus-in on cards when moused over in-hand.
 * Automatic re-arranging of hand as cards are added or removed.
 * Drag & Drop of cards on table and between containers
-* Possibility for multiple hands and piles
+* Supports having multiple hands and piles.
 * Piles of cards represent their size visually.
 * Larger image of card when moving mouse cursor over it
 * Pop-up buttons for predefined functions on cards and card containers
@@ -39,18 +34,21 @@ Pull requests are more than welcome ;)
 
 ### Scripting Engine Features
 
-* Can define card scripts in plain text, using simple json
-* Can set cards to trigger off of any booard manipulation
-* Can filter the triggers based on card properties, or a special subset
-* Can define optional abilities
-* Can define multiple-choice abilities
-* Very easily extensible to your own game's special requirements
+* Can define card scripts in plain text, using simple json.
+* Can set cards to trigger off of any booard manipulation.
+* Can filter the triggers based on card properties, or a special subset.
+* Can define optional abilities.
+* Can define multiple-choice abilities.
+* Can request simple inputs from the player during execution.
+
+All of the above while being very easily extensible to your own game's special requirements through simple json dictionaries.
 
 ## Easy Customation
 
-The classes provide some easy customization options, such as how the card move, where they appear etc
-Check the "Behaviour Constants" header at the start of the CFControl singleton.
-For more fine customization, you'll need to modify manually
+The classes provide some easy customization options, such as how the card move, where they appear etc.
+
+Check the "Behaviour Constants" inside `CFConst.gd` for detailed information on what each does.
+For more fine-tuned customization than that, you'll need to modify the code manually
 
 ## Usage
 
@@ -92,6 +90,7 @@ Click on the 'F' button to exchange between these two states
 
 The first four cards you will draw from your deck each have different prepared automations. 
 Their text explains these effects.
+
 You can double click any of them in the hand or board to see their scripts in action.
 
 Some of them have also effects that trigger off of other effects.

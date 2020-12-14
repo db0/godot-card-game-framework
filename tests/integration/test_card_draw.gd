@@ -7,7 +7,7 @@ func before_each():
 func test_single_card_draw_use_rectangle():
 	cfc.hand_use_oval_shape = false
 	var card0: Card = hand.draw_card()
-	assert_eq(len(hand.get_children()), 3,
+	assert_eq(len(hand.get_children()), 4,
 			"Correct amount of cards drawn")
 	assert_true(card0.visible,
 			"Cards drawn is visible")
@@ -28,7 +28,7 @@ func test_single_card_draw_use_rectangle():
 func test_single_card_draw_use_oval():
 	cfc.hand_use_oval_shape = true
 	var card0: Card = hand.draw_card()
-	assert_eq(len(hand.get_children()), 3,
+	assert_eq(len(hand.get_children()), 4,
 			"Correct amount of cards drawn")
 	assert_true(card0.visible,
 			"Cards drawn is visible")

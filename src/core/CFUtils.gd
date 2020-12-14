@@ -121,3 +121,26 @@ static func sort_card_containers(c1, c2) -> bool:
 		else:
 			ret = true
 	return(ret)
+
+
+# Returns an array of CardContainers sorted reverse order of whichever 
+# has to be shifted first to resolve duplicate anchor placement
+static func sort_by_shift_priority(c1, c2) -> bool:
+	var ret: bool
+	# The first two checks ensure that CardContainers 
+	# set to overlap_shift == None will never be pushed.
+	if c1.overlap_shift_direction == CFConst.OverlapShiftDirection.NONE:
+		ret = true
+	elif c2.overlap_shift_direction == CFConst.OverlapShiftDirection.NONE:
+		ret = false
+	elif c1.index_shift_priority == CFConst.IndexShiftPriority.LOWER:
+		if c1.get_index() < c2.get_index():
+			ret = false
+		else:
+			ret = true
+	else:
+		if c1.get_index() < c2.get_index():
+			ret = true
+		else:
+			ret = false
+	return(ret)
