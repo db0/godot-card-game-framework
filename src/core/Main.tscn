@@ -66,3 +66,4 @@ current = true
 zoom = Vector2( 0.75, 0.8 )
 
 [node name="Tween" type="Tween" parent="Focus"]
+[connection signal="size_changed" from="ViewportContainer/Viewport" to="." method="_on_Viewport_size_changed"]

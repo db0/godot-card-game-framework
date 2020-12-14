@@ -24,8 +24,9 @@ script = ExtResource( 2 )
 
 [node name="Control" type="Panel" parent="."]
 self_modulate = Color( 1, 1, 1, 0 )
-margin_right = 150.0
-margin_bottom = 240.0
+margin_right = 156.0
+margin_bottom = 246.0
+rect_min_size = Vector2( 156, 246 )
 mouse_filter = 1
 custom_styles/panel = SubResource( 1 )
 __meta__ = {

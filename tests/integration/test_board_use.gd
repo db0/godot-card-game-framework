@@ -11,7 +11,7 @@ func before_each():
 func test_card_table_drop_location_and_rotation_use_rectangle():
 	cfc.hand_use_oval_shape = false
 	for c in cfc.NMAP.hand.get_all_cards():
-		c.reorganizeSelf()
+		c.reorganize_self()
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start		
 	# Reminder that card should not have trigger script definitions, to avoid
 	# messing with the tests

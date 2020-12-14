@@ -22,6 +22,7 @@ func _ready():
 	$ViewPopup.connect("popup_hide",self,'_on_ViewPopup_popup_hide')
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("about_to_show",self,'_on_ViewPopup_about_to_show')
+	re_place()
 
 
 func _process(_delta) -> void:
@@ -112,7 +113,8 @@ func reorganize_stack() -> void:
 				-get_card_index(c)):
 			c.position = Vector2(0.5 * get_card_index(c),
 					-get_card_index(c))
-	#The size of the panel has to be modified to be as large as the size of the cardd
+	# The size of the panel has to be modified to be as large as the size
+	# of the card stack
 	# TODO: This logic has to be adapted depending on where on the viewport
 	# This pile is anchored. The below calculations assume bottom-left.
 	$Control.rect_size = Vector2(156 + 0.5 * get_card_count(), 246 + get_card_count())
@@ -120,6 +122,14 @@ func reorganize_stack() -> void:
 	# The highlight has to also be shifted higher or else it will just extend
 	# below the viewport
 	$Control/Highlight.rect_position.y = -get_card_count()
+	.re_place()
+	# since we're adding cards towards the top, we do not want the re_place()
+	# function to push the pile higher than the edge of the screen
+	# it is supposed to be
+	if "bottom" in get_groups() or "top" in get_groups():
+		position.y += get_card_count()
+#	if "right" in get_groups():
+#		position.x -= get_card_count() * 0.5
 
 
 # Override the godot builtin move_child() method,
@@ -315,6 +325,13 @@ func shuffle_cards(animate = true) -> void:
 	else:
 		# if we're already running another animation, just shuffle
 		.shuffle_cards()
+	reorganize_stack()
+
+
+# Overrides the re_place() function of [Pile] in order
+# to also restack the cards
+func re_place() -> void:
+	# reorganize_stack() calls .re_place() at the end
 	reorganize_stack()
 
 

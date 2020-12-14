@@ -15,6 +15,10 @@
 * Piles and Hand will highlight when a dragged card hovers over them to display where the card will be dropped when released.
 * Framework godot source directories can now be renamed or moved.
 * Added new Scripting Engine tassk "modify_properties", which allows scripts to change the card details.
+* Added "Placement" option to select where each CardContainer will be setup on the board
+* If CardContainers have a specified placement on the board, a table resize will automatically move them to the right location
+* Stretch mode "disabled" is usable now.
+
 
 ### Bugfixes
 
