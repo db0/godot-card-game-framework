@@ -16,6 +16,7 @@
 * Framework godot source directories can now be renamed or moved.
 * Added "Placement" option to select where each CardContainer will be setup on the board
 * If CardContainers have a specified placement on the board, a table resize will automatically move them to the right location. This means that stretch mode "disabled" is usable now.
+* Added switch to disable placement on board (for games that don't use it)
 
 #### Scripting Engine
 

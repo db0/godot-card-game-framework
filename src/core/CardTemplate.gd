@@ -739,7 +739,7 @@ func get_card_rotation() -> int:
 #
 # If placed in a pile, the index determines the card's position
 # among other card. If it's -1, card will be placed on the bottom of the pile
-func move_to(targetHost: Node2D,
+func move_to(targetHost,
 		index := -1,
 		boardPosition := Vector2(-1,-1)) -> void:
 #	if cfc.focus_style:
@@ -750,6 +750,8 @@ func move_to(targetHost: Node2D,
 	var parentHost = get_parent()
 	# We want to keep the token drawer closed during movement
 	tokens.is_drawer_open = false
+	if CFConst.DISABLE_BOARD_DROP and targetHost == cfc.NMAP.board:
+		targetHost = parentHost
 	if targetHost != parentHost:
 		# When changing parent, it resets the position of the child it seems
 		# So we store it to know where the card used to be, before moving it
@@ -794,7 +796,8 @@ func move_to(targetHost: Node2D,
 			# If the card is also in a popup, we assume we're moving back
 			# to the same container, so we do nothing
 			# The finite state machine  will reset the card to its position
-			if "CardPopUpSlot" in parentHost.name:
+			if "CardPopUpSlot" in parentHost.name \
+					and parentHost.get_parent().get_parent().get_parent() == targetHost:
 				if targetHost.get_node("ViewPopup").visible == true:
 					pass
 			else:
@@ -846,7 +849,7 @@ func move_to(targetHost: Node2D,
 					self,
 					"card_moved_to_board",
 					{"destination": targetHost, "source": parentHost})
-		if parentHost.is_in_group("hands"):
+		if parentHost and parentHost.is_in_group("hands"):
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
 				# But this time we don't want to rearrange ourselves, as we're
@@ -854,7 +857,7 @@ func move_to(targetHost: Node2D,
 				if c != self and c.state != CardState.DRAGGED:
 					c.interruptTweening()
 					c.reorganize_self()
-		elif parentHost == cfc.NMAP.board:
+		elif parentHost and parentHost == cfc.NMAP.board:
 			# If the card was or had attachments and it is removed from the table,
 			# all attachments status is cleared
 			_clear_attachment_status()
@@ -864,15 +867,13 @@ func move_to(targetHost: Node2D,
 			if CFConst.TOKENS_ONLY_ON_BOARD or cfc._ut_tokens_only_on_board:
 				for token in tokens.get_all_tokens().values():
 					token.queue_free()
-
-
 	else:
 		# Here we check what to do if the player just moved the card back
 		# to the same container
 		if parentHost == cfc.NMAP.hand:
 			state = CardState.IN_HAND
 			reorganize_self()
-		if parentHost == cfc.NMAP.board:
+		elif parentHost == cfc.NMAP.board:
 			# Checking if this is an attachment and we're looking for a new host
 			if len(_potential_cards):
 				attach_to_host(_potential_cards.back())
@@ -888,6 +889,8 @@ func move_to(targetHost: Node2D,
 				_determine_target_position_from_mouse()
 				raise()
 			state = CardState.ON_PLAY_BOARD
+		elif "CardPopUpSlot" in parentHost.name:
+			state = CardState.IN_POPUP
 	# Just in case there's any leftover potential host highlights
 	if len(_potential_cards):
 		for card in _potential_cards:
