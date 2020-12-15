@@ -19,10 +19,13 @@ script = ExtResource( 1 )
 [node name="Deck" parent="." instance=ExtResource( 4 )]
 script = ExtResource( 2 )
 placement = 8
+shuffle_style = 0
+faceup_cards = false
 
 [node name="DiscardPile" parent="." instance=ExtResource( 4 )]
 script = ExtResource( 3 )
 placement = 6
+shuffle_style = 0
 faceup_cards = true
 
 [node name="Control" parent="DiscardPile" index="0"]

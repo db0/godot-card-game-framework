@@ -21,6 +21,9 @@ extents = Vector2( 78, 123 )
 "piles",
 ]]
 script = ExtResource( 2 )
+placement = null
+shuffle_style = null
+faceup_cards = null
 
 [node name="Control" type="Panel" parent="."]
 self_modulate = Color( 1, 1, 1, 0 )
