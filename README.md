@@ -52,7 +52,7 @@ For more fine-tuned customization than that, you'll need to modify the code manu
 
 ## Usage
 
-Most of the card manipulation functionalities work without any extra work, as long as the relevant scenes have been setup correctly (see [Installation](INSTALL)). For example, the code which handles moving cards around or focusing on them etc should work out of the box.
+Most of the card manipulation functionalities work without any extra work, as long as the relevant scenes have been setup correctly (see [Installation](INSTALL.md)). For example, the code which handles moving cards around or focusing on them etc should work out of the box.
 
 However some effects require some trigger, such as targeting of cards etc. The method calls to perform these are available to use and some demo functions have been provided to understand how it works, but it is expected that each game will provide their own logic in their own scripts to call the relevant methods.
 
