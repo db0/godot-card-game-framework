@@ -1,7 +1,8 @@
 extends "res://tests/UTcommon.gd"
 
 var cards := []
-const token_scene = preload("res://src/core/Token.tscn")
+
+const token_scene = TokenDrawer._TOKEN_SCENE
 var token: Token
 
 func before_all():

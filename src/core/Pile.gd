@@ -14,13 +14,14 @@ export var faceup_cards := false
 onready var view_button := $Control/ManipulationButtons/View
 
 func _ready():
+	add_to_group("piles")
 	# warning-ignore:return_value_discarded
 	view_button.connect("pressed",self,'_on_View_Button_pressed')
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("popup_hide",self,'_on_ViewPopup_popup_hide')
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("about_to_show",self,'_on_ViewPopup_about_to_show')
-	re_place()
+	#re_place()
 
 
 func _process(_delta) -> void:

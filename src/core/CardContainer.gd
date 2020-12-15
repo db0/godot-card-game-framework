@@ -6,10 +6,16 @@ extends Area2D
 # Cache control button
 var all_manipulation_buttons := [] setget ,get_all_manipulation_buttons
 
-# The various automatic placements possible on a card
-# None means the container will not be adjusted as the viewport changes
-# All other options will automatically adjust themselves.
-enum Placements{
+# The various automatic Anchors possible for a CardContainer
+# NONE means the container will not stay anchored to the screen
+# and will not adjust its position if the viewport changes.
+# Use this setting if your game is not expected to use different resolutions
+# or you want this CardContainer to be placed somewhere other than the
+# edge of the viewport (although you could adjust that in code as well)
+#
+# All other options will automatically adjust the position of the
+# CardContainer if the resolution changes
+enum Anchors{
 	NONE
 	TOP_RIGHT
 	TOP_MIDDLE
@@ -21,10 +27,22 @@ enum Placements{
 	BOTTOM_LEFT
 }
 
-# This variable spefifies the position of the card on the game layout
-# This position will be retained as the window is resized.
-export(Placements) var placement
+# Spefifies the anchor of the card on the screen layout
+# This placement will be retained as the window is resized.
+export(Anchors) var placement
+# In case of multiple CardContainers using the same anchor placement,
+# specifies whether this container should displace itself to make space
+# for the others, and how.
+export(CFConst.OverlapShiftDirection) var overlap_shift_direction
+# In case of multiple CardContainers using the same anchor placement
+# specifies which container should be displaced more.
+export(CFConst.IndexShiftPriority) var index_shift_priority
 
+# Used for debugging
+var _debugger_hook := false
+# Stores how much this container has moved from its original anchor placement
+# as a result of other containers sharing the same anchor placement
+var accumulated_shift := Vector2(0,0)
 # ManipulationButtons node
 onready var manipulation_buttons := $Control/ManipulationButtons
 # ManipulationButtons tween node
@@ -33,14 +51,24 @@ onready var manipulation_buttons_tween := $Control/ManipulationButtons/Tween
 onready var control := $Control
 # Shuffle button
 onready var shuffle_button := $Control/ManipulationButtons/Shuffle
+# Container higlight
 onready var highlight := $Control/Highlight
+
+
+func _process(_delta: float) -> void:
+	# Debug labels
+	if cfc._debug:
+		$Debug.visible = true
+		$Debug/Position.text = "POSITION:  " + str(position)
+		$Debug/AreaPos.text = "AREA POS: " + str($CollisionShape2D.position)
+		$Debug/Size.text = "SIZE: " + str($Control.rect_size)
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	add_to_group("card_containers")
 	_init_ui()
 	_init_signal()
-
 
 
 # Initialize some of the controls to ensure
@@ -61,7 +89,9 @@ func _init_signal() -> void:
 		button.connect("mouse_entered", self, "_on_button_mouse_entered")
 		#button.connect("mouse_exited", self, "_on_button_mouse_exited")
 	shuffle_button.connect("pressed", self, '_on_Shuffle_Button_pressed')
+	# warning-ignore:return_value_discarded
 	get_viewport().connect("size_changed",self,"_on_viewport_resized")
+
 
 # Hides the container manipulation buttons when you stop hovering over them
 func _on_Control_mouse_exited() -> void:
@@ -88,6 +118,13 @@ func _on_button_mouse_entered() -> void:
 func _on_Shuffle_Button_pressed() -> void:
 	# Reshuffles the cards in container
 	shuffle_cards()
+
+
+# Called whenever the viewport is changed so ensure all containers
+# are moved to their anchor.
+func _on_viewport_resized() -> void:
+	if ProjectSettings.get("display/window/stretch/mode") == "disabled":
+		re_place()
 
 
 # Hides manipulation buttons
@@ -225,30 +262,96 @@ func translate_card_index_to_node_index(index: int) -> int:
 # Adjusts the placement of the node, according to the placement var
 # So that it always stays in the same approximate location
 func re_place():
-		var place: Vector2
+		var place := Vector2(0,0)
+		# Here we match the adjust the default position based on the anchor
+		# First we adjust the x position
 		match placement:
-			Placements.TOP_RIGHT, Placements.RIGHT_MIDDLE, Placements.BOTTOM_RIGHT:
-				place.x = get_viewport().size.x - $Control.rect_size.x
-				add_to_group("right")
-			Placements.TOP_LEFT, Placements.LEFT_MIDDLE, Placements.BOTTOM_LEFT:
+			# Left position always start from x == 0,
+			# which means left side of the viewport
+			Anchors.TOP_LEFT, Anchors.LEFT_MIDDLE, Anchors.BOTTOM_LEFT:
 				place.x = 0
 				add_to_group("left")
-			Placements.TOP_MIDDLE, Placements.BOTTOM_MIDDLE:
+			# Right position always start from the right-side of the viewport
+			# minus the width of the container
+			Anchors.TOP_RIGHT, Anchors.RIGHT_MIDDLE, Anchors.BOTTOM_RIGHT:
+				place.x = get_viewport().size.x - $Control.rect_size.x
+				add_to_group("right")
+			# Middle placement is the middle of the viewport width,
+			# minues half the height of the container
+			Anchors.TOP_MIDDLE, Anchors.BOTTOM_MIDDLE:
 				place.x = get_viewport().size.x / 2 - $Control.rect_size.x / 2
+		# Now we adjust the y position. Same logic for
 		match placement:
-			Placements.TOP_LEFT, Placements.TOP_MIDDLE, Placements.TOP_RIGHT:
+			# Top position always start from y == 0,
+			# which means top of the viewport
+			Anchors.TOP_LEFT, Anchors.TOP_MIDDLE, Anchors.TOP_RIGHT:
 				place.y = 0
 				add_to_group("top")
-			Placements.BOTTOM_LEFT, Placements.BOTTOM_MIDDLE, Placements.BOTTOM_RIGHT:
+			# Bottom position always start from the bottom of the viewport
+			# minus the height of the container
+			Anchors.BOTTOM_LEFT, Anchors.BOTTOM_MIDDLE, Anchors.BOTTOM_RIGHT:
 				place.y = get_viewport().size.y - $Control.rect_size.y
 				add_to_group("bottom")
-			Placements.RIGHT_MIDDLE, Placements.LEFT_MIDDLE:
+			# Middle placement is the middle of the viewport height
+			# minus half the height of the container
+			Anchors.RIGHT_MIDDLE, Anchors.LEFT_MIDDLE:
 				place.y = get_viewport().size.y / 2 - $Control.rect_size.y / 2
-#		if name == "Deck":
-#			print('view: ', get_viewport().size.y, ' size: ',$Control.rect_size,' pos: ',position,' place: ', place)
+		# Now we try to discover if more than one CardContainer share
+		# the same anchor and the figure out which to displace.
+		var duplicate_anchors := {}
+		# All CardContainer belong to the "card_containers" group
+		# So we gather them in a list
+		for container in get_tree().get_nodes_in_group("card_containers"):
+			# I could have made this code a bit more optimal
+			# but Godot didn't like that sort of logic
+			# So I just ensure each anchor is a key, and contains
+			# an empty list
+			if not duplicate_anchors.get(container.placement):
+				duplicate_anchors[container.placement] = []
+			# For each anchor, I add to the list all the CardContainers
+			# which are placed in that anchor
+			duplicate_anchors[container.placement].append(container)
+		# Hook for the debugger
+		if _debugger_hook:
+			pass
+		for anchor in duplicate_anchors:
+			# I only iterate on the anchor that this CardContainer is set
+			# And only if there's more than one CardContainer using it.
+			if anchor == placement and duplicate_anchors[anchor].size() > 1:
+				# This variable will hold all the CardContainers which share it
+				var cc_array =  duplicate_anchors[anchor]
+				# This function sorts the CardContainers sharing the same anchor
+				# based on their preferred index to push.
+				# If they're set to push the "lowest" index, then the
+				# containers with thew lower index will be pushed to the
+				# back of the array.
+				# Otherwise the containers with the highest index will be at
+				# The back of the array.
+				# This allows us to control which node will be "pushed".
+				cc_array.sort_custom(CFUtils,"sort_by_shift_priority")
+				# We reset this variable every time
+				accumulated_shift = Vector2(0,0)
+				# Now we start going through the sorted array of CardContainers
+				# Since the array is sorted from not-moved, to move-the-furthest
+				# We will adjust the amount we move by the amount of others
+				# Which we have passed through
+				for cc in cc_array:
+					# if we find self, then we stop. If self is the first
+					# container in the array, this means it won't move at all
+					if cc == self:
+						place += accumulated_shift
+						break
+					# If we didn't find self, then we increase the amount
+					# This container will move, by the combined size of
+					# other containers in the array before it.
+					match overlap_shift_direction:
+						CFConst.OverlapShiftDirection.UP:
+							accumulated_shift.y -= cc.control.rect_size.y
+						CFConst.OverlapShiftDirection.DOWN:
+							accumulated_shift.y += cc.control.rect_size.y
+						CFConst.OverlapShiftDirection.LEFT:
+							accumulated_shift.x -= cc.control.rect_size.x
+						CFConst.OverlapShiftDirection.RIGHT:
+							accumulated_shift.x += cc.control.rect_size.x
+		# Finally, we move to the right location.
 		position = place
-
-
-func _on_viewport_resized() -> void:
-	if ProjectSettings.get("display/window/stretch/mode") == "disabled":
-		re_place()

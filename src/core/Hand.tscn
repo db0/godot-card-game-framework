@@ -60,3 +60,27 @@ text = "R"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 490, 120 )
 shape = SubResource( 3 )
+
+[node name="Debug" type="VBoxContainer" parent="."]
+margin_left = 473.045
+margin_top = -58.7338
+margin_right = 513.045
+margin_bottom = -18.7338
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Position" type="Label" parent="Debug"]
+margin_right = 40.0
+margin_bottom = 14.0
+
+[node name="AreaPos" type="Label" parent="Debug"]
+margin_top = 18.0
+margin_right = 40.0
+margin_bottom = 32.0
+
+[node name="Size" type="Label" parent="Debug"]
+margin_top = 36.0
+margin_right = 40.0
+margin_bottom = 50.0

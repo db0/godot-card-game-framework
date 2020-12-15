@@ -792,8 +792,9 @@ func move_to(targetHost,
 			if set_is_faceup(true) == CFConst.ReturnCode.FAILED:
 				print("ERROR: Something went unexpectedly in set_is_faceup")
 		elif targetHost.is_in_group("piles"):
-			# The below checks if the container we're moving is in popup
-			# If the card is also in a popup, we assume we're moving back
+			# The below checks if the pile we're moving is in a popup
+			# If the card is also in a popup of the same pile
+			# we assume we're moving back
 			# to the same container, so we do nothing
 			# The finite state machine  will reset the card to its position
 			if "CardPopUpSlot" in parentHost.name \
@@ -1583,10 +1584,21 @@ func _process_card_state() -> void:
 						c.reorganize_self()
 				# When zooming in, we also want to move the card higher,
 				# so that it's not under the screen's bottom edge.
+				# We multiple with 0.25 to offset the increase in size
+				# due to the 1.5 scale coming later.
+				var oval_offset = 0.0
+				# The below calculation ensures that rotated cards
+				# Don't raise too much over the hand location, causing the card
+				# focus to spazz-out.
+				# This needs to be improved, as the multiplier needs to be
+				# based on the angle somehow.
+				if cfc.hand_use_oval_shape:
+					oval_offset = (90 - abs(_recalculate_rotation())) * 0.75
 				_target_position = expected_position \
 						- Vector2($Control.rect_size.x \
 						* 0.25,$Control.rect_size.y \
-						* 0.5 + cfc.NMAP.hand.bottom_margin)
+						* 0.5 + cfc.NMAP.hand.bottom_margin \
+						- oval_offset)
 				_target_rotation = expected_rotation
 				# We make sure to remove other tweens of the same type
 				# to avoid a deadlock
@@ -1838,7 +1850,7 @@ func _process_card_state() -> void:
 
 
 # Get the angle on the ellipse
-func _get_angle_by_index(index_diff = null):
+func _get_angle_by_index(index_diff = null) -> float:
 	var index = get_my_card_index()
 	var hand_size = get_parent().get_card_count()
 	# This to prevent div/0 errors because the card will not be
@@ -1867,7 +1879,7 @@ func _get_oval_angle_by_index(
 		angle = null,
 		index_diff = null,
 		hor_rad = null,
-		ver_rad = null):
+		ver_rad = null) -> float:
 	if not angle:
 		# Get the angle from the point on the oval to the center of the oval
 		angle = _get_angle_by_index(index_diff)

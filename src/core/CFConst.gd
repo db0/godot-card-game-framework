@@ -44,6 +44,33 @@ enum ShuffleStyle {
 	SNAP,
 	OVERHAND,
 }
+# Options for displacing choosing which of the [CardContainer]s
+# sharing the same anchor to displace more.
+# * LOWER: The CardContainer with the lowest index will be displaced more
+# * HIGHER: The CardContainer with the highest index will be displaced more
+# Do not mix containers using both of these settings, unless the conflicting
+# container's OverlapShiftDirection is set to "NONE"
+enum IndexShiftPriority{
+	LOWER
+	HIGHER
+}
+# Options for displacing [CardContainer]s sharing the same anchor
+# * NONE: This CardContainer will never be displaced from its position
+# * UP: This CardContainer will be displaced upwards. Typically used when
+#	this container is using one of the bottom anchors.
+# * DOWN: This CardContainer will be displaced downwards.Typically used when
+#	this container is using one of the top anchors.
+# * LEFT: This CardContainer will be displaced leftwards. Typically used when
+#	this container is using one of the right anchors.
+# * RIGHT: This CardContainer will be displaced rightwards.Typically used when
+#	this container is using one of the left anchors.
+enum OverlapShiftDirection{
+	NONE
+	UP
+	DOWN
+	LEFT
+	RIGHT
+}
 
 # When this is set, the player cannot drop cards on the board.
 # If the card is not hovering over a pile when it is dropped, it will

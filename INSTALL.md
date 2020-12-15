@@ -7,7 +7,7 @@ However if you do so, you'll also need to adjust the variables starting with `PA
 
 Strictly speaking, the tcsn files inside are optional but **highly recommended** as they come preset with all the node configuration needed to run all interactions defined in the code properly.
 
-While you could simply use only the provided scrips and classes, you will then need to adapt your own scenes to contain the nodes required with retaining the the correct names. 
+While you could simply use only the provided scrips and classes, you will then need to adapt your own scenes to contain the nodes required with retaining the the correct names.
 This is easier said than done so use this approach at your own risk.
 
 **It is strongly suggested you start by importing the provided scenes in src and modify them further to fit your own requirements.**
@@ -15,13 +15,13 @@ This is easier said than done so use this approach at your own risk.
 The scripts and scenes inside /src/custom are optional. They are just there to create a sample setup of the capabilties of the framework.
 
 A notable exception to this is the Board.tcsn.
-While optional, it is also referenced from the Main.tcsn and is mandatory to have a board to let the framework work. 
+While optional, it is also referenced from the Main.tcsn and is mandatory to have a board to let the framework work.
 Nevertheless, this one is the easiest to replace with your own custom board.
 Just remember to adjust Main.tcsn to instance your own Board scene under ViewportContainer/Viewport)
 
 ## Global configuration
 
-The framework uses a common singleton called CFControl to control overall configuration. 
+The framework uses a common singleton called CFControl to control overall configuration.
 It also uses a core reference class called CFControl which defines the behaviour of the framework
 
 1. Add CFControl.gd as an autoloaded singleton with name 'cfc'
@@ -41,12 +41,12 @@ The below instructions will set up your game to use the `Card` class as a framew
 2. If you're going to add extra code for your own game in the card scenes, then:
 	* If it's relevant to all cards in your game:
 		1. Modify the `CardTemplate.tcsn` by removing its `CardTemplate.gd` script and adding a new script that extends Card. Give it a new class_name.
-		
+
 		```
 		class_name MyCustomCard
 		extends Card
 		```
-		   
+
 		2. Make sure any extra scripts for different types of cards, extend your new card's class.
 	* If it's only relevant to a specific type of card, remove the script attached to that type's scene, and add a new script. Make that script extend from the Card class or from your own new card class_name.
 
@@ -71,7 +71,9 @@ You now need to populate your Card Definitions:
 
 The below instructions will set up your game to use the `Hand` class as a framework for hand handling.
 
-1. Instance in your board scene, a scene based on `Hand.tcsn`. Adjust its position on your board with code or visually
+1. Instance in your board scene, a scene based on `Hand.tcsn`.
+
+2. Adjust its Placement variable on the editor according to where you want to it exist. We suggest Bottom Middle initially
 
 2. If you want to customize the code for your own hand functions,
 	modify the `Hand.tcsn` by removing its `Hand.gd` script and adding a new script that extends Hand. Give it a new class_name.
@@ -94,24 +96,29 @@ Like with Card, the node layout is tightly woven in the code. Amend at your own 
 
 The below instructions will set up your game to use the `Pile` class as a framework for pile handling.
 
-1. Instance in your board scene, as many pile scenes as needed, based on `Pile.tcsn`. Adjust their position on your board with code or visually
+1. Instance in your board scene, as many pile scenes as needed, based on `Pile.tcsn`.
+2. Adjust its Placement variable on the editor according to where you want to it exist. Typically you want one of the corners such as Bottom Left or Bottom Right
+3. If you want multiple piles to share the same corner, adjust the Overlap Shift Direction of the Pile that you want to be pushed from the corner accordingly.
+4. If you have more than 2 piles sharing the same corner, adjust the Index Shift Priority of those that will move. Make sure they're all the same (Higher or Lower)
+5. For each pile, decide which shuffle style you want to use. Default is "auto"
+6. For each pile, decide if the cards inside are by default face-up or face-down. Check the "Faceup Cards" accordingly.
+7. In case you want the hand to draw cards from this pile. (See the custom `Deck.tcsn` node for a sample of this setup)
+	1. connect your `_on_input_event` signal to self and make it emit a "draw card" signal containing `self` as an argument.
+	2. Connect the "draw card" signal to the Hand node's `draw_card()` method.
 
-2. For each pile, decide which shuffle style you want to use. Default is "auto"
-3. For each pile, decide if the cards inside are by default face-up or face-down. Check the "Faceup Cards" accordingly.
+If you want to customize the code for your own pile functions then:
 
-4. If you want to customize the code for your own pile functions then:
-	* If it's relevant to all piles in your game
-		1. Modify the `Pile.tcsn` by removing its `Pile.gd` script and adding a new script that extends Pile. Give it a new class_name.
-		
-		```
-		class_name MyCustomPle
-		extends Pile
-		```
-		
-	* If it's only relevant to a specific type of pile (e.g. deck, or discard), remove the script attached to that type's scene, and add a new script.
-		Make that script extend from the Pile class or from your own new pile class_name if you've made one.
+* If it's relevant to all piles in your game
+	1. Modify the `Pile.tcsn` by removing its `Pile.gd` script and adding a new script that extends Pile. Give it a new class_name.
 
-2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the custom Deck.tcsn node for a sample of such a signal)
+	```
+	class_name MyCustomPle
+	extends Pile
+	```
+
+* If it's only relevant to a specific type of pile (e.g. deck, or discard), remove the script attached to that type's scene, and add a new script.
+	Make that script extend from the Pile class or from your own new pile class_name if you've made one.
+
 
 If you want to customize the `Pile.tcsn`, the following nodes are fairly safe to manipulate
 
@@ -144,10 +151,10 @@ By default the game has both active, but the viewport focus requires a bit more 
 
 If you do not already have anything like this, you can simply use the `Main.tcsn` scene as a template and modify accordingly. The framework will utilize it automatically if it detects a Main.tcsn as the root.
 
-If you want to use your own root scene, then you can simply extend it from the ViewportCardFocus class to inherit all the required methods. 
+If you want to use your own root scene, then you can simply extend it from the ViewportCardFocus class to inherit all the required methods.
 The Main.tcsn has a fairly simple layout, however it's still not recommended to replace it, but instead to tweak it what has already been provided.
 
-If you do not want or need the viewport focus, then you can simply ignore it. 
+If you do not want or need the viewport focus, then you can simply ignore it.
 However you'll need to make sure table cards are legible as they are since there's no other good way to get a closeup of them without viewports
 
 ## Unit Testing

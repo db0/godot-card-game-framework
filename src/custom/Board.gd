@@ -17,6 +17,8 @@ func _ready() -> void:
 	# Fill up the deck for demo purposes
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
+	for container in get_tree().get_nodes_in_group("card_containers"):
+		container.re_place()
 
 
 # This function is to avoid relating the logic in the card objects
@@ -90,4 +92,17 @@ func load_test_cards(extras := 11) -> void:
 		card._determine_idle_state()
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 		#card.modulate.a = 0 # We use this for a nice transition effect
-	$Deck.reorganize_stack()
+#	$Deck.reorganize_stack()
+#	var test_card_array2 := []
+#	if extras == 11:
+#	# I ensure there's of each test card, for use in GUT
+#		for card_name in test_cards:
+#			test_card_array2.append(cfc.instance_card(card_name))
+#	for card in test_card_array2:
+#		$Deck2.add_child(card)
+#		# warning-ignore:return_value_discarded
+#		card.set_is_faceup(false,true)
+#		card._determine_idle_state()
+#		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
+#		#card.modulate.a = 0 # We use this for a nice transition effect
+#	$Deck2.reorganize_stack()

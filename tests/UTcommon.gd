@@ -79,6 +79,7 @@ func drag_card(card: Card, target_position: Vector2, interpolation_speed := "fas
 		extra_offset = Vector2(10,60)
 	board._UT_interpolate_mouse_move(card.global_position + extra_offset,
 			board._UT_mouse_position,mouse_speed)
+	print(card,card.global_position)
 	yield(yield_for(mouse_yield_wait), YIELD)
 	click_card(card)
 	if interpolation_speed == "debug":
