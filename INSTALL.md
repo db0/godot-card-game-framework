@@ -22,13 +22,11 @@ Just remember to adjust Main.tcsn to instance your own Board scene under Viewpor
 ## Global configuration
 
 The framework uses a common singleton called CFControl to control overall configuration.
-It also uses a core reference class called CFControl which defines the behaviour of the framework
+It also uses a core reference class called CFConst which defines the behaviour of the framework
 
 1. Add CFControl.gd as an autoloaded singleton with name 'cfc'
 
 2. Edit the `var nodes_map` in CFConst.gd in the "Behaviour Constants" section, to point to your board and other container scenes (Deck, discard etc)
-
-4. Edit the pile_names and hand_names arrays with the names of your respective piles (deck, discard etc) and hand(s).
 
 ## Card class
 
@@ -40,7 +38,7 @@ The below instructions will set up your game to use the `Card` class as a framew
 
 2. If you're going to add extra code for your own game in the card scenes, then:
 	* If it's relevant to all cards in your game:
-		1. Modify the `CardTemplate.tcsn` by removing its `CardTemplate.gd` script and adding a new script that extends Card. Give it a new class_name.
+		1. Modify the `CardTemplate.tcsn` by detaching its `CardTemplate.gd` script and adding a new script that extends Card. Give it a new class_name.
 
 		```
 		class_name MyCustomCard
@@ -76,7 +74,7 @@ The below instructions will set up your game to use the `Hand` class as a framew
 2. Adjust its Placement variable on the editor according to where you want to it exist. We suggest Bottom Middle initially
 
 2. If you want to customize the code for your own hand functions,
-	modify the `Hand.tcsn` by removing its `Hand.gd` script and adding a new script that extends Hand. Give it a new class_name.
+	modify the `Hand.tcsn` by detaching its `Hand.gd` script and adding a new script that extends Hand. Give it a new class_name.
 
 	```
 	class_name MyCustomHand
@@ -100,7 +98,7 @@ The below instructions will set up your game to use the `Pile` class as a framew
 2. Adjust its Placement variable on the editor according to where you want to it exist. Typically you want one of the corners such as Bottom Left or Bottom Right
 3. If you want multiple piles to share the same corner, adjust the Overlap Shift Direction of the Pile that you want to be pushed from the corner accordingly.
 4. If you have more than 2 piles sharing the same corner, adjust the Index Shift Priority of those that will move. Make sure they're all the same (Higher or Lower)
-5. For each pile, decide which shuffle style you want to use. Default is "auto"
+5. For each pile, decide which Shuffle Style you want to use. Default is "auto"
 6. For each pile, decide if the cards inside are by default face-up or face-down. Check the "Faceup Cards" accordingly.
 7. In case you want the hand to draw cards from this pile. (See the custom `Deck.tcsn` node for a sample of this setup)
 	1. connect your `_on_input_event` signal to self and make it emit a "draw card" signal containing `self` as an argument.
@@ -109,7 +107,7 @@ The below instructions will set up your game to use the `Pile` class as a framew
 If you want to customize the code for your own pile functions then:
 
 * If it's relevant to all piles in your game
-	1. Modify the `Pile.tcsn` by removing its `Pile.gd` script and adding a new script that extends Pile. Give it a new class_name.
+	1. Modify the `Pile.tcsn` by detaching its `Pile.gd` script and adding a new script that extends Pile. Give it a new class_name.
 
 	```
 	class_name MyCustomPle
@@ -163,7 +161,8 @@ Do the following if you want to use/import the provided unit tests.
 
 1. [install Gut](https://github.com/bitwes/Gut/wiki/Install) and do the relevant setup, if you don't have it already.
   **Important:** Due to https://github.com/bitwes/Gut/issues/239 I had to modify the gut tests for assert_almost_eq and assert_almost_ne to work with Vector2. If you install the offical version, you will start seeing a lot of failures.
-  You can either use the GUT version included in this repository, or manually edit the tests to work (will require a lot of lines of extra code), or manually edit yout gut file tests.gd and adapt the asserts likewise.
-2. If you followed the standard Gut instructions, you should have already have created the tests folder, copy the test_*.gd from /tests/unit inside your own `res://tests/unit`.
+  You can either use the GUT version included in this repository (in the assets directory), or manually edit the tests to work (will require a lot of lines of extra code), or manually edit yout gut file tests.gd and adapt the asserts likewise.
+2. If you followed the standard Gut instructions, you should have already have created the tests folder, copy all the files inside `tests` to your own `res://tests/unit` directory.
 3. Edit TestVars.gd and modify the boardScene const to point to the root board (i.e. where the cards are played) of your game.
 4. You need to use the Board class on the root of your game or you need to copy the code inside BoardTemplate.tcsn into your own board (at there's necessary Unit Testing code in there)
+5. You need to have a Main.tcsn scene.

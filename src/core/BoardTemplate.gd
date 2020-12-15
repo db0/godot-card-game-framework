@@ -25,7 +25,8 @@ onready var mouse_pointer = \
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	add_child(mouse_pointer)
-
+	for container in get_tree().get_nodes_in_group("card_containers"):
+		container.re_place()
 
 
 func _process(_delta: float) -> void:

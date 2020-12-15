@@ -17,8 +17,7 @@ func _ready() -> void:
 	# Fill up the deck for demo purposes
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
-	for container in get_tree().get_nodes_in_group("card_containers"):
-		container.re_place()
+
 
 
 # This function is to avoid relating the logic in the card objects
