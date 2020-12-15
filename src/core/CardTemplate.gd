@@ -1602,7 +1602,7 @@ func _process_card_state() -> void:
 				_target_rotation = expected_rotation
 				# We make sure to remove other tweens of the same type
 				# to avoid a deadlock
-				_add_tween_position(expected_position, _target_position)
+				_add_tween_position(expected_position, _target_position, 0.3)
 				_add_tween_scale(scale, Vector2(1.5,1.5))
 
 				if cfc.hand_use_oval_shape:
@@ -1701,7 +1701,7 @@ func _process_card_state() -> void:
 				_add_tween_position(position, _target_position, 0.4)
 				if not scale.is_equal_approx(Vector2(1,1)):
 					_add_tween_scale(scale, Vector2(1,1),0.4)
-				_add_tween_rotation($Control.rect_rotation,_target_rotation)
+				_add_tween_rotation($Control.rect_rotation,_target_rotation, 0.4)
 				$Tween.start()
 				state = CardState.IN_HAND
 

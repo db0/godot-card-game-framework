@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1 (Ongoing)
+
+### Tweaks
+
+* Synchronized card focus animations
+
 
 ## 1.0
 
