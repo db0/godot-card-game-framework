@@ -13,9 +13,3 @@ corner_radius_bottom_left = 10
 
 [node name="Front" parent="Control" index="1"]
 custom_styles/panel = SubResource( 1 )
-
-[node name="Name" parent="Control/Front/CardText" index="0"]
-text = ""
-
-[node name="Abilities" parent="Control/Front/CardText" index="4"]
-text = "While on board, this card will flip face-down and rotate 180 degrees a target"

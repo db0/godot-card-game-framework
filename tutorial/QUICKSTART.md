@@ -1,5 +1,7 @@
 # Godot Card Game Framework Quick Start Guide
 
+**Written for v1.0**
+
 This guide is meant to take you through using the Card Game Framework (CGF from now on) for the first time in a simple step-by-step approach, starting from brand a new project.
 
 Hopefully by the end of this tutorial you'll have a better idea of what goes where and how things connect to each other. 

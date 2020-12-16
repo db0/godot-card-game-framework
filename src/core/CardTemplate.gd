@@ -35,8 +35,17 @@ enum CardState {
 const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
 const _CARD_CHOICES_SCENE = preload(_CARD_CHOICES_SCENE_FILE)
 
-
-
+# Maps the location of the card front labels so that they're findable even when
+# The card front is customized for games of different needs
+const CARD_LABELS := {
+	"Name": "Control/Front/Margin/CardText/Name",
+	"Type": "Control/Front/Margin/CardText/Type",
+	"Tags": "Control/Front/Margin/CardText/Tags",
+	"Requirements": "Control/Front/Margin/CardText/Requirements",
+	"Abilities": "Control/Front/Margin/CardText/Abilities",
+	"Cost": "Control/Front/Margin/CardText/HB/Cost",
+	"Power": "Control/Front/Margin/CardText/HB/Power",
+}
 # Emitted whenever the card is rotated
 # The signal must send its name as well (in the trigger var)
 # Because it's sent by the SignalPropagator to all cards and they use it
@@ -74,6 +83,8 @@ signal card_targeted(card,trigger,details)
 # a cyclic reference as the scripting engine refers back to the Card class.
 var scripting_engine = load(CFConst.PATH_CORE + "ScriptingEngine.gd")
 
+# The properties dictionary will be filled in by the setup() code
+# according to the card definintion.
 export var properties : Dictionary
 # We export this variable to the editor to allow us to add scripts to each card
 # object directly instead of only via code.
@@ -120,17 +131,21 @@ var _fancy_move_second_part := false
 # We use this to track multiple cards
 # when our card is about to drop onto or target them
 var _potential_cards := []
+# We use this to track multiple [CardContainer]s
+# when our card is about to drop onto them
 var _potential_containers := []
+var _extra_text_shrink := 0.0
 
 # Used for picking a card to start the compiler on
 var _debugger_hook := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
 
+
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
 onready var _control = $Control
-onready var _card_text = $Control/Front/CardText
+onready var _card_text = $Control/Front/Margin/CardText
 # The node which has the image of the card back
 # And the methods which are used for its potential animation.
 onready var card_back = $Control/Back
@@ -144,6 +159,7 @@ onready var tokens = $Control/Tokens
 onready var targeting_arrow = $TargetLine
 # The node which manipulates the highlight borders.
 onready var highlight = $Control/Highlight
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -176,8 +192,8 @@ func _init_card_name():
 	if not card_name:
 		# If the variable has not been set on start
 		# But the Name label has been set, we set our name to that instead
-		if $Control/Front/CardText/Name.text != "":
-			set_card_name($Control/Front/CardText/Name.text)
+		if get_node(CARD_LABELS["Name"]).text != "":
+			set_card_name(get_node(CARD_LABELS["Name"]).text)
 		else:
 			# The node name changes depeding on how many other cards
 			# with the same node name are siblings
@@ -486,22 +502,22 @@ func modify_property(property: String, value, is_init = false, check := false) -
 			# These are standard properties which is simple a String to add to the
 			# label.text field
 			if property in CardConfig.PROPERTIES_STRINGS:
-				_set_label_text($Control/Front/CardText.get_node(property),
-						value)
-				# $Control/Front/CardText.get_node(label).text = properties[label]
+				_set_label_text(get_node(CARD_LABELS[property]), value)
+				# If we have an empty property, we let the other labels
+				# use the space vertical space it would have taken.
 				if value == "" :
-					$Control/Front/CardText.get_node(property).visible = false
+					get_node(CARD_LABELS[property]).visible = false
 			# These are int or float properties which need to be converted
 			# to a string with some formatting.
 			#
 			# In this demo, the format is defined as: "labelname: value"
 			elif property in CardConfig.PROPERTIES_NUMBERS:
-				_set_label_text($Control/Front/CardText.get_node(property),property
+				_set_label_text(get_node(CARD_LABELS[property]),property
 						+ ": " + str(value))
 			# These are arrays of properties which are put in a label with a simple
 			# Join character
 			elif property in CardConfig.PROPERTIES_ARRAYS:
-				_set_label_text($Control/Front/CardText.get_node(property),
+				_set_label_text(get_node(CARD_LABELS[property]),
 						CFUtils.array_join(value,
 						CFConst.ARRAY_PROPERTY_JOIN))
 	return(retcode)
@@ -635,7 +651,7 @@ func get_is_viewed() -> bool:
 # Setter for card_name
 # Also changes the card label and the node name
 func set_card_name(value : String) -> void:
-	var name_label = $Control/Front/CardText/Name
+	var name_label = get_node(CARD_LABELS["Name"])
 	_set_label_text(name_label,value)
 	name = value
 	card_name = value
@@ -652,7 +668,7 @@ func get_card_name() -> String:
 # It's preferrable to set card_name instead.
 func set_name(value : String) -> void:
 	.set_name(value)
-	$Control/Front/CardText/Name.text = value
+	get_node(CARD_LABELS["Name"]).text = value
 	card_name = value
 
 # Setter for card_rotation.
@@ -1993,6 +2009,12 @@ func _set_label_text(node, value):
 	# We do not want some fields, like the name, to be too small.
 	# see CardConfig.TEXT_EXPANSION_MULTIPLIER documentation
 	var allowed_expansion = CardConfig.TEXT_EXPANSION_MULTIPLIER.get(node.name,1)
+	var shrink_size : float
+	# If this node is the specified node that compensates for other nodes
+	# increasing their y-rect, then it has less y-space for itself according
+	# to the amount the others increased.
+	if node.name in CardConfig.SHRINK_LABEL:
+		shrink_size = _extra_text_shrink
 	var label_size = node.rect_size
 	var label_font = node.get("custom_fonts/font").duplicate()
 	var line_height = label_font.get_height()
@@ -2010,7 +2032,7 @@ func _set_label_text(node, value):
 	# If the y-size of the wordwrapped text would be bigger than the current
 	# available y-size foir this label, we reduce the text, until we
 	# it's small enough to stay within the boundaries
-	while label_rect_y > label_size.y * allowed_expansion:
+	while label_rect_y > label_size.y * allowed_expansion - shrink_size:
 		label_font.size = label_font.size - 1
 		if label_font.size < 3:
 			label_font.size = 2
@@ -2020,6 +2042,12 @@ func _set_label_text(node, value):
 				/ line_height \
 				* (line_height + line_spacing) \
 				- line_spacing
+	# If we allowed the card to expand its initial rect_size.y
+	# we need to compensate somewhere by reducing another label's size.
+	# We store the amount we increased in size from the
+	# initial amount,m for this purpose.
+	if label_rect_y > label_size.y:
+		_extra_text_shrink = label_rect_y - label_size.y
 	node.set("custom_fonts/font", label_font)
 	node.rect_min_size = label_size
 	node.text = value

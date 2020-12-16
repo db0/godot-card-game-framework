@@ -2,10 +2,17 @@
 
 ## 1.1 (Ongoing)
 
+We're now [added a quickstart guide](tutorial/QUICKSTART.md)!
+
+### New Features
+
+* Card Front labels should be defined in the CARD_LABELS constant. This allows any developer to modify the Front control nodes layout and still allow the setup() to find the label nodes to modify them
+
 ### Tweaks
 
 * Synchronized card focus animations
-
+* Changed colour for the Requirements label to make it more obvious in the demonstration that an empty label is hidden
+* If a label expands too much in rect._size.y, a pre-specified label will shrink to compensate. Defined in CardConfig.
 
 ## 1.0
 

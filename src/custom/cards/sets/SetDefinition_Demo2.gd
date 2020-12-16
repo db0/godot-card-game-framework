@@ -14,6 +14,7 @@ const CARDS := {
 				+ "a target card from the game" \
 				+ "\n\nAfter another card is flipped, gain a blood token.",
 		"Cost": 0,
+		"Power": 9001,
 	},
 	"Multiple Choices Test Card": {
 		"Type": "Blue",

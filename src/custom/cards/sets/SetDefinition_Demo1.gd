@@ -7,10 +7,11 @@ const CARDS := {
 	"Test Card 1": {
 		"Type": "Blue",
 		"Tags": ["Tag 1","Tag 2"],
-		"Requirements": "",
+		"Requirements": "Demo Requirements",
 		"Abilities": "While on board, this will rotate itself." \
 				+ "\n\nWhile in hand, this will spawn a test card on the board.",
 		"Cost": 0,
+		"Power": 0,
 	},
 	"Test Card 2": {
 		"Type": "Red",
@@ -20,6 +21,7 @@ const CARDS := {
 				+ "and another target."\
 				+ "\n\nWhile on the hand, this card will remove itself " \
 				+ "from the game",
-		"Cost": 0,
+		"Cost": 2,
+		"Power": 5,
 	},
 }
