@@ -109,11 +109,14 @@ Please see the [ScriptDefinitions](https://github.com/db0/godot-card-gaming/wiki
 
 The game comes with some sample scripted cards which can be found under `res://src/custom/cards/sets`.
 
+## Getting help, talking dev, or general chat
+
+You can join us on Discord with this invite code: https://discord.gg/AjZMFY7jD4
+
 ## Contributing
 
 Please see the [Contribution Guide](CONTRIBUTING.md)
 
-You can also join us on Discord with this invite code: https://discord.gg/AjZMFY7jD4
 
 ## Credits
 
