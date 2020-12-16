@@ -2,6 +2,8 @@
 
 Simply copy the src folder to your project.
 
+[We've created a quickstart guide](tutorial/QUICKSTART.md) which takes you up to the point where you're creating your first custom card. Once you've done this, continue with the installation guide for more detailed information.
+
 You can rename the folder or any subfolders as you wish to fit your directory structure, just make sure you do it within Godot to allow it to rename all instanced scenes.
 However if you do so, you'll also need to adjust the variables starting with `PATH_` inside `CFControl.gd`.
 
