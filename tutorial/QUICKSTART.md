@@ -68,12 +68,11 @@ In this part, we'll define our card using a simply json format which will automa
 6. Change "Type" to "Creature". This tells the card to use your Creature.tcsn scene you just created
 7. You can leave the other properties as they are, or change them. But we need to define its power. So move your cursor to the "cost" line and again press Ctrl+D to duplicate it.
 8. Rename the key of the new line to "Power" and set the number to anything.
-	![Definition Modified](3.8-new_card_definition_modified)
+	![Definition Modified](3.8-new_card_definition_modified.png)
 
 Since you're using the tutorial code. The card will automatically be included in the test deck. Try it out now. Press F5 and draw some cards. your "Tutorial Creature" card should appear randomly among the cards drawn. If it didn't, maybe you got very unlucky, just reload the game. ;)
 
 Congratulations, you have now defined your first card! 
-
 	![Success](3.end-creature-in-game.png)
 
 Hopefully this will give you a basic idea of where things are. Continue exploring and changing things and you should be able to customize the framework to your needs in no-time. 
