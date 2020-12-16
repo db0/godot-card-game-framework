@@ -61,7 +61,7 @@ In this part, we'll define our card using a simply json format which will automa
 8. Rename the key of the new line to "Power" and set the number to anything.
 	![Definition Modified](3.8-new_card_definition_modified.png)
 
-Since you're using the tutorial code. The card will automatically be included in the test deck. Try it out now. Press F5 and draw some cards. your "Tutorial Creature" card should appear randomly among the cards drawn. If it didn't, maybe you got very unlucky, just reload the game. ;)
+Since you're using the demonstration code, the new card will automatically be included in the starting deck. Try it out now! Press F5 and draw some cards by clicking on the deck. Your "Tutorial Creature" card should appear randomly among the cards drawn. If it didn't, maybe you got really unlucky, just reload the game and try again. ;)
 
 Congratulations, you have now defined your first card! 
 	![Success](3.end-creature-in-game.png)
