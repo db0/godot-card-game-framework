@@ -6,15 +6,6 @@ Hopefully by the end of this tutorial you'll have a better idea of what goes whe
 
 Think of this as the "Hello World" instructions for this Framework.
 
-## Core Concepts
-
-The CGF tries to standardize some standard terms in order to keep track of what we're talking about. 
-
-* Card: A card is the core concept of our card game. In CGF, the Card class holds the logic for manipulating and moving card scenes around.
-* CardContainer: As understood from the name, this is a container which is meant to hold cards. This term is a supergroup which contains both piles and hands
-* Hand: A CardContainer which is meant to hold cards face up, and oriented in a way that they're all visible to the player.
-* Pile: A CardContainer which is meant to hold cards stacked on top of each other. The deck and discard pile would be Piles.
-* Board: The play area where cards can be placed and where the main game happens.
 
 ## Step 1: Create new project and setup to use CGF
 
@@ -79,6 +70,18 @@ Hopefully this will give you a basic idea of where things are. Continue explorin
 
 Have fun!
 
-## Addendum: How Is Babby Formed?
+## Addendum 1: How Is Babby Formed?
 
 If you're wondering how the Initial cards you see starting in the deck are added, this is all defined inside `res://src/custom/Board.gd`. Inside `ready()` you'll find a call to `load_test_cards()` which loads the deck with a random selection of cards among all those defined. This is why your `Tutorial Creature` magically appeared in the deck without you having to do anything special. Your game should of course include some logic in creating, storing and loading decks instead of relying on random chance. But this is currently outsided the scope of this framework.
+
+## Addendum 2: Core Concepts
+
+The CGF tries to standardize some standard terms in order to keep track of what we're talking about. 
+
+* **Card:** A card is the core concept of our card game. In CGF, the Card class holds the logic for manipulating and moving card scenes around.
+* **CardContainer:** As understood from the name, this is a container which is meant to hold cards. This term is a supergroup which contains both piles and hands
+* **Hand:** A CardContainer which is meant to hold cards face up, and oriented in a way that they're all visible to the player.
+* **Pile:** A CardContainer which is meant to hold cards stacked on top of each other. The deck and discard pile would be Piles.
+* **Board:** The play area where cards can be placed and where the main game happens.
+* **Manipulation Button:** A button which appears on a Card or CardContainer when you mouse over it. Code can be attached to it to do practically anything, but they tend to manipulate the object they're attached to in some way.
+* **Token:** a counter that goes on a card to track and measure various changes as dictated by the game rules
