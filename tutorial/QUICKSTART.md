@@ -24,17 +24,17 @@ In this part, we'll create our first new card type which will serve as the basel
 For this demonstration, let's create a "creature" card.
 
 1. In the Godot Filesystem view, navigate to `res://src/core/`
-2. Right-click on `CardTemplate.tcsn` and select "New Inherited Scene". A new tab will open on the top called "[unsaved]". Press "F1" to ensure you're on the 2D view. You should see a grey card scene. This is the baseline coming from the CGF. We're not going to modify that to fit our purposes.
+2. Right-click on `CardTemplate.tcsn` and select "New Inherited Scene". A new tab will open on the top called "[unsaved]". Press "F1" to ensure you're on the 2D view. You should see a grey card scene. This is the baseline coming from the CGF. We're now going to modify that to fit our purposes.
 3. In the Godot Scene tab, double-click on "Card" to rename the scene root. Let's rename it to "Creature" to remind ourselves what this is when working on our scenes.
 4. In the scene, navigate and click on the "Control/Front" node. 
 5. In the inspector, find and expand custom styles. Then click on the arrow next to StyleBox and select "Make Unique".
 6. Click on the "StyleBox" label, to expand its properties
 7. Click on the "Bg Color". The colour picker will appear. Select a background colour you want to use for your creature cards.
 8. The basic card template has most of the information a creature would need, but what would a creature be without some Fighting power. Let's add this now. 
-	Right click on Cost > search for Label and add it. The new node will appear under the "Cost" label.
+	Right click on Card Text > Add Child Node > search for "Label" and add it. The new label node will appear under the "Cost" node.
 9. Double click it to rename it to "Power". You can add some sample power to see how it looks. If you cannot see it against the background colour, you will need to adjust the font. Let's provide a setup which should work with any background colour now.
 10. With Power selected, in the inspector expand "Custom Fonts". Click on "[empty]" and select "New Dynamic Font". 
-11. Click on the "Dynamic Font" dropdown to open its properties. Click on "Font". Click on "[empty]" next to Font Data. Select "load". If you've copied the "fonts" directory into your project, browse into res://src/fonts and select xolonium. Otherwise load any other font file you would like.
+11. Click on the "Dynamic Font" dropdown to open its properties. Click on "Font". Click on "[empty]" next to Font Data. Select "load". If you've copied the "fonts" directory into your project, browse into `res://src/fonts` and select xolonium. Otherwise load any other font file you would like.
 12. Under "Font" expand settings. Put "Outline size" to 2 and "Outline color" to black. Check "use filter". White fonts with black outline should be visible against any background.
 13. Press Ctrl+S to save our new scene. Naviate to `res://src/custom/cards` and save it as `Creature.tcsn`. We now have our template scene, but our game is not configuration to populate it just yet.
 14. Open `res://custom/card/CardConfig.gd`. This is where we specify what kind of information each label adds. Since the power of each creature is just a number, we'll add it as a number.
@@ -72,7 +72,7 @@ Have fun!
 
 ## Addendum 1: How Is Babby Formed?
 
-If you're wondering how the Initial cards you see starting in the deck are added, this is all defined inside `res://src/custom/Board.gd`. Inside `ready()` you'll find a call to `load_test_cards()` which loads the deck with a random selection of cards among all those defined. This is why your `Tutorial Creature` magically appeared in the deck without you having to do anything special. Your game should of course include some logic in creating, storing and loading decks instead of relying on random chance. But this is currently outsided the scope of this framework.
+If you're wondering how the Initial cards you see starting in the deck are added, this is all defined inside `res://src/custom/Board.gd`. Inside `_ready()` you'll find a call to `load_test_cards()` which loads the deck with a random selection of cards among all those defined. This is why your `Tutorial Creature` magically appeared in the deck without you having to do anything else after defining it. Your game should of course include some logic in creating, storing and loading decks instead of relying on random chance. But this is currently outsided the scope of this framework (at this point).
 
 ## Addendum 2: Core Concepts
 
