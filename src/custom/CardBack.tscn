@@ -12,7 +12,7 @@ corner_radius_bottom_left = 10
 [node name="CardBack" type="Panel"]
 margin_right = 150.0
 margin_bottom = 240.0
-mouse_filter = 1
+mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 1 )
 __meta__ = {

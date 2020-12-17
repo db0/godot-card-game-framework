@@ -9,6 +9,7 @@
 ### Tweaks
 
 * Card Back scene has to be defined in the new card_back_design exported variable. You have to select the scene you want from for each different card type (assuming they're using a different one)
+* Switched BoardTemplate to expect Control instead of Node2D, to allow potential GUI elements to orient themselves easier.
 
 ## 1.1
 

@@ -2,7 +2,7 @@
 #
 # It functions almost like a [CardContainer].
 class_name Board
-extends Node2D
+extends Control
 
 
 # Simulated mouse position for Unit Testing

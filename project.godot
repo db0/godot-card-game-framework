@@ -9,7 +9,7 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "Node2D",
+"base": "Control",
 "class": "Board",
 "language": "GDScript",
 "path": "res://src/core/BoardTemplate.gd"

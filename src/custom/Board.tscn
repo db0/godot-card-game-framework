@@ -13,8 +13,14 @@ corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
-[node name="Board" type="Node2D"]
+[node name="Board" type="Control"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
 script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="Deck" parent="." instance=ExtResource( 4 )]
 script = ExtResource( 2 )
@@ -45,9 +51,6 @@ margin_right = 93.0
 [node name="CardCount" parent="DiscardPile/Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" index="0"]
 margin_left = 38.0
 margin_right = 54.0
-
-[node name="MarginContainer" parent="DiscardPile/Control/CenterContainer/VBoxContainer" index="2"]
-margin_right = 93.0
 
 [node name="Hand" parent="." instance=ExtResource( 5 )]
 position = Vector2( 1.12244, 0 )

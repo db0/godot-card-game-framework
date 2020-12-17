@@ -18,14 +18,14 @@ outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 1 )
 
-[sub_resource type="StyleBoxFlat" id=4]
+[sub_resource type="StyleBoxFlat" id=3]
 bg_color = Color( 0.392157, 0.364706, 0.364706, 1 )
 corner_radius_top_left = 15
 corner_radius_top_right = 15
 corner_radius_bottom_right = 15
 corner_radius_bottom_left = 15
 
-[sub_resource type="RectangleShape2D" id=3]
+[sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 78, 123 )
 
 [node name="Pile" type="Area2D" groups=[
@@ -56,9 +56,10 @@ __meta__ = {
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer"]
 margin_left = 47.0
-margin_top = 46.0
+margin_top = 48.0
 margin_right = 109.0
-margin_bottom = 112.0
+margin_bottom = 110.0
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -76,13 +77,15 @@ __meta__ = {
 margin_top = 33.0
 margin_right = 62.0
 margin_bottom = 62.0
+mouse_filter = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_styles/panel = SubResource( 4 )
+custom_styles/panel = SubResource( 3 )
 
 [node name="CenterContainer" type="CenterContainer" parent="Control/CenterContainer/VBoxContainer/PanelContainer"]
 margin_right = 62.0
 margin_bottom = 29.0
+mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -96,11 +99,6 @@ text = "0"
 __meta__ = {
 "_edit_use_anchors_": false
 }
-
-[node name="MarginContainer" type="MarginContainer" parent="Control/CenterContainer/VBoxContainer"]
-margin_top = 66.0
-margin_right = 62.0
-margin_bottom = 66.0
 
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
 margin_left = 2.0
@@ -140,7 +138,7 @@ __meta__ = {
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 78, 123 )
-shape = SubResource( 3 )
+shape = SubResource( 4 )
 
 [node name="ViewPopup" type="PopupPanel" parent="."]
 margin_right = 8.0
