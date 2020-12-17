@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.1 (Ongoing)
+## 1.1
 
 We're now [added a quickstart guide](tutorial/QUICKSTART.md)!
 
