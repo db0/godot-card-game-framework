@@ -131,6 +131,7 @@ var _debugger_hook := false
 var _tween_stuck_time = 0
 # Maps the location of the card front labels so that they're findable even when
 # The card front is customized for games of different needs
+# See _init_front_labels() to change the definition
 var _card_labels := {}
 
 onready var _tween = $Tween
