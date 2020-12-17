@@ -10,7 +10,6 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [node name="Test2" instance=ExtResource( 1 )]
-card_name = "Test Card 2"
 
 [node name="Front" parent="Control" index="1"]
 custom_styles/panel = SubResource( 1 )

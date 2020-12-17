@@ -35,17 +35,6 @@ enum CardState {
 const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
 const _CARD_CHOICES_SCENE = preload(_CARD_CHOICES_SCENE_FILE)
 
-# Maps the location of the card front labels so that they're findable even when
-# The card front is customized for games of different needs
-const CARD_LABELS := {
-	"Name": "Control/Front/Margin/CardText/Name",
-	"Type": "Control/Front/Margin/CardText/Type",
-	"Tags": "Control/Front/Margin/CardText/Tags",
-	"Requirements": "Control/Front/Margin/CardText/Requirements",
-	"Abilities": "Control/Front/Margin/CardText/Abilities",
-	"Cost": "Control/Front/Margin/CardText/HB/Cost",
-	"Power": "Control/Front/Margin/CardText/HB/Power",
-}
 # Emitted whenever the card is rotated
 # The signal must send its name as well (in the trigger var)
 # Because it's sent by the SignalPropagator to all cards and they use it
@@ -140,7 +129,9 @@ var _extra_text_shrink := 0.0
 var _debugger_hook := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
-
+# Maps the location of the card front labels so that they're findable even when
+# The card front is customized for games of different needs
+var _card_labels := {}
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
@@ -167,7 +158,13 @@ func _ready() -> void:
 	# Normally the setup() function should be used to set it,
 	# but setting the name here as well ensures that a card can be also put on
 	# The board without calling setup() and then use its hardcoded labels
+	_init_front_labels()
+	# This ensures card_name is set at the least based on its label or node name
+	# This allows a developer to create individual card instances and simply
+	# name their root node them after their card name,
+	# and the setup() will do the rest.
 	_init_card_name()
+	setup()
 	# First we set the card to always pivot from its center.
 	# We only rotate the Control node however, so the collision shape is not rotated
 	# Looking for a better solution, but this is the best I have until now.
@@ -188,12 +185,33 @@ func _ready() -> void:
 	cfc.signal_propagator.connect_new_card(self)
 
 
-func _init_card_name():
+# This function is used to map the card labels for all cards
+# If you create an instance of this CardTemplate and want to modify their position
+# You need to extend the Card class, and then override this function
+# With your own function defined in the new card type.
+# If you're just adding new labels, without modifying the existing ones
+# You can simply call `._init_front_labels()` from inside the new type
+# Then define your extra labels on top.
+func _init_front_labels() -> void:
+# Maps the location of the card front labels so that they're findable even when
+# The card front is customized for games of different needs
+	_card_labels["Name"] = $Control/Front/Margin/CardText/Name
+	_card_labels["Type"] = $Control/Front/Margin/CardText/Type
+	_card_labels["Tags"] = $Control/Front/Margin/CardText/Tags
+	_card_labels["Requirements"] = $Control/Front/Margin/CardText/Requirements
+	_card_labels["Abilities"] = $Control/Front/Margin/CardText/Abilities
+	_card_labels["Cost"] = $Control/Front/Margin/CardText/HB/Cost
+	_card_labels["Power"] = $Control/Front/Margin/CardText/HB/Power
+
+
+# Ensures that the canonical card name is set in all fields which use it.
+#  var card_name, "Name" label and self.name should use the same string.
+func _init_card_name() -> void:
 	if not card_name:
 		# If the variable has not been set on start
 		# But the Name label has been set, we set our name to that instead
-		if get_node(CARD_LABELS["Name"]).text != "":
-			set_card_name(get_node(CARD_LABELS["Name"]).text)
+		if _card_labels["Name"].text != "":
+			set_card_name(_card_labels["Name"].text)
 		else:
 			# The node name changes depeding on how many other cards
 			# with the same node name are siblings
@@ -467,16 +485,18 @@ func _on_Card_area_exited(area: Area2D) -> void:
 
 # This function handles filling up the card's labels according to its
 # card definition dictionary entry.
-func setup(cname: String) -> void:
-	# The card name is the most important aspect.
-	# We cannot use card_name as this var, as it's a global var
-	set_card_name(cname)
+func setup() -> void:
+	# card_name needs to be setup before we call this function
+	set_card_name(card_name)
 	# The properties of the card should be already stored in cfc
-	var read_properties = cfc.card_definitions.get(cname)
+	var read_properties = cfc.card_definitions.get(card_name, {})
 	for property in read_properties.keys():
 		modify_property(property,read_properties[property], true)
 
 
+# Changes the property stored in the properties dictionary of this card
+# and modified the card front labels so that they display the correct
+# text
 func modify_property(property: String, value, is_init = false, check := false) -> int:
 	var retcode: int
 	if not property in properties.keys() and not is_init:
@@ -493,33 +513,37 @@ func modify_property(property: String, value, is_init = false, check := false) -
 			set_card_name(value)
 		elif not check:
 			properties[property] = value
+			var label_node = _card_labels[property]
 			if not is_init:
 				emit_signal("card_properties_modified",
 						self, "card_properties_modified",
 						{"property_name": property,
 						"new_property_value": value,
 						"previous_property_value": previous_value})
-			# These are standard properties which is simple a String to add to the
-			# label.text field
-			if property in CardConfig.PROPERTIES_STRINGS:
-				_set_label_text(get_node(CARD_LABELS[property]), value)
-				# If we have an empty property, we let the other labels
-				# use the space vertical space it would have taken.
-				if value == "" :
-					get_node(CARD_LABELS[property]).visible = false
 			# These are int or float properties which need to be converted
 			# to a string with some formatting.
 			#
 			# In this demo, the format is defined as: "labelname: value"
-			elif property in CardConfig.PROPERTIES_NUMBERS:
-				_set_label_text(get_node(CARD_LABELS[property]),property
+			if property in CardConfig.PROPERTIES_NUMBERS:
+				_set_label_text(label_node,property
 						+ ": " + str(value))
 			# These are arrays of properties which are put in a label with a simple
 			# Join character
 			elif property in CardConfig.PROPERTIES_ARRAYS:
-				_set_label_text(get_node(CARD_LABELS[property]),
+				_set_label_text(label_node,
 						CFUtils.array_join(value,
 						CFConst.ARRAY_PROPERTY_JOIN))
+			# These are standard properties which is simple a String to add to the
+			# label.text field
+			# Normally they should be defined in CardConfig.PROPERTIES_STRINGS
+			# but this is also the fallback we use for
+			# properties undefined in CardConfig
+			else:
+				_set_label_text(label_node, str(value))
+				# If we have an empty property, we let the other labels
+				# use the space vertical space it would have taken.
+			if label_node.text == "" :
+				label_node.visible = false
 	return(retcode)
 
 
@@ -651,11 +675,17 @@ func get_is_viewed() -> bool:
 # Setter for card_name
 # Also changes the card label and the node name
 func set_card_name(value : String) -> void:
-	var name_label = get_node(CARD_LABELS["Name"])
-	_set_label_text(name_label,value)
-	name = value
-	card_name = value
-	properties["Name"] = value
+	# if the _card_labels variable is not set it means ready() has not
+	# run yet, so we just store the card name for later.
+	if _card_labels.empty():
+		card_name = value
+	else:
+		# We set all areas of the card to match the canonical name.
+		var name_label = _card_labels["Name"]
+		_set_label_text(name_label,value)
+		name = value
+		card_name = value
+		properties["Name"] = value
 
 
 # Getter for card_name
@@ -668,7 +698,7 @@ func get_card_name() -> String:
 # It's preferrable to set card_name instead.
 func set_name(value : String) -> void:
 	.set_name(value)
-	get_node(CARD_LABELS["Name"]).text = value
+	_card_labels["Name"].text = value
 	card_name = value
 
 # Setter for card_rotation.
@@ -2005,7 +2035,7 @@ func _recalculate_rotation(index_diff = null)-> float:
 
 # Set a label node's text.
 # As the string becomes longer, the font size becomes smaller
-func _set_label_text(node, value):
+func _set_label_text(node: Label, value):
 	# We do not want some fields, like the name, to be too small.
 	# see CardConfig.TEXT_EXPANSION_MULTIPLIER documentation
 	var allowed_expansion = CardConfig.TEXT_EXPANSION_MULTIPLIER.get(node.name,1)
@@ -2015,7 +2045,7 @@ func _set_label_text(node, value):
 	# to the amount the others increased.
 	if node.name in CardConfig.SHRINK_LABEL:
 		shrink_size = _extra_text_shrink
-	var label_size = node.rect_size
+	var label_size = node.rect_min_size
 	var label_font = node.get("custom_fonts/font").duplicate()
 	var line_height = label_font.get_height()
 	# line_spacing should be calculated into rect_size
