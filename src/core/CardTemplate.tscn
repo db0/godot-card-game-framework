@@ -174,9 +174,9 @@ autowrap = true
 uppercase = true
 
 [node name="Requirements" type="Label" parent="Control/Front/Margin/CardText"]
-margin_top = 60.0
+margin_top = 61.0
 margin_right = 146.0
-margin_bottom = 74.0
+margin_bottom = 75.0
 rect_min_size = Vector2( 146, 14 )
 custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 0.290196, 0.752941, 0, 1 )
@@ -205,9 +205,8 @@ margin_bottom = 240.0
 mouse_filter = 2
 
 [node name="Cost" type="Label" parent="Control/Front/Margin/CardText/HB"]
-margin_top = -1.0
 margin_right = 39.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 rect_min_size = Vector2( 39, 13 )
 custom_fonts/font = SubResource( 9 )
 custom_colors/font_color = Color( 0.658824, 0.541176, 0, 1 )
@@ -216,9 +215,8 @@ valign = 1
 
 [node name="Power" type="Label" parent="Control/Front/Margin/CardText/HB"]
 margin_left = 43.0
-margin_top = -1.0
 margin_right = 146.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 rect_min_size = Vector2( 103, 13 )
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 9 )

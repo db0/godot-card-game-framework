@@ -1,12 +1,16 @@
 # Changelog
 
+## 1.2 (Ongoing)
+
+* Pile name and card count will be displayed. Possibility to add an image or colour to the pile which will not be shown when there's cards inside.
+
 ## 1.1
 
 We're now [added a quickstart guide](tutorial/QUICKSTART.md)!
 
 ### New Features
 
-* Card Front labels should be defined in the CARD_LABELS constant. This allows any developer to modify the Front control nodes layout and still allow the setup() to find the label nodes to modify them
+* Card Front labels should be defined in the _card_labels variable. This is defined inside `_init_front_labels()`. This allows any developer to modify the Front control nodes layout and still allow the setup() to find the label nodes to modify them.
 
 ### Tweaks
 

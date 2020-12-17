@@ -12,7 +12,8 @@ export(CFConst.ShuffleStyle) var shuffle_style = CFConst.ShuffleStyle.AUTO
 export var faceup_cards := false
 # Popup View button for Piles
 onready var view_button := $Control/ManipulationButtons/View
-
+onready var card_count_label := $Control/CenterContainer/VBoxContainer\
+		/PanelContainer/CenterContainer/CardCount
 func _ready():
 	add_to_group("piles")
 	# warning-ignore:return_value_discarded
@@ -98,10 +99,33 @@ func add_child(node, _legible_unique_name=false) -> void:
 			# By raising the $Control every time a card is added
 			# we ensure it's always drawn on top of the card objects
 			$Control.raise()
+			if get_card_count() == 1:
+				if not $Tween.is_active():
+					$Tween.remove($Control,'self_modulate:a')
+					$Tween.interpolate_property($Control,'self_modulate:a',
+							$Control.self_modulate.a, 0, 1,
+							Tween.TRANS_SINE, Tween.EASE_OUT)
+					$Tween.start()
+				else:
+					$Control.self_modulate.a = 0
+			card_count_label.text = str(get_card_count())
 	elif node as Card: # This triggers if the ViewPopup node is active
 		# When the player adds card while the viewpopup is active
 		# we move them automatically to the viewpopup grid.
 		_slot_card_into_popup(node)
+
+func remove_child(node, _legible_unique_name=false) -> void:
+	.remove_child(node)
+	card_count_label.text = str(get_card_count())
+	if get_card_count() == 0:
+		if not $Tween.is_active():
+			$Tween.remove($Control,'self_modulate:a')
+			$Tween.interpolate_property($Control,'self_modulate:a',
+					$Control.self_modulate.a, 0.4, 0.5,
+					Tween.TRANS_SINE, Tween.EASE_IN)
+			$Tween.start()
+		else:
+			$Control.self_modulate.a = 1
 
 
 # Rearranges the position of the contained cards slightly
