@@ -100,7 +100,7 @@ export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_ca
 export var card_name : String setget set_card_name, get_card_name
 # Contains the scene which has the Card Back design to use for this card type
 # It needs to be scene which uses a CardBack class script.
-export (PackedScene) var card_back_design
+export(PackedScene) var card_back_design = preload("res://src/custom/CardBack.tscn")
 
 # Starting state for each card
 var state : int = CardState.IN_PILE
@@ -191,9 +191,18 @@ func _ready() -> void:
 
 
 func _init_card_back() -> void:
-	$Control/Back.add_child(card_back_design.instance())
-	card_back = $Control/Back/CardBack
-	$Control/Back.move_child(card_back,0)
+	# Because we duplicate the card when adding to the viewport focus
+	# It already has a CardBack node, so we don't want to replicate it
+	# so we only add a CardBack node, if we know it's not a dupe focus
+	if get_parent().name != "Viewport":
+		$Control/Back.add_child(card_back_design.instance())
+		card_back = $Control/Back/CardBack
+		$Control/Back.move_child(card_back,0)
+	# If it is a viewport focus dupe, we still need to setup the
+	# card_back variable, as the .duplicate() method does not copy
+	# internal variables.
+	else:
+		card_back = $Control/Back/CardBack
 
 
 # This function is used to map the card labels for all cards
@@ -1495,7 +1504,7 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 		_flip_tween.interpolate_property(highlight,'rect_scale',
 				highlight.rect_scale, Vector2(0,1), 0.4,
 				Tween.TRANS_QUAD, Tween.EASE_IN)
-		# The highlight is larger than the card size, but also offet a big
+		# The highlight is larger than the card size, but also offset a bit
 		# so that it's still centered. This way its borders only extend
 		# over the card borders. We need to offest to the right location.
 		_flip_tween.interpolate_property(highlight,'rect_position',
@@ -1903,8 +1912,8 @@ func _process_card_state() -> void:
 				else:
 					# We slightly reduce the colour intensity of the dupe
 					# As its enlarged state makes it glow too much
-					var current_colour = $Control/Back.modulate
-					$Control/Back.modulate = current_colour * 0.95
+					var current_colour = card_back.modulate
+					card_back.modulate = current_colour * 0.95
 
 
 # Get the angle on the ellipse

@@ -22,6 +22,10 @@ func test_single_card_focus():
 			"Duplicate card does not belong to the 'cards' group")
 	assert_false(focus_dupe.highlight.visible,
 			"Duplicate card does not have visible highlight")
+	assert_not_null(focus_dupe.card_back, "card_back variable is populated")
+	assert_eq(focus_dupe.get_node("Control/Back").get_child_count(), 2,
+			"Duplicate card does not have duplicate card backs")
+
 	yield(move_mouse(Vector2(0,0)), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),

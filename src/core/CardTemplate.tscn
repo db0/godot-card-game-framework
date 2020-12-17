@@ -1,9 +1,8 @@
-[gd_scene load_steps=23 format=2]
+[gd_scene load_steps=22 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
 [ext_resource path="res://assets/icons/view.svg" type="Texture" id=3]
-[ext_resource path="res://src/custom/CardBack.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/core/Card/TokenDrawer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/core/Card/ManipulationButtons.gd" type="Script" id=7]
@@ -89,7 +88,6 @@ _data = [ Vector2( 0, 0.463636 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 1.4, 0.0, 0, 
 collision_layer = 3
 collision_mask = 2147483651
 script = ExtResource( 2 )
-card_back_design = ExtResource( 4 )
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 75, 120 )

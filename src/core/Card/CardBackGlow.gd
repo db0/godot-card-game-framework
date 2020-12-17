@@ -9,6 +9,7 @@ extends CardBack
 # brightness a lot
 var _pulse_values := [Color(1.05,1.05,1.05),Color(0.9,0.9,0.9)]
 # A link to the tween which changes the glow intensity
+# For this class, a Tween node called Pulse must exist at the root of the scene.
 onready var _tween = $Pulse
 
 
