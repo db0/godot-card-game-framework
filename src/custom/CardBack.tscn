@@ -184,3 +184,5 @@ polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
 position = Vector2( 9, 47 )
 color = Color( 3, 0.2, 0, 1 )
 polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="Pulse" type="Tween" parent="."]

@@ -1,8 +1,14 @@
 # Changelog
 
-## 1.2 (Ongoing)
+## 1.2
+
+### New Features
 
 * Pile name and card count will be displayed. Possibility to add an image or colour to the pile which will not be shown when there's cards inside.
+
+### Tweaks
+
+* Card Back scene has to be defined in the new card_back_design exported variable. You have to select the scene you want from for each different card type (assuming they're using a different one)
 
 ## 1.1
 
@@ -25,7 +31,7 @@ First stable release is here! We will attempt to not break (too much) existing n
 ### New Features
 
 * Pile shuffle is now animated - Contribution by [@vmjcv](https://github.com/vmjcv).
-* Many types of pile shuffle animation and ability to select a different one per pile. 
+* Many types of pile shuffle animation and ability to select a different one per pile.
 	Available anims:
    * corgi
    * splash

@@ -2,7 +2,7 @@ class_name CardBack
 extends Panel
 
 # Stores a reference to the Card that is hosting this node
-onready var card_owner = get_parent().get_parent()
+onready var card_owner = get_parent().get_parent().get_parent()
 
 # Each class which extends this has to overwrite this function
 # with the one specific to its needs

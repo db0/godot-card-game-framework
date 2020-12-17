@@ -98,6 +98,9 @@ export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_ca
 # if that is also not set, will be set.
 # to the human-readable value of the "name" node property.
 export var card_name : String setget set_card_name, get_card_name
+# Contains the scene which has the Card Back design to use for this card type
+# It needs to be scene which uses a CardBack class script.
+export (PackedScene) var card_back_design
 
 # Starting state for each card
 var state : int = CardState.IN_PILE
@@ -133,14 +136,16 @@ var _tween_stuck_time = 0
 # The card front is customized for games of different needs
 # See _init_front_labels() to change the definition
 var _card_labels := {}
+# The node which has the design of the card back
+# And the methods which are used for its potential animation.
+# This will be loaded in `_init_card_back()`
+var card_back : CardBack
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
 onready var _control = $Control
 onready var _card_text = $Control/Front/Margin/CardText
-# The node which has the image of the card back
-# And the methods which are used for its potential animation.
-onready var card_back = $Control/Back
+
 # The node which hosts all manipulation buttons belonging to this card
 # as well as methods to hide/show them, and connect them to this card.
 onready var buttons= $Control/ManipulationButtons
@@ -165,6 +170,7 @@ func _ready() -> void:
 	# name their root node them after their card name,
 	# and the setup() will do the rest.
 	_init_card_name()
+	_init_card_back()
 	setup()
 	# First we set the card to always pivot from its center.
 	# We only rotate the Control node however, so the collision shape is not rotated
@@ -179,11 +185,15 @@ func _ready() -> void:
 	connect("area_entered", self, "_on_Card_area_entered")
 	# warning-ignore:return_value_discarded
 	connect("area_exited", self, "_on_Card_area_exited")
-
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
-
 	cfc.signal_propagator.connect_new_card(self)
+
+
+func _init_card_back() -> void:
+	$Control/Back.add_child(card_back_design.instance())
+	card_back = $Control/Back/CardBack
+	$Control/Back.move_child(card_back,0)
 
 
 # This function is used to map the card labels for all cards
@@ -193,6 +203,8 @@ func _ready() -> void:
 # If you're just adding new labels, without modifying the existing ones
 # You can simply call `._init_front_labels()` from inside the new type
 # Then define your extra labels on top.
+
+
 func _init_front_labels() -> void:
 # Maps the location of the card front labels so that they're findable even when
 # The card front is customized for games of different needs
@@ -480,7 +492,6 @@ func _on_Card_area_exited(area: Area2D) -> void:
 		container.highlight.set_highlight(false)
 		highlight.highlight_potential_container(CFConst.TARGET_HOVER_COLOUR,
 				_potential_containers)
-
 
 
 
