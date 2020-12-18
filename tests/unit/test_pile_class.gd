@@ -23,3 +23,9 @@ func test_get_card_methods():
 			"get_all_cards() works without anything in viewpile")
 	pending("Card has to be facedown when moved into pile")
 	pending("Card has to be faceup when viewed in popup")
+
+func test_set_pile_name():
+	var pile : Pile = cfc.NMAP.discard
+	pile.pile_name = "GUT Test"
+	assert_eq(pile.pile_name, pile.pile_name_label.text,
+			"Label is renamed whe pile_name changes")

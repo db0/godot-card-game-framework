@@ -35,17 +35,17 @@ func test_manipulation_buttons():
 	var deck : Pile = cfc.NMAP.deck
 	assert_eq(1.0,deck.manipulation_buttons.modulate.a,
 			"Buttons container should be visible")
-	for button in deck.all_manipulation_buttons:
+	for button in deck.get_all_manipulation_buttons():
 		assert_eq(0.0,button.modulate.a,
 				"Buttons should start invisible")
 	deck.show_buttons()
 	yield(yield_to(deck.manipulation_buttons_tween, "tween_all_completed", 1), YIELD)
-	for button in deck.all_manipulation_buttons:
+	for button in deck.get_all_manipulation_buttons():
 		assert_eq(1.0,button.modulate.a,
 				"Buttons are visible after shown")
 	deck.hide_buttons()
 	yield(yield_to(deck.manipulation_buttons_tween, "tween_all_completed", 1), YIELD)
-	for button in deck.all_manipulation_buttons:
+	for button in deck.get_all_manipulation_buttons():
 		assert_eq(0.0,button.modulate.a,
 				"Buttons are invisible after hide")
 
@@ -55,11 +55,11 @@ func test_init_signal():
 	assert_connected(deck.control, deck, "mouse_entered")
 	assert_connected(deck.control, deck, "mouse_exited")
 	assert_connected(deck.shuffle_button, deck, "pressed")
-	for button in deck.all_manipulation_buttons:
+	for button in deck.get_all_manipulation_buttons():
 		assert_connected(button, deck, "mouse_entered")
 
 
 func test_update_manipulation_buttons():
 	var deck : Pile = cfc.NMAP.deck
-	assert_eq(2,deck.all_manipulation_buttons.size(),
+	assert_eq(2,deck.get_all_manipulation_buttons().size(),
 				"Expected number of manipulation buttons are there")

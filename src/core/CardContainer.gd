@@ -3,9 +3,6 @@
 class_name CardContainer
 extends Area2D
 
-# Cache control button
-var all_manipulation_buttons := [] setget ,get_all_manipulation_buttons
-
 # The various automatic Anchors possible for a CardContainer
 # NONE means the container will not stay anchored to the screen
 # and will not adjust its position if the viewport changes.
@@ -85,7 +82,7 @@ func _init_signal() -> void:
 	# warning-ignore:return_value_discarded
 	control.connect("mouse_exited", self, "_on_Control_mouse_exited")
 	# warning-ignore:return_value_discarded
-	for button in all_manipulation_buttons:
+	for button in get_all_manipulation_buttons():
 		button.connect("mouse_entered", self, "_on_button_mouse_entered")
 		#button.connect("mouse_exited", self, "_on_button_mouse_exited")
 	shuffle_button.connect("pressed", self, '_on_Shuffle_Button_pressed')
@@ -110,7 +107,7 @@ func _on_Control_mouse_entered() -> void:
 func _on_button_mouse_entered() -> void:
 	# We stop ongoing animations to avoid conflicts.
 	manipulation_buttons_tween.remove_all()
-	for button in all_manipulation_buttons:
+	for button in get_all_manipulation_buttons():
 		button.modulate[3] = 1
 
 
@@ -131,7 +128,7 @@ func _on_viewport_resized() -> void:
 func hide_buttons() -> void:
 	# We stop existing tweens to avoid deadlocks
 	manipulation_buttons_tween.remove_all()
-	for button in all_manipulation_buttons:
+	for button in get_all_manipulation_buttons():
 		manipulation_buttons_tween.interpolate_property(button, 'modulate:a',
 				button.modulate.a, 0, 0.25,
 				Tween.TRANS_SINE, Tween.EASE_IN)
@@ -141,7 +138,7 @@ func hide_buttons() -> void:
 # Shows manipulation buttons
 func show_buttons() -> void:
 	manipulation_buttons_tween.remove_all()
-	for button in all_manipulation_buttons:
+	for button in get_all_manipulation_buttons():
 		manipulation_buttons_tween.interpolate_property(button, 'modulate:a',
 				button.modulate.a, 1, 0.25,
 				Tween.TRANS_SINE, Tween.EASE_IN)
@@ -154,11 +151,11 @@ func show_buttons() -> void:
 # By using group, different tree structures are allowed
 func get_all_manipulation_buttons() -> Array:
 	var buttons = get_tree().get_nodes_in_group("manipulation_button")
-	all_manipulation_buttons.clear()
+	var my_buttons = []
 	for button in buttons:
 		if is_a_parent_of(button):
-			all_manipulation_buttons.append(button)
-	return all_manipulation_buttons
+			my_buttons.append(button)
+	return my_buttons
 
 
 # Overrides the built-in get_class to return "CardContainer" instead of "Area2D"
