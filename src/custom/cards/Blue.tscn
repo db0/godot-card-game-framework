@@ -1,6 +1,7 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/core/CardTemplate.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/custom/PlayingCardBack.tscn" type="PackedScene" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.0431373, 0.0313726, 0.364706, 1 )
@@ -10,18 +11,7 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [node name="Test1111" instance=ExtResource( 1 )]
+card_back_design = ExtResource( 2 )
 
 [node name="Front" parent="Control" index="1"]
 custom_styles/panel = SubResource( 1 )
-
-[node name="Requirements" parent="Control/Front/Margin/CardText" index="3"]
-margin_top = 61.0
-margin_bottom = 75.0
-
-[node name="Cost" parent="Control/Front/Margin/CardText/HB" index="0"]
-margin_top = 0.0
-margin_bottom = 13.0
-
-[node name="Power" parent="Control/Front/Margin/CardText/HB" index="1"]
-margin_top = 0.0
-margin_bottom = 13.0

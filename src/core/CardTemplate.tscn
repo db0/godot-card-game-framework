@@ -1,8 +1,7 @@
-[gd_scene load_steps=22 format=2]
+[gd_scene load_steps=20 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
-[ext_resource path="res://assets/icons/view.svg" type="Texture" id=3]
 [ext_resource path="res://src/core/Card/TokenDrawer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/core/Card/ManipulationButtons.gd" type="Script" id=7]
@@ -65,21 +64,17 @@ outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 1 )
 
-[sub_resource type="DynamicFont" id=10]
-size = 12
-font_data = ExtResource( 1 )
-
-[sub_resource type="StyleBoxFlat" id=11]
+[sub_resource type="StyleBoxFlat" id=10]
 bg_color = Color( 0.584314, 0.6, 0.647059, 1 )
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 
-[sub_resource type="RectangleShape2D" id=12]
+[sub_resource type="RectangleShape2D" id=11]
 
-[sub_resource type="DynamicFont" id=13]
+[sub_resource type="DynamicFont" id=12]
 font_data = ExtResource( 1 )
 
-[sub_resource type="Curve" id=14]
+[sub_resource type="Curve" id=13]
 _data = [ Vector2( 0, 0.463636 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 1.4, 0.0, 0, 0 ]
 
 [node name="Card" type="Area2D" groups=[
@@ -232,57 +227,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Control/Back"]
-anchor_right = 1.0
-anchor_bottom = 1.0
-mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="MarginContainer" type="MarginContainer" parent="Control/Back/VBoxContainer"]
-margin_right = 150.0
-margin_bottom = 50.0
-mouse_filter = 2
-custom_constants/margin_top = 50
-
-[node name="CenterContainer" type="CenterContainer" parent="Control/Back/VBoxContainer"]
-margin_top = 54.0
-margin_right = 150.0
-margin_bottom = 94.0
-rect_min_size = Vector2( 0, 40 )
-mouse_filter = 2
-
-[node name="Viewed" type="TextureRect" parent="Control/Back/VBoxContainer/CenterContainer"]
-visible = false
-modulate = Color( 1.5, 0.2, 0, 1 )
-margin_left = 55.0
-margin_right = 95.0
-margin_bottom = 40.0
-mouse_filter = 2
-texture = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="MarginContainer2" type="MarginContainer" parent="Control/Back/VBoxContainer"]
-margin_top = 98.0
-margin_right = 150.0
-margin_bottom = 101.0
-mouse_filter = 2
-custom_constants/margin_top = 3
-
-[node name="Label" type="Label" parent="Control/Back/VBoxContainer"]
-margin_top = 105.0
-margin_right = 150.0
-margin_bottom = 121.0
-custom_fonts/font = SubResource( 10 )
-custom_colors/font_color = Color( 1, 0.2, 0, 1 )
-text = "Card Game Framework"
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
 [node name="Tokens" type="Node2D" parent="Control"]
 script = ExtResource( 5 )
 
@@ -293,7 +237,7 @@ margin_top = 20.0
 margin_right = 165.0
 margin_bottom = 70.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 11 )
+custom_styles/panel = SubResource( 10 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -311,7 +255,7 @@ collision_layer = 2148007936
 collision_mask = 524288
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Control/Tokens/Drawer/Area2D"]
-shape = SubResource( 12 )
+shape = SubResource( 11 )
 
 [node name="Tween" type="Tween" parent="Control/Tokens"]
 
@@ -331,7 +275,7 @@ __meta__ = {
 margin_right = 29.0
 margin_bottom = 26.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 12 )
 text = "T"
 
 [node name="Rot180" type="Button" parent="Control/ManipulationButtons"]
@@ -339,7 +283,7 @@ margin_top = 30.0
 margin_right = 29.0
 margin_bottom = 56.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 12 )
 text = "@"
 
 [node name="Flip" type="Button" parent="Control/ManipulationButtons"]
@@ -347,7 +291,7 @@ margin_top = 60.0
 margin_right = 29.0
 margin_bottom = 86.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 12 )
 text = "F"
 
 [node name="AddToken" type="Button" parent="Control/ManipulationButtons"]
@@ -355,7 +299,7 @@ margin_top = 90.0
 margin_right = 29.0
 margin_bottom = 116.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 12 )
 text = "O"
 
 [node name="View" type="Button" parent="Control/ManipulationButtons"]
@@ -364,7 +308,7 @@ margin_top = 90.0
 margin_right = 40.0
 margin_bottom = 116.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 13 )
+custom_fonts/font = SubResource( 12 )
 text = "V"
 
 [node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
@@ -377,7 +321,7 @@ text = "V"
 z_index = 50
 points = PoolVector2Array( 384, 112 )
 width = 15.0
-width_curve = SubResource( 14 )
+width_curve = SubResource( 13 )
 default_color = Color( 1, 1, 1, 1 )
 antialiased = true
 script = ExtResource( 9 )

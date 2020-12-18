@@ -23,8 +23,10 @@ func test_single_card_focus():
 	assert_false(focus_dupe.highlight.visible,
 			"Duplicate card does not have visible highlight")
 	assert_not_null(focus_dupe.card_back, "card_back variable is populated")
-	assert_eq(focus_dupe.get_node("Control/Back").get_child_count(), 2,
+	assert_eq(focus_dupe.get_node("Control/Back").get_child_count(), 1,
 			"Duplicate card does not have duplicate card backs")
+	assert_eq(focus_dupe.card_back.modulate.a, 1,
+			"Duplicate card does not have visible highlight")			
 
 	yield(move_mouse(Vector2(0,0)), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
@@ -34,6 +36,20 @@ func test_single_card_focus():
 func test_for_leftover_focus_objects():
 	var card : Card = cards[2]
 	yield(drag_drop(card,cfc.NMAP.discard.position), 'completed')
+	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
+			"Duplicate card has been removed from focus")
+
+func test_card_back_focus():
+	var card : Card = cards[0]
+	card.is_faceup = false
+	yield(move_mouse(card.global_position), 'completed')
+	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	var focus_dupe = main._previously_focused_cards[0]
+	assert_eq(focus_dupe.card_back.modulate.a, 1,
+			"Duplicate card back does not modulate out")
+
+	yield(move_mouse(Vector2(0,0)), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
 			"Duplicate card has been removed from focus")

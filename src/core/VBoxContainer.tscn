@@ -1,0 +1,59 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://assets/icons/view.svg" type="Texture" id=1]
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
+
+[sub_resource type="DynamicFont" id=1]
+size = 12
+font_data = ExtResource( 2 )
+
+[node name="VBoxContainer" type="VBoxContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+margin_right = 150.0
+margin_bottom = 50.0
+mouse_filter = 2
+custom_constants/margin_top = 50
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+margin_top = 54.0
+margin_right = 150.0
+margin_bottom = 94.0
+rect_min_size = Vector2( 0, 40 )
+mouse_filter = 2
+
+[node name="Viewed" type="TextureRect" parent="CenterContainer"]
+visible = false
+modulate = Color( 1.5, 0.2, 0, 1 )
+margin_left = 55.0
+margin_right = 95.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="."]
+margin_top = 98.0
+margin_right = 150.0
+margin_bottom = 101.0
+mouse_filter = 2
+custom_constants/margin_top = 3
+
+[node name="Label" type="Label" parent="."]
+margin_top = 105.0
+margin_right = 150.0
+margin_bottom = 121.0
+custom_fonts/font = SubResource( 1 )
+custom_colors/font_color = Color( 1, 0.2, 0, 1 )
+text = "Card Game Framework"
+__meta__ = {
+"_edit_use_anchors_": false
+}
