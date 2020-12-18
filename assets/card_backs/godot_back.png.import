@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/godot_back.png-dce2875d216ea75b571e43112990c798.stex"
+path="res://.import/godot_back.png-d96d2d6fc38eec92e0541f54797d7292.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/cards/godot_back.png"
-dest_files=[ "res://.import/godot_back.png-dce2875d216ea75b571e43112990c798.stex" ]
+source_file="res://assets/card_backs/godot_back.png"
+dest_files=[ "res://.import/godot_back.png-d96d2d6fc38eec92e0541f54797d7292.stex" ]
 
 [params]
 

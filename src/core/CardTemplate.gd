@@ -100,7 +100,7 @@ export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_ca
 export var card_name : String setget set_card_name, get_card_name
 # Contains the scene which has the Card Back design to use for this card type
 # It needs to be scene which uses a CardBack class script.
-export(PackedScene) var card_back_design = preload("res://src/custom/CardBack.tscn")
+export(PackedScene) var card_back_design = preload("res://src/custom/CGFCardBack.tscn")
 
 # Starting state for each card
 var state : int = CardState.IN_PILE
@@ -195,14 +195,15 @@ func _init_card_back() -> void:
 	# It already has a CardBack node, so we don't want to replicate it
 	# so we only add a CardBack node, if we know it's not a dupe focus
 	if get_parent().name != "Viewport":
-		$Control/Back.add_child(card_back_design.instance())
-		card_back = $Control/Back/CardBack
+		var card_back_instance = card_back_design.instance()
+		$Control/Back.add_child(card_back_instance)
+		card_back = card_back_instance
 		$Control/Back.move_child(card_back,0)
 	# If it is a viewport focus dupe, we still need to setup the
 	# card_back variable, as the .duplicate() method does not copy
 	# internal variables.
 	else:
-		card_back = $Control/Back/CardBack
+		card_back = $Control/Back.get_child(0)
 
 
 # This function is used to map the card labels for all cards
@@ -670,7 +671,7 @@ func set_is_viewed(value: bool) -> int:
 				var dupe_back = cfc.NMAP.main._previously_focused_cards.back()\
 						.get_node("Control/Back")
 				_flip_card(dupe_back, dupe_front, true)
-			$Control/Back/VBoxContainer/CenterContainer/Viewed.visible = true
+			card_back.is_viewed_visible = true
 			retcode = CFConst.ReturnCode.CHANGED
 			# We only emit a signal when we view the card
 			# not when we unview it as that happens naturally
@@ -681,7 +682,7 @@ func set_is_viewed(value: bool) -> int:
 		elif is_faceup == true:
 			retcode = CFConst.ReturnCode.CHANGED
 			is_viewed = false
-			$Control/Back/VBoxContainer/CenterContainer/Viewed.visible = false
+			card_back.is_viewed_visible = false
 		else:
 			# We don't allow players to unview cards
 			retcode = CFConst.ReturnCode.FAILED
@@ -1909,11 +1910,6 @@ func _process_card_state() -> void:
 			if not is_faceup:
 				if is_viewed:
 					_flip_card($Control/Back,$Control/Front, true)
-				else:
-					# We slightly reduce the colour intensity of the dupe
-					# As its enlarged state makes it glow too much
-					var current_colour = card_back.modulate
-					card_back.modulate = current_colour * 0.95
 
 
 # Get the angle on the ellipse

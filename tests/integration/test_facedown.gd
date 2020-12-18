@@ -57,7 +57,7 @@ func test_board_facedown():
 	var dupe_back
 	dupe_back = dupe.get_node("Control/Back")
 	var view_button  = card.get_node("Control/ManipulationButtons/View")
-	var viewed_icon  = card.get_node("Control/Back/VBoxContainer/CenterContainer/Viewed")
+	var viewed_icon  = card.card_back.viewed_node
 	card.is_faceup = false
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_false(dupe_front.visible,

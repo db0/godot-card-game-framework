@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/core/CardTemplate.tscn" type="PackedScene" id=1]
-[ext_resource path="res://src/custom/CardBackPlayingCard.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/custom/PlayingCardBack.tscn" type="PackedScene" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.0431373, 0.0313726, 0.364706, 1 )
