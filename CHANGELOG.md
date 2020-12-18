@@ -5,11 +5,22 @@
 ### New Features
 
 * Pile name and card count will be displayed. Possibility to add an image or colour to the pile which will not be shown when there's cards inside.
+* Added new card back that meets proper gambling symmetry rules.  - Contribution by [@zombieCraig](https://github.com/zombieCraig).
+* A pile can now be renamed from the editor properties, instead of having to edit node properties and look for the label. - Contribution by [@zombieCraig](https://github.com/zombieCraig).
 
 ### Tweaks
 
 * Card Back scene has to be defined in the new card_back_design exported variable. You have to select the scene you want from for each different card type (assuming they're using a different one)
 * Switched BoardTemplate to expect Control instead of Node2D, to allow potential GUI elements to orient themselves easier.
+* Card back now can include the "Viewed" node in in any form they wish.
+	The function set_is_viewed() will handle setting the viewed node to visible or not.
+	if another method to show viewed has been setup for this card back, then the set_is_viewed() function can be overriden.
+
+
+### Bugfixes
+
+* Card properties will now properly ignore properties defined with _underscore in the name start.
+	If the property's label is missing and the property does not start with an underscore, the framework will print out an error. - Contribution by [@zombieCraig](https://github.com/zombieCraig).
 
 ## 1.1
 
