@@ -535,37 +535,43 @@ func modify_property(property: String, value, is_init = false, check := false) -
 			set_card_name(value)
 		elif not check:
 			properties[property] = value
-			var label_node = _card_labels[property]
-			if not is_init:
-				emit_signal("card_properties_modified",
-						self, "card_properties_modified",
-						{"property_name": property,
-						"new_property_value": value,
-						"previous_property_value": previous_value})
-			# These are int or float properties which need to be converted
-			# to a string with some formatting.
-			#
-			# In this demo, the format is defined as: "labelname: value"
-			if property in CardConfig.PROPERTIES_NUMBERS:
-				_set_label_text(label_node,property
-						+ ": " + str(value))
-			# These are arrays of properties which are put in a label with a simple
-			# Join character
-			elif property in CardConfig.PROPERTIES_ARRAYS:
-				_set_label_text(label_node,
-						CFUtils.array_join(value,
-						CFConst.ARRAY_PROPERTY_JOIN))
-			# These are standard properties which is simple a String to add to the
-			# label.text field
-			# Normally they should be defined in CardConfig.PROPERTIES_STRINGS
-			# but this is also the fallback we use for
-			# properties undefined in CardConfig
+			if not _card_labels.has(property):
+				if not property.begins_with("_"):
+					print_debug("Warning: ", property,
+							" does not have a matching label!")
+				retcode = CFConst.ReturnCode.FAILED
 			else:
-				_set_label_text(label_node, str(value))
-				# If we have an empty property, we let the other labels
-				# use the space vertical space it would have taken.
-			if label_node.text == "" :
-				label_node.visible = false
+				var label_node = _card_labels[property]
+				if not is_init:
+					emit_signal("card_properties_modified",
+							self, "card_properties_modified",
+							{"property_name": property,
+							"new_property_value": value,
+							"previous_property_value": previous_value})
+				# These are int or float properties which need to be converted
+				# to a string with some formatting.
+				#
+				# In this demo, the format is defined as: "labelname: value"
+				if property in CardConfig.PROPERTIES_NUMBERS:
+					_set_label_text(label_node,property
+							+ ": " + str(value))
+				# These are arrays of properties which are put in a label
+				# with a simple join character
+				elif property in CardConfig.PROPERTIES_ARRAYS:
+					_set_label_text(label_node,
+							CFUtils.array_join(value,
+							CFConst.ARRAY_PROPERTY_JOIN))
+				# These are standard properties which is simple a String to add to the
+				# label.text field
+				# Normally they should be defined in CardConfig.PROPERTIES_STRINGS
+				# but this is also the fallback we use for
+				# properties undefined in CardConfig
+				else:
+					_set_label_text(label_node, str(value))
+					# If we have an empty property, we let the other labels
+					# use the space vertical space it would have taken.
+				if label_node.text == "" :
+					label_node.visible = false
 	return(retcode)
 
 
