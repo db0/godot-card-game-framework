@@ -1,5 +1,13 @@
 # This class defines how the properties of the [Card] definition are to be
 # used during `setup()`
+#
+# All the properties defined on the card json will attempt to find a matching
+# label node inside the cards _card_labels dictionary.
+# If one was not found, an error will be printed.
+#
+# The exception is properties starting with _underscore. This are considered
+# Meta properties and the game will not attempt to display them on the card
+# front.
 class_name CardConfig
 extends Reference
 
@@ -10,9 +18,6 @@ const PROPERTIES_NUMBERS := ["Cost","Power"]
 # Properties provided in a list which are converted into a string for the
 # label text, using the array_join() method
 const PROPERTIES_ARRAYS := ["Tags"]
-# Properties which are not visible on the card front, but are nevertheless
-# needed for the game in some way.
-const META := ["_template"]
 # This property matches the name of the scene file (without the .tcsn file)
 # which is used as a template For this card.
 const SCENE_PROPERTY = "Type"
