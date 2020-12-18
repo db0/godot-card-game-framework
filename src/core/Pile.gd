@@ -3,17 +3,24 @@
 class_name Pile
 extends CardContainer
 
-
+# The pile's name. If this value is changed, it will change the
+# `pile_name_label` text.
+export(String) var pile_name : String setget set_pile_name
 # The shuffle style chosen for this pile. See CFConst.ShuffleStyle documentation.
 export(CFConst.ShuffleStyle) var shuffle_style = CFConst.ShuffleStyle.AUTO
-
 # If this is set to true, cards on this stack will be placed face-up.
 # Otherwise they will be placed face-down.
 export var faceup_cards := false
+
 # Popup View button for Piles
 onready var view_button := $Control/ManipulationButtons/View
+# The label node where the pile_name is written.
+onready var pile_name_label := $Control/CenterContainer/VBoxContainer/Label
+# The label node which shows the amount of cards in the pile.
 onready var card_count_label := $Control/CenterContainer/VBoxContainer\
 		/PanelContainer/CenterContainer/CardCount
+
+
 func _ready():
 	add_to_group("piles")
 	# warning-ignore:return_value_discarded
@@ -22,7 +29,7 @@ func _ready():
 	$ViewPopup.connect("popup_hide",self,'_on_ViewPopup_popup_hide')
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("about_to_show",self,'_on_ViewPopup_about_to_show')
-	#re_place()
+	set_pile_name(pile_name)
 
 
 func _process(_delta) -> void:
@@ -86,6 +93,23 @@ func _on_ViewPopup_popup_hide() -> void:
 	# as it will bug-out
 	$Control/ManipulationButtons.visible = true
 
+
+# Setter for pile_name.
+# Also sets `pile_name_label` to the provided value.
+func set_pile_name(value: String) -> void:
+	# If the pile name has not been specified
+	# we default to the node name instead
+	if not pile_name:
+		pile_name = name
+	else:
+		pile_name = value
+	# if the pile name has been specified in the editor
+	# this function will run before the onready calls
+	# so the pile_name_will be empty
+	if pile_name_label:
+		pile_name_label.text = value
+
+
 # Overrides the built-in add_child() method,
 # To make sure the control node is set to be the last one among siblings.
 # This way the control node intercepts any inputs.
@@ -99,6 +123,8 @@ func add_child(node, _legible_unique_name=false) -> void:
 			# By raising the $Control every time a card is added
 			# we ensure it's always drawn on top of the card objects
 			$Control.raise()
+			# If this was the first card which enterred this pile
+			# We hide the pile "floor" by making it transparent
 			if get_card_count() == 1:
 				if not $Tween.is_active():
 					$Tween.remove($Control,'self_modulate:a')
@@ -114,9 +140,15 @@ func add_child(node, _legible_unique_name=false) -> void:
 		# we move them automatically to the viewpopup grid.
 		_slot_card_into_popup(node)
 
+
+# Overrides the function which removed chilren nodes so that it detects
+# when a Card class is removed. In that case it also shows
+# this container's "floor" if it was the last card in the pile.
 func remove_child(node, _legible_unique_name=false) -> void:
 	.remove_child(node)
 	card_count_label.text = str(get_card_count())
+	# When we put the first card in the pile, we make sure the
+	# Panel is made transparent so that the card backs are seen instead
 	if get_card_count() == 0:
 		if not $Tween.is_active():
 			$Tween.remove($Control,'self_modulate:a')
@@ -132,10 +164,8 @@ func remove_child(node, _legible_unique_name=false) -> void:
 # so that they appear to be stacked on top of each other
 func reorganize_stack() -> void:
 	for c in get_all_cards():
-		if c.position != Vector2(0.5 * get_card_index(c),
-				-get_card_index(c)):
-			c.position = Vector2(0.5 * get_card_index(c),
-					-get_card_index(c))
+		if c.position != get_stack_position(c):
+			c.position = get_stack_position(c)
 	# The size of the panel has to be modified to be as large as the size
 	# of the card stack
 	# TODO: This logic has to be adapted depending on where on the viewport
@@ -190,8 +220,10 @@ func get_bottom_card() -> Card:
 	return(get_first_card())
 
 
+# Returns the position among other cards the specified card should have.
 func get_stack_position(card: Card) -> Vector2:
 	return Vector2(0.5 * get_card_index(card), -1 * get_card_index(card))
+
 
 # Prepares a [Card] object to be added to the popup grid
 func _slot_card_into_popup(card: Card) -> void:
@@ -217,6 +249,7 @@ func _slot_card_into_popup(card: Card) -> void:
 	card.set_is_faceup(true,true)
 	card.position = Vector2(0,0)
 	card.state = card.CardState.IN_POPUP
+
 
 # Randomly rearranges the order of the [Card] nodes.
 # Pile shuffling includes a fancy animation
