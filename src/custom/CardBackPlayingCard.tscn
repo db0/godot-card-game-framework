@@ -1,0 +1,20 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/core/Card/CardBackGlow.gd" type="Script" id=1]
+[ext_resource path="res://assets/cards/godot_back.png" type="Texture" id=2]
+
+[sub_resource type="StyleBoxTexture" id=1]
+texture = ExtResource( 2 )
+region_rect = Rect2( 0, 0, 141, 225 )
+
+[node name="CardBack" type="Panel"]
+margin_right = 150.0
+margin_bottom = 240.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Pulse" type="Tween" parent="."]
