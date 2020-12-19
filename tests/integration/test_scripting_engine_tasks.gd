@@ -11,7 +11,9 @@ func after_all():
 	cfc.fancy_movement = true
 
 func before_each():
-	setup_board()
+	var confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(5)
 	yield(yield_for(0.5), YIELD)
 	card = cards[0]
@@ -172,13 +174,13 @@ func test_mod_tokens():
 func test_spawn_card():
 	target.scripts = {"manual": {"hand": [
 			{"name": "spawn_card",
-			"card_scene": "res://src/core/CardTemplate.tscn",
+			"card_scene": "res://src/custom/CGFCardTemplate.tscn",
 			"board_position":  Vector2(500,200)}]}}
 	target.execute_scripts()
 	assert_eq(1,cfc.NMAP.board.get_card_count(),
 		"Card spawned on board")
 	card = cfc.NMAP.board.get_card(0)
-	assert_eq("res://src/core/CardTemplate.tscn",card.filename,
+	assert_eq("res://src/custom/CGFCardTemplate.tscn",card.filename,
 		"Card of the correct scene spawned")
 	assert_eq(Card.CardState.ON_PLAY_BOARD,card.state,
 		"Spawned card left in correct state")

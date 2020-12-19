@@ -190,17 +190,14 @@ const TOKENS_MAP := {
 	'gold coin': 'yellow.svg',
 	'void': 'black.svg',
 }
-# The below vars predefine the position in your node structure
-# to reach the nodes relevant to the cards.
+# This list needs to hold the names of all your critical nodes
+# by which we mean, the Board and all CardContainers.
 #
-# Adapt this according to your node structure. Do not prepent /root in front,
-# as this is assumed.
-#
-# Optimally this should be moved to its own reference class
-# and set in the autoloader
-const NODES_MAP := {
-	'board': "Board",
-	'hand': "Board/Hand",
-	'deck': "Board/Deck",
-	'discard': "Board/DiscardPile"
-	}
+# **Do not list Main**
+const CRITICAL_NODES := [
+	'board',
+	'hand',
+	'deck',
+	'discard',
+	]
+

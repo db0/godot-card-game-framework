@@ -9,7 +9,9 @@ func after_all():
 	cfc.fancy_movement = true
 
 func before_each():
-	setup_board()
+	var confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 
 func test_get_card_methods():
 	var pile : Pile = cfc.NMAP.deck

@@ -4,6 +4,7 @@
 class_name CFControl
 extends Node
 
+signal all_nodes_mapped()
 #-----------------------------------------------------------------------------
 # BEGIN Control Variables
 # These variables change the way the cards behave.
@@ -39,6 +40,7 @@ var _ut_show_token_buttons := CFConst.SHOW_TOKEN_BUTTONS
 # END Unit Testing Variables
 #-----------------------------------------------------------------------------
 
+var are_all_nodes_mapped := false
 # The games initial Random Number Generator seed.
 # When this stays the same, the game randomness will always play the predictable.
 var game_rng_seed := "CFC Random Seed" setget set_seed
@@ -61,25 +63,25 @@ var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 func _ready() -> void:
 	# We reset our node mapping variables every time
 	# as they repopulate during unit testing many times.
+	# warning-ignore:return_value_discarded
+	connect("all_nodes_mapped", self, "_on_all_nodes_mapped")
 	NMAP = {}
 	card_drag_ongoing = null
 	# The below takes care that we adjust some settings when testing via Gut
 	if get_tree().get_root().has_node('Gut'):
 		ut = true
 		_debug = true
-	# The below code allows us to quickly refer to nodes meant to host cards
-	# (i.e. parents) using an human-readable name
+	# Initialize the game random seed
+	set_seed(game_rng_seed)
+	card_definitions = load_card_definitions()
+
+
+func _on_all_nodes_mapped() -> void:
 	if get_tree().get_root().has_node('Main'):
-		for node in CFConst.NODES_MAP.keys():
-			NMAP[node]  = get_node('/root/Main/ViewportContainer/Viewport/'
-					+ CFConst.NODES_MAP[node])
-		NMAP['main'] = get_node('/root/Main')
-		# When Unite Testing, we want to always have both scaling options possible
+		# When Unit Testing, we want to always have both scaling options possible
 		if ut:
 			focus_style = CFConst.FocusStyle.BOTH
 	else:
-		for node in CFConst.NODES_MAP.keys():
-			NMAP[node]  = get_node('/root/' + CFConst.NODES_MAP[node])
 		# If we're not using the main viewport scene, we need to fallback
 		# to the basic focus
 		focus_style = CFConst.FocusStyle.SCALED
@@ -87,12 +89,19 @@ func _ready() -> void:
 		# viewports active
 		if NMAP.board: # Needed for UT
 			NMAP.board.get_node("ScalingFocusOptions").disabled = true
-		# The below loops, populate two arrays which allows us to quickly
-		# figure out if a container is a pile or hand
-	# Initialize the game random seed
-	set_seed(game_rng_seed)
-	card_definitions = load_card_definitions()
 	set_scripts = load_script_definitions()
+
+
+# The below code allows us to quickly refer to nodes meant to host cards
+# (i.e. parents) using an human-readable name
+func map_node(node) -> void:
+	NMAP[node.name.to_lower()] = node
+	var add_main = 0
+	if get_tree().get_root().has_node('Main'):
+		add_main = 1
+	if NMAP.size() == CFConst.CRITICAL_NODES.size() + add_main:
+		are_all_nodes_mapped = true
+		emit_signal("all_nodes_mapped")
 
 
 # Setter for the ranom seed.

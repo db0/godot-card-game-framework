@@ -7,7 +7,9 @@ var deck2 : Pile
 
 
 func before_each():
-	setup_board()
+	var confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 	deck2 = autoqfree(_PILE_SCENE.instance())
 
 func test_anchor_positioning_and_groups():

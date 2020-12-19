@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.3 (Ongoing)
+
+### New Features
+
+* Refactoring was done so that the Framework is easier to upgrade to a newer version by simply overwritting the `res://src/core` folder with the newer version
+  * Moved CFConst to `res://src/custom` which is not meant to be overwritten. This will ensure tweaks to the way the engine works will remain after an upgrade.
+  * Main.tcsn now doesn't have the board scene instanced directly. Rather you specify the board scene via an exported variable. 
+	This allows developers to create a new inherited Main.tcsn scene and set it to load their own custom board scene. This in turn allows a developer to upgrade their Main.tcsn in `res://src/core` and take advantage of any upgrades, while not losing their own customizations
+  * Moved Card Front to its own instance, with a same method used for card back. Now inherited card scenes from CardTemplate can have radically different Front layout from each other.
+  * Moved Manipulation buttons to code, instanced from a single button scene. Code exists inside ManipulationButtons class and can be overriden by any card that uses its own script to extend it.
+
 ## 1.2
 
 ### New Features

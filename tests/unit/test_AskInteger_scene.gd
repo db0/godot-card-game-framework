@@ -15,12 +15,14 @@ func after_all():
 	cfc.fancy_movement = true
 
 func before_each():
-	setup_board()
+	var confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 	ask_integer = ScriptingEngine._ASK_INTEGER_SCENE.instance()
 	hh = ask_integer.get_node("HorizontalHighlights")
 	vh = ask_integer.get_node("VecticalHighlights")
 	line = ask_integer.get_node("LineEdit")
-	
+
 func test_title_and_highlights():
 	ask_integer.prep("UT Card",1,5)
 	assert_eq("Please enter number for the effect of UT Card", ask_integer.window_title)
@@ -71,7 +73,7 @@ func test_on_LineEdit_text_changed():
 	assert_eq(Color(1.4,0,0), hh.modulate)
 	assert_eq(Color(1.2,0,0), vh.modulate)
 	assert_eq("10005",line.text)
-	
+
 func test_submit():
 	watch_signals(ask_integer)
 	ask_integer.prep("UT Card",1,5)

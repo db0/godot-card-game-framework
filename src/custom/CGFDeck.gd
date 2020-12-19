@@ -4,6 +4,9 @@ extends Pile
 signal draw_card(deck)
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	while cfc.NMAP.size() < 5:
+		yield(cfc, "all_nodes_mapped")
+	
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Deck_input_event")
 	# warning-ignore:return_value_discarded

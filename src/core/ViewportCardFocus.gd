@@ -4,6 +4,7 @@
 class_name ViewportCardFocus
 extends Node2D
 
+export(PackedScene) var board_scene : PackedScene
 # This array holds all the previously focused cards.
 var _previously_focused_cards := []
 # This var hold the currently focused card duplicate.
@@ -15,9 +16,17 @@ var _dupes_dict := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
+	cfc.map_node(self)
+	# We use the below while to wait until all the nodes we need have been mapped
+	# "hand" should be one of them.
+	$ViewportContainer/Viewport.add_child(board_scene.instance())
+	if not cfc.are_all_nodes_mapped:
+		yield(cfc, "all_nodes_mapped")
 	# warning-ignore:return_value_discarded
 	get_viewport().connect("size_changed",self,"_on_Viewport_size_changed")
 	$ViewportContainer.rect_size = get_viewport().size
+	for container in get_tree().get_nodes_in_group("card_containers"):
+		container.re_place()
 
 
 func _process(_delta) -> void:
