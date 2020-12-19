@@ -2,15 +2,15 @@
 
 importer="texture"
 type="StreamTexture"
-path="res://.import/3.8-new_card_definition_modified.png-bd9f27cd1c2e12e18c9b96b236be1bdb.stex"
+path="res://.import/3.extend_creature_front_script.png-e312d1d5b968497a1ef71bb926a6cb7b.stex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://tutorial/3.8-new_card_definition_modified.png"
-dest_files=[ "res://.import/3.8-new_card_definition_modified.png-bd9f27cd1c2e12e18c9b96b236be1bdb.stex" ]
+source_file="res://tutorial/3.extend_creature_front_script.png"
+dest_files=[ "res://.import/3.extend_creature_front_script.png-e312d1d5b968497a1ef71bb926a6cb7b.stex" ]
 
 [params]
 

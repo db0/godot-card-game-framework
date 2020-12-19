@@ -30,24 +30,21 @@ corner_radius_top_right = 15
 corner_radius_bottom_right = 15
 corner_radius_bottom_left = 15
 
-[node name="Highlight" type="Control"]
+[node name="Highlight" type="MarginContainer"]
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
 margin_left = -3.0
 margin_top = -3.0
-margin_right = 3.0
-margin_bottom = 3.00002
+margin_right = -1283.0
+margin_bottom = -723.0
 mouse_filter = 2
 script = ExtResource( 1 )
 __meta__ = {
-"_edit_group_": true,
-"_edit_use_anchors_": false
+"_edit_group_": true
 }
 
 [node name="LeftRight" type="Panel" parent="."]
-anchor_right = 1.0
-anchor_bottom = 1.0
 mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 __meta__ = {
@@ -56,8 +53,6 @@ __meta__ = {
 
 [node name="TopBottom" type="Panel" parent="."]
 modulate = Color( 1.8, 1.8, 1.8, 1 )
-anchor_right = 1.0
-anchor_bottom = 1.0
 mouse_filter = 2
 custom_styles/panel = SubResource( 2 )
 __meta__ = {

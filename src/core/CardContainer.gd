@@ -66,9 +66,9 @@ func _ready() -> void:
 	cfc.map_node(self)
 	# We use the below while to wait until all the nodes we need have been mapped
 	# "hand" should be one of them.
+	add_to_group("card_containers")
 	if not cfc.are_all_nodes_mapped:
 		yield(cfc, "all_nodes_mapped")
-	add_to_group("card_containers")
 	_init_ui()
 	_init_signal()
 
@@ -276,12 +276,12 @@ func re_place():
 			# Right position always start from the right-side of the viewport
 			# minus the width of the container
 			Anchors.TOP_RIGHT, Anchors.RIGHT_MIDDLE, Anchors.BOTTOM_RIGHT:
-				place.x = get_viewport().size.x - $Control.rect_size.x
+				place.x = get_viewport().size.x - CFConst.CARD_SIZE.x
 				add_to_group("right")
 			# Middle placement is the middle of the viewport width,
 			# minues half the height of the container
 			Anchors.TOP_MIDDLE, Anchors.BOTTOM_MIDDLE:
-				place.x = get_viewport().size.x / 2 - $Control.rect_size.x / 2
+				place.x = get_viewport().size.x / 2 - CFConst.CARD_SIZE.x / 2
 		# Now we adjust the y position. Same logic for
 		match placement:
 			# Top position always start from y == 0,
@@ -292,12 +292,12 @@ func re_place():
 			# Bottom position always start from the bottom of the viewport
 			# minus the height of the container
 			Anchors.BOTTOM_LEFT, Anchors.BOTTOM_MIDDLE, Anchors.BOTTOM_RIGHT:
-				place.y = get_viewport().size.y - $Control.rect_size.y
+				place.y = get_viewport().size.y - CFConst.CARD_SIZE.y
 				add_to_group("bottom")
 			# Middle placement is the middle of the viewport height
 			# minus half the height of the container
 			Anchors.RIGHT_MIDDLE, Anchors.LEFT_MIDDLE:
-				place.y = get_viewport().size.y / 2 - $Control.rect_size.y / 2
+				place.y = get_viewport().size.y / 2 - CFConst.CARD_SIZE.y / 2
 		# Now we try to discover if more than one CardContainer share
 		# the same anchor and the figure out which to displace.
 		var duplicate_anchors := {}

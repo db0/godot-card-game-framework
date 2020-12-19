@@ -170,7 +170,8 @@ func reorganize_stack() -> void:
 	# of the card stack
 	# TODO: This logic has to be adapted depending on where on the viewport
 	# This pile is anchored. The below calculations assume bottom-left.
-	$Control.rect_size = Vector2(156 + 0.5 * get_card_count(), 246 + get_card_count())
+	$Control.rect_size = Vector2(CFConst.CARD_SIZE.x + 3 + .5 * get_card_count(),
+			CFConst.CARD_SIZE.y + 6 + get_card_count())
 	$Control/Highlight.rect_size = $Control.rect_size
 	# The highlight has to also be shifted higher or else it will just extend
 	# below the viewport

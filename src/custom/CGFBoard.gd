@@ -79,9 +79,10 @@ func load_test_cards(extras := 11) -> void:
 		test_cards.append(ckey)
 	var test_card_array := []
 	for _i in range(extras):
-		var random_card_name = \
-				test_cards[CFUtils.randi() % len(test_cards)]
-		test_card_array.append(cfc.instance_card(random_card_name))
+		if not test_cards.empty():
+			var random_card_name = \
+					test_cards[CFUtils.randi() % len(test_cards)]
+			test_card_array.append(cfc.instance_card(random_card_name))
 	# 11 is the cards GUT expects. It's the testing standard
 	if extras == 11:
 	# I ensure there's of each test card, for use in GUT
@@ -89,22 +90,7 @@ func load_test_cards(extras := 11) -> void:
 			test_card_array.append(cfc.instance_card(card_name))
 	for card in test_card_array:
 		$Deck.add_child(card)
-		# warning-ignore:return_value_discarded
-		card.set_is_faceup(false,true)
+		#card.set_is_faceup(false,true)
 		card._determine_idle_state()
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
-		#card.modulate.a = 0 # We use this for a nice transition effect
-#	$Deck.reorganize_stack()
-#	var test_card_array2 := []
-#	if extras == 11:
-#	# I ensure there's of each test card, for use in GUT
-#		for card_name in test_cards:
-#			test_card_array2.append(cfc.instance_card(card_name))
-#	for card in test_card_array2:
-#		$Deck2.add_child(card)
-#		# warning-ignore:return_value_discarded
-#		card.set_is_faceup(false,true)
-#		card._determine_idle_state()
-#		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
-#		#card.modulate.a = 0 # We use this for a nice transition effect
-#	$Deck2.reorganize_stack()
+

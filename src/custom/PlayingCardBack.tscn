@@ -9,8 +9,7 @@ texture = ExtResource( 2 )
 region_rect = Rect2( 0, 0, 141, 225 )
 
 [node name="PlayingCardBack" type="Panel"]
-margin_right = 150.0
-margin_bottom = 240.0
+rect_min_size = Vector2( 150, 240 )
 mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 3 )

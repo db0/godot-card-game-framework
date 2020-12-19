@@ -149,10 +149,15 @@ func test_draw_multiple_cards_fast():
 
 
 func test_container_custom_card_functions():
+	# warning-ignore:return_value_discarded
 	hand.draw_card()
+	# warning-ignore:return_value_discarded
 	hand.draw_card()
+	# warning-ignore:return_value_discarded
 	hand.draw_card()
+	# warning-ignore:return_value_discarded
 	hand.draw_card()
+	# warning-ignore:return_value_discarded
 	hand.draw_card()
 	var card5: Card = hand.draw_card()
 	yield(yield_to(card5._tween, "tween_all_completed", 1), YIELD)

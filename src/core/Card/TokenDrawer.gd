@@ -59,7 +59,7 @@ func token_drawer(requested_state := true) -> void:
 			# warning-ignore:return_value_discarded
 			_tween.interpolate_property(
 					td,'rect_position', td.rect_position,
-					Vector2(owner_card._control.rect_size.x,td.rect_position.y),
+					Vector2(owner_card.card_size.x,td.rect_position.y),
 					0.3, Tween.TRANS_ELASTIC, Tween.EASE_OUT)
 			# We make all tokens display names
 			for token in $Drawer/VBoxContainer.get_children():
@@ -77,7 +77,7 @@ func token_drawer(requested_state := true) -> void:
 			# warning-ignore:return_value_discarded
 			_tween.interpolate_property(
 					td,'rect_position', td.rect_position,
-					Vector2(owner_card._control.rect_size.x - 35,
+					Vector2(owner_card.card_size.x - 35,
 					td.rect_position.y),
 					0.2, Tween.TRANS_ELASTIC, Tween.EASE_IN)
 			# warning-ignore:return_value_discarded

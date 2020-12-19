@@ -40,6 +40,8 @@ var _ut_show_token_buttons := CFConst.SHOW_TOKEN_BUTTONS
 # END Unit Testing Variables
 #-----------------------------------------------------------------------------
 
+# If this is false, all CardContainers will pause in their ready() scene
+# until all other CardContainers have been mapped.
 var are_all_nodes_mapped := false
 # The games initial Random Number Generator seed.
 # When this stays the same, the game randomness will always play the predictable.
@@ -65,7 +67,9 @@ func _ready() -> void:
 	# as they repopulate during unit testing many times.
 	# warning-ignore:return_value_discarded
 	connect("all_nodes_mapped", self, "_on_all_nodes_mapped")
+	# We need to reset these values for UNIT testing
 	NMAP = {}
+	are_all_nodes_mapped = false
 	card_drag_ongoing = null
 	# The below takes care that we adjust some settings when testing via Gut
 	if get_tree().get_root().has_node('Gut'):
@@ -93,14 +97,32 @@ func _on_all_nodes_mapped() -> void:
 
 
 # The below code allows us to quickly refer to nodes meant to host cards
-# (i.e. parents) using an human-readable name
+# (i.e. parents) using an human-readable name.
+#
+# Since the fully mapped NMAP variable is critical for the good functioning
+# of the framework, all CardContainers will wait in their ready() process
+# for NMAP to be completed.
 func map_node(node) -> void:
+	# The nmap always stores lowercase keys. Each key is a node name
 	NMAP[node.name.to_lower()] = node
 	var add_main = 0
+	# Since we allow the game to run directly from the board scene,
+	# we need to check if a viewport called Main is being used.
 	if get_tree().get_root().has_node('Main'):
 		add_main = 1
-	if NMAP.size() == CFConst.CRITICAL_NODES.size() + add_main:
+	# The below variable counts how many nodes we're expecting to map inside
+	# NMAP. We calculate this by using node groups. For this, the piles
+	# and hands have to be added to group from the editor (i.e. not only
+	# via code in the ready() method).
+	# The amount we're looking for is the sum of all CardContainers
+	# +1 for the board, +1 if we're using a focus viewport
+	var all_nodes : int = get_tree().get_nodes_in_group("hands").size() \
+			+ get_tree().get_nodes_in_group("piles").size() + 1  + add_main
+	# If the amount of node maps we have is equal to all nodes in gr
+	if NMAP.size() == all_nodes:
 		are_all_nodes_mapped = true
+		# Once all nodes have been mapped, we emit a signal so that
+		# all nodes waiting to complete their ready()  method, can continue.
 		emit_signal("all_nodes_mapped")
 
 

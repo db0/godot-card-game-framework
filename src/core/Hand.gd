@@ -8,14 +8,13 @@ extends CardContainer
 const hand_size := 12
 
 # Offsets the hand position based on the configuration
-onready var bottom_margin: float = $Control.rect_size.y * CFConst.BOTTOM_MARGIN_MULTIPLIER
+var bottom_margin: float = CFConst.CARD_SIZE.y * CFConst.BOTTOM_MARGIN_MULTIPLIER
 
 
 func _ready() -> void:
 	add_to_group("hands")
 	# warning-ignore:return_value_discarded
 	$Control/ManipulationButtons/DiscardRandom.connect("pressed",self,'_on_DiscardRandom_Button_pressed')
-	#re_place()
 
 
 # Button which shuffles the children [Card] objects
@@ -121,14 +120,17 @@ func re_place() -> void:
 	if "top" in get_groups() or "bottom" in get_groups():
 		$Control.rect_size.x = get_viewport().size.x - others_rect_x
 		position.x = start_pos_left
+		$Control.rect_size.y = CFConst.CARD_SIZE.y
 	# If the hand is oriented vertically, we reduce its size by other
 	# containers on the same column
 	if "left" in get_groups() or "right" in get_groups():
 		$Control.rect_size.y = get_viewport().size.y - others_rect_y
 		position.x = start_pos_top
+		$Control.rect_size.x = CFConst.CARD_SIZE.x
 	# We also need to adjust the hand's collision area to match its new size
 	$CollisionShape2D.shape.extents = $Control.rect_size / 2
 	$CollisionShape2D.position = $Control.rect_size / 2
+	highlight.rect_size = $Control.rect_size
 	# If the hand is supposed to be shifted slightly outside the viewport
 	# we do it now.
 	position.y += bottom_margin

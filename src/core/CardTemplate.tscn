@@ -1,6 +1,6 @@
 [gd_scene load_steps=10 format=2]
 
-[ext_resource path="res://src/custom/CGFManipulationButtons.gd" type="Script" id=1]
+[ext_resource path="res://src/core/Card/ManipulationButtons.gd" type="Script" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
 [ext_resource path="res://src/core/Card/TokenDrawer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
@@ -16,7 +16,7 @@ corner_radius_bottom_right = 25
 
 [sub_resource type="RectangleShape2D" id=3]
 
-[sub_resource type="Curve" id=5]
+[sub_resource type="Curve" id=4]
 _data = [ Vector2( 0, 0.463636 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 1.4, 0.0, 0, 0 ]
 
 [node name="Card" type="Area2D" groups=[
@@ -31,8 +31,6 @@ position = Vector2( 75, 120 )
 shape = SubResource( 1 )
 
 [node name="Control" type="Control" parent="."]
-margin_right = 150.0
-margin_bottom = 240.0
 rect_min_size = Vector2( 150, 240 )
 __meta__ = {
 "_edit_group_": true,
@@ -40,9 +38,16 @@ __meta__ = {
 }
 
 [node name="Highlight" parent="Control" instance=ExtResource( 6 )]
+margin_right = 3.0
+margin_bottom = 3.00002
 
-[node name="Back" type="Control" parent="Control"]
+[node name="Back" type="MarginContainer" parent="Control"]
 visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Front" type="MarginContainer" parent="Control"]
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
@@ -104,7 +109,7 @@ __meta__ = {
 z_index = 50
 points = PoolVector2Array( 384, 112 )
 width = 15.0
-width_curve = SubResource( 5 )
+width_curve = SubResource( 4 )
 default_color = Color( 1, 1, 1, 1 )
 antialiased = true
 script = ExtResource( 9 )
@@ -163,3 +168,4 @@ margin_bottom = 50.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+[connection signal="resized" from="Control/Back" to="." method="_on_Back_resized"]

@@ -1,8 +1,7 @@
 class_name ManipulationButtons
 extends VBoxContainer
 
-const _MANIP_BUTTON_SCENE_FILE = CFConst.PATH_CUSTOM + "CGFCardManipulationButton.tscn"
-const _MANIP_BUTTON_SCENE = preload(_MANIP_BUTTON_SCENE_FILE)
+export(PackedScene) var manipulation_button : PackedScene
 
 # This variable hold definitions for which buttons to create on this card.
 #
@@ -22,7 +21,7 @@ func _ready() -> void:
 # Adds an amount of manipulation buttons to the card
 func spawn_manipulation_buttons() -> void:
 	for button_name in needed_buttons:
-		var button = _MANIP_BUTTON_SCENE.instance()
+		var button = manipulation_button.instance()
 		button.name = button_name
 		button.text = needed_buttons[button_name]
 		add_child(button)
