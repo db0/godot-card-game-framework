@@ -1616,7 +1616,7 @@ func _process_card_state() -> void:
 				# This needs to be improved, as the multiplier needs to be
 				# based on the angle somehow.
 				if cfc.hand_use_oval_shape:
-					oval_offset = (90 - abs(_recalculate_rotation())) * 0.75
+					oval_offset = (90 - abs(_recalculate_rotation())) * 0.9
 				_target_position = expected_position \
 						- Vector2($Control.rect_size.x \
 						* 0.25,$Control.rect_size.y \
