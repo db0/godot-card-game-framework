@@ -1673,6 +1673,13 @@ func _process_card_state() -> void:
 						* 0.25,$Control.rect_size.y \
 						* 0.5 + cfc.NMAP.hand.bottom_margin \
 						- oval_offset)
+				# We need to bump up the y postion a bit based on the rotation
+				# We subtract 13 if there is no rotation
+				var y_bump = 13
+				# For each degree off of 90 we multiply by 1.8 to handle the curve offset
+				y_bump += abs(90 - _get_oval_angle_by_index()) * 1.8
+				# Subtract the y_bump from the target Y position
+				_target_position -= Vector2(0, y_bump)
 				_target_rotation = expected_rotation
 				# We make sure to remove other tweens of the same type
 				# to avoid a deadlock
