@@ -1882,10 +1882,9 @@ func _get_angle_by_index(index_diff = null) -> float:
 	# reported when it's being dragged
 	if hand_size == 0:
 		hand_size = 1
-	var half
-	half = (hand_size - 1) / 2.0
+	var half = (hand_size - 1) / 2.0
 	var card_angle_max: float = 15
-	var card_angle_min: float = 5
+	var card_angle_min: float = 6.5
 	# Angle between cards
 	var card_angle = max(min(60 / hand_size, card_angle_max), card_angle_min)
 	# When foucs hand, the card needs to be offset by a certain angle
