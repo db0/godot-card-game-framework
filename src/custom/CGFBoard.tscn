@@ -40,6 +40,7 @@ custom_styles/panel = SubResource( 1 )
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 1.12244, 0 )
 script = ExtResource( 6 )
+placement = 7
 
 [node name="FancyMovementToggle" type="CheckButton" parent="."]
 margin_right = 12.0
