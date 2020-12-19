@@ -1,7 +1,9 @@
 extends "res://tests/UTcommon.gd"
 
 func before_each():
-	setup_board()
+	var confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 
 
 func test_single_card_draw_use_rectangle():

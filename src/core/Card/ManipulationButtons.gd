@@ -1,15 +1,35 @@
 class_name ManipulationButtons
 extends VBoxContainer
 
+const _MANIP_BUTTON_SCENE_FILE = CFConst.PATH_CUSTOM + "CGFCardManipulationButton.tscn"
+const _MANIP_BUTTON_SCENE = preload(_MANIP_BUTTON_SCENE_FILE)
+
+# This variable hold definitions for which buttons to create on this card.
+#
+# The dictionary key is the button name, and the value is the text to add
+# to the button label.
+var needed_buttons: Dictionary
+
 onready var _tween = $Tween
 # Hold the node which owns this node.
 onready var owner_node = get_parent().get_parent()
 
+
 func _ready() -> void:
-	for button in get_children():
-		if button.name != "Tween":
-			# There should be a function on the owner_card for each button
-			button.connect("pressed",owner_node,"_on_" + button.name + "_pressed")
+	spawn_manipulation_buttons()
+
+
+# Adds an amount of manipulation buttons to the card
+func spawn_manipulation_buttons() -> void:
+	for button_name in needed_buttons:
+		var button = _MANIP_BUTTON_SCENE.instance()
+		button.name = button_name
+		button.text = needed_buttons[button_name]
+		add_child(button)
+		# We also connect each button to the ourselves
+		# The method should exist in any script that extends this class
+		button.connect("pressed",self,"_on_" + button.name + "_pressed")
+
 
 # Detects when the mouse is still hovering over the buttons area.
 #
@@ -58,8 +78,9 @@ func set_active(value = true) -> void:
 
 
 # Sets one specific button to be (in)visible (and thus active) on demand
-func set_button_visible(button: String, value: bool) -> void:
-	get_node(button).visible = value
+func set_button_visible(button_name: String, value: bool) -> void:
+	if has_node(button_name):
+		get_node(button_name).visible = value
 
 
 # Allows the buttons to appear gracefully

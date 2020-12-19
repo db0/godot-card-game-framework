@@ -24,6 +24,8 @@ onready var mouse_pointer = \
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	if not cfc.are_all_nodes_mapped:
+		yield(cfc, "all_nodes_mapped")
 	add_child(mouse_pointer)
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()

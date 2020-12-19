@@ -6,6 +6,9 @@ var allCards := [] # A pseudo-deck array to hold the card objects we want to pul
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	cfc.map_node(self)
+	# We use the below while to wait until all the nodes we need have been mapped
+	# "hand" should be one of them.
 	# We're assigning our positions programmatically,
 	# instead of defining them on the scene.
 	# This way any they will work with any size of viewport in a game.

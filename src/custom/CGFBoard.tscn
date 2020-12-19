@@ -1,13 +1,13 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://src/custom/Board.gd" type="Script" id=1]
-[ext_resource path="res://src/custom/Deck.gd" type="Script" id=2]
-[ext_resource path="res://src/custom/Discard.gd" type="Script" id=3]
-[ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=4]
-[ext_resource path="res://src/core/Hand.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/custom/CGFDiscard.gd" type="Script" id=1]
+[ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/core/Hand.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/custom/CGFDeck.gd" type="Script" id=4]
+[ext_resource path="res://src/custom/CGFBoard.gd" type="Script" id=5]
 
 [sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.0392157, 0.0392157, 0.0392157, 1 )
+bg_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
@@ -17,43 +17,26 @@ corner_radius_bottom_left = 25
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-script = ExtResource( 1 )
+script = ExtResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Deck" parent="." instance=ExtResource( 4 )]
-script = ExtResource( 2 )
+[node name="Deck" parent="." instance=ExtResource( 2 )]
+script = ExtResource( 4 )
 placement = 8
+pile_name = "Deck"
 
-[node name="DiscardPile" parent="." instance=ExtResource( 4 )]
-script = ExtResource( 3 )
+[node name="Discard" parent="." instance=ExtResource( 2 )]
+script = ExtResource( 1 )
 placement = 6
 pile_name = "Discard"
 faceup_cards = true
 
-[node name="Control" parent="DiscardPile" index="0"]
+[node name="Control" parent="Discard" index="0"]
 custom_styles/panel = SubResource( 1 )
 
-[node name="VBoxContainer" parent="DiscardPile/Control/CenterContainer" index="0"]
-margin_left = 31.0
-margin_right = 124.0
-
-[node name="Label" parent="DiscardPile/Control/CenterContainer/VBoxContainer" index="0"]
-margin_right = 93.0
-text = "Discard"
-
-[node name="PanelContainer" parent="DiscardPile/Control/CenterContainer/VBoxContainer" index="1"]
-margin_right = 93.0
-
-[node name="CenterContainer" parent="DiscardPile/Control/CenterContainer/VBoxContainer/PanelContainer" index="0"]
-margin_right = 93.0
-
-[node name="CardCount" parent="DiscardPile/Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" index="0"]
-margin_left = 38.0
-margin_right = 54.0
-
-[node name="Hand" parent="." instance=ExtResource( 5 )]
+[node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 1.12244, 0 )
 placement = 7
 
@@ -138,4 +121,4 @@ __meta__ = {
 [connection signal="toggled" from="OvalHandToggle" to="." method="_on_OvalHandToggle_toggled"]
 [connection signal="toggled" from="Debug" to="." method="_on_Debug_toggled"]
 
-[editable path="DiscardPile"]
+[editable path="Discard"]

@@ -17,7 +17,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "CFConst",
 "language": "GDScript",
-"path": "res://src/core/CFConst.gd"
+"path": "res://src/custom/CFConst.gd"
 }, {
 "base": "Node",
 "class": "CFControl",
@@ -58,6 +58,11 @@ _global_script_classes=[ {
 "class": "CardContainer",
 "language": "GDScript",
 "path": "res://src/core/CardContainer.gd"
+}, {
+"base": "Panel",
+"class": "CardFront",
+"language": "GDScript",
+"path": "res://src/core/Card/CardFront.gd"
 }, {
 "base": "Reference",
 "class": "CustomScripts",
@@ -140,6 +145,7 @@ _global_script_class_icons={
 "CardBackTexture": "",
 "CardConfig": "",
 "CardContainer": "",
+"CardFront": "",
 "CustomScripts": "",
 "Hand": "",
 "Highlight": "",
@@ -159,7 +165,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Card Game Framework"
-run/main_scene="res://src/core/Main.tscn"
+run/main_scene="res://src/custom/CGFMain.tscn"
 config/icon="res://icon.png"
 
 [autoload]

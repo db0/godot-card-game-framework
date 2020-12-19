@@ -106,7 +106,7 @@ func set_pile_name(value: String) -> void:
 	# if the pile name has been specified in the editor
 	# this function will run before the onready calls
 	# so the pile_name_will be empty
-	if pile_name_label:
+	if is_inside_tree():
 		pile_name_label.text = value
 
 

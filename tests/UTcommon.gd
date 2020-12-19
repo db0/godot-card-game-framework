@@ -1,9 +1,9 @@
 class_name UTCommon
 extends "res://addons/gut/test.gd"
 
-const MAIN_SCENE_FILE = CFConst.PATH_CORE + "Main.tscn"
+const MAIN_SCENE_FILE = CFConst.PATH_CUSTOM + "CGFMain.tscn"
 const MAIN_SCENE = preload(MAIN_SCENE_FILE)
-const BOARD_SCENE_FILE = CFConst.PATH_CUSTOM + "Board.tscn"
+const BOARD_SCENE_FILE = CFConst.PATH_CUSTOM + "CGFBoard.tscn"
 var BOARD_SCENE = load(BOARD_SCENE_FILE)
 const MOUSE_SPEED := {
 	"fast": [10,0.3],
@@ -30,9 +30,11 @@ func fake_click(pressed, position, use_fake_mouse := true, flags=0) -> InputEven
 
 
 func setup_main() -> void:
+	cfc._ready()
 	main = autoqfree(MAIN_SCENE.instance())
 	get_tree().get_root().add_child(main)
-	cfc._ready()
+	if not cfc.are_all_nodes_mapped:
+		yield(cfc, "all_nodes_mapped")
 	board = cfc.NMAP.board
 	board.load_test_cards()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
@@ -42,11 +44,13 @@ func setup_main() -> void:
 
 
 func setup_board() -> void:
+	cfc._ready()
 	board = autoqfree(BOARD_SCENE.instance())
 	get_tree().get_root().add_child(board)
-	cfc._ready()
 	board.load_test_cards()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
+	if not cfc.are_all_nodes_mapped:
+		yield(cfc, "all_nodes_mapped")
 	hand = cfc.NMAP.hand
 	deck = cfc.NMAP.deck
 	discard = cfc.NMAP.discard
@@ -79,7 +83,6 @@ func drag_card(card: Card, target_position: Vector2, interpolation_speed := "fas
 		extra_offset = Vector2(10,60)
 	board._UT_interpolate_mouse_move(card.global_position + extra_offset,
 			board._UT_mouse_position,mouse_speed)
-	print(card,card.global_position)
 	yield(yield_for(mouse_yield_wait), YIELD)
 	click_card(card)
 	if interpolation_speed == "debug":

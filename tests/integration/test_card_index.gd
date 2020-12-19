@@ -3,7 +3,9 @@ extends "res://tests/UTcommon.gd"
 var cards := []
 
 func before_each():
-	setup_board()
+	var confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 	hand = cfc.NMAP.hand
 	cards.clear()
 

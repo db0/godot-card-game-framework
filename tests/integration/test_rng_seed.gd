@@ -8,7 +8,9 @@ func after_all():
 
 func test_game_seed_consistency():
 	cfc.game_rng_seed = "GUT"
-	setup_board()
+	var confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(10)
 	yield(yield_for(1), YIELD)
 	var all_index1 := []
@@ -20,7 +22,9 @@ func test_game_seed_consistency():
 	board.queue_free()
 	yield(yield_for(0.2), YIELD)
 	cfc.game_rng_seed = "GUT"
-	setup_board()
+	confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(10)
 	yield(yield_for(1), YIELD)
 	# warning-ignore:return_value_discarded
@@ -39,7 +43,9 @@ func test_game_seed_consistency():
 
 func test_game_seed_randomization():
 	cfc.game_rng_seed = "GUT"
-	setup_board()
+	var confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(10)
 	yield(yield_for(1), YIELD)
 	var all_index1 := []
@@ -51,7 +57,9 @@ func test_game_seed_randomization():
 	board.queue_free()
 	yield(yield_for(0.2), YIELD)
 	cfc.game_rng_seed = "GUT"
-	setup_board()
+	confirm_return = setup_board()
+	if confirm_return is GDScriptFunctionState: # Still working.
+		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(10)
 	yield(yield_for(1), YIELD)
 	cfc.game_rng.randomize()

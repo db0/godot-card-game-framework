@@ -7,19 +7,26 @@ Simply copy the src folder to your project.
 You can rename the folder or any subfolders as you wish to fit your directory structure, just make sure you do it within Godot to allow it to rename all instanced scenes.
 However if you do so, you'll also need to adjust the variables starting with `PATH_` inside `CFControl.gd`.
 
-Strictly speaking, the tcsn files inside are optional but **highly recommended** as they come preset with all the node configuration needed to run all interactions defined in the code properly.
+Technically, the tcsn files inside the `res://src/core` are optional but practically it would be very difficult to design them from scratch. Instead we've made them sufficiently modular, that you can easily modify all relevant
+parts for your card game by modifying inherited scenes only.
 
-While you could simply use only the provided scrips and classes, you will then need to adapt your own scenes to contain the nodes required with retaining the the correct names.
-This is easier said than done so use this approach at your own risk.
+If you insist on modifying scenes inside core, use this approach at your own risk and be aware that if you try to upgrade the framework, it is likely going to replace your modifications and break your game, so you'll be left using the same version.
 
-**It is strongly suggested you start by importing the provided scenes in src and modify them further to fit your own requirements.**
+**It is strongly suggested you do not modify the scenes inside `res://src/core`.** If you have a good reason why you must be able to modify a scene in core, please open a issue to tell us about it, and we'll try to make that part customizable via inherited scenes instead.
 
-The scripts and scenes inside /src/custom are optional. They are just there to create a sample setup of the capabilties of the framework.
+On the other hand, te scripts and scenes inside `res://src/custom` are demontstration. They are just there to create a sample setup that we suggest you use when fitting this framework to your needs.
 
-A notable exception to this is the Board.tcsn.
-While optional, it is also referenced from the Main.tcsn and is mandatory to have a board to let the framework work.
-Nevertheless, this one is the easiest to replace with your own custom board.
-Just remember to adjust Main.tcsn to instance your own Board scene under ViewportContainer/Viewport)
+A few notes about the custom scenes.
+
+While everything in there can be modified, some files need to exist in one form or another.
+* You **need** a board scene, which you will load into your Main.tcsn "Board Scene" variable. The current provided CGFBoard.tcsn is full of demo functions and you can safely delete everything inside except the class extends declaration.
+* You **need** CardConfig.gd, but it is in custom because its contents should change from game to game, and it should not be overriden via an upgrade.
+* You **need** CustomScripts.gd, even if it custom_script() function does not match anything.
+* You **need** CFConst, but you should customize its constants to fit your needs. It is in custom so that you do not lose your changes during an upgrade.
+* You **need** at least 1 Card Back and 1 Card Front scenes, to link to your card template.
+
+All other files, especially those starting with "CGF" can be deleted, or you can keep them around for reference.
+
 
 ## Global configuration
 
@@ -28,19 +35,25 @@ It also uses a core reference class called CFConst which defines the behaviour o
 
 1. Add CFControl.gd as an autoloaded singleton with name 'cfc'
 
-2. Edit the `var nodes_map` in CFConst.gd in the "Behaviour Constants" section, to point to your board and other container scenes (Deck, discard etc)
+2. Edit the `CRITICAL_NODES` in CFConst.gd, with the node names of your board and all CardContainer scenes (Deck, discard etc) in lowercase. Do not list Main.
+
+Whenever your game is loaded, all your card containers and your board will be mapped inside cfc.NMAP.
+This way if you want to quickly refer to your pile called, say, "SuperCards" all you need to do is refer to `cfc.NMAP.supercards` (in lowercase always)
 
 ## Card class
 
 The below instructions will set up your game to use the `Card` class as a framework for card handling.
 
-1. Instance a scene based on `CardTemplate.tcsn`. We suggest you create one scene per card type in your game.
-	Add those card scenes into the custom/cards folder where you'll keep your game assets.
+1. Start by creating an inherited scene based on `CardTemplate.tcsn`. We suggest you create one scene per card type in your game.
+	Add those card scenes into either custom/cards directory, or another directory of your preference.
 2. If the card type is supposed to be attached to others, check the "Is Attachment"
+3. If you have designed your own card back scene, modify the card_back variable to point it to your own card back scene. Make sure your card back extends CardBack.
+4. If you wish to modify the provided card front scene, modify the card_front variable to point it to your own card front scene. Make sure it extends CardFront.
+	Define the card_labels dicrionary within to allow the card properties to populate the labels correctly.
 
 2. If you're going to add extra code for your own game in the card scenes, then:
 	* If it's relevant to all cards in your game:
-		1. Modify the `CardTemplate.tcsn` by detaching its `CardTemplate.gd` script and adding a new script that extends Card. Give it a new class_name.
+		1. Modify your **instanced scene** from `CardTemplate.tcsn` by detaching its `CardTemplate.gd` script and adding a new script that extends Card. Give it a new class_name.
 
 		```
 		class_name MyCustomCard
@@ -50,14 +63,17 @@ The below instructions will set up your game to use the `Card` class as a framew
 		2. Make sure any extra scripts for different types of cards, extend your new card's class.
 	* If it's only relevant to a specific type of card, remove the script attached to that type's scene, and add a new script. Make that script extend from the Card class or from your own new card class_name.
 
-If you want to customize the `CardTemplate.tcsn`, the following nodes are fairly safe to manipulate:
+If you want to customize the `CardTemplate.tcsn`, you should start by creating an inherited scene from it. You should not modify the CardTemplate.tcsn directly, as that will be overwritten in case of an upgrade
 
+In the inherited Card scene, you can modify the following.
+
+* The scenes linked from card_back and card_front.
 * The `$Control` rect_size property
-* The `$Control/Front` node type, as long as it remains a Control type node.
-* All children nodes of `$Control/Front`. The labels there are used to populate your card. You'll need to adjust setup() and the Card Definitions if you change their names and positions.
-* Everything under `$Control/Back/VBoxContainer` except `$Control/Back/VBoxContainer/CenterContainer` as that is needed to show the viewed status.
-* Everything under `$Control/ManipulationButtons`
 * `$Debug`
+
+You will find that most of the scripts linked into the card are pointing to extension of classes, and they reside in `res://src/custom`. You do not need to keep those. Feel free to extend the classes with a fresh script and setup your own configuration. For example, if you design your own CardFront, simply create a new script called like "MyCardTypeFront.gd" extending class CardFront, and attach it to "MyCardTypeFront.tcsn".
+
+
 
 If you want a different node setup for the card scene, be aware that the current layout is very tightly wound in the code.
 You may need to do extensive modifications to make sure the code can find the modified node names and positions.
@@ -139,7 +155,7 @@ The below instructions will set up your game to use the `Board` class as a frame
 
    `extends Board`
 
-1. If you're not using the provided `Board.tcsn`, then all you need to do is add a Node2D in the root of your scene.
+1. If you're not using the provided `Board.tcsn`, then all you need to do is add a Node2D in the root of your scene and make sure the scene root is called "Board"
 
 Of course without instancing a few Hand or Pile objects, there won't be anything you can do.
 
@@ -147,15 +163,25 @@ Of course without instancing a few Hand or Pile objects, there won't be anything
 
 The framework includes two forms of showing details about a card. One is simply to scale up a the card a bit while in hand, and the other is to pop-up a new viewport with a copy of the card object in it.
 
-By default the game has both active, but the viewport focus requires a bit more extensive setup to be usable by your game. Specifically you need to setup a parent scene which utilizes multiple viewports.
+By default out of the box, the game has both active.
 
-If you do not already have anything like this, you can simply use the `Main.tcsn` scene as a template and modify accordingly. The framework will utilize it automatically if it detects a Main.tcsn as the root.
+In order to customize the main scene while allowing the framework to be upgraded in the future, you should simply create a new scene inheriting `Main.tcsn`, then adjust the "Board Scene" variable to point to your own custom Board scene. Ensure you retain "Main" as the scene name.
+The framework will utilize it automatically if it detects a scene called "Main" as the Main scene (as defined in the project configuration).
 
 If you want to use your own root scene, then you can simply extend it from the ViewportCardFocus class to inherit all the required methods.
 The Main.tcsn has a fairly simple layout, however it's still not recommended to replace it, but instead to tweak it what has already been provided.
 
-If you do not want or need the viewport focus, then you can simply ignore it.
+If you do not want or need the viewport focus, then you can simply ignore it use use your own Board scene as your Main scene
+
 However you'll need to make sure table cards are legible as they are since there's no other good way to get a closeup of them without viewports
+
+## Upgrading
+
+This framework has been developed with the idea that you might want to upgrade it with the latest version down the road.
+
+To make sure your game can upgrade its framework, make sure to never modify any scenes inside `res://src/core`. If you need to tweak them, you should instead create an inherited scene and store it in a different folder. You can use `res://src/custom` or any other one of your choice. To achieve this, a lot of scenes, like the CardTemplate.tcsn and the Main.tcsn use variables where you point to customized scenes. You should be storing the customized scenes inside your custom folder as well.
+
+To upgrade the framework, simply download the latest version, exit your project, delete `res://src/core` and copy over the core folder from the new version. You should theoretically be able to just overwrite it, but this will create an issue in case any scenes inside were renamed or deleted.
 
 ## Unit Testing
 

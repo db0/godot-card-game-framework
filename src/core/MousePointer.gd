@@ -75,7 +75,8 @@ func determine_global_mouse_pos() -> Vector2:
 			- get_viewport_transform().origin
 	offset_mouse_position *= zoom
 	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
-	if cfc.ut: mouse_position = cfc.NMAP.board._UT_mouse_position
+	if cfc.ut and cfc.NMAP.get("board"): 
+		mouse_position = cfc.NMAP.board._UT_mouse_position
 	else: mouse_position = offset_mouse_position
 	return mouse_position
 

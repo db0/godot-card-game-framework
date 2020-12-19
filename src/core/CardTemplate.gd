@@ -35,6 +35,7 @@ enum CardState {
 const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
 const _CARD_CHOICES_SCENE = preload(_CARD_CHOICES_SCENE_FILE)
 
+
 # Emitted whenever the card is rotated
 # The signal must send its name as well (in the trigger var)
 # Because it's sent by the SignalPropagator to all cards and they use it
@@ -100,7 +101,8 @@ export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_ca
 export var card_name : String setget set_card_name, get_card_name
 # Contains the scene which has the Card Back design to use for this card type
 # It needs to be scene which uses a CardBack class script.
-export(PackedScene) var card_back_design = preload("res://src/custom/CGFCardBack.tscn")
+export(PackedScene) var card_back_design : PackedScene
+export(PackedScene) var card_front_design : PackedScene
 
 # Starting state for each card
 var state : int = CardState.IN_PILE
@@ -126,29 +128,26 @@ var _potential_cards := []
 # We use this to track multiple [CardContainer]s
 # when our card is about to drop onto them
 var _potential_containers := []
-var _extra_text_shrink := 0.0
 
 # Used for picking a card to start the compiler on
 var _debugger_hook := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
-# Maps the location of the card front labels so that they're findable even when
-# The card front is customized for games of different needs
-# See _init_front_labels() to change the definition
-var _card_labels := {}
+
 # The node which has the design of the card back
 # And the methods which are used for its potential animation.
 # This will be loaded in `_init_card_back()`
 var card_back : CardBack
+var card_front : CardFront
+var _card_text
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
 onready var _control = $Control
-onready var _card_text = $Control/Front/Margin/CardText
 
 # The node which hosts all manipulation buttons belonging to this card
 # as well as methods to hide/show them, and connect them to this card.
-onready var buttons= $Control/ManipulationButtons
+onready var buttons = $Control/ManipulationButtons
 # The node which hosts all tokens belonging to this card
 # as well as the methods retrieve them and to to hide/show their drawer.
 onready var tokens = $Control/Tokens
@@ -160,17 +159,12 @@ onready var highlight = $Control/Highlight
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	_init_card_layout()
 	# The below call ensures out card_name variable is set.
 	# Normally the setup() function should be used to set it,
 	# but setting the name here as well ensures that a card can be also put on
 	# The board without calling setup() and then use its hardcoded labels
-	_init_front_labels()
-	# This ensures card_name is set at the least based on its label or node name
-	# This allows a developer to create individual card instances and simply
-	# name their root node them after their card name,
-	# and the setup() will do the rest.
 	_init_card_name()
-	_init_card_back()
 	setup()
 	# First we set the card to always pivot from its center.
 	# We only rotate the Control node however, so the collision shape is not rotated
@@ -190,11 +184,14 @@ func _ready() -> void:
 	cfc.signal_propagator.connect_new_card(self)
 
 
-func _init_card_back() -> void:
+func _init_card_layout() -> void:
 	# Because we duplicate the card when adding to the viewport focus
 	# It already has a CardBack node, so we don't want to replicate it
 	# so we only add a CardBack node, if we know it's not a dupe focus
 	if get_parent().name != "Viewport":
+		var card_front_instance = card_front_design.instance()
+		$Control.add_child_below_node($Control/Highlight,card_front_instance)
+		card_front = card_front_instance
 		var card_back_instance = card_back_design.instance()
 		$Control/Back.add_child(card_back_instance)
 		card_back = card_back_instance
@@ -206,25 +203,7 @@ func _init_card_back() -> void:
 		card_back = $Control/Back.get_child(0)
 
 
-# This function is used to map the card labels for all cards
-# If you create an instance of this CardTemplate and want to modify their position
-# You need to extend the Card class, and then override this function
-# With your own function defined in the new card type.
-# If you're just adding new labels, without modifying the existing ones
-# You can simply call `._init_front_labels()` from inside the new type
-# Then define your extra labels on top.
 
-
-func _init_front_labels() -> void:
-# Maps the location of the card front labels so that they're findable even when
-# The card front is customized for games of different needs
-	_card_labels["Name"] = $Control/Front/Margin/CardText/Name
-	_card_labels["Type"] = $Control/Front/Margin/CardText/Type
-	_card_labels["Tags"] = $Control/Front/Margin/CardText/Tags
-	_card_labels["Requirements"] = $Control/Front/Margin/CardText/Requirements
-	_card_labels["Abilities"] = $Control/Front/Margin/CardText/Abilities
-	_card_labels["Cost"] = $Control/Front/Margin/CardText/HB/Cost
-	_card_labels["Power"] = $Control/Front/Margin/CardText/HB/Power
 
 
 # Ensures that the canonical card name is set in all fields which use it.
@@ -233,8 +212,8 @@ func _init_card_name() -> void:
 	if not card_name:
 		# If the variable has not been set on start
 		# But the Name label has been set, we set our name to that instead
-		if _card_labels["Name"].text != "":
-			set_card_name(_card_labels["Name"].text)
+		if card_front.card_labels["Name"].text != "":
+			set_card_name(card_front.card_labels["Name"].text)
 		else:
 			# The node name changes depeding on how many other cards
 			# with the same node name are siblings
@@ -248,6 +227,7 @@ func _init_card_name() -> void:
 		# If the variable has been set, we ensure label and node name
 		# are matching
 		set_card_name(card_name)
+
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -411,36 +391,6 @@ func _on_Card_mouse_exited() -> void:
 		CardState.FOCUSED_IN_POPUP:
 			state = CardState.IN_POPUP
 
-# Hover button which rotates the card 90 degrees
-func _on_Rot90_pressed() -> void:
-# warning-ignore:return_value_discarded
-	set_card_rotation(90, true)
-
-
-# Hover button which rotates the card 180 degrees
-func _on_Rot180_pressed() -> void:
-# warning-ignore:return_value_discarded
-	set_card_rotation(180, true)
-
-
-# Hover button which flips the card facedown/faceup
-func _on_Flip_pressed() -> void:
-	# warning-ignore:return_value_discarded
-	set_is_faceup(not is_faceup)
-
-
-# Demo hover button which adds a selection of random tokens
-func _on_AddToken_pressed() -> void:
-	var valid_tokens := ['tech','gold coin','blood','plasma']
-	# warning-ignore:return_value_discarded
-	tokens.mod_token(valid_tokens[CFUtils.randi() % len(valid_tokens)], 1)
-
-
-# Hover button which allows the player to view a facedown card
-func _on_View_pressed() -> void:
-	# warning-ignore:return_value_discarded
-	set_is_viewed(true)
-
 
 # Triggers when a card hovers over another card while being dragged
 #
@@ -504,7 +454,6 @@ func _on_Card_area_exited(area: Area2D) -> void:
 				_potential_containers)
 
 
-
 # This function handles filling up the card's labels according to its
 # card definition dictionary entry.
 func setup() -> void:
@@ -535,13 +484,13 @@ func modify_property(property: String, value, is_init = false, check := false) -
 			set_card_name(value)
 		elif not check:
 			properties[property] = value
-			if not _card_labels.has(property):
+			if not card_front.card_labels.has(property):
 				if not property.begins_with("_"):
 					print_debug("Warning: ", property,
 							" does not have a matching label!")
 				retcode = CFConst.ReturnCode.FAILED
 			else:
-				var label_node = _card_labels[property]
+				var label_node = card_front.card_labels[property]
 				if not is_init:
 					emit_signal("card_properties_modified",
 							self, "card_properties_modified",
@@ -553,12 +502,12 @@ func modify_property(property: String, value, is_init = false, check := false) -
 				#
 				# In this demo, the format is defined as: "labelname: value"
 				if property in CardConfig.PROPERTIES_NUMBERS:
-					_set_label_text(label_node,property
+					card_front.set_label_text(label_node,property
 							+ ": " + str(value))
 				# These are arrays of properties which are put in a label
 				# with a simple join character
 				elif property in CardConfig.PROPERTIES_ARRAYS:
-					_set_label_text(label_node,
+					card_front.set_label_text(label_node,
 							CFUtils.array_join(value,
 							CFConst.ARRAY_PROPERTY_JOIN))
 				# These are standard properties which is simple a String to add to the
@@ -567,7 +516,7 @@ func modify_property(property: String, value, is_init = false, check := false) -
 				# but this is also the fallback we use for
 				# properties undefined in CardConfig
 				else:
-					_set_label_text(label_node, str(value))
+					card_front.set_label_text(label_node, str(value))
 					# If we have an empty property, we let the other labels
 					# use the space vertical space it would have taken.
 				if label_node.text == "" :
@@ -703,14 +652,14 @@ func get_is_viewed() -> bool:
 # Setter for card_name
 # Also changes the card label and the node name
 func set_card_name(value : String) -> void:
-	# if the _card_labels variable is not set it means ready() has not
+	# if the card_front.card_labels variable is not set it means ready() has not
 	# run yet, so we just store the card name for later.
-	if _card_labels.empty():
+	if not card_front:
 		card_name = value
 	else:
 		# We set all areas of the card to match the canonical name.
-		var name_label = _card_labels["Name"]
-		_set_label_text(name_label,value)
+		var name_label = card_front.card_labels["Name"]
+		card_front.set_label_text(name_label,value)
 		name = value
 		card_name = value
 		properties["Name"] = value
@@ -726,7 +675,7 @@ func get_card_name() -> String:
 # It's preferrable to set card_name instead.
 func set_name(value : String) -> void:
 	.set_name(value)
-	_card_labels["Name"].text = value
+	card_front.card_labels["Name"].text = value
 	card_name = value
 
 # Setter for card_rotation.
@@ -2055,55 +2004,6 @@ func _recalculate_rotation(index_diff = null)-> float:
 		calculated_rotation = 90.0 - _get_oval_angle_by_index(null, index_diff)
 	return(calculated_rotation)
 
-
-# Set a label node's text.
-# As the string becomes longer, the font size becomes smaller
-func _set_label_text(node: Label, value):
-	# We do not want some fields, like the name, to be too small.
-	# see CardConfig.TEXT_EXPANSION_MULTIPLIER documentation
-	var allowed_expansion = CardConfig.TEXT_EXPANSION_MULTIPLIER.get(node.name,1)
-	var shrink_size : float
-	# If this node is the specified node that compensates for other nodes
-	# increasing their y-rect, then it has less y-space for itself according
-	# to the amount the others increased.
-	if node.name in CardConfig.SHRINK_LABEL:
-		shrink_size = _extra_text_shrink
-	var label_size = node.rect_min_size
-	var label_font = node.get("custom_fonts/font").duplicate()
-	var line_height = label_font.get_height()
-	# line_spacing should be calculated into rect_size
-	var line_spacing = node.get("custom_constants/line_spacing")
-	if not line_spacing:
-		line_spacing = 3
-	# This calculates the amount of vertical pixels the text would take
-	# once it was word-wrapped.
-	var label_rect_y = label_font.get_wordwrap_string_size(
-			value, label_size.x).y \
-			/ line_height \
-			* (line_height + line_spacing) \
-			- line_spacing
-	# If the y-size of the wordwrapped text would be bigger than the current
-	# available y-size foir this label, we reduce the text, until we
-	# it's small enough to stay within the boundaries
-	while label_rect_y > label_size.y * allowed_expansion - shrink_size:
-		label_font.size = label_font.size - 1
-		if label_font.size < 3:
-			label_font.size = 2
-			break
-		label_rect_y = label_font.get_wordwrap_string_size(
-				value,label_size.x).y \
-				/ line_height \
-				* (line_height + line_spacing) \
-				- line_spacing
-	# If we allowed the card to expand its initial rect_size.y
-	# we need to compensate somewhere by reducing another label's size.
-	# We store the amount we increased in size from the
-	# initial amount,m for this purpose.
-	if label_rect_y > label_size.y:
-		_extra_text_shrink = label_rect_y - label_size.y
-	node.set("custom_fonts/font", label_font)
-	node.rect_min_size = label_size
-	node.text = value
 
 
 # Ensures that all filters requested by the script are respected
