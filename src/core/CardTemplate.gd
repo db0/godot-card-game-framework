@@ -71,7 +71,7 @@ signal card_targeted(card,trigger,details)
 #
 # If we do, it is parsed by the compiler who then considers it
 # a cyclic reference as the scripting engine refers back to the Card class.
-var scripting_engine = load(CFConst.PATH_CORE + "ScriptingEngine.gd")
+var scripting_engine = load(CFConst.PATH_SCRIPTING_ENGINE)
 
 
 # The properties dictionary will be filled in by the setup() code
