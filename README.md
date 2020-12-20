@@ -43,11 +43,12 @@ Pull requests are more than welcome ;)
 
 All of the above while being very easily extensible to your own game's special requirements through simple json dictionaries.
 
-## Easy Customation
+## Easy Customization
 
-The classes provide some easy customization options, such as how the card move, where they appear etc.
+The classes provide some easy customization options, such as the card size, how the card move, where they appear etc.
 
-Check the "Behaviour Constants" inside `CFConst.gd` for detailed information on what each does.
+Check the Behaviour Constants of `CFConst.gd` for detailed information on what each does.
+
 For more fine-tuned customization than that, you'll need to modify the code manually
 
 ## Easy to Upgrade
