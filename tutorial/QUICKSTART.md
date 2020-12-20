@@ -177,7 +177,7 @@ Press F5 and draw some cards. Your "Beast" cards should be the only options.
 
 Congratulations, you have now created your own customized workspace, defined your first card type, and created your first cards to use it!
 
-	![Success](4.end-creature-in-game.png)
+![Success](4.end-creature-in-game.png)
 
 Hopefully this will give you a basic idea of where things are. Continue exploring and changing things and you should be able to customize the framework to your needs in no-time.
 
