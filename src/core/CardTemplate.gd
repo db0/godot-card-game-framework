@@ -23,7 +23,6 @@ enum CardState {
 	DROPPING_TO_BOARD		#6
 	ON_PLAY_BOARD			#7
 	FOCUSED_ON_BOARD		#8
-	DROPPING_INTO_PILE 		#9
 	IN_PILE					#10
 	IN_POPUP				#11
 	FOCUSED_IN_POPUP		#12
@@ -246,7 +245,6 @@ func _process(delta) -> void:
 			"DROPPING_TO_BOARD",
 			"ON_PLAY_BOARD",
 			"FOCUSED_ON_BOARD",
-			"DROPPING_INTO_PILE",
 			"IN_PILE",
 			"IN_POPUP",
 			"FOCUSED_IN_POPUP",
@@ -320,6 +318,17 @@ func _on_Card_gui_input(event) -> void:
 				if state in [CardState.FOCUSED_IN_HAND,
 						CardState.FOCUSED_ON_BOARD,
 						CardState.FOCUSED_IN_POPUP]:
+					# See CFConst documentation.
+					if state == CardState.FOCUSED_IN_HAND \
+							and (CFConst.DISABLE_DRAGGING_FROM_HAND
+							or not check_play_costs()):
+						return
+					if state == CardState.FOCUSED_ON_BOARD \
+							and CFConst.DISABLE_DRAGGING_FROM_BOARD:
+						return
+					if state == CardState.FOCUSED_IN_POPUP \
+							and CFConst.DISABLE_DRAGGING_FROM_PILE:
+						return
 					# But first we check if the player does a long-press.
 					# We don't want to start dragging the card immediately.
 					cfc.card_drag_ongoing = self
@@ -410,6 +419,10 @@ func _on_Card_area_entered(area: Area2D) -> void:
 	if area.get_class() == "CardContainer" \
 			and not area in _potential_containers \
 			and state == CardState.DRAGGED:
+		# If DISABLE_DROPPING_TO_CARDCONTAINERS is set to true, we still
+		# Allow the player to return the card where they got it.
+		if CFConst.DISABLE_DROPPING_TO_CARDCONTAINERS and area != get_parent():
+			return
 		var container = area
 		_potential_containers.append(container)
 		_potential_containers.sort_custom(CFUtils,"sort_card_containers")
@@ -1135,10 +1148,13 @@ func interruptTweening() ->void:
 
 # Changes card focus (highlighted and put on the focus viewport)
 func set_focus(requestedFocus: bool) -> void:
-	 # We use an if to avoid performing constant operations in _process
+	# We use an if to avoid performing constant operations in _process
+	# We only modify the highlight though, if the card is not being
+	# highlighted by another effect (such as a targetting arrow etc)
 	if highlight.visible != requestedFocus and \
-			highlight.modulate == CFConst.FOCUS_HOVER_COLOUR:
-		highlight.visible = requestedFocus
+			highlight.modulate in \
+			[CFConst.FOCUS_HOVER_COLOUR, CFConst.CANNOT_PAY_COST_COLOUR]:
+		highlight.set_highlight(requestedFocus,CFConst.FOCUS_HOVER_COLOUR)
 	if cfc.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
 			cfc.NMAP.main.focus_card(self)
@@ -1261,6 +1277,19 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	if rot_anim:
 		_add_tween_rotation(random_rot,0,rot_speed,rot_anim,Tween.EASE_IN)
 	_tween.start()
+
+
+# This function can be overriden by any class extending Card, in order to provide
+# a way of checking if a card can be played before dragging it out of the hand.
+#
+# This method will be called while the card is being focused by the player
+# If it returns true, the card will be highlighted as normal and the player
+# will be able to drag it out of the hand
+#
+# If it returns false, the card will be highlighted with a red tint, and the
+# player will not be able to drag it out of the hand.
+func check_play_costs() -> bool:
+	return(true)
 
 
 # Makes attachments always move with their parent around the board
@@ -1422,16 +1451,6 @@ func _clear_attachment_status() -> void:
 # Returns true if the mouse is hovering over the card, else false
 func _is_card_hovered() -> bool:
 	var ret = false
-#	if (cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos().x
-#			>= $Control.rect_global_position.x and
-#			cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos().y
-#			>= $Control.rect_global_position.y and
-#			cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos().x
-#			<= $Control.rect_global_position.x
-#			+ card_size.x and
-#			cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos().y
-#			<= $Control.rect_global_position.y
-#			+ card_size.y):
 	if cfc.NMAP.board.mouse_pointer in get_overlapping_areas():
 		ret = true
 	#print(ret)
@@ -1582,6 +1601,8 @@ func _process_card_state() -> void:
 			# always over its neighbours
 			z_index = 1
 			set_focus(true)
+			if not check_play_costs():
+				highlight.set_highlight(true,CFConst.CANNOT_PAY_COST_COLOUR)
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
@@ -1615,16 +1636,6 @@ func _process_card_state() -> void:
 					if not c in neighbours and c != self:
 						c.interruptTweening()
 						c.reorganize_self()
-				# When zooming in, we also want to move the card higher,
-				# so that it's not under the screen's bottom edge.
-				# We multiple with 0.25 to offset the increase in size
-				# due to the 1.5 scale coming later.
-				var oval_offset = 0.0
-				# The below calculation ensures that rotated cards
-				# Don't raise too much over the hand location, causing the card
-				# focus to spazz-out.
-				# This needs to be improved, as the multiplier needs to be
-				# based on the angle somehow.
 				_target_position = expected_position \
 						- Vector2(card_size.x \
 						* 0.25,0)
@@ -2045,3 +2056,4 @@ func _on_Back_resized() -> void:
 	if $Control/Back.rect_size != CFConst.CARD_SIZE:
 		pass
 		print_debug($Control/Back.rect_size) # Replace with function body.
+

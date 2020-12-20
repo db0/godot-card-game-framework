@@ -13,6 +13,9 @@
   * Developers can now also specify the Scripting Engine location inside CFConst. This will allow them to extend its functionality with more tasks, specific to their game.
 * Can now define global CARD_SIZE to CFConst. Now you can change card size globally and all cardcontainers will also adjust their size accordingly. 
 * Developers do not need to define critical node locations in CFConst anymore.
+* Made it easier for other devs to extend the ScriptingEngine
+* Added configuration option that selectively disables drag or drop.
+* Added overridable function `check_play_costs()` which can determine on runtime is costs can be paid, and allow the card to be dragged from hand
 
 ## 1.2
 

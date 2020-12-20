@@ -74,7 +74,7 @@ enum OverlapShiftDirection{
 
 # The card size you want your  cards to have.
 # This will also adjust all CardContainers to match
-# If you modify this property, you **must** adjust 
+# If you modify this property, you **must** adjust
 # the min_rect of the various control nodes inside the card front and back scenes.
 const CARD_SIZE := Vector2(150,240)
 # When this is set, the player cannot drop cards on the board.
@@ -145,6 +145,12 @@ const ATTACHMENT_OFFSET := -0.2
 #
 # Reduce the multiplier to reduce glow effect or stop it altogether
 const FOCUS_HOVER_COLOUR := Color(1, 1, 1) * 1
+# The colour to use when hovering over a card in hand and the
+# `_check_play_costs()` function returns false, signifying the card
+# should be be draggable out of the hand
+#
+# Reduce the multiplier to reduce glow effect or stop it altogether
+const CANNOT_PAY_COST_COLOUR := Color(1, 0, 0) * 1.3
 # The colour to use when hovering over a card with an attachment to signify
 # a valid host.
 #
@@ -181,6 +187,21 @@ const TOKENS_ONLY_ON_BOARD := true
 # If true, each token will have a convenient +/- button when expanded
 # to allow the player to add a remove more of the same
 const SHOW_TOKEN_BUTTONS := false
+# If true, the player will not be able to drop dragged cards back into
+# CardContainers. The player will only be allowed to drop cards to the board
+# or back into the container they picked them front
+# The game logic will have to provide another way to send cards to the various
+# piles
+# Be careful with this setting, as it will allow the player to drop cards
+# on top of the hand or pile areas.
+const DISABLE_DROPPING_TO_CARDCONTAINERS := false
+# If true, the player will not be able to drag cards out of the hand manually
+const DISABLE_DRAGGING_FROM_HAND := false
+# If true, the player will not be able to drag cards around the board manually
+const DISABLE_DRAGGING_FROM_BOARD := false
+# If true, the player will not be able to drag cards out of piles
+# (Either directly from top, or from popup windows)
+const DISABLE_DRAGGING_FROM_PILE := false
 # This dictionary contains your defined tokens for cards
 #
 # The key is the name of the token as it will appear in your scene and labels
