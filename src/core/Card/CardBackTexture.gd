@@ -7,3 +7,4 @@ extends CardBack
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	viewed_node = $VBoxContainer/CenterContainer/Viewed
+	

@@ -1,6 +1,8 @@
 class_name UTCommon
 extends "res://addons/gut/test.gd"
 
+# TODO: I should make 2 scenes just for UT so I don't rely on these which
+# might get deleted
 const MAIN_SCENE_FILE = CFConst.PATH_CUSTOM + "CGFMain.tscn"
 const MAIN_SCENE = preload(MAIN_SCENE_FILE)
 const BOARD_SCENE_FILE = CFConst.PATH_CUSTOM + "CGFBoard.tscn"
@@ -47,10 +49,10 @@ func setup_board() -> void:
 	cfc._ready()
 	board = autoqfree(BOARD_SCENE.instance())
 	get_tree().get_root().add_child(board)
-	board.load_test_cards()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 	if not cfc.are_all_nodes_mapped:
 		yield(cfc, "all_nodes_mapped")
+	board.load_test_cards()
 	hand = cfc.NMAP.hand
 	deck = cfc.NMAP.deck
 	discard = cfc.NMAP.discard

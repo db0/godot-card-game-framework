@@ -9,5 +9,35 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[node name="Front" instance=ExtResource( 1 )]
+[node name="RedFront" instance=ExtResource( 1 )]
+margin_right = -1130.0
+margin_bottom = -480.0
 custom_styles/panel = SubResource( 1 )
+
+[node name="CardText" parent="Margin" index="0"]
+margin_right = 148.0
+margin_bottom = 240.0
+
+[node name="Name" parent="Margin/CardText" index="0"]
+margin_right = 146.0
+
+[node name="Type" parent="Margin/CardText" index="1"]
+margin_right = 146.0
+
+[node name="Tags" parent="Margin/CardText" index="2"]
+margin_right = 146.0
+
+[node name="Requirements" parent="Margin/CardText" index="3"]
+margin_right = 146.0
+
+[node name="Abilities" parent="Margin/CardText" index="4"]
+margin_right = 146.0
+margin_bottom = 223.0
+
+[node name="HB" parent="Margin/CardText" index="5"]
+margin_top = 227.0
+margin_right = 146.0
+margin_bottom = 240.0
+
+[node name="Power" parent="Margin/CardText/HB" index="1"]
+margin_right = 146.0

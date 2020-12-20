@@ -72,6 +72,11 @@ enum OverlapShiftDirection{
 	RIGHT
 }
 
+# The card size you want your  cards to have.
+# This will also adjust all CardContainers to match
+# If you modify this property, you **must** adjust 
+# the min_rect of the various control nodes inside the card front and back scenes.
+const CARD_SIZE := Vector2(150,240)
 # When this is set, the player cannot drop cards on the board.
 # If the card is not hovering over a pile when it is dropped, it will
 # simply return to its originating container
@@ -190,14 +195,3 @@ const TOKENS_MAP := {
 	'gold coin': 'yellow.svg',
 	'void': 'black.svg',
 }
-# This list needs to hold the names of all your critical nodes
-# by which we mean, the Board and all CardContainers.
-#
-# **Do not list Main**
-const CRITICAL_NODES := [
-	'board',
-	'hand',
-	'deck',
-	'discard',
-	]
-
