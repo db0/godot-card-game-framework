@@ -100,7 +100,7 @@ func run_next_script(card_owner: Card,
 		elif script.task_name:
 			if script.is_valid \
 					and (not costs_dry_run
-						or (costs_dry_run and script.get(SP.KEY_IS_COST))):
+						or (costs_dry_run and script.get_property(SP.KEY_IS_COST))):
 				#print(script.is_valid,':',costs_dry_run)
 				var retcode = call(script.task_name, script)
 				# When
@@ -145,7 +145,7 @@ func rotate_card(script: ScriptTask) -> int:
 		# The last arg is the "check" flag.
 		# Unfortunately Godot does not support passing named vars
 		# (See https://github.com/godotengine/godot-proposals/issues/902)
-		retcode = card.set_card_rotation(script.get(SP.KEY_DEGREES),
+		retcode = card.set_card_rotation(script.get_property(SP.KEY_DEGREES),
 				false, true, costs_dry_run)
 	return(retcode)
 
@@ -159,7 +159,7 @@ func rotate_card(script: ScriptTask) -> int:
 func flip_card(script: ScriptTask) -> int:
 	var retcode: int
 	for card in script.subjects:
-		retcode = card.set_is_faceup(script.get(SP.KEY_SET_FACEUP),
+		retcode = card.set_is_faceup(script.get_property(SP.KEY_SET_FACEUP),
 				false,costs_dry_run)
 	return(retcode)
 
@@ -175,9 +175,9 @@ func flip_card(script: ScriptTask) -> int:
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
 func move_card_to_container(script: ScriptTask) -> void:
-	var dest_index: int = script.get(SP.KEY_DEST_INDEX)
+	var dest_index: int = script.get_property(SP.KEY_DEST_INDEX)
 	for card in script.subjects:
-		card.move_to(script.get(SP.KEY_DEST_CONTAINER), dest_index)
+		card.move_to(script.get_property(SP.KEY_DEST_CONTAINER), dest_index)
 		yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 
 # Task for moving card to the board
@@ -186,7 +186,7 @@ func move_card_to_container(script: ScriptTask) -> void:
 # * "container": CardContainer
 func move_card_to_board(script: ScriptTask) -> void:
 	for card in script.subjects:
-		card.move_to(cfc.NMAP.board, -1, script.get(SP.KEY_BOARD_POSITION))
+		card.move_to(cfc.NMAP.board, -1, script.get_property(SP.KEY_BOARD_POSITION))
 		yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 
 # Task for moving card from one container to another
@@ -207,8 +207,8 @@ func move_card_cont_to_cont(script: ScriptTask) -> int:
 		if len(script.subjects) < script.requested_subjects:
 			retcode = CFConst.ReturnCode.FAILED
 	else:
-		var dest_container: CardContainer = script.get(SP.KEY_DEST_CONTAINER)
-		var dest_index: int = script.get(SP.KEY_DEST_INDEX)
+		var dest_container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
+		var dest_index: int = script.get_property(SP.KEY_DEST_INDEX)
 		for card in script.subjects:
 			card.move_to(dest_container,dest_index)
 			yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
@@ -225,7 +225,7 @@ func move_card_cont_to_board(script: ScriptTask) -> int:
 		if len(script.subjects) < script.requested_subjects:
 			retcode = CFConst.ReturnCode.FAILED
 	else:
-		var board_position = script.get(SP.KEY_BOARD_POSITION)
+		var board_position = script.get_property(SP.KEY_BOARD_POSITION)
 		for card in script.subjects:
 			# We assume cards moving to board want to be face-up
 			card.move_to(cfc.NMAP.board, -1, board_position)
@@ -243,12 +243,12 @@ func move_card_cont_to_board(script: ScriptTask) -> int:
 func mod_tokens(script: ScriptTask) -> int:
 	var retcode: int
 	var modification: int
-	var token_name: String = script.get(SP.KEY_TOKEN_NAME)
-	if str(script.get(SP.KEY_TOKEN_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
+	var token_name: String = script.get_property(SP.KEY_TOKEN_NAME)
+	if str(script.get_property(SP.KEY_TOKEN_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
 	else:
-		modification = script.get(SP.KEY_TOKEN_MODIFICATION)
-	var set_to_mod: bool = script.get(SP.KEY_TOKEN_SET_TO_MOD)
+		modification = script.get_property(SP.KEY_TOKEN_MODIFICATION)
+	var set_to_mod: bool = script.get_property(SP.KEY_TOKEN_SET_TO_MOD)
 	for card in script.subjects:
 		retcode = card.tokens.mod_token(token_name,modification,set_to_mod,costs_dry_run)
 	return(retcode)
@@ -260,8 +260,8 @@ func mod_tokens(script: ScriptTask) -> int:
 # * "card_scene": path to .tscn file
 # * "board_position": Vector2
 func spawn_card(script: ScriptTask) -> void:
-	var card_scene: String = script.get(SP.KEY_CARD_SCENE)
-	var board_position: Vector2 = script.get(SP.KEY_BOARD_POSITION)
+	var card_scene: String = script.get_property(SP.KEY_CARD_SCENE)
+	var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)
 	var card: Card = load(card_scene).instance()
 	cfc.NMAP.board.add_child(card)
 	card.position = board_position
@@ -273,7 +273,7 @@ func spawn_card(script: ScriptTask) -> void:
 # Requires the following keys:
 # * "container": CardContainer
 func shuffle_container(script: ScriptTask) -> void:
-	var container: CardContainer = script.get(SP.KEY_DEST_CONTAINER)
+	var container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
 	container.shuffle_cards()
 
 
@@ -294,7 +294,7 @@ func host_card(script: ScriptTask) -> void:
 func modify_properties(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.OK
 	for card in script.subjects:
-		var properties = script.get(SP.KEY_MODIFY_PROPERTIES)
+		var properties = script.get_property(SP.KEY_MODIFY_PROPERTIES)
 		for property in properties:
 			var ret_once = card.modify_property(
 					property,
@@ -313,8 +313,8 @@ func modify_properties(script: ScriptTask) -> int:
 func ask_integer(script: ScriptTask) -> void:
 	var integer_dialog = _ASK_INTEGER_SCENE.instance()
 	# AskInteger tasks have to always provide a min and max value
-	var minimum = script.get(SP.KEY_ASK_INTEGER_MIN)
-	var maximum = script.get(SP.KEY_ASK_INTEGER_MAX)
+	var minimum = script.get_property(SP.KEY_ASK_INTEGER_MIN)
+	var maximum = script.get_property(SP.KEY_ASK_INTEGER_MAX)
 	integer_dialog.prep(script.owner_card.card_name, minimum, maximum)
 	# We have to wait until the player has finished selecting an option
 	yield(integer_dialog,"popup_hide")
