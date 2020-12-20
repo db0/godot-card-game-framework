@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework [1.2](CHANGELOG.md)
+# Godot Card Game Framework [1.3](CHANGELOG.md)
 
 ![Codot Card Game Framework preview image](preview.png "Codot Card Game Framework preview image")
 
@@ -49,6 +49,10 @@ The classes provide some easy customization options, such as how the card move, 
 
 Check the "Behaviour Constants" inside `CFConst.gd` for detailed information on what each does.
 For more fine-tuned customization than that, you'll need to modify the code manually
+
+## Easy to Upgrade
+
+This Framework has been designed with the idea that it can easily be upgraded to receive new features. Look at the [Upgrade section within the Install guide](INSTALL.md#Upgrading) for more info.
 
 ## Usage
 
@@ -116,7 +120,6 @@ You can join us on Discord with this invite code: https://discord.gg/AjZMFY7jD4
 ## Contributing
 
 Please see the [Contribution Guide](CONTRIBUTING.md)
-
 
 ## Credits
 

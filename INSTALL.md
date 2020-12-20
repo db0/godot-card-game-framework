@@ -23,7 +23,7 @@ While everything in there can be modified, some files need to exist in one form 
 * You **need** CardConfig.gd, but it is in custom because its contents should change from game to game, and it should not be overriden via an upgrade.
 * You **need** CustomScripts.gd, even if it custom_script() function does not match anything.
 * You **need** CFConst, but you should customize its constants to fit your needs. It is in custom so that you do not lose your changes during an upgrade.
-* You **need** at least 1 Card Back and 1 Card Front scenes, to link to your card template.
+* You **need** at least 1 Card Back, 1 Card Front and 1 CardManipulationButton scene, to link to your card templates.
 
 All other files, especially those starting with "CGF" can be deleted, or you can keep them around for reference.
 
@@ -35,7 +35,7 @@ It also uses a core reference class called CFConst which defines the behaviour o
 
 1. Add CFControl.gd as an autoloaded singleton with name 'cfc'
 
-2. Edit the `CRITICAL_NODES` in CFConst.gd, with the node names of your board and all CardContainer scenes (Deck, discard etc) in lowercase. Do not list Main.
+2. Edit the CFConst.gdand adjust any properties according to your game. For example CARD_SIZE will adjust the size of all your cards in the game as well as the CardContainers that host them.
 
 Whenever your game is loaded, all your card containers and your board will be mapped inside cfc.NMAP.
 This way if you want to quickly refer to your pile called, say, "SuperCards" all you need to do is refer to `cfc.NMAP.supercards` (in lowercase always)
@@ -46,12 +46,13 @@ The below instructions will set up your game to use the `Card` class as a framew
 
 1. Start by creating an inherited scene based on `CardTemplate.tcsn`. We suggest you create one scene per card type in your game.
 	Add those card scenes into either custom/cards directory, or another directory of your preference.
-2. If the card type is supposed to be attached to others, check the "Is Attachment"
-3. If you have designed your own card back scene, modify the card_back variable to point it to your own card back scene. Make sure your card back extends CardBack.
-4. If you wish to modify the provided card front scene, modify the card_front variable to point it to your own card front scene. Make sure it extends CardFront.
-	Define the card_labels dicrionary within to allow the card properties to populate the labels correctly.
+1. If the card type is supposed to be attached to others, check the "Is Attachment"
+1. If you have designed your own card back scene, modify the card_back variable to point it to your own card back scene. Make sure your card back extends CardBack.
+1. Either use the provided template `res://src/custom/CGFCardFront.tscn` or create your own. Then adjust the card_front variable to point it. To design from scratch, make sure its script extends CardFront.
+	Ensure you populate the card_labels dictionary within with the paths to all your text labels.
+1. Either use the provided template `res://src/custom/CGFCardManipulationButton.tscn` or create your own. Then adjust the manipulation_button variable on the ManipulationButtons node to point to it. 
 
-2. If you're going to add extra code for your own game in the card scenes, then:
+If you're going to add extra code for your own game in the card scenes, then:
 	* If it's relevant to all cards in your game:
 		1. Modify your **instanced scene** from `CardTemplate.tcsn` by detaching its `CardTemplate.gd` script and adding a new script that extends Card. Give it a new class_name.
 
@@ -63,17 +64,9 @@ The below instructions will set up your game to use the `Card` class as a framew
 		2. Make sure any extra scripts for different types of cards, extend your new card's class.
 	* If it's only relevant to a specific type of card, remove the script attached to that type's scene, and add a new script. Make that script extend from the Card class or from your own new card class_name.
 
-If you want to customize the `CardTemplate.tcsn`, you should start by creating an inherited scene from it. You should not modify the CardTemplate.tcsn directly, as that will be overwritten in case of an upgrade
-
-In the inherited Card scene, you can modify the following.
-
-* The scenes linked from card_back and card_front.
-* The `$Control` rect_size property
-* `$Debug`
+If you want to customize the `CardTemplate.tcsn`, you should start by creating an inherited scene from it. You should try not to modify the CardTemplate.tcsn directly, as that will be overwritten in case of an upgrade.
 
 You will find that most of the scripts linked into the card are pointing to extension of classes, and they reside in `res://src/custom`. You do not need to keep those. Feel free to extend the classes with a fresh script and setup your own configuration. For example, if you design your own CardFront, simply create a new script called like "MyCardTypeFront.gd" extending class CardFront, and attach it to "MyCardTypeFront.tcsn".
-
-
 
 If you want a different node setup for the card scene, be aware that the current layout is very tightly wound in the code.
 You may need to do extensive modifications to make sure the code can find the modified node names and positions.
@@ -100,11 +93,6 @@ The below instructions will set up your game to use the `Hand` class as a framew
 	```
 
 2. Connect your card-draw signal to the Hand node and make it call the `draw_card()` (see the custom Deck.tcsn node for a sample of such a signal)
-
-If you want to customize the `Hand.tcsn`, the following nodes are fairly safe to manipulate
-
-* The `$Control` rect_size property
-* Everything under `$Control/ManipulationButtons` except `$Control/ManipulationButtons/Tween`
 
 Like with Card, the node layout is tightly woven in the code. Amend at your own responsibility.
 
@@ -136,12 +124,6 @@ If you want to customize the code for your own pile functions then:
 	Make that script extend from the Pile class or from your own new pile class_name if you've made one.
 
 
-If you want to customize the `Pile.tcsn`, the following nodes are fairly safe to manipulate
-
-* The `$Control` rect_size property
-* Everything under `$Control/ManipulationButtons` except `$Control/ManipulationButtons/Tween`
-* `$CenterContainer`
-
 Like with Card, the node layout is tightly woven in the code. Amend at your own responsibility.
 
 
@@ -155,7 +137,7 @@ The below instructions will set up your game to use the `Board` class as a frame
 
    `extends Board`
 
-1. If you're not using the provided `Board.tcsn`, then all you need to do is add a Node2D in the root of your scene and make sure the scene root is called "Board"
+1. If you're not using the provided `CGFBoard.tcsn`, then all you need to do is add a Node2D in the root of your scene and make sure the scene root is called "Board"
 
 Of course without instancing a few Hand or Pile objects, there won't be anything you can do.
 
@@ -165,15 +147,12 @@ The framework includes two forms of showing details about a card. One is simply 
 
 By default out of the box, the game has both active.
 
-In order to customize the main scene while allowing the framework to be upgraded in the future, you should simply create a new scene inheriting `Main.tcsn`, then adjust the "Board Scene" variable to point to your own custom Board scene. Ensure you retain "Main" as the scene name.
+In order to customize the main scene while allowing the framework to be upgraded in the future, you should simply create a new scene inheriting `Main.tcsn`, then adjust the "Board Scene" variable to point to your own custom Board scene. Ensure you retain "Main" as the scene name. Then add it as your Main scene in your project settings.
+
 The framework will utilize it automatically if it detects a scene called "Main" as the Main scene (as defined in the project configuration).
 
-If you want to use your own root scene, then you can simply extend it from the ViewportCardFocus class to inherit all the required methods.
-The Main.tcsn has a fairly simple layout, however it's still not recommended to replace it, but instead to tweak it what has already been provided.
-
-If you do not want or need the viewport focus, then you can simply ignore it use use your own Board scene as your Main scene
-
-However you'll need to make sure table cards are legible as they are since there's no other good way to get a closeup of them without viewports
+If you do not want or need the viewport focus, then you can simply ignore it use use your own Board scene as your Main scene.
+However you'll need to make sure table cards are legible as they are since there's no other good way to get a closeup of them without viewports.
 
 ## Upgrading
 
