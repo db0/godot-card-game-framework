@@ -102,6 +102,12 @@ const PATH_CUSTOM := "res://src/custom/"
 # The path where card template scenes exist.
 # These is usually one scene per type of card in the game
 const PATH_CARDS := PATH_CUSTOM + "cards/"
+
+const PATH_CARD_BACK_MODEL := PATH_CUSTOM + "card_back_model/"
+const PATH_CARD_BACK_BOTTOM := PATH_CARD_BACK_MODEL + "bottom/"
+const PATH_CARD_BACK_MIDDLE := PATH_CARD_BACK_MODEL + "middle/"
+const PATH_CARD_BACK_TOP := PATH_CARD_BACK_MODEL + "top/"
+
 # The path where the set definitions exist.
 # This includes Card definition and card script definitions.
 const PATH_SETS := PATH_CARDS + "sets/"

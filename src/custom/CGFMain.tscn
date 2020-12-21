@@ -5,3 +5,6 @@
 
 [node name="Main" instance=ExtResource( 1 )]
 board_scene = ExtResource( 2 )
+
+[node name="DirectionalLight" type="DirectionalLight" parent="." index="3"]
+transform = Transform( 1, 0, 0, 0, 0.776255, 0.630418, 0, -0.630418, 0.776255, 0, 1.41463, 1.68499 )

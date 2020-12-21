@@ -141,6 +141,10 @@ func instance_card(card_name: String) -> Card:
 	var card = template.instance()
 	# We set the card_name variable so that it's able to be used later
 	card.card_name = card_name
+	if card_definitions[card_name][CardConfig.SCENE_PROPERTY] == "Custom":
+		card.bottom_type = card_definitions[card_name]["BottomType"]
+		card.middle_type = card_definitions[card_name]["MiddleType"]
+		card.top_type = card_definitions[card_name]["TopType"]
 	return(card)
 
 

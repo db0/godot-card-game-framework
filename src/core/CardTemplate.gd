@@ -143,6 +143,10 @@ var card_back : CardBack
 var card_front : CardFront
 var _card_text
 
+var bottom_type
+var middle_type
+var top_type
+
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
 onready var _control = $Control
@@ -187,6 +191,10 @@ func _init_card_layout() -> void:
 		$Control/Front.add_child(card_front_instance)
 		card_front = card_front_instance
 		var card_back_instance = card_back_design.instance()
+		if get_card_name()=="Custom":
+			card_back_instance.bottom_type = bottom_type
+			card_back_instance.middle_type = middle_type
+			card_back_instance.top_type = top_type
 		$Control/Back.add_child(card_back_instance)
 		card_back = card_back_instance
 		$Control/Back.move_child(card_back,0)
@@ -490,6 +498,8 @@ func modify_property(property: String, value, is_init = false, check := false) -
 		if not check and property == "Name":
 			set_card_name(value)
 		elif not check:
+			if property in ["BottomType","MiddleType","TopType"]:
+				return(retcode)
 			properties[property] = value
 			if not card_front.card_labels.has(property):
 				if not property.begins_with("_"):
@@ -2056,4 +2066,3 @@ func _on_Back_resized() -> void:
 	if $Control/Back.rect_size != CFConst.CARD_SIZE:
 		pass
 		print_debug($Control/Back.rect_size) # Replace with function body.
-

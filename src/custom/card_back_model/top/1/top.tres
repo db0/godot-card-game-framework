@@ -1,0 +1,46 @@
+[gd_resource type="SpatialMaterial" load_steps=8 format=2]
+
+[ext_resource path="res://src/custom/card_back_model/top/1/top_Normal.png" type="Texture" id=1]
+[ext_resource path="res://src/custom/card_back_model/top/1/top_Roughness.png" type="Texture" id=2]
+[ext_resource path="res://src/custom/card_back_model/top/1/top_Detail_Normal.png" type="Texture" id=3]
+[ext_resource path="res://src/custom/card_back_model/top/1/top_Metallic.png" type="Texture" id=4]
+[ext_resource path="res://src/custom/card_back_model/top/1/top_Ambient_Occlusion.png" type="Texture" id=5]
+[ext_resource path="res://src/custom/card_back_model/top/1/top_Base_Color.png" type="Texture" id=6]
+[ext_resource path="res://src/custom/card_back_model/top/1/top_Emissive.png" type="Texture" id=7]
+
+
+
+[resource]
+render_priority = -1
+flags_transparent = true
+flags_no_depth_test = true
+vertex_color_use_as_albedo = true
+albedo_texture = ExtResource( 6 )
+metallic = 0.53
+metallic_specular = 0.02
+metallic_texture = ExtResource( 4 )
+roughness = 0.04
+roughness_texture = ExtResource( 2 )
+emission_enabled = true
+emission = Color( 0, 0, 0, 1 )
+emission_energy = 0.5
+emission_operator = 0
+emission_on_uv2 = false
+emission_texture = ExtResource( 7 )
+normal_enabled = true
+normal_scale = 1.0
+normal_texture = ExtResource( 1 )
+ao_enabled = true
+ao_light_affect = 1.0
+ao_texture = ExtResource( 5 )
+ao_on_uv2 = false
+ao_texture_channel = 0
+depth_enabled = true
+depth_scale = 0.94
+depth_deep_parallax = false
+depth_flip_tangent = false
+depth_flip_binormal = false
+detail_enabled = true
+detail_blend_mode = 3
+detail_uv_layer = 0
+detail_normal = ExtResource( 3 )

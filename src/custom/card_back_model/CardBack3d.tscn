@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/custom/card_back_model/CardBackModel.gd" type="Script" id=1]
+[ext_resource path="res://src/custom/card_back_model/bottom/1/bottom.png" type="Texture" id=2]
+
+[node name="Sprite3d" type="Sprite3D"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000697345, 0.0572512, -0.00266409 )
+texture = ExtResource( 2 )
+script = ExtResource( 1 )

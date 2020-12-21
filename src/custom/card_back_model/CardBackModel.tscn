@@ -1,0 +1,66 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/core/Card/CardBackModel.gd" type="Script" id=1]
+[ext_resource path="res://assets/icons/view.svg" type="Texture" id=2]
+
+[node name="CardBackModel" type="Panel"]
+rect_min_size = Vector2( 150, 240 )
+mouse_filter = 2
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Pulse" type="Tween" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_left = -0.166672
+margin_right = -0.166672
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+margin_right = 150.0
+margin_bottom = 95.0
+mouse_filter = 2
+custom_constants/margin_top = 95
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
+margin_top = 99.0
+margin_right = 150.0
+margin_bottom = 139.0
+rect_min_size = Vector2( 0, 40 )
+mouse_filter = 2
+
+[node name="Viewed" type="TextureRect" parent="VBoxContainer/CenterContainer"]
+visible = false
+margin_left = 55.0
+margin_right = 95.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ViewportContainer" type="ViewportContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Viewport" type="Viewport" parent="ViewportContainer"]
+size = Vector2( 150, 240 )
+handle_input_locally = false
+render_target_update_mode = 3
+
+[node name="Camera" type="Camera" parent="ViewportContainer/Viewport"]
+transform = Transform( 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 5 )
+projection = 1
+current = true
+size = 7.2

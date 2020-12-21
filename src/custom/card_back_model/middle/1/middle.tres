@@ -1,0 +1,74 @@
+[gd_resource type="ShaderMaterial" load_steps=6 format=2]
+
+[ext_resource path="res://src/custom/card_back_model/noise_texture/noise_tex.png" type="Texture" id=1]
+[ext_resource path="res://src/custom/card_back_model/middle/1/middle_Normal.png" type="Texture" id=2]
+[ext_resource path="res://src/custom/card_back_model/middle/1/middle_Base_Color.png" type="Texture" id=3]
+[ext_resource path="res://src/custom/card_back_model/top/1/top.tres" type="Material" id=4]
+
+[sub_resource type="Shader" id=1]
+code = "shader_type spatial;
+render_mode blend_add;
+uniform float TAU = 11.283;
+uniform float fill : hint_range(0, 1);
+uniform float direction : hint_range(-1, 1);
+uniform float PI = 3.141592;
+uniform vec4 own_color : hint_color;
+uniform vec4 glow_color : hint_color;
+uniform sampler2D noise_tex;
+uniform sampler2D cur_texture;
+uniform sampler2D cur_normal;
+uniform float zoom : hint_range(0,3) = 1.0;
+uniform float glow : hint_range(0,1);
+
+vec2 rotateUV(vec2 uv, vec2 pivot, float rotation) {
+    float cosa = cos(rotation);
+    float sina = sin(rotation);
+    uv -= pivot;
+    return vec2(
+        cosa * uv.x - sina * uv.y,
+        cosa * uv.y + sina * uv.x 
+    ) + pivot;
+}
+
+void fragment(){
+	float time = TIME * 1. * direction;
+	vec2 uv =  (UV - 0.5) * zoom + 0.5;
+	float uv_len = length(uv-0.5) * 30. + time * 0.5;
+	float rot = 0.05 * sin(uv_len) * cos(uv_len);
+	float angle = time * 0.01 + rot;
+	vec2 rot_uv = rotateUV(uv, vec2(0.5), angle);
+	vec4 tex = texture(cur_texture, UV);
+	vec4 noise = texture(noise_tex, rot_uv);
+	vec4 central = texture(cur_normal, UV);
+	
+	float center = pow(central.r, 3);
+
+	float flow = smoothstep(0.5, 0.9, sin(tex.r * TAU + time) + fill * PI );
+	
+	float grain = 0.5 + pow(noise.r, 3) * 8.;
+
+	vec3 res_2 = float(glow) * glow_color.rgb * flow * tex.a * grain * center;
+
+//	COLOR = own_color * tex.a;
+	vec4 color = mix(vec4(0), own_color, tex.a);
+	ALBEDO = color.rgb;
+	ALPHA = color.a;
+	
+//	COLOR += res;
+	ALBEDO.rgb += res_2 * 0.4;
+}"
+
+[resource]
+next_pass = ExtResource( 4 )
+shader = SubResource( 1 )
+shader_param/TAU = 11.283
+shader_param/fill = 0.0
+shader_param/direction = 1.0
+shader_param/PI = 3.14159
+shader_param/own_color = Color( 0, 0, 0, 1 )
+shader_param/glow_color = Color( 0, 0.47451, 1, 1 )
+shader_param/zoom = 0.795
+shader_param/glow = 0.691
+shader_param/noise_tex = ExtResource( 1 )
+shader_param/cur_texture = ExtResource( 3 )
+shader_param/cur_normal = ExtResource( 2 )
