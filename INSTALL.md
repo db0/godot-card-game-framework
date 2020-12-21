@@ -141,6 +141,7 @@ The below instructions will set up your game to use the `Board` class as a frame
 
 Of course without instancing a few Hand or Pile objects, there won't be anything you can do.
 
+
 ## Viewport Focus
 
 The framework includes two forms of showing details about a card. One is simply to scale up a the card a bit while in hand, and the other is to pop-up a new viewport with a copy of the card object in it.

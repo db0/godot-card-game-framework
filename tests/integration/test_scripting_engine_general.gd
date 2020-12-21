@@ -182,7 +182,6 @@ func test_subject_previous():
 			"degrees": 90}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
-	yield(yield_for(1), YIELD)
 	assert_eq(target.card_rotation, 90,
 			"Target should be pre-selected to be rotated")
 	assert_true(target.is_faceup,

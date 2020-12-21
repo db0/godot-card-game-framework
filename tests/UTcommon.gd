@@ -3,10 +3,8 @@ extends "res://addons/gut/test.gd"
 
 # TODO: I should make 2 scenes just for UT so I don't rely on these which
 # might get deleted
-const MAIN_SCENE_FILE = CFConst.PATH_CUSTOM + "CGFMain.tscn"
-const MAIN_SCENE = preload(MAIN_SCENE_FILE)
-const BOARD_SCENE_FILE = CFConst.PATH_CUSTOM + "CGFBoard.tscn"
-var BOARD_SCENE = load(BOARD_SCENE_FILE)
+const MAIN_SCENE = preload("res://tests/UTMain.tscn")
+var BOARD_SCENE = load("res://tests/UTBoard.tscn")
 const MOUSE_SPEED := {
 	"fast": [10,0.3],
 	"slow": [3,0.6],
@@ -57,10 +55,20 @@ func setup_board() -> void:
 	deck = cfc.NMAP.deck
 	discard = cfc.NMAP.discard
 
-func draw_test_cards(count: int) -> Array:
+func draw_test_cards(count: int, fast := true) -> Array:
 	var cards = []
 	for _iter in range(count):
-		cards.append(hand.draw_card())
+		if fast:
+			var card = deck.get_top_card()
+			deck.remove_child(card)
+			hand.add_child(card)
+			card.state = Card.CardState.IN_HAND
+			cards.append(card)
+		else:
+			cards.append(hand.draw_card())
+	for c in cards:
+		c.interruptTweening()
+		c.reorganize_self()
 	return cards
 
 func click_card(card: Card, use_fake_mouse := true) -> void:

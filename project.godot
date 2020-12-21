@@ -14,6 +14,16 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/BoardTemplate.gd"
 }, {
+"base": "Control",
+"class": "BoardPlacementGrid",
+"language": "GDScript",
+"path": "res://src/core/BoardPlacementGrid.gd"
+}, {
+"base": "Control",
+"class": "BoardPlacementSlot",
+"language": "GDScript",
+"path": "res://src/core/BoardPlacementSlot.gd"
+}, {
 "base": "Reference",
 "class": "CFConst",
 "language": "GDScript",
@@ -136,6 +146,8 @@ _global_script_classes=[ {
 } ]
 _global_script_class_icons={
 "Board": "",
+"BoardPlacementGrid": "",
+"BoardPlacementSlot": "",
 "CFConst": "",
 "CFControl": "",
 "CFUtils": "",

@@ -9,7 +9,7 @@ func before_each():
 		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(5)
 	board.get_node("EnableAttach").pressed = true
-	yield(yield_for(1), YIELD)
+	yield(yield_for(0.1), YIELD)
 
 
 func test_attaching_and_switching_parent():
@@ -100,7 +100,7 @@ func test_attaching_and_switching_parent():
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_almost_eq(card_prev_pos,card.global_position, Vector2(2,2),
 			"After dropping an attached card, it returns to the parent host")
-	yield(drag_drop(card,Vector2(400,500)), 'completed')
+	yield(drag_drop(card,Vector2(400,600)), 'completed')
 	assert_null(card.current_host_card,
 			"Attachment clears out correctly when removed from table")
 	assert_eq(2,len(cards[0].attachments),

@@ -7,7 +7,7 @@ func before_each():
 	if confirm_return is GDScriptFunctionState: # Still working.
 		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(5)
-	yield(yield_for(1), YIELD)
+	yield(yield_for(0.1), YIELD)
 
 func after_each():
 	cfc.fancy_movement = true

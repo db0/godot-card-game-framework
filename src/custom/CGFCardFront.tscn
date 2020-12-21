@@ -60,6 +60,8 @@ font_data = ExtResource( 1 )
 [node name="Front" type="Panel"]
 anchor_right = 1.0
 anchor_bottom = 1.0
+margin_right = -1130.0
+margin_bottom = -480.0
 mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 2 )
@@ -79,15 +81,15 @@ __meta__ = {
 
 [node name="CardText" type="VBoxContainer" parent="Margin"]
 margin_left = 2.0
-margin_right = 1278.0
-margin_bottom = 720.0
+margin_right = 148.0
+margin_bottom = 240.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Name" type="Label" parent="Margin/CardText"]
-margin_right = 1276.0
+margin_right = 146.0
 margin_bottom = 19.0
 rect_min_size = Vector2( 146, 19 )
 size_flags_vertical = 1
@@ -101,7 +103,7 @@ autowrap = true
 
 [node name="Type" type="Label" parent="Margin/CardText"]
 margin_top = 23.0
-margin_right = 1276.0
+margin_right = 146.0
 margin_bottom = 36.0
 rect_min_size = Vector2( 146, 13 )
 size_flags_vertical = 1
@@ -114,7 +116,7 @@ uppercase = true
 
 [node name="Tags" type="Label" parent="Margin/CardText"]
 margin_top = 40.0
-margin_right = 1276.0
+margin_right = 146.0
 margin_bottom = 57.0
 rect_min_size = Vector2( 146, 17 )
 size_flags_vertical = 1
@@ -127,7 +129,7 @@ uppercase = true
 
 [node name="Requirements" type="Label" parent="Margin/CardText"]
 margin_top = 61.0
-margin_right = 1276.0
+margin_right = 146.0
 margin_bottom = 75.0
 rect_min_size = Vector2( 146, 14 )
 custom_fonts/font = SubResource( 6 )
@@ -138,8 +140,8 @@ autowrap = true
 
 [node name="Abilities" type="Label" parent="Margin/CardText"]
 margin_top = 79.0
-margin_right = 1276.0
-margin_bottom = 703.0
+margin_right = 146.0
+margin_bottom = 223.0
 rect_min_size = Vector2( 146, 144 )
 size_flags_vertical = 3
 custom_fonts/font = SubResource( 7 )
@@ -151,9 +153,9 @@ valign = 1
 autowrap = true
 
 [node name="HB" type="HBoxContainer" parent="Margin/CardText"]
-margin_top = 707.0
-margin_right = 1276.0
-margin_bottom = 720.0
+margin_top = 227.0
+margin_right = 146.0
+margin_bottom = 240.0
 mouse_filter = 2
 
 [node name="Cost" type="Label" parent="Margin/CardText/HB"]
@@ -167,7 +169,7 @@ valign = 1
 
 [node name="Power" type="Label" parent="Margin/CardText/HB"]
 margin_left = 43.0
-margin_right = 1276.0
+margin_right = 146.0
 margin_bottom = 13.0
 rect_min_size = Vector2( 103, 13 )
 size_flags_horizontal = 3

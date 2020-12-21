@@ -71,16 +71,11 @@ enum OverlapShiftDirection{
 	LEFT
 	RIGHT
 }
-
 # The card size you want your  cards to have.
 # This will also adjust all CardContainers to match
 # If you modify this property, you **must** adjust
 # the min_rect of the various control nodes inside the card front and back scenes.
 const CARD_SIZE := Vector2(150,240)
-# When this is set, the player cannot drop cards on the board.
-# If the card is not hovering over a pile when it is dropped, it will
-# simply return to its originating container
-const DISABLE_BOARD_DROP := false
 # Switch this off to disable fancy movement of cards during draw/discard
 const FANCY_MOVEMENT := true
 # The focus style selected for this game. See enum `FocusStyle`

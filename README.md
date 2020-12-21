@@ -31,6 +31,7 @@ Pull requests are more than welcome ;)
 * Automatically resizing text inside cards to fit the card size.
 * Supports resizing the window, in all stretch modes (including disabled stretch)
 * Can select layout of your CardContainers from a simple drop-down menu.
+* Grid-based or Free-form placement on the board, or a combination of both, on a per-card-type basis
 
 ### Scripting Engine Features
 
@@ -90,6 +91,11 @@ Click on the +/- buttons next to each Token to add/remove that token specificall
 ### Card Flip Face-Up/Face-Down
 
 Click on the 'F' button to exchange between these two states
+
+### Grid-placement
+
+The demonstration board has been setup with two different grid placements you can use. Try drag & dropping a card to either "PlacementGridDemo" or "This Grid has a modified label".
+
 
 ### Card Scripts
 

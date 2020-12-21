@@ -12,7 +12,6 @@ func test_game_seed_consistency():
 	if confirm_return is GDScriptFunctionState: # Still working.
 		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(10)
-	yield(yield_for(1), YIELD)
 	var all_index1 := []
 	hand.shuffle_cards()
 	yield(yield_for(0.2), YIELD)
@@ -26,7 +25,6 @@ func test_game_seed_consistency():
 	if confirm_return is GDScriptFunctionState: # Still working.
 		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(10)
-	yield(yield_for(1), YIELD)
 	# warning-ignore:return_value_discarded
 	randi()
 	randomize()
@@ -47,7 +45,6 @@ func test_game_seed_randomization():
 	if confirm_return is GDScriptFunctionState: # Still working.
 		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(10)
-	yield(yield_for(1), YIELD)
 	var all_index1 := []
 	hand.shuffle_cards()
 	yield(yield_for(0.2), YIELD)
@@ -61,7 +58,6 @@ func test_game_seed_randomization():
 	if confirm_return is GDScriptFunctionState: # Still working.
 		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(10)
-	yield(yield_for(1), YIELD)
 	cfc.game_rng.randomize()
 	var all_index2 := []
 	hand.shuffle_cards()

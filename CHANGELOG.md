@@ -16,6 +16,8 @@
 * Made it easier for other devs to extend the ScriptingEngine
 * Added configuration option that selectively disables drag or drop.
 * Added overridable function `check_play_costs()` which can determine on runtime is costs can be paid, and allow the card to be dragged from hand
+* Can now create grid containers which will highlight when a card is being dragged on top of them so signify the position the card will move to.
+* Can now specify where each card type will be able to drop on the board. Options are Anywhere, Any Grid only, Specific Grid only, or None (which means this card type cannot be dropped on the board at all)
 
 ## 1.2
 

@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://src/custom/CGFDiscard.gd" type="Script" id=1]
 [ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
@@ -6,15 +6,33 @@
 [ext_resource path="res://src/custom/CGFDeck.gd" type="Script" id=4]
 [ext_resource path="res://src/custom/CGFBoard.gd" type="Script" id=5]
 [ext_resource path="res://src/custom/CGFHand.gd" type="Script" id=6]
-[ext_resource path="res://src/custom/CGFPlacementGridDemo.tscn" type="PackedScene" id=7]
-[ext_resource path="res://src/custom/CGFModifiedLabelGrid.tscn" type="PackedScene" id=8]
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=7]
+[ext_resource path="res://src/core/BoardPlacementSlot.tscn" type="PackedScene" id=8]
+[ext_resource path="res://src/core/BoardPlacementGrid.gd" type="Script" id=9]
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxFlat" id=3]
 bg_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0, 0, 0, 1 )
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color( 0.0431373, 0.294118, 0.823529, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="DynamicFont" id=2]
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 7 )
 
 [node name="Board" type="Control"]
 anchor_right = 1.0
@@ -40,7 +58,7 @@ faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
 self_modulate = Color( 1, 1, 1, 0.501961 )
-custom_styles/panel = SubResource( 1 )
+custom_styles/panel = SubResource( 3 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 479 )
@@ -48,6 +66,7 @@ script = ExtResource( 6 )
 placement = 7
 
 [node name="FancyMovementToggle" type="CheckButton" parent="."]
+visible = false
 margin_right = 12.0
 margin_bottom = 20.0
 pressed = true
@@ -57,6 +76,7 @@ __meta__ = {
 }
 
 [node name="EnableAttach" type="CheckButton" parent="."]
+visible = false
 margin_left = 194.978
 margin_top = 1.33486
 margin_right = 395.978
@@ -67,6 +87,7 @@ __meta__ = {
 }
 
 [node name="ScalingFocusOptions" type="OptionButton" parent="."]
+visible = false
 margin_left = -1.33484
 margin_top = 44.0497
 margin_right = 187.665
@@ -80,6 +101,7 @@ __meta__ = {
 }
 
 [node name="ReshuffleAllDeck" type="Button" parent="."]
+visible = false
 margin_left = 9.89948
 margin_top = 116.762
 margin_right = 200.899
@@ -90,6 +112,7 @@ __meta__ = {
 }
 
 [node name="ReshuffleAllDiscard" type="Button" parent="."]
+visible = false
 margin_left = 9.89948
 margin_top = 140.334
 margin_right = 200.899
@@ -100,6 +123,7 @@ __meta__ = {
 }
 
 [node name="OvalHandToggle" type="CheckButton" parent="."]
+visible = false
 margin_left = 405.31
 margin_top = 1.12245
 margin_right = 594.31
@@ -111,6 +135,7 @@ __meta__ = {
 }
 
 [node name="Debug" type="CheckButton" parent="."]
+visible = false
 margin_left = 789.192
 margin_top = 3.36737
 margin_right = 978.192
@@ -121,18 +146,64 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PlacementGridDemo" parent="." instance=ExtResource( 7 )]
-margin_left = 775.0
-margin_top = 240.0
-margin_right = 1274.0
-margin_bottom = 436.0
-highlight = Color( 0.985156, 0, 1.3, 1.3 )
+[node name="BoardPlacementGrid" type="PanelContainer" parent="."]
+visible = false
+self_modulate = Color( 1, 1, 1, 0.121569 )
+anchor_left = 1.0
+anchor_right = 1.0
+margin_left = -500.0
+margin_top = 267.0
+margin_right = -350.0
+margin_bottom = 463.0
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 9 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+highlight = Color( 1.3, 0, 0.457031, 1.3 )
 
-[node name="ModifiedLabelGrid" parent="." instance=ExtResource( 8 )]
-margin_left = 1015.0
-margin_top = 30.0
-margin_right = 1264.0
-margin_bottom = 226.0
+[node name="GridContainer" type="GridContainer" parent="BoardPlacementGrid"]
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 497.0
+margin_bottom = 194.0
+custom_constants/vseparation = 5
+custom_constants/hseparation = 5
+columns = 6
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="BoardPlacementSlot" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
+
+[node name="BoardPlacementSlot2" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
+margin_left = 125.0
+margin_right = 245.0
+
+[node name="BoardPlacementSlot3" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
+margin_left = 250.0
+margin_right = 370.0
+
+[node name="BoardPlacementSlot4" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
+margin_left = 375.0
+margin_right = 495.0
+
+[node name="Control" type="Control" parent="BoardPlacementGrid"]
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 497.0
+margin_bottom = 194.0
+
+[node name="Label" type="Label" parent="BoardPlacementGrid/Control"]
+modulate = Color( 1, 1, 1, 0.627451 )
+margin_left = -20.0
+margin_top = -20.0
+margin_right = 475.0
+custom_fonts/font = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
 [connection signal="item_selected" from="ScalingFocusOptions" to="." method="_on_ScalingFocusOptions_item_selected"]
