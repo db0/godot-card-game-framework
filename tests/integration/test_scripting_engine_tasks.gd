@@ -94,7 +94,7 @@ func test_move_card_to_container():
 			"Card should have moved to index 5")
 
 
-func test_move_card_to_board():
+func test_move_card_hand_to_board():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_board",
 			"subject": "self",
@@ -110,7 +110,7 @@ func test_move_card_to_board():
 func test_move_card_cont_to_cont():
 	target = cfc.NMAP.deck.get_card(5)
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": 5,
 			"src_container":  cfc.NMAP.deck,
@@ -121,7 +121,7 @@ func test_move_card_cont_to_cont():
 			"Card should have moved to discard pile")
 	target = cfc.NMAP.deck.get_card(3)
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": 3,
 			"dest_index": 1,
@@ -139,7 +139,7 @@ func test_move_card_cont_to_board():
 	yield(yield_for(0.2), YIELD)
 	target = cfc.NMAP.deck.get_card(5)
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_board",
+			{"name": "move_card_to_board",
 			"subject": "index",
 			"subject_index": 5,
 			"src_container":  cfc.NMAP.deck,
@@ -149,6 +149,27 @@ func test_move_card_cont_to_board():
 	yield(yield_for(0.2), YIELD)
 	assert_almost_eq(Vector2(1000,200),target.global_position, Vector2(5,5),
 			"Card should have moved to specified board position")
+	target = cfc.NMAP.deck.get_card(0)
+	var target2 = cfc.NMAP.deck.get_card(1)
+	card.scripts = {"manual": {"hand": [
+			{"name": "move_card_to_board",
+			"subject": "index",
+			"subject_count": 4,
+			"subject_index": "bottom",
+			"src_container":  cfc.NMAP.deck,
+			"grid_name":  "BoardPlacementGrid"}]}}
+	board.get_node("BoardPlacementGrid").visible = true
+	card.execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_not_null(target._placement_slot,
+			"Card should have moved to a grid slot")
+	assert_not_null(target2._placement_slot,
+			"Card should have moved to a grid slot")
+	if target._placement_slot:
+		assert_eq(target._placement_slot.get_grid_name(), "BoardPlacementGrid",
+				"Card placed in the correct grid")
+		assert_ne(target._placement_slot, target2._placement_slot,
+				"Cards not placed in the same slot")
 
 
 func test_mod_tokens():

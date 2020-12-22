@@ -164,72 +164,71 @@ func flip_card(script: ScriptTask) -> int:
 	return(retcode)
 
 
-# Task for moving cards to other containers
+# Task for moving card to a [CardContainer]
 #
-# Requires the following keys:
-# * "container": CardContainer
-# * (Optional) "dest_index": int
-#
-# The index position the card can be placed in, are:
-# * index ==  -1 means last card in the CardContainer
-# * index == 0 means the the first card in the CardContainer
-# * index > 0 means the specific index among other cards.
-func move_card_to_container(script: ScriptTask) -> void:
-	var dest_index: int = script.get_property(SP.KEY_DEST_INDEX)
-	for card in script.subjects:
-		card.move_to(script.get_property(SP.KEY_DEST_CONTAINER), dest_index)
-		yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
-
-# Task for moving card to the board
-#
-# Requires the following keys:
-# * "container": CardContainer
-func move_card_to_board(script: ScriptTask) -> void:
-	for card in script.subjects:
-		card.move_to(cfc.NMAP.board, -1, script.get_property(SP.KEY_BOARD_POSITION))
-		yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
-
-# Task for moving card from one container to another
-#
-# Requires the following keys:
-# * "card_index": int
-# * "src_container": CardContainer
-# * "dest_container": CardContainer
-# * (Optional) "dest_index": int
-#
-# The index position the card can be placed in, are:
-# * index ==  -1 means last card in the CardContainer
-# * index == 0 means the the first card in the CardContainer
-# * index > 0 means the specific index among other cards.
-func move_card_cont_to_cont(script: ScriptTask) -> int:
+# * [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER): CardContainer
+# * (Optional) [KEY_DEST_INDEX](SP#KEY_DEST_INDEX): int
+func move_card_to_container(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
 	if costs_dry_run:
 		if len(script.subjects) < script.requested_subjects:
 			retcode = CFConst.ReturnCode.FAILED
 	else:
 		var dest_container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
-		var dest_index: int = script.get_property(SP.KEY_DEST_INDEX)
+		var dest_index = script.get_property(SP.KEY_DEST_INDEX)
+		if str(dest_index) == SP.KEY_SUBJECT_INDEX_V_TOP:
+			dest_index = -1
+		elif str(dest_index) == SP.KEY_SUBJECT_INDEX_V_BOTTOM:
+			dest_index = 0
 		for card in script.subjects:
 			card.move_to(dest_container,dest_index)
 			yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 	return(retcode)
 
-# Task for playing a card to the board from a container directly.
+
+# Task for playing a card to the board directly.
 #
-# Requires the following keys:
-# * "card_index": int
-# * "src_container": CardContainer
-func move_card_cont_to_board(script: ScriptTask) -> int:
+# Requires one of the following keys
+# * [KEY_GRID_NAME](SP#KEY_GRID_NAME): The board grid to place the card.
+# * [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): The exact position to place the card.
+func move_card_to_board(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
-	if costs_dry_run:
-		if len(script.subjects) < script.requested_subjects:
-			retcode = CFConst.ReturnCode.FAILED
+	if len(script.subjects) < script.requested_subjects:
+		retcode = CFConst.ReturnCode.FAILED
+	var grid_name = script.get_property(SP.KEY_GRID_NAME)
+	if grid_name:
+		var grid: BoardPlacementGrid
+		var slot: BoardPlacementSlot
+		grid = cfc.NMAP.board.get_grid(grid_name)
+		if grid:
+			# If there's more subjects to move than available slots
+			# we don't move anything
+			if script.subjects.size() > grid.count_available_slots() \
+					and not grid.auto_extend:
+				# If the found grid was full and not allowed to auto-extend,
+				# we return FAILED for cost_checking purposes.
+				retcode = CFConst.ReturnCode.FAILED
+			else:
+				for card in script.subjects:
+					slot = grid.find_available_slot()
+					slot.set_highlight(true)
+					if not costs_dry_run:
+						card.move_to(cfc.NMAP.board, -1, Vector2(-1,-1))
+						yield(script.owner_card.get_tree().create_timer(0.05),
+								"timeout")
+		else:
+			# If the named grid  was not found, we inform the developer.
+			print_debug("WARNING: Script from card '"
+					+ script.owner_card.card_name
+					+ "' requested card move to grid '"
+					+ grid_name + "', but no grid of such name was found.")
 	else:
 		var board_position = script.get_property(SP.KEY_BOARD_POSITION)
 		for card in script.subjects:
 			# We assume cards moving to board want to be face-up
-			card.move_to(cfc.NMAP.board, -1, board_position)
-			yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+			if not costs_dry_run:
+				card.move_to(cfc.NMAP.board, -1, board_position)
+				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 	return(retcode)
 
 # Task from modifying tokens on a card

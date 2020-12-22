@@ -185,7 +185,7 @@ func test_ask_integer_with_card_moves():
 					"ask_int_max": 5,
 				},
 				{
-					"name": "move_card_cont_to_cont",
+					"name": "move_card_to_container",
 					"src_container": cfc.NMAP.deck,
 					"dest_container": cfc.NMAP.discard,
 					"subject": "index",

@@ -21,7 +21,9 @@ outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 2 )
 
-[node name="BoardPlacementGrid" type="PanelContainer"]
+[node name="BoardPlacementGrid" type="PanelContainer" groups=[
+"placement_grid",
+]]
 self_modulate = Color( 1, 1, 1, 0.121569 )
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 3 )

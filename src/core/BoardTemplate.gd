@@ -80,3 +80,12 @@ func get_card(idx: int) -> Card:
 # Returns an int of the index of the card object requested
 func get_card_index(card: Card) -> int:
 	return get_all_cards().find(card)
+
+
+# Returns the BoardPlacementGrid object with the specified name
+func get_grid(grid_name: String) -> BoardPlacementGrid:
+	var found_grid: BoardPlacementGrid
+	for grid in get_tree().get_nodes_in_group("placement_grid"):
+		if grid.name_label.text == grid_name:
+			found_grid = grid
+	return(found_grid)

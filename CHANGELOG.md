@@ -1,17 +1,39 @@
 # Changelog
 
+## 1.4 (Ongoing)
+
+
+### New Features
+
+* Added ability for BoardPlacementGrid to be set to autoextend based on exported var. Only really useful for scripting, when a script requests a position to said grid, it will automatically add a new slot.
+	(defaults to false)
+
+#### ScriptingEngine
+
+* Added support for placing cards directly into Grids
+* Having enough space in a grid can also be considered a cost check
+
+### Tweaks
+#### ScriptingEngine
+
+* Consolidated move_card_cont_to_cont to move_card_to_container
+* Consolidated move_card_cont_to_board to move_card_to_board
+
+You have to adjust any scripts which used the former two tasks, to use the latter two. No need to adjust any keys.
+
+
 ## 1.3
 
 ### New Features
 
 * Refactoring was done so that the Framework is easier to upgrade to a newer version by simply overwritting the `res://src/core` folder with the newer version
   * Moved CFConst to `res://src/custom` which is not meant to be overwritten. This will ensure tweaks to the way the engine works will remain after an upgrade.
-  * Main.tcsn now doesn't have the board scene instanced directly. Rather you specify the board scene via an exported variable. 
+  * Main.tcsn now doesn't have the board scene instanced directly. Rather you specify the board scene via an exported variable.
 	This allows developers to create a new inherited Main.tcsn scene and set it to load their own custom board scene. This in turn allows a developer to upgrade their Main.tcsn in `res://src/core` and take advantage of any upgrades, while not losing their own customizations
   * Moved Card Front to its own instance, with a same method used for card back. Now inherited card scenes from CardTemplate can have radically different Front layout from each other.
   * Moved Manipulation buttons to code, instanced from a single button scene. Code exists inside ManipulationButtons class and can be overriden by any card that uses its own script to extend it.
   * Developers can now also specify the Scripting Engine location inside CFConst. This will allow them to extend its functionality with more tasks, specific to their game.
-* Can now define global CARD_SIZE to CFConst. Now you can change card size globally and all cardcontainers will also adjust their size accordingly. 
+* Can now define global CARD_SIZE to CFConst. Now you can change card size globally and all cardcontainers will also adjust their size accordingly.
 * Developers do not need to define critical node locations in CFConst anymore.
 * Made it easier for other devs to extend the ScriptingEngine
 * Added configuration option that selectively disables drag or drop.

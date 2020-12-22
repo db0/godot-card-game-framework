@@ -10,14 +10,14 @@
 [ext_resource path="res://src/core/BoardPlacementSlot.tscn" type="PackedScene" id=8]
 [ext_resource path="res://src/core/BoardPlacementGrid.gd" type="Script" id=9]
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 0, 0, 0, 1 )
 border_width_left = 2
 border_width_top = 2
@@ -29,7 +29,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=3]
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 7 )
@@ -58,7 +58,7 @@ faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
 self_modulate = Color( 1, 1, 1, 0.501961 )
-custom_styles/panel = SubResource( 3 )
+custom_styles/panel = SubResource( 1 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 479 )
@@ -146,18 +146,21 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BoardPlacementGrid" type="PanelContainer" parent="."]
+[node name="BoardPlacementGrid" type="PanelContainer" parent="." groups=[
+"placement_grid",
+]]
 visible = false
 self_modulate = Color( 1, 1, 1, 0.121569 )
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -500.0
-margin_top = 267.0
-margin_right = -350.0
-margin_bottom = 463.0
-custom_styles/panel = SubResource( 1 )
+margin_left = -504.238
+margin_top = 14.8477
+margin_right = -5.23779
+margin_bottom = 210.848
+custom_styles/panel = SubResource( 2 )
 script = ExtResource( 9 )
 __meta__ = {
+"_edit_group_": true,
 "_edit_use_anchors_": false
 }
 highlight = Color( 1.3, 0, 0.457031, 1.3 )
@@ -169,7 +172,7 @@ margin_right = 497.0
 margin_bottom = 194.0
 custom_constants/vseparation = 5
 custom_constants/hseparation = 5
-columns = 6
+columns = 4
 __meta__ = {
 "_edit_group_": true,
 "_edit_use_anchors_": false
@@ -200,7 +203,7 @@ modulate = Color( 1, 1, 1, 0.627451 )
 margin_left = -20.0
 margin_top = -20.0
 margin_right = 475.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

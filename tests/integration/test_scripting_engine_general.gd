@@ -169,7 +169,7 @@ func test_subject_boardseek():
 func test_subject_previous():
 	target = cfc.NMAP.deck.get_card(1)
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_board",
+			{"name": "move_card_to_board",
 			"subject": "index",
 			"subject_index": 1,
 			"src_container":  cfc.NMAP.deck,
@@ -212,7 +212,7 @@ func test_subject_boardseek_previous():
 
 func test_subject_tutor():
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_board",
+			{"name": "move_card_to_board",
 			"subject": "tutor",
 			"src_container":  cfc.NMAP.deck,
 			"filter_properties_tutor": {"Type": "Red"},
@@ -223,7 +223,7 @@ func test_subject_tutor():
 	assert_eq("Red",target.properties["Type"],
 			"Card of the correct type should be placed on the board")
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_board",
+			{"name": "move_card_to_board",
 			"subject": "tutor",
 			"src_container":  cfc.NMAP.deck,
 			"filter_properties_tutor": {"Name": "Multiple Choices Test Card"},
@@ -237,7 +237,7 @@ func test_subject_tutor():
 func test_subject_index():
 	target = cfc.NMAP.deck.get_card(5)
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_board",
+			{"name": "move_card_to_board",
 			"subject": "index",
 			"subject_index": 5,
 			"src_container":  cfc.NMAP.deck,
@@ -248,7 +248,7 @@ func test_subject_index():
 			"Card should have moved to board")
 	target = cfc.NMAP.deck.get_card(0)
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_board",
+			{"name": "move_card_to_board",
 			"subject": "index",
 			"src_container":  cfc.NMAP.deck,
 			"board_position":  Vector2(100,200)}]}}

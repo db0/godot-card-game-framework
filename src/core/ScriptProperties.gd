@@ -50,17 +50,12 @@ const KEY_SUBJECT_V_INDEX := "index"
 const KEY_SUBJECT_V_PREVIOUS := "previous"
 # Used when we're seeking a card
 # to limit the amount to retrieve to this amount
-# Work with the following task/key combinations:
-# * move_card_cont_to_board
-#   * KEY_SUBJECT_V_TUTOR
-#   * KEY_SUBJECT_V_INDEX
-# * move_card_cont_to_cont
-#   * KEY_SUBJECT_V_TUTOR
-#   * KEY_SUBJECT_V_INDEX
-# * move_card_to_container
-#   * KEY_SUBJECT_V_BOARDSEEK
-# * move_card_to_board
-#   * KEY_SUBJECT_V_BOARDSEEK
+# Work with the following tasks and KEY_SUBJECT values:
+# * [move_card_to_container](ScriptingEngine#move_card_to_container)
+# and [move_card_to_board](ScriptingEngine#move_card_to_board).
+#	* KEY_SUBJECT_V_BOARDSEEK
+#	* KEY_SUBJECT_V_TUTOR
+#	* KEY_SUBJECT_V_INDEX
 # Default is to seek only 1 card.
 # when used in combination with KEY_SUBJECT_V_BOARDSEEK value can
 # also be KEY_SUBJECT_COUNT_V_ALL which will simply set all cards
@@ -69,14 +64,10 @@ const KEY_SUBJECT_COUNT := "subject_count"
 # When specified as the value of KEY_SUBJECT_COUNT, will retrieve as many
 # cards as match the criteria.
 # Useful with the following KEY/VALUE combinations
-# * move_card_cont_to_board
-#   * KEY_SUBJECT_V_TUTOR
-# * move_card_cont_to_cont
-#   * KEY_SUBJECT_V_TUTOR
-# * move_card_to_container
+# * [move_card_to_container](ScriptingEngine#move_card_to_container)
+# and [move_card_to_board](ScriptingEngine#move_card_to_board).
 #   * KEY_SUBJECT_V_BOARDSEEK
-# * move_card_to_board
-#   * KEY_SUBJECT_V_BOARDSEEK
+#	* KEY_SUBJECT_V_TUTOR
 const KEY_SUBJECT_COUNT_V_ALL := "all"
 # This key is used to mark a task as being a cost requirement before the
 # rest of the defined tasks can execute.
@@ -88,8 +79,8 @@ const KEY_SUBJECT_COUNT_V_ALL := "all"
 # * rotate_card
 # * flip_card
 # * mod_tokens
-# * move_card_cont_to_cont
-# * move_card_cont_to_board
+# * move_card_to_container
+# * move_card_to_board
 const KEY_IS_COST := "is_cost"
 # Used when a script is triggered by a signal.
 #
@@ -110,24 +101,33 @@ const KEY_SET_FACEUP := "set_faceup"
 # The value is supposed to be a dictionary of `"property name": value` entries
 const KEY_MODIFY_PROPERTIES := "set_properties"
 # Used when a script is using one of the following tasks
-# * move_card_cont_to_cont
-# * move_card_cont_to_board
-#
+# * move_card_to_cont
+# * move_card_to_board
+# When the following KEY_SUBJECT values are also used:
+# * KEY_SUBJECT_V_TUTOR
+# * KEY_SUBJECT_V_INDEX
 # Specifies the source container to pick the card from
 const KEY_SRC_CONTAINER := "src_container"
 # Used when a script is using one of the following tasks
 # * move_card_to_container
-# * move_card_cont_to_cont
 # * shuffle_container
 #
 # Specifies the destination container to manipulate
+# Allowed values:
+# * Pile class object
 const KEY_DEST_CONTAINER := "dest_container"
 # Used when we're seeking a card inside a [CardContainer]
 # in one of the following tasks
-# * move_card_cont_to_board
-# * move_card_cont_to_cont
+# * move_card_to_board
+# * move_card_to_container
+# when KEY_SUBJECT_V_INDEX is also used:
 #
 # Default is to seek card at index 0
+# but value can also be set to one of the following
+# * any integer
+# * KEY_SUBJECT_INDEX_V_TOP
+# * KEY_SUBJECT_INDEX_V_BOTTOM
+# * VALUE_RETRIEVE_INTEGER
 const KEY_SUBJECT_INDEX := "subject_index"
 # Special entry to be used with KEY_SUBJECT_INDEX instead of an integer
 # If specified, explicitly looks for the top "card" of a pile
@@ -136,19 +136,30 @@ const KEY_SUBJECT_INDEX_V_TOP := "top"
 # If specified, explicitly looks for the "bottom" card of a pile
 const KEY_SUBJECT_INDEX_V_BOTTOM := "bottom"
 # Used when placing a card inside a [CardContainer]
-# in one of the follwing tasks
-# * move_card_to_container
-# * move_card_cont_to_cont
+# using the [move_card_to_container](ScriptingEngine#move_card_to_container) task
 #
-# When -1 is defined, it is placed on the last position
+# The index position the card can be placed in, are:
+# * index == -1 means last card in the CardContainer
+# * index == 0 means the the first card in the CardContainer
+# * index > 0 means the specific index among other cards.
+# [KEY_SUBJECT_INDEX_V_TOP](SP#KEY_SUBJECT_INDEX_V_TOP)
+# and [KEY_SUBJECT_INDEX_V_BOTTOM](SP#KEY_SUBJECT_INDEX_V_BOTTOM)
+# can also be used instead of 0 and -1.
 const KEY_DEST_INDEX := "dest_index"
-# Used when a script is using one of the following tasks
-# * move_card_to_board
-# * move_card_cont_to_board
+# Used when a script is using the move_card_to_board task
 #
 # If Vector2(-1,-1) is specified, it uses the mouse position
 # which obviously not good for scripts
 const KEY_BOARD_POSITION := "board_position"
+# Used when a script is using the move_card_to_board task
+#
+# If specified, it will take priority over KEY_BOARD_POSITION
+# The card will be placed to the specified grid on the board
+#
+# This task will not check that the grid exists or that the card's
+# mandatory grid name matches the grid name. The game has to be developed
+# to not cause this situation.
+const KEY_GRID_NAME := "grid_name"
 # Used when a script is using the mod_tokens task
 #
 # It specifies if we're modifying the existing amount

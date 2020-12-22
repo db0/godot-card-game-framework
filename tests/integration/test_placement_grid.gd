@@ -12,7 +12,7 @@ func before_each():
 	yield(yield_for(0.1), YIELD)
 	grid = board.get_node("BoardPlacementGrid")
 	grid.rect_position = Vector2(200,200)
-	board.get_node("BoardPlacementGrid").visible = true
+	grid.visible = true
 
 func test_placement_slots():
 	var card = cards[1]

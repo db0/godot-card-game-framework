@@ -18,6 +18,10 @@ const _SLOT_SCENE = preload(_SLOT_SCENE_FILE)
 
 # Set the highlight colour for all contained BoardPlacementSlot slots
 export(Color) var highlight = CFConst.TARGET_HOVER_COLOUR
+# If set to true, the grid will automatically add more slots
+# when find_available_slot() is used and there's no more available slots
+# (only useful when using the ScriptingEngine)
+export var auto_extend := false
 
 # Sets a custom label for this grid
 onready var name_label = $Control/Label
@@ -36,7 +40,7 @@ func _ready() -> void:
 # Returns the object. Else returns null
 func get_highlighted_slot() -> BoardPlacementSlot:
 	var ret_slot: BoardPlacementSlot = null
-	for slot in $GridContainer.get_children():
+	for slot in get_all_slots():
 		if slot.is_highlighted():
 			ret_slot = slot
 	return(ret_slot)
@@ -59,17 +63,32 @@ func add_slot() -> BoardPlacementSlot:
 # Returns a slot that is not currently occupied by a card
 func find_available_slot() -> BoardPlacementSlot:
 	var found_slot : BoardPlacementSlot
-	for slot in $GridContainer.get_children():
-		if not slot.occupying_card:
-			found_slot = slot
+	if not get_available_slots().empty():
+		found_slot = get_available_slots().front()
+	elif auto_extend:
+		found_slot = add_slot()
 	return(found_slot)
 
 
-# Returns an array containing all the BoardPlacementSlots
+# Returns an array containing all the BoardPlacementSlot nodes
 func get_all_slots() -> Array:
 	return($GridContainer.get_children())
 
 
-# Returns the amount of BoardPlacementSlot contained. 
+# Returns the amount of BoardPlacementSlot contained.
 func get_slot_count() -> int:
 	return(get_all_slots().size())
+
+
+# Returns an array with all slots not occupied by a card
+func get_available_slots() -> Array:
+	var available_slots: Array
+	for slot in get_all_slots():
+		if not slot.occupying_card:
+			available_slots.append(slot)
+	return(available_slots)
+
+
+# Returns the count of all available slots
+func count_available_slots() -> int:
+	return(get_available_slots().size())

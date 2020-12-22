@@ -59,7 +59,7 @@ func test_boardseek_with_subject_count():
 
 func test_tutor_with_subject_count():
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "tutor",
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard,
@@ -72,7 +72,7 @@ func test_tutor_with_subject_count():
 		assert_eq("Blue", c.properties.Type,
 			"Tutor correctly discarded only the Blue cards")
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "tutor",
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard,
@@ -86,7 +86,7 @@ func test_tutor_with_subject_count():
 		assert_eq("Blue", c.properties.Type,
 			"Tutor correctly discarded only the Blue cards")
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "tutor",
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard,
@@ -101,7 +101,7 @@ func test_tutor_with_subject_count():
 
 func test_index_with_subject_count_from_top():
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": "top",
 			"src_container":  cfc.NMAP.deck,
@@ -115,7 +115,7 @@ func test_index_with_subject_count_from_top():
 	assert_eq(discard,target.get_parent(), "bottom card should be in discard")
 
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": "top",
 			"subject_count": 5,
@@ -130,7 +130,7 @@ func test_index_with_subject_count_from_top():
 	assert_eq(discard,target.get_parent(), "bottom card should be in discard")
 
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": "top",
 			"subject_count": "all",
@@ -149,7 +149,7 @@ func test_index_with_subject_count_from_top():
 
 func test_index_with_subject_count_from_bottom():
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": "bottom",
 			"subject_count": 5,
@@ -163,7 +163,7 @@ func test_index_with_subject_count_from_bottom():
 			"5 cards in should have been index sought")
 	assert_eq(discard,target.get_parent(), "bottom card should be in discard")
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": "bottom",
 			"subject_count": "all",
@@ -179,7 +179,7 @@ func test_index_with_subject_count_from_bottom():
 
 func test_index_with_subject_count_from_index():
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": 5,
 			"subject_count": 5,
@@ -191,7 +191,7 @@ func test_index_with_subject_count_from_index():
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(discard,target.get_parent(), "target card should be in discard")
 	card.scripts = {"manual": {"hand": [
-			{"name": "move_card_cont_to_cont",
+			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": 5,
 			"subject_count": "all",
