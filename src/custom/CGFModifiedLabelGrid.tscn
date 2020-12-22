@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/core/BoardPlacementSlot.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/core/BoardPlacementGrid.tscn" type="PackedScene" id=2]
+
+[node name="ModifiedLabelGrid" instance=ExtResource( 2 )]
+
+[node name="GridContainer" parent="." index="0"]
+margin_right = 247.0
+
+[node name="BoardPlacementSlot2" parent="GridContainer" index="1" instance=ExtResource( 1 )]
+margin_left = 125.0
+margin_right = 245.0
+
+[node name="Control" parent="." index="1"]
+margin_right = 247.0
+
+[node name="Label" parent="Control" index="0"]
+text = "This Grid has a modified label"

@@ -28,7 +28,19 @@ enum CardState {
 	FOCUSED_IN_POPUP		#12
 	VIEWPORT_FOCUS			#13
 }
-
+# Specifies where a card is allowed to drop on the board
+#
+# * NONE:  Cards cannot be manually dropped on the board
+# * SPECIFIC_GRID: Cards can only be manually dropped in Grids of a specific
+# name on the board. They will use mandatory_grid_name to specify which grid.
+# * ANY_GRID: Cards can only be manually dropped in BoardPlacementGrids
+# * ANYWHERE: Cards can only be manually dropped anywhere on the board
+enum BoardPlacement{
+	NONE
+	SPECIFIC_GRID
+	ANY_GRID
+	ANYWHERE
+}
 # Used to spawn CardChoices. We have to add the consts together
 # before passing to the preload, or the parser complains.
 const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
@@ -65,13 +77,6 @@ signal card_properties_modified(card,trigger,details)
 # warning-ignore:unused_signal
 signal card_targeted(card,trigger,details)
 
-# We cannot preload the scripting engine as a const for the same reason
-# We cannot refer to it via class name.
-#
-# If we do, it is parsed by the compiler who then considers it
-# a cyclic reference as the scripting engine refers back to the Card class.
-var scripting_engine = load(CFConst.PATH_SCRIPTING_ENGINE)
-
 
 # The properties dictionary will be filled in by the setup() code
 # according to the card definintion.
@@ -92,7 +97,12 @@ export var is_attachment := false setget set_is_attachment, get_is_attachment
 # while it's face-down
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
 # Specifies the card rotation in increments of 90 degrees
-export(int, 0, 270, 90) var card_rotation  := 0 setget set_card_rotation, get_card_rotation
+export(int, 0, 270, 90) var card_rotation  := 0 \
+		setget set_card_rotation, get_card_rotation
+# Specifies where on the board the card may be placed
+export(BoardPlacement) var board_placement \
+		:= BoardPlacement.ANYWHERE
+export var mandatory_grid_name : String
 # This is **the** authorative name for this node
 #
 # If not set, will be set to the value of the Name label in the front.
@@ -104,6 +114,12 @@ export var card_name : String setget set_card_name, get_card_name
 export(PackedScene) var card_back_design : PackedScene
 export(PackedScene) var card_front_design : PackedScene
 
+# We cannot preload the scripting engine as a const for the same reason
+# We cannot refer to it via class name.
+#
+# If we do, it is parsed by the compiler who then considers it
+# a cyclic reference as the scripting engine refers back to the Card class.
+var scripting_engine = load(CFConst.PATH_SCRIPTING_ENGINE)
 # Ensures all nodes fit inside this rect.
 var card_size := CFConst.CARD_SIZE setget set_card_size
 # Starting state for each card
@@ -126,10 +142,13 @@ var _focus_completed: bool = false
 var _fancy_move_second_part := false
 # We use this to track multiple cards
 # when our card is about to drop onto or target them
-var _potential_cards := []
+var potential_host: Card = null
 # We use this to track multiple [CardContainer]s
 # when our card is about to drop onto them
-var _potential_containers := []
+var potential_container = null
+# If the card is placed in a placement grid, this will hold
+# a reference to the slot where this card is placed
+var _placement_slot : BoardPlacementSlot = null
 
 # Used for picking a card to start the compiler on
 var _debugger_hook := false
@@ -170,13 +189,8 @@ func _ready() -> void:
 	_init_card_name()
 	setup()
 	# warning-ignore:return_value_discarded
-	connect("area_entered", self, "_on_Card_area_entered")
-	# warning-ignore:return_value_discarded
-	connect("area_exited", self, "_on_Card_area_exited")
-	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
 	cfc.signal_propagator.connect_new_card(self)
-
 
 func _init_card_layout() -> void:
 	# Because we duplicate the card when adding to the viewport focus
@@ -356,9 +370,9 @@ func _on_Card_gui_input(event) -> void:
 					# We need to reset it to the default of 0
 					z_index = 0
 					var destination = cfc.NMAP.board
-					if not _potential_containers.empty():
-						destination = _potential_containers.back()
-						_potential_containers.back().highlight.set_highlight(false)
+					if potential_container:
+						destination = potential_container
+						potential_container.highlight.set_highlight(false)
 					move_to(destination)
 					_focus_completed = false
 					#emit_signal("card_dropped",self)
@@ -392,72 +406,6 @@ func _on_Card_mouse_exited() -> void:
 			state = CardState.ON_PLAY_BOARD
 		CardState.FOCUSED_IN_POPUP:
 			state = CardState.IN_POPUP
-
-
-# Triggers when a card hovers over another card while being dragged
-#
-# It takes care to highlight potential cards which can serve as hosts
-func _on_Card_area_entered(area: Area2D) -> void:
-	if (area as Card and is_attachment and not area in attachments):
-		var card : Card = area
-		# The below 'if', checks if the card we're hovering has already been considered
-		# If it hasn't we add it to an array of all the cards we're hovering
-		# onto at the moment, at the same time
-		# But we only care for cards on the table, and only while this card is
-		# the one being dragged
-		if (not card in _potential_cards and
-				card.get_parent() == cfc.NMAP.board and
-				cfc.card_drag_ongoing == self):
-			# We add the card to the list which tracks out simultaneous hovers
-			_potential_cards.append(card)
-			# We sort all potential cards by their index
-			_potential_cards.sort_custom(CFUtils,"sort_index_ascending")
-			# Finally we use a method which  handles changing highlights on the
-			# top index card
-			highlight.highlight_potential_card(CFConst.HOST_HOVER_COLOUR,
-					_potential_cards)
-	if area.get_class() == "CardContainer" \
-			and not area in _potential_containers \
-			and state == CardState.DRAGGED:
-		# If DISABLE_DROPPING_TO_CARDCONTAINERS is set to true, we still
-		# Allow the player to return the card where they got it.
-		if CFConst.DISABLE_DROPPING_TO_CARDCONTAINERS and area != get_parent():
-			return
-		var container = area
-		_potential_containers.append(container)
-		_potential_containers.sort_custom(CFUtils,"sort_card_containers")
-		highlight.highlight_potential_container(CFConst.TARGET_HOVER_COLOUR,
-				_potential_containers)
-
-
-# Triggers when a card stops hovering over another
-#
-# It clears potential highlights and adjusts potential cards as hosts
-func _on_Card_area_exited(area: Area2D) -> void:
-	if area as Card:
-		var card : Card = area
-		# We only do any step if the card we exited was already considered and
-		# was on the board
-		# And only while this is the card being dragged
-		if (card in _potential_cards and
-				card.get_parent() == cfc.NMAP.board
-				and cfc.card_drag_ongoing == self):
-			# We remove the card we stopped hovering from the _potential_cards
-			_potential_cards.erase(card)
-			# And we explicitly hide its cards focus since we don't care about
-			# it anymore
-			card.highlight.set_highlight(false)
-			# Finally, we make sure we highlight any other cards we're still hovering
-			highlight.highlight_potential_card(CFConst.HOST_HOVER_COLOUR,
-					_potential_cards)
-	if area.get_class() == "CardContainer" \
-			and area in _potential_containers \
-			and state == CardState.DRAGGED:
-		var container = area
-		_potential_containers.erase(container)
-		container.highlight.set_highlight(false)
-		highlight.highlight_potential_container(CFConst.TARGET_HOVER_COLOUR,
-				_potential_containers)
 
 
 # This function handles filling up the card's labels according to its
@@ -776,6 +724,14 @@ func get_card_rotation() -> int:
 	return card_rotation
 
 
+# Discovers if a grid placement slot is currently highlighted to be used
+func get_potential_placement_slot() -> BoardPlacementSlot:
+	var placement_slot: BoardPlacementSlot = null
+	for ps in get_tree().get_nodes_in_group("placement_slot"):
+		if ps.is_highlighted():
+			placement_slot = ps
+	return(placement_slot)
+
 # Arranges so that the card enters the chosen container.
 #
 # Will take care of interpolation.
@@ -796,8 +752,20 @@ func move_to(targetHost,
 	var parentHost = get_parent()
 	# We want to keep the token drawer closed during movement
 	tokens.is_drawer_open = false
-	if CFConst.DISABLE_BOARD_DROP and targetHost == cfc.NMAP.board:
-		targetHost = parentHost
+	# This checks ensure we don't change parent to the board,
+	# if the placement to the board requested is invalid
+	# depending on the board_placement variable
+	if targetHost == cfc.NMAP.board:
+		if board_placement == BoardPlacement.NONE:
+			targetHost = parentHost
+		elif board_placement == BoardPlacement.ANY_GRID:
+			if not get_potential_placement_slot():
+				targetHost = parentHost
+		elif board_placement == BoardPlacement.SPECIFIC_GRID:
+			if not get_potential_placement_slot() \
+					or get_potential_placement_slot().get_grid_name() \
+					!= mandatory_grid_name:
+				targetHost = parentHost
 	if targetHost != parentHost:
 		# When changing parent, it resets the position of the child it seems
 		# So we store it to know where the card used to be, before moving it
@@ -879,17 +847,23 @@ func move_to(targetHost,
 		else:
 			interruptTweening()
 			_target_rotation = _recalculate_rotation()
-			if len(_potential_cards):
+			if potential_host:
 				# The _potential_cards are always organized so that the card higher
 				# in index that we were hovering over, is the last in the array.
-				attach_to_host(_potential_cards.back())
+				attach_to_host(potential_host)
 			else:
+				var slot := get_potential_placement_slot()
 				# The developer is allowed to pass a position override to the
-				# card placement
-				if boardPosition == Vector2(-1,-1):
-					_determine_target_position_from_mouse()
-				else:
+				# card placement which also bypasses manual drop placement
+				# restrictions
+				if boardPosition != Vector2(-1,-1):
 					_target_position = boardPosition
+				elif slot:
+					_target_position = slot.rect_global_position
+					slot.occupying_card = self
+					_placement_slot = slot
+				else:
+					_determine_target_position_from_mouse()
 				raise()
 			state = CardState.DROPPING_TO_BOARD
 			emit_signal("card_moved_to_board",
@@ -914,6 +888,11 @@ func move_to(targetHost,
 			if CFConst.TOKENS_ONLY_ON_BOARD or cfc._ut_tokens_only_on_board:
 				for token in tokens.get_all_tokens().values():
 					token.queue_free()
+			# If the card was hosted in a board placement grid
+			# we clean the references.
+			if _placement_slot:
+					_placement_slot.occupying_card = null
+					_placement_slot = null
 	else:
 		# Here we check what to do if the player just moved the card back
 		# to the same container
@@ -922,27 +901,59 @@ func move_to(targetHost,
 			reorganize_self()
 		elif parentHost == cfc.NMAP.board:
 			# Checking if this is an attachment and we're looking for a new host
-			if len(_potential_cards):
-				attach_to_host(_potential_cards.back())
+			if potential_host:
+				attach_to_host(potential_host)
 			# If we are an attachment and were moved elsewhere
 			# We reset the position.
+				state = CardState.ON_PLAY_BOARD
 			elif current_host_card:
 				var attach_index = current_host_card.attachments.find(self)
 				_target_position = (current_host_card.global_position
 						+ Vector2(0,(attach_index + 1)
 						* card_size.y
 						* CFConst.ATTACHMENT_OFFSET))
+				state = CardState.ON_PLAY_BOARD
 			else:
-				_determine_target_position_from_mouse()
+				# When we drop from board to board
+				# We need to ensure the card respects its
+				# board_placement variable. So we need to check
+				# where the player is trying to drop the card
+				# and revert the placement if it's invalid
+				var slot := get_potential_placement_slot()
+				if slot:
+					# This will trigger is the card can only be placed
+					# in specific grids, and the player tried to drag it
+					# Manually to a different grid
+					if board_placement == BoardPlacement.SPECIFIC_GRID \
+							and slot.get_grid_name() != mandatory_grid_name:
+						# if the card board placement is a specific grid,
+						# and the card is already on the table
+						# then we know the _placement_slot is set.
+						_target_position = _placement_slot.rect_global_position
+						state = CardState.DROPPING_TO_BOARD
+					else:
+						_target_position = slot.rect_global_position
+						state = CardState.DROPPING_TO_BOARD
+						if _placement_slot:
+							_placement_slot.occupying_card = null
+						slot.occupying_card = self
+						_placement_slot = slot
+				# If we only allow placement in grid slots, and the player
+				# Dragged the card outside of a grid, we return the card
+				# to its original slot position
+				elif board_placement in [BoardPlacement.ANY_GRID,
+						BoardPlacement.SPECIFIC_GRID]:
+					_target_position = _placement_slot.rect_global_position
+					state = CardState.DROPPING_TO_BOARD
+				else:
+					_determine_target_position_from_mouse()
+					state = CardState.ON_PLAY_BOARD
+					if _placement_slot:
+							_placement_slot.occupying_card = null
+							_placement_slot = null
 				raise()
-			state = CardState.ON_PLAY_BOARD
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP
-	# Just in case there's any leftover potential host highlights
-	if len(_potential_cards):
-		for card in _potential_cards:
-			card.highlight.set_highlight(false)
-		_potential_cards.clear()
 
 
 # Executes the tasks defined in the card's scripts in order.
@@ -1073,9 +1084,13 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 					self,
 					"card_unattached",
 					{"host": current_host_card})
+		# If card was on a grid slot, we clear that occupation
+		if _placement_slot:
+			_placement_slot.occupying_card = null
+			_placement_slot = null
 		current_host_card = host
 		# Once we selected the host, we don't need anything in the array anymore
-		_potential_cards.clear()
+		potential_host = null
 		# We also clear the highlights on our new host
 		current_host_card.highlight.set_highlight(false)
 		# We set outselves as an attachment on the target host for easy iteration
@@ -1386,8 +1401,8 @@ func _start_dragging() -> void:
 	# before we started dragging. If so, we activate the code
 	# which checks for potential hosts, on all these cards to make sure
 	# we don't miss any.
-	for obj in get_overlapping_areas():
-		_on_Card_area_entered(obj)
+#	for obj in get_overlapping_areas():
+#		_on_Card_area_entered(obj)
 	if get_parent().is_in_group("hands"):
 		# While we're dragging the card from hand, we want the other cards
 		# to move to their expected position in hand
@@ -1843,6 +1858,7 @@ func _process_card_state() -> void:
 			set_control_mouse_filters(true)
 			buttons.set_active(true)
 			# We don't change state yet, only when the focus is removed from this card
+			_organize_attachments()
 
 		CardState.IN_PILE:
 			set_focus(false)

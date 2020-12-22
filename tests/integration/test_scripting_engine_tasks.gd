@@ -15,7 +15,7 @@ func before_each():
 	if confirm_return is GDScriptFunctionState: # Still working.
 		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(5)
-	yield(yield_for(0.5), YIELD)
+	yield(yield_for(0.1), YIELD)
 	card = cards[0]
 	target = cards[2]
 
@@ -136,6 +136,7 @@ func test_move_card_cont_to_cont():
 
 
 func test_move_card_cont_to_board():
+	yield(yield_for(0.2), YIELD)
 	target = cfc.NMAP.deck.get_card(5)
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_cont_to_board",
@@ -145,7 +146,8 @@ func test_move_card_cont_to_board():
 			"board_position":  Vector2(1000,200)}]}}
 	card.execute_scripts()
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	assert_eq(Vector2(1000,200),target.global_position,
+	yield(yield_for(0.2), YIELD)
+	assert_almost_eq(Vector2(1000,200),target.global_position, Vector2(5,5),
 			"Card should have moved to specified board position")
 
 

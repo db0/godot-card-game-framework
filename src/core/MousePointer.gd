@@ -7,6 +7,12 @@
 class_name MousePointer
 extends Area2D
 
+# The amount of radius in pixels that the mouse collision area
+#
+# This const is sometimes looked-up by other nodes to determine
+# their own properties
+const MOUSE_RADIUS := 2
+
 # The card that is currently highlighted as a result of this
 # mouse cursor hovering over it.
 var current_focused_card : Card = null
@@ -20,6 +26,7 @@ var overlaps := []
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	$CollisionShape2D.shape.radius = MOUSE_RADIUS
 	# warning-ignore:return_value_discarded
 	connect("area_entered",self,"_on_MousePointer_area_entered")
 	# warning-ignore:return_value_discarded
@@ -30,7 +37,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if current_focused_card:
-		# We after a card has been dragged, it generally clears its
+		# After a card has been dragged, it generally clears its
 		# focused state. This check ensures that if the mouse hovers over
 		# the card still after the drag, we focus it again
 		if current_focused_card.get_parent() == cfc.NMAP.board \
@@ -39,20 +46,30 @@ func _process(_delta: float) -> void:
 		if current_focused_card.get_parent() == cfc.NMAP.hand \
 				and current_focused_card.state == Card.CardState.IN_HAND:
 			current_focused_card.state = Card.CardState.FOCUSED_IN_HAND
-		if cfc.card_drag_ongoing and cfc.card_drag_ongoing != current_focused_card:
-			current_focused_card = cfc.card_drag_ongoing
+	if cfc.card_drag_ongoing and cfc.card_drag_ongoing != current_focused_card:
+		current_focused_card = cfc.card_drag_ongoing
 	if cfc._debug:
 		$DebugShape/current_focused_card.text = "MOUSE: " + str(current_focused_card)
 
+
+# Adds the overlapping area to the list of overlaps, and triggers the
+# discover_focus()
 func _on_MousePointer_area_entered(area: Area2D) -> void:
 	overlaps.append(area)
-	#print("enter:",area)
+	#print("enter:",area.name)
 	_discover_focus()
 
 
+# Removes the overlapping area from the list of overlaps, and triggers the
+# discover_focus()
 func _on_MousePointer_area_exited(area: Area2D) -> void:
+	# We stop the highlight on any areas we exit with the mouse.
+	if area as Card or area as CardContainer:
+		area.highlight.set_highlight(false)
+	elif area.get_parent() as BoardPlacementSlot:
+		area.get_parent().set_highlight(false)
 	overlaps.erase(area)
-	#print("exit:",area)
+	#print("exit:",area.name)
 	_discover_focus()
 
 
@@ -75,21 +92,81 @@ func determine_global_mouse_pos() -> Vector2:
 			- get_viewport_transform().origin
 	offset_mouse_position *= zoom
 	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
-	if cfc.ut and cfc.NMAP.get("board"): 
+	if cfc.ut and cfc.NMAP.get("board"):
 		mouse_position = cfc.NMAP.board._UT_mouse_position
 	else: mouse_position = offset_mouse_position
 	return mouse_position
 
 
-# Parses all collided objects and figures out which card, if any, to focus on.
+# Parses all collided objects and figures out which card, if any, to focus on and
+# also while a card is being dragged, figures out which potential area to highlight
+# for the drop effect.
+#
+# For dropping dragged cards, there is a general priority which is used
+#  when figuring out which area to highlight
+# * CardContainers have priority over potential hosts and placement slots.
+#	This means if a card is being dragged and the mouse is over a CardContainer,
+#	then the CardContainer will be highlighted.
+# * Potential Hosts have priority over placement slots.
+# * Potential board grid placement slots have the lowest priority. They
+#	will only be highlighted if a the mouse is not over a CardContainer or
+#	potential host.
 func _discover_focus() -> void:
 	var potential_cards := []
+	var potential_slots := []
+	var potential_containers := []
+	var potential_hosts := []
 	# We might overlap cards or their token drawers, but we hihglight
 	# only cards.
-	for c in overlaps:
-		if c as Card:
-			potential_cards.append(c)
-	if not potential_cards.empty():
+	for area in overlaps:
+		if area as Card:
+			potential_cards.append(area)
+			# To check for potential hosts, the card has to be dragged
+			# And it has to be an attachment
+			# and the checked area has to not be the dragged card
+			# and the checked area has to not be an attachment to the
+			# dragged card
+			# and the checked area has to be on the board
+			if current_focused_card \
+					and current_focused_card == cfc.card_drag_ongoing \
+					and current_focused_card.is_attachment \
+					and area != current_focused_card \
+					and not area in current_focused_card.attachments \
+					and area.state == Card.CardState.ON_PLAY_BOARD:
+						potential_hosts.append(area)
+		# We only populate potential_slots if the card is not hovering over
+		# potential hosts
+		# There is a lot of checks to consider a BoardPlacementHost a
+		# potential drop point
+		# It has to not be occupied by another card
+		# The card being dragged cannot be an attachment
+		# or if it is an attachment, there have to be no potential hosts
+		# currently highlighted
+		if area.get_parent() as BoardPlacementSlot \
+				and (not area.get_parent().occupying_card
+				or area.get_parent().occupying_card == cfc.card_drag_ongoing) \
+				and cfc.card_drag_ongoing:
+			if not cfc.card_drag_ongoing.is_attachment \
+					or (cfc.card_drag_ongoing.is_attachment
+					and (potential_cards.empty()
+					or cfc.card_drag_ongoing in potential_cards)):
+				potential_slots.append(area.get_parent())
+#		if area.get_parent() as BoardPlacementSlot and cfc.card_drag_ongoing and cfc.card_drag_ongoing.is_attachment and not potential_cards.empty():
+#			print_debug(potential_cards)
+		if area as CardContainer and cfc.card_drag_ongoing:
+			potential_containers.append(area)
+	# Dragging into containers takes priority over draggging onto board
+	if not potential_containers.empty():
+		cfc.card_drag_ongoing.potential_container = \
+				Highlight.highlight_potential_container(
+				CFConst.TARGET_HOVER_COLOUR,
+				potential_containers,
+				potential_cards,
+				potential_slots)
+	# Dragging onto cards, takes priority over board placement grid slots
+	elif not potential_cards.empty():
+		if cfc.card_drag_ongoing:
+			cfc.card_drag_ongoing.potential_container = null
 		# We sort the potential cards by their index on the board
 		potential_cards.sort_custom(CFUtils,"sort_index_ascending")
 		# The candidate always has the highest index as it's drawn on top of
@@ -109,8 +186,24 @@ func _discover_focus() -> void:
 				# we remove it's focus state
 				if current_focused_card:
 					current_focused_card._on_Card_mouse_exited()
-				card._on_Card_mouse_entered()
-				current_focused_card = card
+				if not cfc.card_drag_ongoing:
+					card._on_Card_mouse_entered()
+					current_focused_card = card
+		# If we have potential hosts, then we highlight the highest index one
+		if not potential_hosts.empty():
+			cfc.card_drag_ongoing.potential_host = \
+					current_focused_card.highlight.highlight_potential_card(
+					CFConst.HOST_HOVER_COLOUR,potential_hosts,potential_slots)
+		# If we have potential placements, then there should be only 1
+		# as their placement should not allow the mouse to overlap more than 1
+		# We also clear potential hosts since there potential_hosts was emty
+		elif not potential_slots.empty():
+			cfc.card_drag_ongoing.potential_host = null
+			potential_slots.back().set_highlight(true)
+		# If card is being dragged, but has no potential target
+		# We ensure we clear potential hosts
+		elif cfc.card_drag_ongoing:
+			cfc.card_drag_ongoing.potential_host = null
 	# If we don't collide with any objects, but we have been focusing until
 	# now, we make sure we're not hovering over the card drawer.
 	# if not, then we remove focus.

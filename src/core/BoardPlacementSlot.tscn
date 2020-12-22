@@ -1,0 +1,86 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://src/core/BoardPlacementSlot.gd" type="Script" id=2]
+
+[sub_resource type="StyleBoxFlat" id=1]
+content_margin_left = 6.0
+content_margin_right = 5.0
+content_margin_top = 6.0
+bg_color = Color( 1, 1, 1, 1 )
+draw_center = false
+border_width_left = 3
+border_width_right = 3
+border_color = Color( 3, 3, 3, 1 )
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+
+[sub_resource type="StyleBoxFlat" id=2]
+content_margin_left = 6.0
+content_margin_right = 5.0
+content_margin_top = 6.0
+bg_color = Color( 1, 1, 1, 1 )
+draw_center = false
+border_width_top = 2
+border_width_bottom = 3
+border_color = Color( 1.3, 1.3, 1.3, 1 )
+corner_radius_top_left = 15
+corner_radius_top_right = 15
+corner_radius_bottom_right = 15
+corner_radius_bottom_left = 15
+
+[sub_resource type="RectangleShape2D" id=3]
+extents = Vector2( 60, 96 )
+
+[node name="BoardPlacementSlot" type="Control" groups=[
+"placement_slot",
+]]
+margin_right = 120.0
+margin_bottom = 192.0
+rect_min_size = Vector2( 120, 192 )
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Highlight" type="MarginContainer" parent="."]
+visible = false
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = -1130.0
+margin_bottom = -480.0
+rect_min_size = Vector2( 120, 192 )
+mouse_filter = 2
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="LeftRight" type="Panel" parent="Highlight"]
+margin_right = 120.0
+margin_bottom = 192.0
+rect_min_size = Vector2( 120, 192 )
+mouse_filter = 2
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="TopBottom" type="Panel" parent="Highlight"]
+modulate = Color( 1.8, 1.8, 1.8, 1 )
+margin_right = 120.0
+margin_bottom = 192.0
+mouse_filter = 2
+custom_styles/panel = SubResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 512
+collision_mask = 512
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+position = Vector2( 60, 96 )
+shape = SubResource( 3 )

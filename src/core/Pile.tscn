@@ -32,6 +32,9 @@ extents = Vector2( 78, 123 )
 "piles",
 ]]
 script = ExtResource( 2 )
+__meta__ = {
+"_edit_group_": true
+}
 
 [node name="Control" type="Panel" parent="."]
 self_modulate = Color( 1, 1, 1, 0.5 )
