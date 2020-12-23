@@ -251,7 +251,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 # Supports [KEY_IS_COST](SP#KEY_IS_COST).
 #
 # Requires the following keys:
-# * "token_name": String
+# * [KEY_TOKEN_NAME](SP#KEY_TOKEN_NAME): String
 # * [KEY_MODIFICATION](SP#KEY_MODIFICATION): int
 # * (Optional) [KEY_SET_TO_MOD](SP#KEY_SET_TO_MOD): bool
 func mod_tokens(script: ScriptTask) -> int:
