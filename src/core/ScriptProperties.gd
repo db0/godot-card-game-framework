@@ -23,13 +23,13 @@ extends Reference
 # If key does not exist, we set value to [], assuming there's no subjects
 # in the task.
 const KEY_SUBJECT := "subject"
-# * If this is the value of the "subject" key,
+# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # we initiate targetting from the owner card
 const KEY_SUBJECT_V_TARGET := "target"
-# * If this is the value of the "subject" key,
+# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then the task affects the owner card only.
 const KEY_SUBJECT_V_SELF := "self"
-# * If this is the value of the "subject" key,
+# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we search all cards on the table
 # by node order, and return candidates equal to KEY_SUBJECT_COUNT
 # that match the filters
@@ -37,37 +37,37 @@ const KEY_SUBJECT_V_SELF := "self"
 # This allows us to make tasks which will affect more than 1 card at
 # the same time (e.g. "All Soldiers")
 const KEY_SUBJECT_V_BOARDSEEK := "boardseek"
-# * If this is the value of the "subject" key,
+# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we search all cards on the specified
 # pile by node order, and pick the first candidate that matches the filter
 const KEY_SUBJECT_V_TUTOR := "tutor"
-# * If this is the value of the "subject" key,
+# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we pick the card on the specified
 # source pile by its index among other cards.
 const KEY_SUBJECT_V_INDEX := "index"
-# * If this is the value of the "subject" key,
+# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we use the subject specified in the previous task
 const KEY_SUBJECT_V_PREVIOUS := "previous"
 # Used when we're seeking a card
 # to limit the amount to retrieve to this amount
-# Work with the following tasks and KEY_SUBJECT values:
+# Work with the following tasks and [KEY_SUBJECT](#KEY_SUBJECT) values:
 # * [move_card_to_container](ScriptingEngine#move_card_to_container)
 # and [move_card_to_board](ScriptingEngine#move_card_to_board).
-#	* KEY_SUBJECT_V_BOARDSEEK
-#	* KEY_SUBJECT_V_TUTOR
-#	* KEY_SUBJECT_V_INDEX
+#	* [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
+#	* [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
+#	* [KEY_SUBJECT_V_INDEX](#KEY_SUBJECT_V_INDEX)
 # Default is to seek only 1 card.
-# when used in combination with KEY_SUBJECT_V_BOARDSEEK value can
-# also be KEY_SUBJECT_COUNT_V_ALL which will simply set all cards
-# that match the filters as subjects
+# when used in combination with [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
+# value can also be [KEY_SUBJECT_COUNT_V_ALL](#KEY_SUBJECT_COUNT_V_ALL)
+# which will simply set all cards that match the filters as subjects
 const KEY_SUBJECT_COUNT := "subject_count"
-# When specified as the value of KEY_SUBJECT_COUNT, will retrieve as many
-# cards as match the criteria.
+# When specified as the value of [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT),
+# will retrieve as many cards as match the criteria.
 # Useful with the following KEY/VALUE combinations
 # * [move_card_to_container](ScriptingEngine#move_card_to_container)
 # and [move_card_to_board](ScriptingEngine#move_card_to_board).
-#   * KEY_SUBJECT_V_BOARDSEEK
-#	* KEY_SUBJECT_V_TUTOR
+#	* [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
+#	* [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
 const KEY_SUBJECT_COUNT_V_ALL := "all"
 # This key is used to mark a task as being a cost requirement before the
 # rest of the defined tasks can execute.
@@ -76,11 +76,11 @@ const KEY_SUBJECT_COUNT_V_ALL := "all"
 # script is not executed.
 #
 # Currently the following tasks support being set as costs:
-# * rotate_card
-# * flip_card
-# * mod_tokens
-# * move_card_to_container
-# * move_card_to_board
+# * [rotate_card](ScriptingEngine#rotate_card)
+# * [flip_card](ScriptingEngine#flip_card)
+# * [mod_tokens](ScriptingEngine#mod_tokens)
+# * [move_card_to_container](ScriptingEngine#move_card_to_container)
+# * [move_card_to_board](ScriptingEngine#move_card_to_board)
 const KEY_IS_COST := "is_cost"
 # Used when a script is triggered by a signal.
 #
@@ -89,11 +89,12 @@ const KEY_IS_COST := "is_cost"
 # * "another": Triggering card has to not be the owner of the script
 # * "any" (default): Will execute regardless of the triggering card.
 const KEY_TRIGGER := "trigger"
-# Used when a script is using the rotate_card task
+# Used when a script is using the [rotate_card](ScriptingEngine#rotate_card) task.
 #
 # These are the degress in multiples of 90, that the subjects will be rotated.
 const KEY_DEGREES := "degrees"
-# Used when a script is using the flip_card task. Values are:
+# Used when a script is using the [flip_card](ScriptingEngine#flip_card) task.
+# Values are:
 # * true: The card will be set face-up
 # * false: The card will be set face-down
 const KEY_SET_FACEUP := "set_faceup"
@@ -101,16 +102,17 @@ const KEY_SET_FACEUP := "set_faceup"
 # The value is supposed to be a dictionary of `"property name": value` entries
 const KEY_MODIFY_PROPERTIES := "set_properties"
 # Used when a script is using one of the following tasks
-# * move_card_to_cont
-# * move_card_to_board
-# When the following KEY_SUBJECT values are also used:
-# * KEY_SUBJECT_V_TUTOR
-# * KEY_SUBJECT_V_INDEX
+# * [move_card_to_board](ScriptingEngine#move_card_to_board)
+# * [move_card_to_container](ScriptingEngine#move_card_to_container)
+# When the following [KEY_SUBJECT](#KEY_SUBJECT) values are also used:
+# * [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
+# * [KEY_SUBJECT_V_INDEX](#KEY_SUBJECT_V_INDEX)
+#
 # Specifies the source container to pick the card from
 const KEY_SRC_CONTAINER := "src_container"
 # Used when a script is using one of the following tasks
-# * move_card_to_container
-# * shuffle_container
+# * [move_card_to_container](ScriptingEngine#move_card_to_container)
+# * [shuffle_container](ScriptingEngine#shuffle_container)
 #
 # Specifies the destination container to manipulate
 # Allowed values:
@@ -118,21 +120,21 @@ const KEY_SRC_CONTAINER := "src_container"
 const KEY_DEST_CONTAINER := "dest_container"
 # Used when we're seeking a card inside a [CardContainer]
 # in one of the following tasks
-# * move_card_to_board
-# * move_card_to_container
+# * [move_card_to_board](ScriptingEngine#move_card_to_board)
+# * [move_card_to_container](ScriptingEngine#move_card_to_container)
 # when KEY_SUBJECT_V_INDEX is also used:
 #
 # Default is to seek card at index 0
 # but value can also be set to one of the following
 # * any integer
-# * KEY_SUBJECT_INDEX_V_TOP
-# * KEY_SUBJECT_INDEX_V_BOTTOM
-# * VALUE_RETRIEVE_INTEGER
+# * [KEY_SUBJECT_INDEX_V_TOP](#KEY_SUBJECT_INDEX_V_TOP)
+# * [KEY_SUBJECT_INDEX_V_BOTTOM](#KEY_SUBJECT_INDEX_V_BOTTOM)
+# * [VALUE_RETRIEVE_INTEGER](#VALUE_RETRIEVE_INTEGER)
 const KEY_SUBJECT_INDEX := "subject_index"
-# Special entry to be used with KEY_SUBJECT_INDEX instead of an integer
+# Special entry to be used with [KEY_SUBJECT_INDEX](#KEY_SUBJECT_INDEX) instead of an integer
 # If specified, explicitly looks for the top "card" of a pile
 const KEY_SUBJECT_INDEX_V_TOP := "top"
-# Special entry to be used with KEY_SUBJECT_INDEX instead of an integer
+# Special entry to be used with [KEY_SUBJECT_INDEX](#KEY_SUBJECT_INDEX) instead of an integer
 # If specified, explicitly looks for the "bottom" card of a pile
 const KEY_SUBJECT_INDEX_V_BOTTOM := "bottom"
 # Used when placing a card inside a [CardContainer]
@@ -142,55 +144,60 @@ const KEY_SUBJECT_INDEX_V_BOTTOM := "bottom"
 # * index == -1 means last card in the CardContainer
 # * index == 0 means the the first card in the CardContainer
 # * index > 0 means the specific index among other cards.
-# [KEY_SUBJECT_INDEX_V_TOP](SP#KEY_SUBJECT_INDEX_V_TOP)
-# and [KEY_SUBJECT_INDEX_V_BOTTOM](SP#KEY_SUBJECT_INDEX_V_BOTTOM)
+# [KEY_SUBJECT_INDEX_V_TOP](#KEY_SUBJECT_INDEX_V_TOP)
+# and [KEY_SUBJECT_INDEX_V_BOTTOM](#KEY_SUBJECT_INDEX_V_BOTTOM)
 # can also be used instead of 0 and -1.
 const KEY_DEST_INDEX := "dest_index"
-# Used when a script is using the move_card_to_board task
+# Used when a script is using the
+# [move_card_to_board](ScriptingEngine#move_card_to_board) task
 #
 # If Vector2(-1,-1) is specified, it uses the mouse position
 # which obviously not good for scripts
 const KEY_BOARD_POSITION := "board_position"
-# Used when a script is using the move_card_to_board task
+# Used when a script is using the
+# [move_card_to_board](ScriptingEngine#move_card_to_board) task
 #
-# If specified, it will take priority over KEY_BOARD_POSITION
+# If specified, it will take priority over [KEY_BOARD_POSITION](#KEY_BOARD_POSITION)
 # The card will be placed to the specified grid on the board
 #
 # This task will not check that the grid exists or that the card's
 # mandatory grid name matches the grid name. The game has to be developed
 # to not cause this situation.
 const KEY_GRID_NAME := "grid_name"
-# Used when a script is using the mod_tokens task
+# Used when a script is using one of the following tasks:
+# * [mod_tokens](ScriptingEngine#mod_tokens)
 #
 # It specifies if we're modifying the existing amount
 # or setting it to the exact one
-const KEY_TOKEN_SET_TO_MOD := "set_to_mod"
-# Used when a script is using the mod_tokens task
+const KEY_SET_TO_MOD := "set_to_mod"
+# Used when a script is using the [mod_tokens](ScriptingEngine#mod_tokens) task.
 #
 # It specifies the name of the token we're modifying
 const KEY_TOKEN_NAME := "token_name"
-# Used when a script is using the mod_tokens task
+# Used when a script is using one of the following tasks:
+# * [mod_tokens](ScriptingEngine#mod_tokens)
 #
 # It specifies the amount we're setting/modifying
 # or setting it to the exact one
-const KEY_TOKEN_MODIFICATION := "modification"
-# Used when a script is using the spawn_card task
+const KEY_MODIFICATION := "modification"
+# Used when a script is using the [spawn_card](ScriptingEngine#spawn_card) task.
 #
 # This is the path to the card template scene to use for this card
 const KEY_CARD_SCENE := "card_scene"
-# Used by the "ask_integer" task. Specifies the minimum value the number
-# needs to have
+# Used by the [ask_integer](ScriptingEngine#ask_integer) task.
+# Specifies the minimum value the number needs to have
 const KEY_ASK_INTEGER_MIN := "ask_int_min"
-# Used by the "ask_integer" task. Specifies the maximum value the number
-# needs to have
+# Used by the [ask_integer](ScriptingEngine#ask_integer) task.
+# Specifies the maximum value the number needs to have
 const KEY_ASK_INTEGER_MAX := "ask_int_max"
 # This is a versatile value that can be inserted into any various keys
-# when a task needs to use a previously inputed integer.
+# when a task needs to use a previously inputed integer provided
+# with a [ask_integer](ScriptingEngine#ask_integer) task.
 # When detected ,the task will retrieve the stored number and use it as specified
 #
 # The following keys support this value
-# * KEY_TOKEN_MODIFICATION
-# * KEY_SUBJECT_COUNT (only for specific tasks, see documentation)
+# * [KEY_MODIFICATION](#KEY_MODIFICATION)
+# * [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT) (only for specific tasks, see documentation)
 const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
 # Specifies whether this script or task can be skipped by the owner.
 #
@@ -245,21 +252,21 @@ const KEY_IS_OPTIONAL := "is_optional_"
 # see _check_properties()
 
 const FILTER_PROPERTIES := "filter_properties_"
-# Filter used in for checking against TRIGGER_DEGREES
+# Filter used in for checking against [TRIGGER_DEGREES](#KEY_MODIFICATION)
 const FILTER_DEGREES := "filter_degrees"
-# Filter for checking against TRIGGER_FACEUP
+# Filter for checking against [TRIGGER_FACEUP](#TRIGGER_FACEUP)
 const FILTER_FACEUP := "filter_faceup"
-# Filter for checking against TRIGGER_SOURCE
+# Filter for checking against [TRIGGER_SOURCE](#TRIGGER_SOURCE)
 const FILTER_SOURCE := "filter_source"
-# Filter for checking against TRIGGER_DESTINATION
+# Filter for checking against [TRIGGER_DESTINATION](#TRIGGER_DESTINATION)
 const FILTER_DESTINATION := "filter_destination"
-# Filter used for checking against TRIGGER_NEW_TOKEN_VALUE
+# Filter used for checking against [TRIGGER_NEW_TOKEN_VALUE](#TRIGGER_NEW_TOKEN_VALUE)
 const FILTER_TOKEN_COUNT := "filter_token_count"
 #  Filter compared against
-# * TRIGGER_V_TOKENS_INCREASED
-# * TRIGGER_V_TOKENS_DECREASED
+# * [TRIGGER_V_TOKENS_INCREASED](#TRIGGER_V_TOKENS_INCREASED)
+# * [TRIGGER_V_TOKENS_DECREASED](#TRIGGER_V_TOKENS_DECREASED)
 const FILTER_TOKEN_DIFFERENCE := "filter_token_difference"
-# Filter used for checking against TRIGGER_TOKEN_NAME
+# Filter used for checking against [TRIGGER_TOKEN_NAME](#TRIGGER_TOKEN_NAME)
 const FILTER_TOKEN_NAME := "filter_token_name"
 # Filter key used for checking against card_properties_modified details.
 #
@@ -269,7 +276,7 @@ const FILTER_TOKEN_NAME := "filter_token_name"
 #
 # The filter specified in the card script definition, will have
 # as the requested property filter, a dictionary inside the card_scripts
-# with the key "filter_modified_properties".
+# with the key [FILTER_MODIFIED_PROPERTIES](#FILTER_MODIFIED_PROPERTIES).
 #
 # Inside that dictionary will be another dictionary with one key per
 # property. That key inside will (optionally) have yet another dictionary
@@ -312,9 +319,9 @@ const FILTER_TOKEN_NAME := "filter_token_name"
 # The above example will only trigger on the "Type" property changing on
 # another card, and only if it changed from "Green" to "Orange"
 const FILTER_MODIFIED_PROPERTIES := "filter_modified_properties"
-# Filter used for checking against TRIGGER_NEW_PROPERTY_VALUE
+# Filter used for checking against [TRIGGER_NEW_PROPERTY_VALUE](#TRIGGER_NEW_PROPERTY_VALUE)
 const FILTER_MODIFIED_PROPERTY_NEW_VALUE := "new_value"
-# Filter used for checking against TRIGGER_PREV_PROPERTY_VALUE
+# Filter used for checking against [TRIGGER_PREV_PROPERTY_VALUE](#TRIGGER_PREV_PROPERTY_VALUE)
 const FILTER_MODIFIED_PROPERTY_PREV_VALUE := "previous_value"
 
 
@@ -337,46 +344,46 @@ const TRIGGER_DEGREES := "degrees"
 # * true: Trigger turned face-up
 # * false: Trigger turned face-down
 const TRIGGER_FACEUP := "is_faceup"
-# Filter value sent by the trigger Card `card_properties_modified` signal.
+# Filter value sent by the trigger [card_properties_modified](Card#signals) signal.
 #
 # This is the property name
 const TRIGGER_MODIFIED_PROPERTY_NAME := "property_name"
-# Filter value sent by the trigger Card `card_properties_modified` signal.
+# Filter value sent by the trigger [card_properties_modified](Card#signals) signal.
 #
 # This is the current value of the property.
 const TRIGGER_NEW_PROPERTY_VALUE := "new_property_value"
-# Filter value sent by the trigger Card `card_properties_modified` signal.
+# Filter value sent by the trigger [card_properties_modified](Card#signals) signal.
 #
 # This is the value the property had before it was modified
 const TRIGGER_PREV_PROPERTY_VALUE := "previous_property_value"
 
-# Filter value sent by one of the trigger Card's following signals:
+# Filter value sent by one of the trigger Card's following [signals](Card#signals):
 # * card_moved_to_board
 # * card_moved_to_pile
 # * card_moved_to_hand
 # The value will be the node name the Card left
 const TRIGGER_SOURCE := "source"
-# Filter value sent by one of the trigger [Card]'s following signals:
+# Filter value sent by one of the trigger Card's following [signals](Card#signals):
 # * card_moved_to_board
 # * card_moved_to_pile
 # * card_moved_to_hand
 # The value will be the node name the Card moved to
 const TRIGGER_DESTINATION := "destination"
-# Filter value sent by the trigger Card `card_token_modified` signal.
+# Filter value sent by the trigger Card `card_token_modified` [signal](Card#signals).
 #
 # This is the current value of the token.
 # If token was removed value will be 0
 const TRIGGER_NEW_TOKEN_VALUE := "new_token_value"
-# Filter value sent by the trigger Card `card_token_modified` signal.
+# Filter value sent by the trigger Card `card_token_modified` [signal](Card#signals).
 #
 # This is the value the token had before it was modified
 # If token was removed value will be 0
 const TRIGGER_PREV_TOKEN_VALUE := "previous_token_value"
-# Filter value sent by the trigger Card `card_token_modified` signal.
+# Filter value sent by the trigger Card `card_token_modified` [signal](Card#signals).
 #
 # This is the value of the token name modified
 const TRIGGER_TOKEN_NAME = "token_name"
-# Filter value sent by the following signals.
+# Filter value sent by the following [signals](Card#signals).
 # * card_attached
 # * card_unattached
 # It contains the host object onto which this card attached
@@ -391,10 +398,10 @@ const TRIGGER_HOST = "host"
 #---------------------------------------------------------------------
 
 # Value is sent by trigger when new token count is higher than old token count.
-# Compared against FILTER_TOKEN_DIFFERENCE
+# Compared against [FILTER_TOKEN_DIFFERENCE](#FILTER_TOKEN_DIFFERENCE)
 const TRIGGER_V_TOKENS_INCREASED := "increased"
 # Value is sent by trigger when new token count is lower than old token count.
-# Compared against FILTER_TOKEN_DIFFERENCE
+# Compared against [FILTER_TOKEN_DIFFERENCE](#FILTER_TOKEN_DIFFERENCE)
 const TRIGGER_V_TOKENS_DECREASED := "decreased"
 
 
@@ -413,9 +420,9 @@ static func get_default(property: String):
 			default = -1
 		KEY_BOARD_POSITION:
 			default = Vector2(-1,-1)
-		KEY_TOKEN_SET_TO_MOD:
+		KEY_SET_TO_MOD:
 			default = false
-		KEY_TOKEN_MODIFICATION:
+		KEY_MODIFICATION:
 			default = 1
 		KEY_IS_OPTIONAL:
 			default = false

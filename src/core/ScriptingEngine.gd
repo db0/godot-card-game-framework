@@ -33,6 +33,8 @@ var all_tasks_completed := false
 var stored_integer: int
 # These task will require input from the player, so the subsequent task execution
 # needs to wait for their completion
+#
+# This variable can be extended when this class is extended with new tasks
 var wait_for_tasks = ["ask_integer"]
 
 
@@ -135,10 +137,10 @@ func run_next_script(card_owner: Card,
 
 # Task for rotating cards
 #
-# Supports KEY_IS_COST.
+# Supports [KEY_IS_COST](SP#KEY_IS_COST).
 #
 # Requires the following keys:
-# * "degrees": int
+# * [KEY_DEGREES](SP#KEY_DEGREES)
 func rotate_card(script: ScriptTask) -> int:
 	var retcode: int
 	for card in script.subjects:
@@ -152,10 +154,10 @@ func rotate_card(script: ScriptTask) -> int:
 
 # Task for flipping cards
 #
-# Supports KEY_IS_COST.
+# Supports [KEY_IS_COST](SP#KEY_IS_COST).
 #
 # Requires the following keys:
-# * "set_faceup": bool
+# * [KEY_SET_FACEUP](SP#KEY_SET_FACEUP)
 func flip_card(script: ScriptTask) -> int:
 	var retcode: int
 	for card in script.subjects:
@@ -166,7 +168,9 @@ func flip_card(script: ScriptTask) -> int:
 
 # Task for moving card to a [CardContainer]
 #
-# * [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER): CardContainer
+# Supports [KEY_IS_COST](SP#KEY_IS_COST).
+#
+# * [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER): [CardContainer]
 # * (Optional) [KEY_DEST_INDEX](SP#KEY_DEST_INDEX): int
 func move_card_to_container(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
@@ -188,9 +192,13 @@ func move_card_to_container(script: ScriptTask) -> int:
 
 # Task for playing a card to the board directly.
 #
+# Supports [KEY_IS_COST](SP#KEY_IS_COST).
+#
 # Requires one of the following keys
-# * [KEY_GRID_NAME](SP#KEY_GRID_NAME): The board grid to place the card.
-# * [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): The exact position to place the card.
+# * [KEY_GRID_NAME](SP#KEY_GRID_NAME): String.
+#	The board grid name to place the card.
+# * [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): Vector2.
+#	The exact position to place the card.
 func move_card_to_board(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
 	if len(script.subjects) < script.requested_subjects:
@@ -233,21 +241,21 @@ func move_card_to_board(script: ScriptTask) -> int:
 
 # Task from modifying tokens on a card
 #
-# Supports KEY_IS_COST.
+# Supports [KEY_IS_COST](SP#KEY_IS_COST).
 #
 # Requires the following keys:
 # * "token_name": String
-# * "modification": int
-# * (Optional) "set_to_mod": bool
+# * [KEY_MODIFICATION](SP#KEY_MODIFICATION): int
+# * (Optional) [KEY_SET_TO_MOD](SP#KEY_SET_TO_MOD): bool
 func mod_tokens(script: ScriptTask) -> int:
 	var retcode: int
 	var modification: int
 	var token_name: String = script.get_property(SP.KEY_TOKEN_NAME)
-	if str(script.get_property(SP.KEY_TOKEN_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
+	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
 	else:
-		modification = script.get_property(SP.KEY_TOKEN_MODIFICATION)
-	var set_to_mod: bool = script.get_property(SP.KEY_TOKEN_SET_TO_MOD)
+		modification = script.get_property(SP.KEY_MODIFICATION)
+	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
 	for card in script.subjects:
 		retcode = card.tokens.mod_token(token_name,modification,set_to_mod,costs_dry_run)
 	return(retcode)
@@ -256,8 +264,8 @@ func mod_tokens(script: ScriptTask) -> int:
 # Task from creating a new card instance on the board
 #
 # Requires the following keys:
-# * "card_scene": path to .tscn file
-# * "board_position": Vector2
+# * [KEY_CARD_SCENE](SP#KEY_CARD_SCENE): path to .tscn file
+# * [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): Vector2
 func spawn_card(script: ScriptTask) -> void:
 	var card_scene: String = script.get_property(SP.KEY_CARD_SCENE)
 	var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)
@@ -270,7 +278,7 @@ func spawn_card(script: ScriptTask) -> void:
 # Task from shuffling a CardContainer
 #
 # Requires the following keys:
-# * "container": CardContainer
+# * [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER): CardContainer
 func shuffle_container(script: ScriptTask) -> void:
 	var container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
 	container.shuffle_cards()
@@ -290,6 +298,9 @@ func host_card(script: ScriptTask) -> void:
 
 
 # Task for modifying a card's properties
+#
+# Requires the following values:
+# * [KEY_MODIFY_PROPERTIES](SP#KEY_MODIFY_PROPERTIES)
 func modify_properties(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.OK
 	for card in script.subjects:

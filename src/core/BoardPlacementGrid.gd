@@ -30,8 +30,10 @@ func _ready() -> void:
 	# We ensure the separation of the grid slots is always 1 pixel larger
 	# Than the radius of the mouse pointer collision area.
 	# This ensures that we don't highlight 2 slots at the same time.
-	$GridContainer.set("custom_constants/vseparation", MousePointer.MOUSE_RADIUS * 2 + 1)
-	$GridContainer.set("custom_constants/hseparation", MousePointer.MOUSE_RADIUS * 2 + 1)
+	$GridContainer.set("custom_constants/vseparation",
+			MousePointer.MOUSE_RADIUS * 2 + 1)
+	$GridContainer.set("custom_constants/hseparation",
+			MousePointer.MOUSE_RADIUS * 2 + 1)
 	if not name_label.text:
 		name_label.text = name
 
@@ -82,7 +84,7 @@ func get_slot_count() -> int:
 
 # Returns an array with all slots not occupied by a card
 func get_available_slots() -> Array:
-	var available_slots: Array
+	var available_slots := []
 	for slot in get_all_slots():
 		if not slot.occupying_card:
 			available_slots.append(slot)
