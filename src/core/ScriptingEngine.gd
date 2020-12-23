@@ -216,14 +216,15 @@ func move_card_to_board(script: ScriptTask) -> int:
 				# If the found grid was full and not allowed to auto-extend,
 				# we return FAILED for cost_checking purposes.
 				retcode = CFConst.ReturnCode.FAILED
-			else:
+			elif not costs_dry_run:
 				for card in script.subjects:
 					slot = grid.find_available_slot()
-					slot.set_highlight(true)
-					if not costs_dry_run:
+					# We need to give the node time to instance
+					yield(script.owner_card.get_tree().create_timer(0.05),
+							"timeout")
+					if slot:
+						slot.set_highlight(true)
 						card.move_to(cfc.NMAP.board, -1, Vector2(-1,-1))
-						yield(script.owner_card.get_tree().create_timer(0.05),
-								"timeout")
 		else:
 			# If the named grid  was not found, we inform the developer.
 			print_debug("WARNING: Script from card '"
@@ -232,7 +233,13 @@ func move_card_to_board(script: ScriptTask) -> int:
 					+ grid_name + "', but no grid of such name was found.")
 	else:
 		var board_position = script.get_property(SP.KEY_BOARD_POSITION)
+		var count = 0
 		for card in script.subjects:
+			# To avoid overlapping on the board, we spawn the cards
+			# Next to each other.
+			board_position.x += \
+					count * CFConst.CARD_SIZE.x * CFConst.PLAY_AREA_SCALE.x
+			count += 1
 			# We assume cards moving to board want to be face-up
 			if not costs_dry_run:
 				card.move_to(cfc.NMAP.board, -1, board_position)
@@ -257,7 +264,8 @@ func mod_tokens(script: ScriptTask) -> int:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
 	for card in script.subjects:
-		retcode = card.tokens.mod_token(token_name,modification,set_to_mod,costs_dry_run)
+		retcode = card.tokens.mod_token(token_name,
+				modification,set_to_mod,costs_dry_run)
 	return(retcode)
 
 
@@ -265,14 +273,43 @@ func mod_tokens(script: ScriptTask) -> int:
 #
 # Requires the following keys:
 # * [KEY_CARD_SCENE](SP#KEY_CARD_SCENE): path to .tscn file
-# * [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): Vector2
+# * One of the following:
+#	* [KEY_GRID_NAME](SP#KEY_GRID_NAME): String.
+#	The board grid name to place the card.
+#	* [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): Vector2.
+#	The exact position to place the card.
+# * (Optional) [KEY_OBJECT_COUNT](SP#KEY_OBJECT_COUNT): int
 func spawn_card(script: ScriptTask) -> void:
+	var card: Card
 	var card_scene: String = script.get_property(SP.KEY_CARD_SCENE)
-	var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)
-	var card: Card = load(card_scene).instance()
-	cfc.NMAP.board.add_child(card)
-	card.position = board_position
-	card.state = Card.CardState.ON_PLAY_BOARD
+	var grid_name = script.get_property(SP.KEY_GRID_NAME)
+	var count: int = script.get_property(SP.KEY_OBJECT_COUNT)
+	if grid_name:
+		var grid: BoardPlacementGrid
+		var slot: BoardPlacementSlot
+		grid = cfc.NMAP.board.get_grid(grid_name)
+		if grid:
+			for iter in range(count):
+				slot = grid.find_available_slot()
+				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+				if slot:
+					card = load(card_scene).instance()
+					cfc.NMAP.board.add_child(card)
+					card.position = slot.rect_global_position
+					card._placement_slot = slot
+					slot.occupying_card = card
+					card.state = Card.CardState.ON_PLAY_BOARD
+	else:
+		for iter in range(count):
+			card = load(card_scene).instance()
+			var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)
+			cfc.NMAP.board.add_child(card)
+			card.position = board_position
+			# If we're spawning more than 1 card, we place the extra ones
+			# +1 card-length to the right each.
+			card.position.x += \
+					iter * CFConst.CARD_SIZE.x * CFConst.PLAY_AREA_SCALE.x
+			card.state = Card.CardState.ON_PLAY_BOARD
 
 
 # Task from shuffling a CardContainer

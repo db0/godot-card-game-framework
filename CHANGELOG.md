@@ -12,6 +12,8 @@
 
 * Added support for placing cards directly into Grids
 * Having enough space in a grid can also be considered a cost check
+* Now can spawn more than 1 card at the same time
+* Spawned cards can be placed in grids directly.
 
 ### Tweaks
 #### ScriptingEngine

@@ -19,10 +19,10 @@ func test_card_table_drop_location_and_rotation_use_rectangle():
 	# messing with the tests
 	var card = cards[1]
 	yield(drag_card(card, Vector2(300,300)), 'completed')
-	yield(move_mouse(Vector2(800,200)), 'completed')
+	yield(move_mouse(Vector2(500,200)), 'completed')
 	drop_card(card,board._UT_mouse_position)
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	assert_almost_eq(Vector2(800, 200),card.global_position,Vector2(2,2),
+	assert_almost_eq(Vector2(500, 200),card.global_position,Vector2(2,2),
 			"Card dragged in correct global position")
 	card.card_rotation = 90
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)

@@ -180,6 +180,11 @@ const KEY_TOKEN_NAME := "token_name"
 # It specifies the amount we're setting/modifying
 # or setting it to the exact one
 const KEY_MODIFICATION := "modification"
+# Used in conjunction with the following tasks
+# * [spawn_card](ScriptingEngine#spawn_card)
+#
+# specified how many of the "thing" done by the task, to perform.
+const KEY_OBJECT_COUNT := "object_count"
 # Used when a script is using the [spawn_card](ScriptingEngine#spawn_card) task.
 #
 # This is the path to the card template scene to use for this card
@@ -428,7 +433,7 @@ static func get_default(property: String):
 			default = false
 		KEY_MODIFY_PROPERTIES:
 			default = {}
-		KEY_SUBJECT_COUNT:
+		KEY_SUBJECT_COUNT, KEY_OBJECT_COUNT:
 			default = 1
 		_:
 			default = null

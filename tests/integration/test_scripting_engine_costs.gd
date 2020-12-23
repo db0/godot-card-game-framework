@@ -304,3 +304,12 @@ func test_move_card_to_grid_cost():
 	assert_true(target.is_faceup,
 			"card should stay face-up because "
 			+ "grid did not have enough slots for all cards")
+	var grid = board.get_grid("BoardPlacementGrid")
+	grid.auto_extend = true
+	target.execute_scripts()
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.4), YIELD)
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.4), YIELD)
+	assert_false(target.is_faceup,
+			"card should turn face-down because "
+			+ "grid auto-extended to host all cards")
+

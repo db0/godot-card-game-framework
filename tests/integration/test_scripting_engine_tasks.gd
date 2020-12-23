@@ -198,15 +198,38 @@ func test_spawn_card():
 	target.scripts = {"manual": {"hand": [
 			{"name": "spawn_card",
 			"card_scene": "res://src/custom/CGFCardTemplate.tscn",
+			"object_count": 3,
 			"board_position":  Vector2(500,200)}]}}
 	target.execute_scripts()
-	assert_eq(1,cfc.NMAP.board.get_card_count(),
+	assert_eq(3,board.get_card_count(),
 		"Card spawned on board")
-	card = cfc.NMAP.board.get_card(0)
+	card = board.get_card(0)
 	assert_eq("res://src/custom/CGFCardTemplate.tscn",card.filename,
 		"Card of the correct scene spawned")
 	assert_eq(Card.CardState.ON_PLAY_BOARD,card.state,
 		"Spawned card left in correct state")
+	assert_almost_eq(Vector2(500,200),card.position,Vector2(2,2),
+		"Card spawned in correct location")
+	var offsetx = CFConst.CARD_SIZE.x * CFConst.PLAY_AREA_SCALE.x
+	assert_almost_eq(Vector2(500 + offsetx * 2,200),
+			board.get_card(2).position,Vector2(2,2),
+			"Third Card spawned in correct location")
+	target.scripts = {"manual": {"hand": [
+			{"name": "spawn_card",
+			"card_scene": "res://src/custom/CGFCardTemplate.tscn",
+			"object_count": 10,
+			"grid_name":  "BoardPlacementGrid"}]}}
+	target.execute_scripts()
+	# Give time to the card to instance
+	yield(yield_for(0.4), YIELD)
+	assert_eq(7,board.get_card_count(),
+		"5 Card spawned on grid")
+	if board.get_card_count() > 1:
+		card = board.get_card(3)
+		assert_eq(Card.CardState.ON_PLAY_BOARD,card.state,
+			"Spawned card left in correct state")
+		assert_not_null(card._placement_slot,
+				"Card should have moved to a grid slot")
 
 
 func test_shuffle_container():
