@@ -7,6 +7,8 @@
 
 * Added ability for BoardPlacementGrid to be set to autoextend based on exported var. Only really useful for scripting, when a script requests a position to said grid, it will automatically add a new slot.
 	(defaults to false)
+* Attachments can now be offset in any direction. Customized on the scene itself.  Collaboration with [@zombieCraig](https://github.com/zombieCraig).
+	* **Note**: You will need to adjust CFConst.ATTACHMENT_OFFSET in case you're working on your own copy of CFConst.
 
 #### ScriptingEngine
 
