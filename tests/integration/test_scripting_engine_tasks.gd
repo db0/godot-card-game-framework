@@ -197,7 +197,7 @@ func test_mod_tokens():
 func test_spawn_card():
 	target.scripts = {"manual": {"hand": [
 			{"name": "spawn_card",
-			"card_scene": "res://src/custom/CGFCardTemplate.tscn",
+			"scene_path": "res://src/custom/CGFCardTemplate.tscn",
 			"object_count": 3,
 			"board_position":  Vector2(500,200)}]}}
 	target.execute_scripts()
@@ -216,7 +216,7 @@ func test_spawn_card():
 			"Third Card spawned in correct location")
 	target.scripts = {"manual": {"hand": [
 			{"name": "spawn_card",
-			"card_scene": "res://src/custom/CGFCardTemplate.tscn",
+			"scene_path": "res://src/custom/CGFCardTemplate.tscn",
 			"object_count": 10,
 			"grid_name":  "BoardPlacementGrid"}]}}
 	target.execute_scripts()
@@ -298,3 +298,29 @@ func test_modify_properties():
 			"Card name should be changed")
 	assert_eq("GUT Test",card.card_name,
 			"Card type should be changed")
+
+func test_create_grid():
+	card.scripts = {"manual": {"hand": [
+			{"name": "add_grid",
+			"scene_path": "res://src/custom/CGFPlacementGridDemo.tscn",
+			"object_count": 2,
+			"board_position":  Vector2(50,50)}]}}
+	card.execute_scripts()
+	yield(yield_for(0.1), YIELD)
+	var grids: Array = get_tree().get_nodes_in_group("placement_grid")
+	assert_eq(grids.size(), 3, "All grids were created")
+	card.scripts = {"manual": {"hand": [
+			{"name": "add_grid",
+			"scene_path": "res://src/custom/CGFPlacementGridDemo.tscn",
+			"grid_name": "GUT Grid",
+			"object_count": 3,
+			"board_position":  Vector2(600,50)}]}}
+	card.execute_scripts()
+	yield(yield_for(0.1), YIELD)
+	var gut_grids := []
+	for g in get_tree().get_nodes_in_group("placement_grid"):
+		if not g in grids:
+			gut_grids.append(g)
+	for grid in gut_grids:
+		assert_eq(grid.name_label.text, "GUT Grid",
+				"Created grid has correct label")

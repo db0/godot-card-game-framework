@@ -203,7 +203,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
 	if len(script.subjects) < script.requested_subjects:
 		retcode = CFConst.ReturnCode.FAILED
-	var grid_name = script.get_property(SP.KEY_GRID_NAME)
+	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
 	if grid_name:
 		var grid: BoardPlacementGrid
 		var slot: BoardPlacementSlot
@@ -272,7 +272,7 @@ func mod_tokens(script: ScriptTask) -> int:
 # Task from creating a new card instance on the board
 #
 # Requires the following keys:
-# * [KEY_CARD_SCENE](SP#KEY_CARD_SCENE): path to .tscn file
+# * [KEY_SCENE_PATH](SP#KEY_SCENE_PATH): path to CardTemplate .tscn file
 # * One of the following:
 #	* [KEY_GRID_NAME](SP#KEY_GRID_NAME): String.
 #	The board grid name to place the card.
@@ -281,9 +281,13 @@ func mod_tokens(script: ScriptTask) -> int:
 # * (Optional) [KEY_OBJECT_COUNT](SP#KEY_OBJECT_COUNT): int
 func spawn_card(script: ScriptTask) -> void:
 	var card: Card
-	var card_scene: String = script.get_property(SP.KEY_CARD_SCENE)
-	var grid_name = script.get_property(SP.KEY_GRID_NAME)
-	var count: int = script.get_property(SP.KEY_OBJECT_COUNT)
+	var count: int
+	var card_scene: String = script.get_property(SP.KEY_SCENE_PATH)
+	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
+	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
+		count = stored_integer
+	else:
+		count = script.get_property(SP.KEY_OBJECT_COUNT)
 	if grid_name:
 		var grid: BoardPlacementGrid
 		var slot: BoardPlacementSlot
@@ -369,3 +373,36 @@ func ask_integer(script: ScriptTask) -> void:
 	stored_integer = integer_dialog.number
 	# Garbage cleanup
 	integer_dialog.queue_free()
+
+
+# Adds a specified BoardPlacementGrid scene to the board at the specified position
+#
+# Requires the following keys:
+# * [KEY_SCENE_PATH](SP#KEY_SCENE_PATH): path to BoardPlacementGrid .tscn file
+# * (Optional) [KEY_GRID_NAME](SP#KEY_GRID_NAME): String.
+# * [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): Vector2.
+# * (Optional) [KEY_OBJECT_COUNT](SP#KEY_OBJECT_COUNT): int
+func add_grid(script: ScriptTask) -> void:
+	var count: int
+	var grid_name : String = script.get_property(SP.KEY_GRID_NAME)
+	var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)
+	var grid_scene: String = script.get_property(SP.KEY_SCENE_PATH)
+	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
+		count = stored_integer
+	else:
+		count = script.get_property(SP.KEY_OBJECT_COUNT)
+	for iter in range(count):
+		var grid: BoardPlacementGrid = load(grid_scene).instance()
+		# A small delay to allow the instance to be added
+		yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+		cfc.NMAP.board.add_child(grid)
+		# If the grid name is empty, we use the predefined names in the scene.
+		if grid_name != "":
+			grid.name = grid_name
+			grid.name_label.text = grid_name
+		grid.rect_position = board_position
+		# If we're spawning more than 1 grid, we place the extra ones
+		# +1 card-width below, becase we assume they're spanwining with more
+		# than 1 column.
+		grid.rect_position.y += \
+				iter * CFConst.CARD_SIZE.y * CFConst.PLAY_AREA_SCALE.y
