@@ -36,8 +36,8 @@ const KEY_SUBJECT_V_TARGET := "target"
 const KEY_SUBJECT_V_SELF := "self"
 # * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we search all cards on the table
-# by node order, and return candidates equal to KEY_SUBJECT_COUNT
-# that match the filters
+# by node order, and return candidates equal to
+# [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT) that match the filters.
 #
 # This allows us to make tasks which will affect more than 1 card at
 # the same time (e.g. "All Soldiers")
@@ -53,30 +53,24 @@ const KEY_SUBJECT_V_INDEX := "index"
 # * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we use the subject specified in the previous task
 const KEY_SUBJECT_V_PREVIOUS := "previous"
-# Used when we're seeking a card
-# to limit the amount to retrieve to this amount
-# Work with the following tasks and [KEY_SUBJECT](#KEY_SUBJECT) values:
-# * [move_card_to_container](ScriptingEngine#move_card_to_container)
-# and [move_card_to_board](ScriptingEngine#move_card_to_board).
-#	* [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
-#	* [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
-#	* [KEY_SUBJECT_V_INDEX](#KEY_SUBJECT_V_INDEX)
-# Default is to seek only 1 card.
-# when used in combination with [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
-# value can also be [KEY_SUBJECT_COUNT_V_ALL](#KEY_SUBJECT_COUNT_V_ALL)
-# which will simply set all cards that match the filters as subjects
-const KEY_SUBJECT_COUNT := "subject_count"
-# Value Type:
+# Value Type: Dynamic (Default = 1)
 # * int
+# * [KEY_SUBJECT_COUNT_V_ALL](#KEY_SUBJECT_COUNT_V_ALL)
 # * [VALUE_RETRIEVE_INTEGER](#VALUE_RETRIEVE_INTEGER)
 #
+# Used when we're seeking a card
+# to limit the amount to retrieve to this amount
+# Works with the following tasks and [KEY_SUBJECT](#KEY_SUBJECT) values:
+# * [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
+# * [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
+# * [KEY_SUBJECT_V_INDEX](#KEY_SUBJECT_V_INDEX)
+const KEY_SUBJECT_COUNT := "subject_count"
 # When specified as the value of [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT),
 # will retrieve as many cards as match the criteria.
-# Useful with the following KEY/VALUE combinations
-# * [move_card_to_container](ScriptingEngine#move_card_to_container)
-# and [move_card_to_board](ScriptingEngine#move_card_to_board).
-#	* [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
-#	* [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
+#
+# Useful with the following VALUES:
+# * [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
+# * [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
 const KEY_SUBJECT_COUNT_V_ALL := "all"
 # Value Type: bool.
 #
@@ -119,18 +113,19 @@ const KEY_SET_FACEUP := "set_faceup"
 # Used when a script is using the modify_properties task.
 # The value is supposed to be a dictionary of `"property name": value` entries
 const KEY_MODIFY_PROPERTIES := "set_properties"
-# Value Type: [Pile](Pile).
+# Value Type: [Pile].
 #
 # Used when a script is using one of the following tasks
 # * [move_card_to_board](ScriptingEngine#move_card_to_board)
 # * [move_card_to_container](ScriptingEngine#move_card_to_container)
+#
 # When the following [KEY_SUBJECT](#KEY_SUBJECT) values are also used:
 # * [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
 # * [KEY_SUBJECT_V_INDEX](#KEY_SUBJECT_V_INDEX)
 #
 # Specifies the source container to pick the card from
 const KEY_SRC_CONTAINER := "src_container"
-# Value Type: [Pile](Pile).
+# Value Type: [Pile].
 #
 # Used when a script is using one of the following tasks
 # * [move_card_to_container](ScriptingEngine#move_card_to_container)
@@ -160,7 +155,7 @@ const KEY_SUBJECT_INDEX_V_TOP := "top"
 #
 # If specified, explicitly looks for the "bottom" card of a pile
 const KEY_SUBJECT_INDEX_V_BOTTOM := "bottom"
-# Value Type: Dynamic (Default = [KEY_SUBJECT_INDEX_V_BOTTOM](#KEY_SUBJECT_INDEX_V_BOTTOM))
+# Value Type: Dynamic (Default = [KEY_SUBJECT_INDEX_V_TOP](#KEY_SUBJECT_INDEX_V_TOP))
 # * int
 # * [KEY_SUBJECT_INDEX_V_TOP](#KEY_SUBJECT_INDEX_V_TOP)
 # * [KEY_SUBJECT_INDEX_V_BOTTOM](#KEY_SUBJECT_INDEX_V_BOTTOM)
@@ -236,9 +231,11 @@ const KEY_MODIFICATION := "modification"
 const KEY_OBJECT_COUNT := "object_count"
 # Value Type: String
 #
-# Used when a script is using the [spawn_card](ScriptingEngine#spawn_card) task.
+# Used in conjunction with the following tasks
+# * [spawn_card](ScriptingEngine#spawn_card)
+# * [add_grid](ScriptingEngine#add_grid)
 #
-# This is the path to the card template scene to use for this card
+# This is the path to the scene we will add to the game.
 const KEY_SCENE_PATH := "scene_path"
 # Value Type: int
 #
@@ -324,14 +321,14 @@ const FILTER_DEGREES := "filter_degrees"
 # Filter for checking against [TRIGGER_FACEUP](#TRIGGER_FACEUP)
 const FILTER_FACEUP := "filter_faceup"
 # Value Type: Dynamic.
-# * [BoardTemplate](BoardTemplate)
-# * [CardContainer](CardContainer)
+# * [Board]
+# * [CardContainer]
 #
 # Filter for checking against [TRIGGER_SOURCE](#TRIGGER_SOURCE)
 const FILTER_SOURCE := "filter_source"
 # Value Type: Dynamic.
-# * [BoardTemplate](BoardTemplate)
-# * [CardContainer](CardContainer)
+# * [Board]
+# * [CardContainer]
 #
 # Filter for checking against [TRIGGER_DESTINATION](#TRIGGER_DESTINATION)
 const FILTER_DESTINATION := "filter_destination"
@@ -452,8 +449,8 @@ const TRIGGER_NEW_PROPERTY_VALUE := "new_property_value"
 # This is the value the property had before it was modified
 const TRIGGER_PREV_PROPERTY_VALUE := "previous_property_value"
 # Value Type: Dynamic.
-# * [BoardTemplate](BoardTemplate)
-# * [CardContainer](CardContainer)
+# * [Board]
+# * [CardContainer]
 #
 # Filter value sent by one of the trigger Card's following [signals](Card#signals):
 # * card_moved_to_board
@@ -462,8 +459,8 @@ const TRIGGER_PREV_PROPERTY_VALUE := "previous_property_value"
 # The value will be the node name the Card left
 const TRIGGER_SOURCE := "source"
 # Value Type: Dynamic.
-# * [BoardTemplate](BoardTemplate)
-# * [CardContainer](CardContainer)
+# * [Board]
+# * [CardContainer]
 #
 # Filter value sent by one of the trigger Card's following [signals](Card#signals):
 # * card_moved_to_board
