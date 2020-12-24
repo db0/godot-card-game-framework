@@ -41,6 +41,16 @@ enum BoardPlacement{
 	ANY_GRID
 	ANYWHERE
 }
+enum AttachmentOffset{
+	TOP_LEFT
+	TOP
+	TOP_RIGHT
+	RIGHT
+	LEFT
+	BOTTOM_LEFT
+	BOTTOM
+	BOTTOM_RIGHT
+}
 # Used to spawn CardChoices. We have to add the consts together
 # before passing to the preload, or the parser complains.
 const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
@@ -93,6 +103,8 @@ export var scripts : Dictionary
 # their host around the table. The card will always return to its host
 # when dragged away
 export var is_attachment := false setget set_is_attachment, get_is_attachment
+# If true, staggers the attachment so the side is also visible
+export(AttachmentOffset) var attachment_offset = AttachmentOffset.TOP
 # If true, the card front will be displayed when mouse hovers over the card
 # while it's face-down
 export var is_viewed  := false setget set_is_viewed, get_is_viewed
@@ -909,9 +921,11 @@ func move_to(targetHost,
 			elif current_host_card:
 				var attach_index = current_host_card.attachments.find(self)
 				_target_position = (current_host_card.global_position
-						+ Vector2(0,(attach_index + 1)
-						* card_size.y
-						* CFConst.ATTACHMENT_OFFSET))
+						+ Vector2(
+						(attach_index + 1) * card_size.x
+						* CFConst.ATTACHMENT_OFFSET[attachment_offset].x,
+						(attach_index + 1)* card_size.y
+						* CFConst.ATTACHMENT_OFFSET[attachment_offset].y))
 				state = CardState.ON_PLAY_BOARD
 			else:
 				# When we drop from board to board
@@ -1106,9 +1120,11 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 		# the card size, times the index among other attachments
 		var attach_index = current_host_card.attachments.find(self)
 		_target_position = (current_host_card.global_position
-				+ Vector2(0,(attach_index + 1)
-				* card_size.y
-				* CFConst.ATTACHMENT_OFFSET))
+				+ Vector2(
+				(attach_index + 1) * card_size.x
+				* CFConst.ATTACHMENT_OFFSET[attachment_offset].x,
+				(attach_index + 1)* card_size.y
+				* CFConst.ATTACHMENT_OFFSET[attachment_offset].y))
 		emit_signal("card_attached",
 				self,
 				"card_attached",
@@ -1333,10 +1349,11 @@ func _organize_attachments() -> void:
 					card.state in \
 					[CardState.ON_PLAY_BOARD,CardState.FOCUSED_ON_BOARD]:
 				card.global_position = global_position + \
-						Vector2(0,(attach_index + 1) \
-						* card_size.y \
-						* CFConst.ATTACHMENT_OFFSET)
-
+						Vector2(
+						(attach_index + 1) * card_size.x
+						* CFConst.ATTACHMENT_OFFSET[attachment_offset].x,
+						(attach_index + 1) * card_size.y \
+						* CFConst.ATTACHMENT_OFFSET[attachment_offset].y)
 
 # Returns the global mouse position but ensures it does not exit the
 # viewport limits when including the card rect
