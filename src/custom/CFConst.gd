@@ -128,14 +128,31 @@ const PLAY_AREA_SCALE := Vector2(1, 1) * 0.8
 #
 # Less than 0 and it will float higher than the bottom of the viewport
 const BOTTOM_MARGIN_MULTIPLIER := 0.5
-# The amount of offset towards the bottom of their host card
+# Here you can adjust the amount of offset towards a side of their host card
 # that attachments are placed.
 #
-# This is a multiplier of the card size.
+# This is a multiplier based on the card size.
 #
-# Put a negative number here if you want attachments to offset
-# towards the top of the host.
-const ATTACHMENT_OFFSET := -0.2
+# You define which placement offset an attachment uses by setting the
+# "attachment_offset" exported variable on the card scene
+const ATTACHMENT_OFFSET := [
+	# TOP_LEFT
+	Vector2(-0.2,-0.2),
+	# TOP
+	Vector2(0,-0.2),
+	# TOP_RIGHT
+	Vector2(0.2,-0.2),
+	# RIGHT
+	Vector2(0.2,0),
+	# LEFT
+	Vector2(-0.2,0),
+	# BOTTOM_LEFT
+	Vector2(-0.2,0.2),
+	# BOTTOM
+	Vector2(0,0.2),
+	# BOTTOM_RIGHT
+	Vector2(0.2,0.2),
+]
 # The colour to use when hovering over a card.
 #
 # Reduce the multiplier to reduce glow effect or stop it altogether
