@@ -1029,14 +1029,16 @@ func execute_scripts(
 	# We select which scripts to run from the card, based on it state
 	var state_exec := "NONE"
 	match state:
-		CardState.ON_PLAY_BOARD, CardState.FOCUSED_ON_BOARD:
+		CardState.ON_PLAY_BOARD,\
+		CardState.FOCUSED_ON_BOARD,\
+		CardState.DROPPING_TO_BOARD:
 			# We assume only faceup cards can execute scripts on the board
 			if is_faceup:
-				state_exec ="board"
+				state_exec = "board"
 		CardState.IN_HAND, CardState.FOCUSED_IN_HAND, CardState.PUSHED_ASIDE:
-				state_exec ="hand"
+				state_exec = "hand"
 		CardState.IN_POPUP, CardState.FOCUSED_IN_POPUP:
-				state_exec ="pile"
+				state_exec = "pile"
 	state_scripts = card_scripts.get(state_exec, [])
 	# Here we check for confirmation of optional trigger effects
 	# There should be an SP.KEY_IS_OPTIONAL definition per state
@@ -1426,6 +1428,7 @@ func _start_dragging() -> void:
 	# This is caused because we're using a viewport node and scaling the game
 	# in full-creen.
 	if not cfc.ut:
+		Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 		if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
 			get_tree().current_scene.get_viewport().warp_mouse(global_position + Vector2(5,5))
 		# However the above messes things if we don't have stretch mode,
@@ -1838,8 +1841,7 @@ func _process_card_state() -> void:
 			# because if the player drags the cursor outside the window and unclicks
 			# The control will not receive the mouse input
 			# and this will stay dragging forever
-			if not cfc.ut:
-				Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
+
 			$Control.set_default_cursor_shape(Input.CURSOR_CROSS)
 			# We set the card to be centered on the mouse cursor to allow
 			# the player to properly understand where it will go once dropped.
