@@ -115,3 +115,27 @@ func test_occupied_slot():
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(card.get_parent(), cfc.NMAP.hand,
 		"Card not moved to board when slot is occupied")
+
+func test_move_script_placed_card_out_of_grid():
+	yield(yield_for(0.2), YIELD)
+	var card: Card = cards[1]
+	var target: Card
+	target = deck.get_card(0)
+	card.scripts = {"manual": {"hand": [
+			{"name": "move_card_to_board",
+			"subject": "self",
+			"grid_name":  "BoardPlacementGrid"}]}}
+	cards[0].scripts = {"manual": {"hand": [
+			{"name": "move_card_to_board",
+			"subject": "self",
+			"grid_name":  "BoardPlacementGrid"}]}}
+	cards[0].execute_scripts()
+	yield(yield_for(0.1), YIELD)
+	card.execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	gut.p(card.board_placement)
+	yield(drag_drop(card,Vector2(1000,0)), 'completed')
+	yield(move_mouse(Vector2(0,0)), 'completed')
+	assert_null(card._placement_slot,
+			"Card should have moved outside grid slot")
+
