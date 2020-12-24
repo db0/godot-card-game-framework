@@ -1010,7 +1010,7 @@ func execute_scripts(
 		# This retrieves all the script from the card, stored in cfc
 		# The seeks in them the specific trigger we're using in this
 		# execution
-		card_scripts = cfc.set_scripts.get(card_name,{}).get(trigger,{})
+		card_scripts = cfc.set_scripts.get(card_name,{}).get(trigger,{}).duplicate()
 
 	# I use this spot to add a breakpoint when testing script behaviour
 	# especially on filters
