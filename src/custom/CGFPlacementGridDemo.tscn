@@ -7,6 +7,7 @@
 
 [node name="GridContainer" parent="." index="0"]
 margin_right = 497.0
+columns = 4
 
 [node name="BoardPlacementSlot2" parent="GridContainer" index="1" instance=ExtResource( 1 )]
 margin_left = 125.0

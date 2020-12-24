@@ -31,7 +31,7 @@ Pull requests are more than welcome ;)
 * Automatically resizing text inside cards to fit the card size.
 * Supports resizing the window, in all stretch modes (including disabled stretch)
 * Can select layout of your CardContainers from a simple drop-down menu.
-* Grid-based or Free-form placement on the board, or a combination of both, on a per-card-type basis
+* Automatic and manual Grid-based, or Free-form placement on the board, or a combination of both, on a per-card-type basis.
 
 ### Scripting Engine Features
 

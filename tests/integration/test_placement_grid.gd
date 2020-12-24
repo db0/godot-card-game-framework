@@ -72,11 +72,11 @@ func test_any_grid_placement():
 	var card: Card = cards[0]
 	card.board_placement = Card.BoardPlacement.ANY_GRID
 	yield(drag_drop(card,Vector2(1000,300)), 'completed')
-	assert_eq(card.get_parent(), cfc.NMAP.hand,
+	assert_eq(card.get_parent(), hand,
 		"Card not moved to board")
 	yield(move_mouse(Vector2(300,200)), 'completed')
 	yield(drag_drop(card,Vector2(500,300)), 'completed')
-	assert_eq(card.get_parent(), cfc.NMAP.board,
+	assert_eq(card.get_parent(), board,
 		"Card moved to board")
 	yield(drag_drop(card,Vector2(1000,300)), 'completed')
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
@@ -88,24 +88,25 @@ func test_specific_grid_placement():
 	card.board_placement = Card.BoardPlacement.SPECIFIC_GRID
 	card.mandatory_grid_name = "GUT Grid"
 	yield(drag_drop(card,Vector2(1000,300)), 'completed')
-	assert_eq(card.get_parent(), cfc.NMAP.hand,
+	assert_eq(card.get_parent(), hand,
 		"Card not moved to board")
 	yield(move_mouse(Vector2(300,200)), 'completed')
 	yield(drag_drop(card,Vector2(500,300)), 'completed')
-	assert_eq(card.get_parent(), cfc.NMAP.hand,
+	assert_eq(card.get_parent(), hand,
 		"Card not moved to wrong grid name")
 	card.mandatory_grid_name = grid.name_label.text
 	yield(move_mouse(Vector2(300,200)), 'completed')
 	yield(drag_drop(card,Vector2(500,300)), 'completed')
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	assert_eq(card.get_parent(), cfc.NMAP.board,
+	assert_eq(card.get_parent(), board,
 		"Card moved to correct grid name")
+
 
 func test_occupied_slot():
 	var card: Card = cards[0]
 	card.board_placement = Card.BoardPlacement.ANY_GRID
 	yield(drag_drop(card,Vector2(500,300)), 'completed')
-	assert_eq(card.get_parent(), cfc.NMAP.board,
+	assert_eq(card.get_parent(), board,
 		"Card moved to board")
 	card = cards[3]
 	card.board_placement = Card.BoardPlacement.ANY_GRID
@@ -113,7 +114,7 @@ func test_occupied_slot():
 	assert_null(grid.get_highlighted_slot(),"No slot highlighted")
 	drop_card(card,board._UT_mouse_position)
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	assert_eq(card.get_parent(), cfc.NMAP.hand,
+	assert_eq(card.get_parent(), hand,
 		"Card not moved to board when slot is occupied")
 
 func test_move_script_placed_card_out_of_grid():
@@ -139,3 +140,44 @@ func test_move_script_placed_card_out_of_grid():
 	assert_null(card._placement_slot,
 			"Card should have moved outside grid slot")
 
+func test_grid_auto_placement():
+	for c in cards:
+		c.board_placement = Card.BoardPlacement.GRID_AUTOPLACEMENT
+		c.mandatory_grid_name = grid.name_label.text
+	var card: Card = cards[0]
+	card.mandatory_grid_name = "GUT Grid"
+	yield(drag_drop(card,Vector2(1000,300)), 'completed')
+	assert_eq(card.get_parent(), hand,
+		"Card not moved to board")
+	yield(move_mouse(Vector2(300,200)), 'completed')
+	yield(drag_drop(card,Vector2(500,300)), 'completed')
+	assert_eq(card.get_parent(), hand,
+		"Card not moved to wrong grid name")
+	card.mandatory_grid_name = grid.name_label.text
+	yield(move_mouse(Vector2(300,200)), 'completed')
+	yield(drag_drop(card,Vector2(1000,300)), 'completed')
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(card.get_parent(), board,
+		"Card moved to correct grid name")
+	assert_eq(card._placement_slot. get_grid_name(), grid.name_label.text,
+		"Card placed in correct grid")
+	var prev_slot = card._placement_slot
+	yield(drag_drop(card,Vector2(500,300)), 'completed')
+	assert_ne(card._placement_slot, prev_slot,
+		"Card can be reorganized in the same grid")
+	yield(drag_drop(cards[1],Vector2(1000,0)), 'completed')
+	yield(move_mouse(Vector2(300,200)), 'completed')
+	yield(drag_drop(cards[2],Vector2(1000,0)), 'completed')
+	yield(move_mouse(Vector2(300,200)), 'completed')
+	yield(drag_drop(cards[3],Vector2(1000,0)), 'completed')
+	yield(move_mouse(Vector2(300,200)), 'completed')
+	yield(drag_drop(cards[4],Vector2(1000,0)), 'completed')
+	assert_eq(cards[1]._placement_slot. get_grid_name(), grid.name_label.text,
+		"Card placed in correct grid")
+	assert_eq(cards[4].get_parent(), hand,
+		"Last card not moved to board because grid is full")
+	grid.auto_extend = true
+	yield(move_mouse(Vector2(300,200)), 'completed')
+	yield(drag_drop(cards[4],Vector2(1000,0)), 'completed')
+	assert_eq(cards[4].get_parent(), board,
+		"Last card moved to autoextended grid")

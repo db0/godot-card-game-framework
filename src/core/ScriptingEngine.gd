@@ -219,13 +219,12 @@ func move_card_to_board(script: ScriptTask) -> int:
 			elif not costs_dry_run:
 				for card in script.subjects:
 					slot = grid.find_available_slot()
-					# We need to give the node time to instance
-					yield(script.owner_card.get_tree().create_timer(0.05),
-							"timeout")
+					# We need a small delay, to allow a potential new slot to instance
+					yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 					if slot:
-						slot.set_highlight(true)
-						card.move_to(cfc.NMAP.board, -1, Vector2(-1,-1))
-						slot.set_highlight(false)
+						# Setting the highlight lets the move_to() method
+						# Know we're moving into that slot
+						card.move_to(cfc.NMAP.board, -1, slot)
 		else:
 			# If the named grid  was not found, we inform the developer.
 			print_debug("WARNING: Script from card '"
@@ -290,8 +289,9 @@ func spawn_card(script: ScriptTask) -> void:
 		var slot: BoardPlacementSlot
 		grid = cfc.NMAP.board.get_grid(grid_name)
 		if grid:
-			for iter in range(count):
+			for _iter in range(count):
 				slot = grid.find_available_slot()
+				# We need a small delay, to allow a potential new slot to instance
 				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 				if slot:
 					card = load(card_scene).instance()

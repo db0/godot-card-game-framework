@@ -9,6 +9,7 @@
 	(defaults to false)
 * Attachments can now be offset in any direction. Customized on the scene itself.  Collaboration with [@zombieCraig](https://github.com/zombieCraig).
 	* **Note**: You will need to adjust CFConst.ATTACHMENT_OFFSET in case you're working on your own copy of CFConst.
+* Can set a card type for Grid Autoplacement. The card will always attempt to position itself inside the specified grid. If it cannot, it will remain where it was. If the grid can auto-extend, it will do so to host the card.
 
 #### ScriptingEngine
 

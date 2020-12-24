@@ -31,7 +31,7 @@ func test_attaching_and_switching_parent():
 	assert_almost_eq(card.global_position,cards[0].global_position
 			+ Vector2(0,1)
 			* card.get_node('Control').rect_size.y
-			* CFConst.ATTACHMENT_OFFSET, Vector2(2,2),
+			* CFConst.ATTACHMENT_OFFSET[1].y, Vector2(2,2),
 			"Card dragged in correct global position")
 	assert_eq(card.current_host_card,cards[0],
 			"Attached card has its parent in the current_host_card var")
@@ -47,14 +47,14 @@ func test_attaching_and_switching_parent():
 	assert_almost_eq(card.global_position,cards[0].global_position
 			+ Vector2(0,2)
 			* card.get_node('Control').rect_size.y
-			* CFConst.ATTACHMENT_OFFSET, Vector2(2,2),
+			* CFConst.ATTACHMENT_OFFSET[1].y, Vector2(2,2),
 			"Multiple attached card are placed in the right position in regards to their parent")
 	card = cards[3]
 	yield(drag_drop(card,Vector2(310,310)), 'completed')
 	assert_almost_eq(card.global_position,cards[0].global_position
 			+ Vector2(0,3)
 			* card.get_node('Control').rect_size.y
-			* CFConst.ATTACHMENT_OFFSET, Vector2(2,2),
+			* CFConst.ATTACHMENT_OFFSET[1].y, Vector2(2,2),
 			"Multiple attached card are placed in the right position in regards to their parent")
 	assert_eq(3,len(cards[0].attachments),
 			"Parent attachments array is the right size")
@@ -78,7 +78,7 @@ func test_attaching_and_switching_parent():
 	assert_almost_eq(cards[3].global_position,card.global_position
 			+ Vector2(0,3)
 			* card.get_node('Control').rect_size.y
-			* CFConst.ATTACHMENT_OFFSET, Vector2(2,2),
+			* CFConst.ATTACHMENT_OFFSET[1].y, Vector2(2,2),
 			"After attachment dragged, drop is placed correctly according to parent")
 	yield(drag_card(card, Vector2(100,100)), "completed")
 	for c in card.attachments:
@@ -107,7 +107,7 @@ func test_attaching_and_switching_parent():
 			"Attachment clears out correctly when removed from table")
 	assert_almost_eq(cards[3].global_position,cards[0].global_position
 			+ Vector2(0,2) * card.get_node('Control').rect_size.y
-			* CFConst.ATTACHMENT_OFFSET, Vector2(2,2),
+			* CFConst.ATTACHMENT_OFFSET[1].y, Vector2(2,2),
 			"Removing an attachment reorganizes other attachments")
 
 	card = cards[4]

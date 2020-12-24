@@ -38,6 +38,7 @@ enum CardState {
 enum BoardPlacement{
 	NONE
 	SPECIFIC_GRID
+	GRID_AUTOPLACEMENT
 	ANY_GRID
 	ANYWHERE
 }
@@ -755,7 +756,7 @@ func get_potential_placement_slot() -> BoardPlacementSlot:
 # among other card. If it's -1, card will be placed on the bottom of the pile
 func move_to(targetHost,
 		index := -1,
-		boardPosition := Vector2(-1,-1)) -> void:
+		board_position = null) -> void:
 #	if cfc.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -767,17 +768,49 @@ func move_to(targetHost,
 	# This checks ensure we don't change parent to the board,
 	# if the placement to the board requested is invalid
 	# depending on the board_placement variable
-	if targetHost == cfc.NMAP.board:
-		if board_placement == BoardPlacement.NONE:
-			targetHost = parentHost
-		elif board_placement == BoardPlacement.ANY_GRID:
-			if not get_potential_placement_slot():
+	if targetHost == cfc.NMAP.board and not board_position:
+		match board_placement:
+			BoardPlacement.NONE:
 				targetHost = parentHost
-		elif board_placement == BoardPlacement.SPECIFIC_GRID:
-			if not get_potential_placement_slot() \
-					or get_potential_placement_slot().get_grid_name() \
-					!= mandatory_grid_name:
-				targetHost = parentHost
+			BoardPlacement.ANY_GRID:
+				var slot = get_potential_placement_slot()
+				if slot:
+					board_position = slot
+				else:
+					targetHost = parentHost
+					board_position = _placement_slot
+			BoardPlacement.SPECIFIC_GRID, BoardPlacement.GRID_AUTOPLACEMENT:
+				var slot = get_potential_placement_slot()
+				if slot:
+					if get_potential_placement_slot().get_grid_name() \
+							== mandatory_grid_name:
+						board_position = slot
+					else:
+						targetHost = parentHost
+						board_position = _placement_slot
+				elif board_placement == BoardPlacement.GRID_AUTOPLACEMENT \
+						and not _placement_slot:
+					var grid = cfc.NMAP.board.get_grid(mandatory_grid_name)
+					if grid:
+						slot = grid.find_available_slot()
+						yield(get_tree().create_timer(0.1), "timeout")
+						if slot:
+							board_position = slot
+						else:
+							targetHost = parentHost
+							board_position = _placement_slot
+					else:
+						targetHost = parentHost
+						board_position = _placement_slot
+				else:
+					targetHost = parentHost
+					board_position = _placement_slot
+			# If we allow positioning anywhere, we check a slot it higlighted
+			# if it is, we use it as target position
+			_:
+				var slot = get_potential_placement_slot()
+				if slot:
+					board_position = slot
 	if targetHost != parentHost:
 		# When changing parent, it resets the position of the child it seems
 		# So we store it to know where the card used to be, before moving it
@@ -864,16 +897,15 @@ func move_to(targetHost,
 				# in index that we were hovering over, is the last in the array.
 				attach_to_host(potential_host)
 			else:
-				var slot := get_potential_placement_slot()
 				# The developer is allowed to pass a position override to the
 				# card placement which also bypasses manual drop placement
 				# restrictions
-				if boardPosition != Vector2(-1,-1):
-					_target_position = boardPosition
-				elif slot:
-					_target_position = slot.rect_global_position
-					slot.occupying_card = self
-					_placement_slot = slot
+				if typeof(board_position) == TYPE_VECTOR2:
+					_target_position = board_position
+				elif board_position as BoardPlacementSlot:
+					_target_position = board_position.rect_global_position
+					board_position.occupying_card = self
+					_placement_slot = board_position
 				else:
 					_determine_target_position_from_mouse()
 				raise()
@@ -933,34 +965,21 @@ func move_to(targetHost,
 				# board_placement variable. So we need to check
 				# where the player is trying to drop the card
 				# and revert the placement if it's invalid
-				var slot := get_potential_placement_slot()
-				if slot:
+				if board_position as BoardPlacementSlot:
 					# This will trigger is the card can only be placed
 					# in specific grids, and the player tried to drag it
 					# Manually to a different grid
-					if board_placement == BoardPlacement.SPECIFIC_GRID \
-							and slot.get_grid_name() != mandatory_grid_name:
-						# if the card board placement is a specific grid,
-						# and the card is already on the table
-						# then we know the _placement_slot is set.
-						_target_position = _placement_slot.rect_global_position
-						state = CardState.DROPPING_TO_BOARD
-					else:
-						_target_position = slot.rect_global_position
-						state = CardState.DROPPING_TO_BOARD
-						if _placement_slot:
-							_placement_slot.occupying_card = null
-						slot.occupying_card = self
-						_placement_slot = slot
-				# If we only allow placement in grid slots, and the player
-				# Dragged the card outside of a grid, we return the card
-				# to its original slot position
-				elif board_placement in [BoardPlacement.ANY_GRID,
-						BoardPlacement.SPECIFIC_GRID]:
-					_target_position = _placement_slot.rect_global_position
+					if _placement_slot != null:
+						_placement_slot.occupying_card = null
+					_target_position = board_position.rect_global_position
+					board_position.occupying_card = self
+					_placement_slot = board_position
 					state = CardState.DROPPING_TO_BOARD
 				else:
-					_determine_target_position_from_mouse()
+					if typeof(board_position) == TYPE_VECTOR2:
+						_target_position = board_position
+					else:
+						_determine_target_position_from_mouse()
 					state = CardState.ON_PLAY_BOARD
 					if _placement_slot:
 							_placement_slot.occupying_card = null
