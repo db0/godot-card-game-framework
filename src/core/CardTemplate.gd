@@ -1353,6 +1353,8 @@ func check_play_costs() -> bool:
 # container, or the same. new_host is where it moved to, and old_host
 # is where it moved from. They can be the same, such as when a card changes
 # places on the table.
+# warning-ignore:unused_argument
+# warning-ignore:unused_argument
 func common_move_scripts(new_host: Node, old_host: Node):
 	pass
 

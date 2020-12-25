@@ -12,6 +12,8 @@
 * Can set a card type for Grid Autoplacement. The card will always attempt to position itself inside the specified grid. If it cannot, it will remain where it was. If the grid can auto-extend, it will do so to host the card.
 * Specified compensation label will increase when other labels are hidden because they are empty
 * Now can specify specific number properties which will cause the label to hide when they're set to 0
+* Added common_move_scripts() method in CardTemplate which is called after a card moves. This can be overriden by developers to call scripts for whole groups of cards.
+* Added a way  to generate a random seed each game.. Demonstration board displays the random seed.
 
 #### ScriptingEngine
 

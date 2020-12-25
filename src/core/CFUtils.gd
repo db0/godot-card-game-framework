@@ -123,11 +123,11 @@ static func sort_card_containers(c1, c2) -> bool:
 	return(ret)
 
 
-# Returns an array of CardContainers sorted reverse order of whichever 
+# Returns an array of CardContainers sorted reverse order of whichever
 # has to be shifted first to resolve duplicate anchor placement
 static func sort_by_shift_priority(c1, c2) -> bool:
 	var ret: bool
-	# The first two checks ensure that CardContainers 
+	# The first two checks ensure that CardContainers
 	# set to overlap_shift == None will never be pushed.
 	if c1.overlap_shift_direction == CFConst.OverlapShiftDirection.NONE:
 		ret = true
@@ -144,3 +144,13 @@ static func sort_by_shift_priority(c1, c2) -> bool:
 		else:
 			ret = false
 	return(ret)
+
+
+# Generates a random 10-char string to serve as a seed for a game.
+# This allows the seed to be viewed and shared for the same game to be replayed.
+static func generate_random_seed() -> String:
+	randomize()
+	var rnd_seed : String = ""
+	for _iter in range(10):
+		rnd_seed +=  char(int(rand_range(40,127)))
+	return(rnd_seed)

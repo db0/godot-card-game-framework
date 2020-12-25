@@ -18,6 +18,9 @@ func _ready() -> void:
 	$ScalingFocusOptions.selected = cfc.focus_style
 	$Debug.pressed = cfc._debug
 	# Fill up the deck for demo purposes
+	if not cfc.ut:
+		cfc.game_rng_seed = CFUtils.generate_random_seed()
+		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
 
