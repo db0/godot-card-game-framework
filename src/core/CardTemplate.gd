@@ -470,8 +470,11 @@ func modify_property(property: String, value, is_init = false, check := false) -
 				#
 				# In this demo, the format is defined as: "labelname: value"
 				if property in CardConfig.PROPERTIES_NUMBERS:
-					card_front.set_label_text(label_node,property
-							+ ": " + str(value))
+					if value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
+						card_front.set_label_text(label_node,"")
+					else:
+						card_front.set_label_text(label_node,property
+								+ ": " + str(value))
 				# These are arrays of properties which are put in a label
 				# with a simple join character
 				elif property in CardConfig.PROPERTIES_ARRAYS:
@@ -487,8 +490,6 @@ func modify_property(property: String, value, is_init = false, check := false) -
 					card_front.set_label_text(label_node, str(value))
 					# If we have an empty property, we let the other labels
 					# use the space vertical space it would have taken.
-				if label_node.text == "" :
-					label_node.visible = false
 	return(retcode)
 
 

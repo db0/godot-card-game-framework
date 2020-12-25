@@ -21,4 +21,6 @@ const PROPERTIES_ARRAYS := ["Tags"]
 # This property matches the name of the scene file (without the .tcsn file)
 # which is used as a template For this card.
 const SCENE_PROPERTY = "Type"
-
+# These are number carrying properties, which we want to hide their label
+# when they're 0, to allow more space for other labels.
+const NUMBERS_HIDDEN_ON_0 := []

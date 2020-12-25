@@ -6,13 +6,13 @@ extends Panel
 # The card front is customized for games of different needs
 # Each card_front scene should have its own script extending this class
 # which set the dictionary to map to the necessary nodes
-# 
+#
 # See "res://src/custom/CGFCardFront.gd" for an example.
 var card_labels := {}
 # Simply points to the container which holds all the labels
 var _card_text
 # Stores the amount of
-var _extra_text_shrink := 0.0
+var _rect_adjustment := 0.0
 # This dictionary defines how much more a text field is allowed
 # to expand their rect in order to fit its text before shrinking its font size.
 #
@@ -34,7 +34,7 @@ var text_expansion_multiplier : Dictionary
 #
 # This string is set inside the script extending this class
 # according to the needs of their labels defined within.
-var shrink_label: String
+var compensation_label: String
 
 
 # Stores a reference to the Card that is hosting this node
@@ -47,12 +47,11 @@ func set_label_text(node: Label, value):
 	# We do not want some fields, like the name, to be too small.
 	# see CardConfig.TEXT_EXPANSION_MULTIPLIER documentation
 	var allowed_expansion = text_expansion_multiplier.get(node.name,1)
-	var shrink_size : float
-	# If this node is the specified node that compensates for other nodes
-	# increasing their y-rect, then it has less y-space for itself according
-	# to the amount the others increased.
-	if node.name in shrink_label:
-		shrink_size = _extra_text_shrink
+	var adjust_size : float
+	# There is always one specified label that compensates for other nodes
+	# increasing or decreasing their y-rect.
+	if node.name in compensation_label:
+		adjust_size = _rect_adjustment
 	var label_size = node.rect_min_size
 	var label_font = node.get("custom_fonts/font").duplicate()
 	var line_height = label_font.get_height()
@@ -70,7 +69,7 @@ func set_label_text(node: Label, value):
 	# If the y-size of the wordwrapped text would be bigger than the current
 	# available y-size foir this label, we reduce the text, until we
 	# it's small enough to stay within the boundaries
-	while label_rect_y > label_size.y * allowed_expansion - shrink_size:
+	while label_rect_y > label_size.y * allowed_expansion - adjust_size:
 		label_font.size = label_font.size - 1
 		if label_font.size < 3:
 			label_font.size = 2
@@ -85,7 +84,10 @@ func set_label_text(node: Label, value):
 	# We store the amount we increased in size from the
 	# initial amount,m for this purpose.
 	if label_rect_y > label_size.y:
-		_extra_text_shrink = label_rect_y - label_size.y
+		_rect_adjustment = label_rect_y - label_size.y
+	if value == "":
+		_rect_adjustment -= node.rect_size.y
+		node.visible = false
 	node.set("custom_fonts/font", label_font)
 	node.rect_min_size = label_size
 	node.text = value
