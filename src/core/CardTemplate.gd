@@ -755,7 +755,7 @@ func get_potential_placement_slot() -> BoardPlacementSlot:
 #
 # If placed in a pile, the index determines the card's position
 # among other card. If it's -1, card will be placed on the bottom of the pile
-func move_to(targetHost,
+func move_to(targetHost: Node,
 		index := -1,
 		board_position = null) -> void:
 #	if cfc.focus_style:
@@ -988,6 +988,7 @@ func move_to(targetHost,
 				raise()
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP
+	common_move_scripts(targetHost, parentHost)
 
 
 # Executes the tasks defined in the card's scripts in order.
@@ -1343,6 +1344,17 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 # player will not be able to drag it out of the hand.
 func check_play_costs() -> bool:
 	return(true)
+
+
+# This function can be overriden by any class extending Card, in order to provide
+# a way of running scripts for a whole class of cards, based on where the card moves.
+#
+# This method will be called after the card moves anywhere, to a different
+# container, or the same. new_host is where it moved to, and old_host
+# is where it moved from. They can be the same, such as when a card changes
+# places on the table.
+func common_move_scripts(new_host: Node, old_host: Node):
+	pass
 
 
 # Makes attachments always move with their parent around the board
