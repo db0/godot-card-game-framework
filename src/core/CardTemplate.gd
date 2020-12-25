@@ -1032,12 +1032,15 @@ func execute_scripts(
 	var state_exec := "NONE"
 	match state:
 		CardState.ON_PLAY_BOARD,\
-		CardState.FOCUSED_ON_BOARD,\
-		CardState.DROPPING_TO_BOARD:
+				CardState.FOCUSED_ON_BOARD,\
+				CardState.DROPPING_TO_BOARD:
 			# We assume only faceup cards can execute scripts on the board
 			if is_faceup:
 				state_exec = "board"
-		CardState.IN_HAND, CardState.FOCUSED_IN_HAND, CardState.PUSHED_ASIDE:
+		CardState.IN_HAND,\
+				CardState.FOCUSED_IN_HAND,\
+				CardState.REORGANIZING,\
+				CardState.PUSHED_ASIDE:
 				state_exec = "hand"
 		CardState.IN_POPUP, CardState.FOCUSED_IN_POPUP:
 				state_exec = "pile"
