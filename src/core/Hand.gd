@@ -5,8 +5,7 @@ extends CardContainer
 
 
 # The maximum amount of cards allowed to draw in this hand
-const hand_size := 12
-
+var hand_size := 12
 # Offsets the hand position based on the configuration
 var bottom_margin: float = CFConst.CARD_SIZE.y * CFConst.BOTTOM_MARGIN_MULTIPLIER
 
