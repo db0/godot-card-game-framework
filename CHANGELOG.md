@@ -17,10 +17,14 @@
 
 #### ScriptingEngine
 
-* Added support for placing cards directly into Grids
-* Having enough space in a grid can also be considered a cost check
-* Now can spawn more than 1 card at the same time
+* Added support for placing cards directly into Grids.
+* Having enough space in a grid can also be considered a cost check.
+* Now can spawn more than 1 card at the same time.
 * Spawned cards can be placed in grids directly.
+* Now supports AND, OR conditionals in filters.
+* Now supports ne/gt/lt/ge/le comparisons on numbers.
+* Now supports "not equal" comparison on strings.
+* Now supports runtime calculation of power of effects using the "per_" key.
 
 ### Tweaks
 #### ScriptingEngine

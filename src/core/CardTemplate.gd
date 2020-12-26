@@ -127,12 +127,6 @@ export var card_name : String setget set_card_name, get_card_name
 export(PackedScene) var card_back_design : PackedScene
 export(PackedScene) var card_front_design : PackedScene
 
-# We cannot preload the scripting engine as a const for the same reason
-# We cannot refer to it via class name.
-#
-# If we do, it is parsed by the compiler who then considers it
-# a cyclic reference as the scripting engine refers back to the Card class.
-var scripting_engine = load(CFConst.PATH_SCRIPTING_ENGINE)
 # Ensures all nodes fit inside this rect.
 var card_size := CFConst.CARD_SIZE setget set_card_size
 # Starting state for each card
@@ -1083,7 +1077,7 @@ func execute_scripts(
 		# cost-defined tasks, and performs a dry-run on them
 		# to ascertain whether they can all be paid,
 		# before executing the card script.
-		sceng = scripting_engine.new(
+		sceng = cfc.scripting_engine.new(
 				self,
 				state_scripts,
 				true)
@@ -1098,7 +1092,7 @@ func execute_scripts(
 			# The ScriptingEngine is where we execute the scripts
 			# We cannot use its class reference,
 			# as it causes a cyclic reference error when parsing
-			sceng = scripting_engine.new(
+			sceng = cfc.scripting_engine.new(
 					self,
 					state_scripts)
 	return(sceng)

@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework [1.3](CHANGELOG.md)
+# Godot Card Game Framework [1.4](CHANGELOG.md)
 
 ![Codot Card Game Framework preview image](preview.png "Codot Card Game Framework preview image")
 
@@ -40,6 +40,7 @@ Pull requests are more than welcome ;)
 * Can filter the triggers based on card properties, or a special subset.
 * Can define optional abilities.
 * Can define multiple-choice abilities.
+* Can calculate effect intensity based on state of the board during runtime.
 * Can request simple inputs from the player during execution.
 
 All of the above while being very easily extensible to your own game's special requirements through simple json dictionaries.

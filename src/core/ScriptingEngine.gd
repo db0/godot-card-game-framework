@@ -89,24 +89,23 @@ func run_next_script(card_owner: Card,
 		# execution until targetting has completed
 		if not script.has_init_completed:
 			yield(script,"completed_init")
-		#print("Scripting: " + str(script.properties)) # Debug
 		#print("Scripting Subjects: " + str(script.subjects)) # Debug
 		if costs_dry_run and ta.target_card:
 			ta.target_dry_run_card = ta.target_card
 			ta.target_card = null
-		if script.task_name == "custom_script":
+		if script.script_name == "custom_script":
 			# This class contains the customly defined scripts for each
 			# card.
 			var custom := CustomScripts.new(costs_dry_run)
 			custom.custom_script(script)
-		elif script.task_name:
+		elif script.script_name:
 			if script.is_valid \
 					and (not costs_dry_run
 						or (costs_dry_run and script.get_property(SP.KEY_IS_COST))):
 				#print(script.is_valid,':',costs_dry_run)
-				var retcode = call(script.task_name, script)
+				var retcode = call(script.script_name, script)
 				# When
-				if script.task_name in wait_for_tasks \
+				if script.script_name in wait_for_tasks \
 						and retcode is GDScriptFunctionState:
 					retcode = yield(retcode, "completed")
 				if costs_dry_run:
@@ -118,9 +117,9 @@ func run_next_script(card_owner: Card,
 						# because there's no point in asking the player
 						# about a task they cannot perform anyway.
 						var confirm_return = CFUtils.confirm(
-							script.properties,
+							script.script_definition,
 							card_owner.card_name,
-							script.task_name)
+							script.script_name)
 						if confirm_return is GDScriptFunctionState: # Still working.
 							confirm_return = yield(confirm_return, "completed")
 							# If the player chooses not to play an optional cost
@@ -260,6 +259,11 @@ func mod_tokens(script: ScriptTask) -> int:
 	var token_name: String = script.get_property(SP.KEY_TOKEN_NAME)
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
+	elif "per_" in str(script.get_property(SP.KEY_MODIFICATION)):
+		modification = ScriptObject.count_per(
+				script.get_property(SP.KEY_MODIFICATION),
+				script.owner_card,
+				script.get_property(script.get_property(SP.KEY_MODIFICATION)))
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
@@ -286,6 +290,11 @@ func spawn_card(script: ScriptTask) -> void:
 	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
 		count = stored_integer
+	elif "per_" in str(script.get_property(SP.KEY_OBJECT_COUNT)):
+		count = ScriptObject.count_per(
+				script.get_property(SP.KEY_OBJECT_COUNT),
+				script.owner_card,
+				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)))
 	else:
 		count = script.get_property(SP.KEY_OBJECT_COUNT)
 	if grid_name:
