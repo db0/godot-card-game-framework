@@ -81,7 +81,9 @@ static func confirm(
 		task_name: String,
 		type := "task") -> bool:
 	var is_accepted := true
-	if script.get(SP.KEY_IS_OPTIONAL + type):
+	# We do not use SP.KEY_IS_OPTIONAL here to avoid causing cyclical
+	# references when calling CFUtils from SP
+	if script.get("is_optional_" + type):
 		var confirm = _OPTIONAL_CONFIRM_SCENE.instance()
 		confirm.prep(card_name,task_name)
 		# We have to wait until the player has finished selecting an option
@@ -154,3 +156,53 @@ static func generate_random_seed() -> String:
 	for _iter in range(10):
 		rnd_seed +=  char(int(rand_range(40,127)))
 	return(rnd_seed)
+
+
+# Compares two numbers based on a comparison type
+# The comparison type is one of the following
+# * "eq": Equal
+# * "ne": Not Equal
+# * "gt": Greater than
+# * "lt": Less than
+# * "le": Less than or Equal
+# * "ge": Geater than or equal
+#
+# The perspective is always from the perspetive of n1
+# I.e. n1 = 1, n2 = 2 and comparison_type = "gt" is equal to: 1 > 2
+static func compare_numbers(n1: int, n2: int, comparison_type: String) -> bool:
+	var comp_result = false
+	match comparison_type:
+		"eq":
+			if n1 == n2:
+				comp_result = true
+		"ne":
+			if n1 != n2:
+				comp_result = true
+		"lt":
+			if n1 < n2:
+				comp_result = true
+		"le":
+			if n1 <= n2:
+				comp_result = true
+		"gt":
+			if n1 > n2:
+				comp_result = true
+		"ge":
+			if n1 >= n2:
+				comp_result = true
+	return(comp_result)
+
+# Compares two strings based on a comparison type
+# The comparison type is one of the following
+# * "eq": Equal
+# * "ne": Not Equal
+static func compare_strings(s1: String, s2: String, comparison_type: String) -> bool:
+	var comp_result = false
+	match comparison_type:
+		"eq":
+			if s1 == s2:
+				comp_result = true
+		"ne":
+			if s1 != s2:
+				comp_result = true
+	return(comp_result)

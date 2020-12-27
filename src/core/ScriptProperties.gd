@@ -248,6 +248,104 @@ const KEY_ASK_INTEGER_MIN := "ask_int_min"
 # Specifies the maximum value the number needs to have
 const KEY_ASK_INTEGER_MAX := "ask_int_max"
 # This is a versatile value that can be inserted into any various keys
+# when a task needs to calculate the amount of subjects to look for
+# or the number of things to do, based on the state of the board at that point
+# in time.
+# The value has to be appended with the type of seek to do to determine
+# the amount. The full value has to match one of the following keys:
+# * [KEY_PER_TOKEN](#KEY_PER_TOKEN)
+# * [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
+# * [KEY_PER_TUTOR](#KEY_PER_TUTOR)
+# * [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK)
+#
+# When this value is set, the relevant key **must** also exist in the
+# Script definition. They key shall contain a dictionary which will
+# Specify the subjects as well as the things to count.
+#
+# Inside the per_ key, you again have to specify [KEY_SUBJECT](#KEY_SUBJECT)
+# lookup which is relevant for the per search.
+#
+# This allows us to calculate the effects of card scripts during runtime.
+# For a complex example:
+#```
+#{"manual":
+#	{"hand": [
+#		{"name": "move_card_to_container",
+#		"subject": "index",
+#		"subject_count": "per_boardseek",
+#		"src_container": deck,
+#		"dest_container": hand,
+#		"subject_index": "top",
+#		"per_boardseek": {
+#			"subject": "boardseek",
+#			"subject_count": "all",
+#			"filter_state_seek": [
+#				{"filter_properties": {
+#					"Power": 0}
+#				}
+#			]
+#		}}
+#	]}
+#}
+#```
+# The above example can be tranlated to:
+# "Draw 1 card for each card with 0 power on the board"
+const VALUE_PER := "per_"
+# Value Type: String
+#
+# This key is typically needed in combination with [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
+# to specify which property to base the per upon. The property **has** to be
+# a number.
+const KEY_PROPERTY_NAME := "property_name"
+# Value Type: Dictionary
+#
+# A [VALUE_PER](#VALUE_PER) key for perfoming an effect equal to a number of tokens on the subject(s)
+#
+# Other than the subject defintions the [KEY_TOKEN_NAME](#KEY_TOKEN_NAME)
+# has to also be provided
+const KEY_PER_TOKEN := "per_token"
+# Value Type: Dictionary
+#
+# A [VALUE_PER](#VALUE_PER) key for perfoming an effect equal to a accumulated property on the subject(s)
+#
+# Other than the subject defintions the [KEY_PROPERTY_NAME](#KEY_PROPERTY_NAME)
+# has to also be provided. Obviously, the property specified has to be a number.
+const KEY_PER_PROPERTY := "per_property"
+# Value Type: Dictionary
+#
+# A [VALUE_PER](#VALUE_PER) key for perfoming an effect equal to a number
+# of cards in pile matching a filter.
+#
+# Typically the [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT)
+# inside this dictionary would be set to
+# [KEY_SUBJECT_COUNT_V_ALL](#KEY_SUBJECT_COUNT_V_ALL),
+# but a [FILTER_STATE](#FILTER_STATE) should also be typically specified
+const KEY_PER_TUTOR := "per_tutor"
+# Value Type: Dictionary
+#
+# A [VALUE_PER](#VALUE_PER) key for perfoming an effect equal the number of
+# cards on the board matching a filter.
+#
+# Typically the [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT)
+# inside this dictionary would be set to
+# [KEY_SUBJECT_COUNT_V_ALL](#KEY_SUBJECT_COUNT_V_ALL),
+# but a [FILTER_STATE](#FILTER_STATE) should also be typically specified
+const KEY_PER_BOARDSEEK := "per_boardseek"
+# Value Type: String
+# * "eq" (Defaut): Equal
+# * "ne": Not equal (This can be used to againsr strings as well)
+# * "gt": Greater than
+# * "lt": Less than
+# * "le": Less than or Equal
+# * "ge": Geater than or equal
+#
+# Key is used typically to do numerical comparisons during filters involving
+# numerical numbers.
+#
+# I.e. it allows to write the script for something like:
+# "Destroy all Monsters with cost equal or higher than 3"
+const KEY_COMPARISON := "comparison"
+# This is a versatile value that can be inserted into any various keys
 # when a task needs to use a previously inputed integer provided
 # with a [ask_integer](ScriptingEngine#ask_integer) task.
 # When detected ,the task will retrieve the stored number and use it as specified
@@ -305,13 +403,64 @@ const KEY_IS_OPTIONAL := "is_optional_"
 # Most of them are only relevant for a specific task type
 #---------------------------------------------------------------------
 
-# Filter used for checking against Card.properties
+# Value Type: Array
 #
-# This is open ended in the end, as the check can be run either
-# against the trigger card, or the subjects card
-# see _check_properties()
-
-const FILTER_PROPERTIES := "filter_properties_"
+# Filter used for checking against the Card state
+#
+# This is open ended to be appended, as the check can be run either
+# against the trigger card, or the subjects card.
+#
+# One of the following strings HAS to be appended at the end:
+# * "trigger": Will only filter cards triggering this effect via signals.
+# * "subject": Will only filter cards that are looked up as targets for the effect.
+# * "seek": Will only filter cards that are automatically sought on the board.
+# * "tutor": Will only filter cards that are automaticaly sought in a pile.
+#
+# see [check_validity()](#check_validity-static)
+#
+# The content of this value has to be an array of dictionaries
+# The different elements in the array act as an "OR" check. If **any** of the
+# dictionary filters matches, then the card will be considered a valid target.
+#
+# Each filter  dictionary has to contain at least one of the various FILTER_ Keys
+# All the FILTER_ keys act as an "AND" check. The Dictionary filter will only
+# match, if **all** the filters requested match the card's state.
+#
+# This allows a very high level of flexibility in filtering exactly the cards
+# required.
+#
+# Here's a particularly complex script example that can be achieved:
+#```
+#"manual": {
+#	"hand": [
+#		{"name": "rotate_card",
+#		"subject": "boardseek",
+#		"subject_count": "all",
+#		"filter_state_seek": [
+#			{"filter_tokens": [
+#				{"filter_token_name": "void",
+#				"filter_token_count": 1,
+#				"comparison": "gt"},
+#				{"filter_token_name": "blood"}
+#			],
+#			"filter_properties": {"Type": "Barbarian"}},
+#			{"filter_properties": {"Type": "Soldier"}}
+#		],
+#		"degrees": 90}
+#	]
+#}
+#```
+# This example would roughly translate to the following ability:
+# *"Rotate to 90 degrees all barbarians with more than 1 void tokens and
+# at least 1 blood token, as well as all soldiers."*
+const FILTER_STATE := "filter_state_"
+# Value Type: Dictionary
+#
+# Filter used for checking against the Card properties
+#
+# Each value is a dictionary where the  key is a card property, and the value
+# is the desired property value to match on the filtered card.
+const FILTER_PROPERTIES := "filter_properties"
 # Value Type: int.
 #
 # Filter used in for checking against [TRIGGER_DEGREES](#KEY_MODIFICATION)
@@ -335,6 +484,7 @@ const FILTER_DESTINATION := "filter_destination"
 # Value Type: int.
 #
 # Filter used for checking against [TRIGGER_NEW_TOKEN_VALUE](#TRIGGER_NEW_TOKEN_VALUE)
+# and in [check_state](#check_state)
 const FILTER_TOKEN_COUNT := "filter_token_count"
 # Value Type: String
 # * [TRIGGER_V_TOKENS_INCREASED](#TRIGGER_V_TOKENS_INCREASED)
@@ -343,7 +493,38 @@ const FILTER_TOKEN_DIFFERENCE := "filter_token_difference"
 # Value Type: String.
 #
 # Filter used for checking against [TRIGGER_TOKEN_NAME](#TRIGGER_TOKEN_NAME)
+# and in [check_state](#check_state)
 const FILTER_TOKEN_NAME := "filter_token_name"
+# Value Type: Dictionary
+#
+# Filter used for checking in [check_state](#check_state)
+# It contains a list of dictionaries, each detailing a token state that
+# is wished on this subject. If any of them fails to match, then the whole
+# filter fails to match.
+#
+# This allows us to check for multiple tokens at once. For example:
+# "If target has a blood and a void token..."
+#
+# The below sample script, will rotate all cards which have
+# any number of void tokens and exactly 1 bio token, 90 degrees
+#```
+#"manual": {
+#	"hand": [
+#		{"name": "rotate_card",
+#		"subject": "boardseek",
+#		"subject_count": "all",
+#		"filter_state_seek": {
+#			"filter_tokens": [
+#				{"filter_token_name": "void"},
+#				{"filter_token_name": "bio",
+#				"filter_token_count": 1},
+#			]
+#		},
+#		"degrees": 90}
+#	]
+#}
+#```
+const FILTER_TOKENS := "filter_tokens"
 # Value Type: Dictionary.
 #
 # Filter key used for checking against card_properties_modified details.
@@ -539,6 +720,8 @@ static func get_default(property: String):
 			default = 1
 		KEY_GRID_NAME:
 			default = ""
+		KEY_COMPARISON:
+			default = "eq"
 		_:
 			default = null
 	return(default)
@@ -555,7 +738,7 @@ static func filter_trigger(
 		signal_details) -> bool:
 	# Checking card properties is its own function as it might be
 	# called from other places as well
-	var is_valid := check_properties(trigger_card, card_scripts, "trigger")
+	var is_valid := check_validity(trigger_card, card_scripts, "trigger")
 
 	# Here we check that the trigger matches the _request_ for trigger
 	# A trigger which requires "another" card, should not trigger
@@ -647,30 +830,132 @@ static func filter_trigger(
 	return(is_valid)
 
 
-# Checks the provided card properties against filters specified in
-# the provided card_scripts.
-#
-# Returns true if all the filters match the card properties.
+# Returns true  if the card properties match against filters specified in
+# the provided card_scripts or if no card property filters were defined.
 # Otherwise returns false.
-static func check_properties(card, card_scripts, type := "trigger") -> bool:
+static func check_properties(card, property_filters: Dictionary) -> bool:
 	var card_matches := true
-	# Card properties filter checks. We use the type of seek we're doing
+	var comparison_type : String = property_filters.get(
+			KEY_COMPARISON, get_default(KEY_COMPARISON))
+	for property in property_filters:
+		if property == KEY_COMPARISON:
+			continue
+		if property in CardConfig.PROPERTIES_ARRAYS:
+			# If it's an array, we assume they passed on element
+			# of that array to check against the card properties
+			if not property_filters[property] in card.properties[property]\
+					and comparison_type == "eq":
+				card_matches = false
+			# We use the "ne" as a "not in" operator for Arrays.
+			elif property_filters[property] in card.properties[property]\
+					and comparison_type == "ne":
+				card_matches = false
+		elif property in CardConfig.PROPERTIES_NUMBERS:
+			if not CFUtils.compare_numbers(
+					card.properties[property],
+					property_filters[property],
+					comparison_type):
+				card_matches = false
+		else:
+			if not CFUtils.compare_strings(
+					property_filters[property],
+					card.properties[property],
+					comparison_type):
+				card_matches = false
+	return(card_matches)
+
+
+# Returns true if the card tokens match against filters specified in
+# the provided card_scripts, of if no token filters were requested.
+# Otherwise returns false.
+static func check_token_filter(card, token_states: Array) -> bool:
+	# Each array element, is an individual token name
+	# for which to check against.
+	var card_matches := true
+	# Token filters always contain an array of token states
+	for token_state in token_states:
+		var comparison_type : String = token_state.get(
+				KEY_COMPARISON, get_default(KEY_COMPARISON))
+		if token_state.get(FILTER_TOKEN_NAME):
+			var token = card.tokens.get_token(
+					token_state.get(FILTER_TOKEN_NAME))
+			if not token:
+				if token_state.get(FILTER_TOKEN_COUNT):
+					match comparison_type:
+						"eq","ge":
+							if token_state.get(FILTER_TOKEN_COUNT) != 0:
+								card_matches = false
+						"gt":
+							card_matches = false
+				else:
+					card_matches = false
+			elif token_state.get(FILTER_TOKEN_COUNT):
+				if not CFUtils.compare_numbers(
+						token.count,
+						token_state.get(FILTER_TOKEN_COUNT),
+						comparison_type):
+					card_matches = false
+	return(card_matches)
+
+
+# Returns true if the rotation of the card matches the specified filter
+# or the filter key was not defined. Otherwise returns false.
+static func check_rotation_filter(card, rotation_state: int) -> bool:
+	var card_matches := true
+	# Card rotation does not support checking for not-equal
+	if rotation_state != card.card_rotation:
+		card_matches = false
+	return(card_matches)
+
+
+# Returns true if the faceup state of the card matches the specified filter
+# or the filter key was not defined. Otherwise returns false.
+static func check_faceup_filter(card, flip_state: bool) -> bool:
+	var card_matches := true
+	if flip_state != card.is_faceup:
+		card_matches = false
+	return(card_matches)
+
+
+# Check if the card is a valid subject or trigger, according to its state.
+static func check_validity(card, card_scripts, type := "trigger") -> bool:
+	var card_matches := true
+	# We use the type of seek we're doing
 	# To know which dictionary property to pass for the required dict
 	# This way a script can be limited on more than one thing according to
-	# properties. For example limit on the properties of the trigger card
-	# and the properties of the subjects card.
-	if card_scripts.get(FILTER_PROPERTIES + type):
-		# prop_limits is the variable which will hold the dictionary
-		# detailing which card properties on the subjects must match
-		# to satisfy this limit
-		var prop_limits : Dictionary = card_scripts.get(FILTER_PROPERTIES + type)
-		for property in prop_limits:
-			if property in CardConfig.PROPERTIES_ARRAYS:
-				# If it's an array, we assume they passed on element
-				# of that array to check against the card properties
-				if not prop_limits[property] in card.properties[property]:
+	# state. For example limit on the state of the trigger card
+	# and the state of the subject cards.
+	if card_scripts.get(FILTER_STATE + type):
+		# each "filter_state_" FILTER is an array.
+		# Each element in this array is dictionary of "AND" conditions
+		# The filter will fail, only if ALL the or elements in this array
+		# fail to match.
+		var state_filters_array : Array = card_scripts.get(FILTER_STATE + type)
+		# state_limits is the variable which will hold the dictionary
+		# detailing which card state which the subjects must match
+		# to satisfy this filter
+		for state_filters in state_filters_array:
+			card_matches = true
+			for filter in state_filters:
+				# We check with like this, as it allows us to provide an "AND"
+				# check, by simply apprending something into the state string
+				# I.e. if we have filter_properties and filter_properties2
+				# It will treat these two states as an "AND"
+				if FILTER_PROPERTIES in filter\
+						and not check_properties(card, state_filters[filter]):
 					card_matches = false
-			else:
-				if prop_limits[property] != card.properties[property]:
+				elif FILTER_TOKENS in filter\
+						and not check_token_filter(card, state_filters[filter]):
 					card_matches = false
+				elif FILTER_DEGREES in filter\
+						and not check_rotation_filter(card,state_filters[filter]):
+					card_matches = false
+				# There's no possible "AND" state for a boolean filter.
+				elif filter == FILTER_FACEUP\
+						and not check_faceup_filter(card,state_filters[filter]):
+					card_matches = false
+			# If at least one of our "or" array elements matches,
+			# We do not need to check the others.
+			if card_matches:
+				break
 	return(card_matches)

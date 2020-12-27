@@ -63,53 +63,53 @@ func test_card_properties_filter():
 			"hand": [
 				{"name": "flip_card",
 				"subject": "target",
-				"filter_properties_subject": {"Type": ttype2},
+				"filter_state_subject": [{"filter_properties": {"Type": ttype2}}],
 				"set_faceup": false}],
-			"filter_properties_trigger": {"Type": "FALSE"},
+			"filter_state_trigger": [{"filter_properties": {"Type": "FALSE"}}],
 			"trigger": "another"}}
 	cards[2].scripts = {"card_rotated": {
 			"hand": [
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_properties_trigger": {"Type": "FALSE"},
+			"filter_state_trigger": [{"filter_properties": {"Type": "FALSE"}}],
 			"trigger": "another"}}
 	cards[3].scripts = {"card_rotated": {
 			"hand": [
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_properties_trigger": {"Type": ttype},
+			"filter_state_trigger": [{"filter_properties": {"Type": ttype}}],
 			"trigger": "another"}}
 	cards[4].scripts = {"card_rotated": {
 			"hand": [
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_properties_trigger": {"Type": ttype, "Tags": "Tag 1"},
+			"filter_state_trigger": [{"filter_properties": {"Type": ttype, "Tags": "Tag 1"}}],
 			"trigger": "another"}}
 	cards[5].scripts = {"card_rotated": {
 			"hand": [
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_properties_trigger": {"Type": "FALSE"},
+			"filter_state_trigger": [{"filter_properties": {"Type": "FALSE"}}],
 			"trigger": "another"}}
 	cards[6].scripts = {"card_rotated": {
 			"hand": [
 				{"name": "flip_card",
 				"subject": "target",
-				"filter_properties_subject": {"Type": ttype2},
+				"filter_state_subject": [{"filter_properties": {"Type": ttype2}}],
 				"set_faceup": false}],
-			"filter_properties_trigger": {"Type": ttype},
+			"filter_state_trigger": [{"filter_properties": {"Type": ttype}}],
 			"trigger": "another"}}
 	cards[7].scripts = {"card_rotated": {
 			"hand": [
 				{"name": "flip_card",
 				"subject": "target",
-				"filter_properties_subject": {"Type": "FALSE"},
+				"filter_state_subject": [{"filter_properties": {"Type": "FALSE"}}],
 				"set_faceup": false}],
-			"filter_properties_trigger": {"Type": ttype2},
+			"filter_state_trigger": [{"filter_properties": {"Type": ttype2}}],
 			"trigger": "another"}}
 	yield(yield_for(0.5), YIELD)
 	yield(table_move(target, Vector2(500,100)), "completed")

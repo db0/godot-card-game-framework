@@ -110,6 +110,16 @@ _global_script_classes=[ {
 "path": "res://src/core/ScriptProperties.gd"
 }, {
 "base": "Reference",
+"class": "ScriptObject",
+"language": "GDScript",
+"path": "res://src/core/ScriptObject.gd"
+}, {
+"base": "ScriptObject",
+"class": "ScriptPer",
+"language": "GDScript",
+"path": "res://src/core/ScriptPer.gd"
+}, {
+"base": "ScriptObject",
 "class": "ScriptTask",
 "language": "GDScript",
 "path": "res://src/core/ScriptTask.gd"
@@ -165,6 +175,8 @@ _global_script_class_icons={
 "MousePointer": "",
 "Pile": "",
 "SP": "",
+"ScriptObject": "",
+"ScriptPer": "",
 "ScriptTask": "",
 "ScriptingEngine": "",
 "TargetingArrow": "",

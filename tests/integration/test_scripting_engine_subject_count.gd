@@ -63,7 +63,7 @@ func test_tutor_with_subject_count():
 			"subject": "tutor",
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard,
-			"filter_properties_tutor": {"Type": "Blue"}}]}}
+			"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}]}]}}
 	card.execute_scripts()
 	yield(yield_for(0.5), YIELD)
 	assert_eq(1,discard.get_card_count(),
@@ -77,7 +77,7 @@ func test_tutor_with_subject_count():
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard,
 			"subject_count": 2,
-			"filter_properties_tutor": {"Type": "Blue"}}]}}
+			"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}]}]}}
 	card.execute_scripts()
 	yield(yield_for(0.5), YIELD)
 	assert_eq(3,discard.get_card_count(),
@@ -91,7 +91,7 @@ func test_tutor_with_subject_count():
 			"src_container":  cfc.NMAP.deck,
 			"dest_container":  cfc.NMAP.discard,
 			"subject_count": "all",
-			"filter_properties_tutor": {"Type": "Blue"}}]}}
+			"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}]}]}}
 	card.execute_scripts()
 	yield(yield_for(0.5), YIELD)
 	for c in deck.get_all_cards():

@@ -24,5 +24,6 @@ const CARDS := {
 				+ "\n\nWhile on hand, discard up to 5 cards " \
 				+ "from the top of the deck",
 		"Cost": 0,
+		"Power": 0,
 	},
 }

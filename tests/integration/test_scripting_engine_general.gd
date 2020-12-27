@@ -151,12 +151,12 @@ func test_subject_boardseek():
 			{"name": "rotate_card",
 			"subject": "boardseek",
 			"subject_count": "all",
-			"filter_properties_seek": {"Type": ttype},
+			"filter_state_seek": [{"filter_properties":  {"Type": ttype}}],
 			"degrees": 180},
 			{"name": "rotate_card",
 			"subject": "boardseek",
 			"subject_count": "all",
-			"filter_properties_seek": {"Type": ttype2},
+			"filter_state_seek": [{"filter_properties": {"Type": ttype2}}],
 			"degrees": 90}]}}
 	var scripting_engine = card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
@@ -197,7 +197,7 @@ func test_subject_boardseek_previous():
 			{"name": "rotate_card",
 			"subject": "boardseek",
 			"subject_count": "all",
-			"filter_properties_seek": {"Tags": "Tag 1"},
+			"filter_state_seek": [{"filter_properties": {"Tags": "Tag 1"}}],
 			"degrees": 90},
 			{"name": "flip_card",
 			"subject": "previous",
@@ -215,7 +215,7 @@ func test_subject_tutor():
 			{"name": "move_card_to_board",
 			"subject": "tutor",
 			"src_container":  cfc.NMAP.deck,
-			"filter_properties_tutor": {"Type": "Red"},
+			"filter_state_tutor": [{"filter_properties": {"Type": "Red"}}],
 			"board_position":  Vector2(1000,200)}]}}
 	card.execute_scripts()
 	target = cfc.NMAP.board.get_card(0)
@@ -226,7 +226,8 @@ func test_subject_tutor():
 			{"name": "move_card_to_board",
 			"subject": "tutor",
 			"src_container":  cfc.NMAP.deck,
-			"filter_properties_tutor": {"Name": "Multiple Choices Test Card"},
+			"filter_state_tutor": [{"filter_properties": 
+				{"Name": "Multiple Choices Test Card"}}],
 			"board_position":  Vector2(100,200)}]}}
 	card.execute_scripts()
 	target = cfc.NMAP.board.get_card(1)

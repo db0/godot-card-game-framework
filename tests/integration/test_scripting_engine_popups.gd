@@ -23,7 +23,7 @@ func before_each():
 func test_filtered_multiple_choice():
 	card.scripts = {"card_flipped": {
 				"trigger": "another",
-				"filter_properties_trigger": {"Type": "Red"},
+				"filter_state_trigger": [{"filter_properties": {"Type": "Red"}}],
 				"board": {
 					"Rotate This Card": [
 						{
