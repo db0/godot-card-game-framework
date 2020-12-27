@@ -31,6 +31,8 @@ func return_per_count() -> int:
 		# of subjects found
 		SP.KEY_PER_TUTOR,SP.KEY_PER_BOARDSEEK:
 			ret = subjects.size()
+		_:
+			ret = _count_custom()
 	return(ret)
 
 # Do something per token count
@@ -50,3 +52,7 @@ func _count_property() -> int:
 			ret += card.properties.get(get_property(SP.KEY_PROPERTY_NAME))
 	return(ret)
 
+# Overridable function for scripts extending this class
+# to add their own methods
+func _count_custom() -> int:
+	return(1)
