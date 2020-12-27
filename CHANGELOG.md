@@ -2,6 +2,12 @@
 
 ## 1.4
 
+## CFConst
+
+**Important:** CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  or add the following constants
+
+* PATH_PER_ENGINE (New Addition)
+* ATTACHMENT_OFFSET (Modified to be an array)
 
 ### New Features
 
