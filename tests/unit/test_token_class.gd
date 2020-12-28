@@ -71,7 +71,7 @@ func test_get_token_name():
 	var token2 = token_scene.instance()
 	token2.setup("tech")
 	board.add_child(token2)
-	assert_eq("Tech",token2.get_token_name(),
-			"Returned name should be human-readable")
+	assert_eq("tech",token2.get_token_name(),
+			"Returned name should be lowercase")
 	assert_ne("Tech",token2.name,
 			"name property is godot-unique")
