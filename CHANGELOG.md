@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.5 (Ongoing)
+
+### Tweaks
+
+* GridPlacementSlots won't highlight anymore when the card doesn't belong in them (i.e. the card cannot be placed on the board, it can only be placed in a differently named grid)
+
 ## 1.4
 
 ## CFConst

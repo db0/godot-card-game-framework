@@ -222,6 +222,13 @@ class SignalPropagator:
 	func _on_Card_signal_received(
 			trigger_card: Card, trigger: String, details: Dictionary):
 		# We use Godot groups to ask every card to check if they
-			# have [ScriptingEngine] triggers for this signal
-		cfc.get_tree().call_group("cards",
+		# have [ScriptingEngine] triggers for this signal.
+		#
+		# I don't know why, but if I use simply call_group(), this will
+		# not execute on a "self" subject
+		# when the trigger card has a grid_autoplacement set, and the player
+		# drags the card on the grid itself. If the player drags the card
+		# To an empty spot, it works fine
+		# It also fails to execute if I use any other flag than GROUP_CALL_UNIQUE
+		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_UNIQUE  ,"cards",
 				"execute_scripts",trigger_card,trigger,details)
