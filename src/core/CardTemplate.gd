@@ -1095,6 +1095,7 @@ func execute_scripts(
 			sceng = cfc.scripting_engine.new(
 					self,
 					state_scripts)
+	common_post_execution_scripts(trigger)
 	return(sceng)
 
 
@@ -1352,7 +1353,14 @@ func check_play_costs() -> bool:
 # places on the table.
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
-func common_move_scripts(new_host: Node, old_host: Node):
+func common_move_scripts(new_host: Node, old_host: Node) -> void:
+	pass
+
+# This function can be overriden by any class extending Card, in order to provide
+# a way of running scripts for a whole class of cards, based on what the trigger was
+#
+# warning-ignore:unused_argument
+func common_post_execution_scripts(trigger: String) -> void:
 	pass
 
 
