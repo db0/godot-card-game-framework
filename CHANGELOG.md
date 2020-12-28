@@ -6,6 +6,11 @@
 
 * GridPlacementSlots won't highlight anymore when the card doesn't belong in them (i.e. the card cannot be placed on the board, it can only be placed in a differently named grid)
 
+### Bugfixes
+
+* When filtering triggers for the number 0, it should not always match
+* Framework won't crash when trying to reduce a token that has not been added yet.
+
 ## 1.4
 
 ## CFConst

@@ -218,6 +218,7 @@ const DISABLE_DRAGGING_FROM_PILE := false
 # This dictionary contains your defined tokens for cards
 #
 # The key is the name of the token as it will appear in your scene and labels
+# **Please use lowercase only for the key**
 #
 # The value is the filename which contains your token image. The full path will
 # be constructed using the PATH_TOKENS variable
