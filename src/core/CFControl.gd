@@ -102,7 +102,7 @@ func _on_all_nodes_mapped() -> void:
 		focus_style = CFConst.FocusStyle.SCALED
 		# To prevent accidental switching this option when there's no other
 		# viewports active
-		if NMAP.board: # Needed for UT
+		if NMAP.board and NMAP.board.has_node("ScalingFocusOptions"): # Needed for UT
 			NMAP.board.get_node("ScalingFocusOptions").disabled = true
 	set_scripts = load_script_definitions()
 

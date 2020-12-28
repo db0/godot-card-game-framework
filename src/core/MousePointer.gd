@@ -134,23 +134,9 @@ func _discover_focus() -> void:
 					and not area in current_focused_card.attachments \
 					and area.state == Card.CardState.ON_PLAY_BOARD:
 						potential_hosts.append(area)
-		# We only populate potential_slots if the card is not hovering over
-		# potential hosts
-		# There is a lot of checks to consider a BoardPlacementHost a
-		# potential drop point
-		# It has to not be occupied by another card
-		# The card being dragged cannot be an attachment
-		# or if it is an attachment, there have to be no potential hosts
-		# currently highlighted
 		if area.get_parent() as BoardPlacementSlot \
-				and (not area.get_parent().occupying_card
-				or area.get_parent().occupying_card == cfc.card_drag_ongoing) \
-				and cfc.card_drag_ongoing:
-			if not cfc.card_drag_ongoing.is_attachment \
-					or (cfc.card_drag_ongoing.is_attachment
-					and (potential_cards.empty()
-					or cfc.card_drag_ongoing in potential_cards)):
-				potential_slots.append(area.get_parent())
+				and _is_placement_slot_valid(area.get_parent(),potential_cards):
+			potential_slots.append(area.get_parent())
 #		if area.get_parent() as BoardPlacementSlot and cfc.card_drag_ongoing and cfc.card_drag_ongoing.is_attachment and not potential_cards.empty():
 #			print_debug(potential_cards)
 		if area as CardContainer and cfc.card_drag_ongoing:
@@ -216,3 +202,55 @@ func _discover_focus() -> void:
 				or not current_focused_card.tokens.is_drawer_open:
 			current_focused_card._on_Card_mouse_exited()
 			current_focused_card = null
+
+# A number of checks to see if a hovered grid placement slot is a valid target
+# to highlight.
+#
+# We only populate potential_slots if the card is not hovering over
+# potential hosts.
+#
+# There is a lot of checks to consider a BoardPlacementHost a
+# potential drop point.
+# * A card has to be currently dragged
+# * It has to not be occupied by another card
+# * The card being dragged cannot be an attachment
+# or if it is an attachment, there have to be no potential hosts
+# currently highlighted
+func _is_placement_slot_valid(slot: BoardPlacementSlot, potential_cards := []) -> bool:
+	var is_valid := true
+	# We only hihglight slots if a card is not currently being dragged
+	if not cfc.card_drag_ongoing:
+		is_valid = false
+	else:
+		# We only hihglight a slot if it is not hosting a different card.
+		if slot.occupying_card and slot.occupying_card != cfc.card_drag_ongoing:
+			is_valid = false
+		# We only hihglight a slot if the dragged card is not an attachment
+		# with a potential host highlighted.
+		if cfc.card_drag_ongoing.is_attachment \
+				and not potential_cards.empty():
+			# The card being dragged is usually part of the potential_cards
+			# So we want to make sure we still highlight a potential slot
+			# if it's only the dragged card in there.
+			if potential_cards.size() == 1 \
+					and not cfc.card_drag_ongoing in potential_cards:
+				is_valid = false
+			# If the card is an attachment and the mouse is hovering over
+			# more than one card, there's is definitielly a potential host
+			# TODO: The logic of this check has to be improved when
+			# a game specifies not all cards are potential hosts.
+			elif potential_cards.size() > 1:
+				is_valid = false
+		# If a card is only allowed to be placed on specific grids,
+		# We do not highlight slots in other grids when it's hovering them
+		if cfc.card_drag_ongoing.board_placement in [
+				Card.BoardPlacement.GRID_AUTOPLACEMENT,
+				Card.BoardPlacement.SPECIFIC_GRID]:
+			if slot.get_grid_name() != cfc.card_drag_ongoing.mandatory_grid_name:
+				is_valid = false
+		# If a card is not allowed on the board
+		# We do not highlight grid slots when it's hovering them
+		if cfc.card_drag_ongoing.board_placement in [Card.BoardPlacement.NONE]:
+				is_valid = false
+	return(is_valid)
+

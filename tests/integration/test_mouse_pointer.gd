@@ -36,3 +36,18 @@ func test_highlight_priority():
 	yield(move_mouse(Vector2(700,500)), 'completed')
 	assert_not_null(grid.get_highlighted_slot(),
 		"Slot highlighted when potential host highlighted")
+
+func test_specific_grid_highlight():
+	var card : Card = cards[0]
+	card.board_placement = Card.BoardPlacement.SPECIFIC_GRID
+	card.mandatory_grid_name = "GUT Grid"
+	yield(drag_card(card, Vector2(700,500)), 'completed')
+	assert_null(grid.get_highlighted_slot(),
+		"No slot highlighted on wrong name grid")
+
+func test_no_board_placement_highlight():
+	var card : Card = cards[0]
+	card.board_placement = Card.BoardPlacement.NONE
+	yield(drag_card(card, Vector2(700,500)), 'completed')
+	assert_null(grid.get_highlighted_slot(),
+		"No slot highlighted when board placement not allowed")
