@@ -118,6 +118,8 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false, check := fals
 		# We just increment it by 1
 		if not token and mod == 0:
 			retcode = CFConst.ReturnCode.OK
+		elif not token and mod < 0:
+			retcode = CFConst.ReturnCode.FAILED
 		# For cost dry-runs, we don't want to modify the tokens at all.
 		# Just check if we could.
 		elif check:
