@@ -76,10 +76,13 @@ func _on_Debug_toggled(button_pressed: bool) -> void:
 	cfc._debug = button_pressed
 
 # Loads a sample set of cards to use for testing
-func load_test_cards(extras := 11) -> void:
+func load_test_cards(extras := 0) -> void:
+	"Test Card 1"
 	var test_cards := []
-	for ckey in cfc.card_definitions.keys():
-		test_cards.append(ckey)
+	for i in range(5):
+		test_cards.append("Test Card 1")
+#	for ckey in cfc.card_definitions.keys():
+#		test_cards.append(ckey)
 	var test_card_array := []
 	for _i in range(extras):
 		if not test_cards.empty():
@@ -87,12 +90,12 @@ func load_test_cards(extras := 11) -> void:
 					test_cards[CFUtils.randi() % len(test_cards)]
 			test_card_array.append(cfc.instance_card(random_card_name))
 	# 11 is the cards GUT expects. It's the testing standard
-	if extras == 11:
+	if extras == 0:
 	# I ensure there's of each test card, for use in GUT
 		for card_name in test_cards:
 			test_card_array.append(cfc.instance_card(card_name))
 	for card in test_card_array:
-		$Deck.add_child(card)
+		$Hand.add_child(card)
 		#card.set_is_faceup(false,true)
 		card._determine_idle_state()
 		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes

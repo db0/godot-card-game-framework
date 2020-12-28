@@ -5,5 +5,7 @@
 [ext_resource path="res://src/custom/cards/BlueFront.tscn" type="PackedScene" id=3]
 
 [node name="Card" instance=ExtResource( 1 )]
+board_placement = 2
+mandatory_grid_name = "PlacementGridDemo"
 card_back_design = ExtResource( 2 )
 card_front_design = ExtResource( 3 )

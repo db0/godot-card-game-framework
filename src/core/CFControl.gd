@@ -230,5 +230,21 @@ class SignalPropagator:
 		# drags the card on the grid itself. If the player drags the card
 		# To an empty spot, it works fine
 		# It also fails to execute if I use any other flag than GROUP_CALL_UNIQUE
-		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_UNIQUE  ,"cards",
+		# So, this executes on the trigger card:
+		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_UNIQUE,"cards",
 				"execute_scripts",trigger_card,trigger,details)
+		# This does not execute on the trigger card
+		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_REALTIME,"cards",
+				"execute_scripts",trigger_card,trigger,details)
+		# This does not execute on the trigger card
+		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_DEFAULT,"cards",
+				"execute_scripts",trigger_card,trigger,details)
+		# This does not execute on the trigger card
+		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_REVERSE,"cards",
+				"execute_scripts",trigger_card,trigger,details)
+		# This does not execute on the trigger card
+		cfc.get_tree().call_group("cards",
+				"execute_scripts",trigger_card,trigger,details)
+		# This also works on the trigger card:
+		for card in cfc.get_tree().get_nodes_in_group("cards"):
+			card.execute_scripts(trigger_card,trigger,details)

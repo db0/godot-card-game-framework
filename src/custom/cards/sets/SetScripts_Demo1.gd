@@ -7,21 +7,17 @@ extends Reference
 func get_scripts(card_name: String) -> Dictionary:
 	var scripts := {
 		"Test Card 1": {
-			"manual": {
+			"card_moved_to_board": {
 				"board": [
 					{
-						"name": "rotate_card",
-						"subject": "self",
-						"degrees": 90,
-					}
+						"name": "mod_tokens",
+						"modification": 1,
+						"token_name": "bio",
+						"subject": "self"
+					},
 				],
-				"hand": [
-					{
-						"name": "spawn_card",
-						"scene_path": CFConst.PATH_CUSTOM + "CGFCardTemplate.tscn",
-						"board_position": Vector2(500,200),
-					}
-				]
+				"trigger": "self",
+				SP.FILTER_SOURCE: cfc.NMAP.hand,
 			},
 		},
 		"Test Card 2": {
