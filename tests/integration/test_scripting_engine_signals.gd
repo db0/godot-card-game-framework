@@ -172,6 +172,13 @@ func test_card_rotated():
 				"set_faceup": false}],
 			"filter_degrees": 90,
 			"trigger": "another"}}
+	cards[4].scripts = {"card_rotated": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_degrees": 0,
+			"trigger": "another"}}
 	yield(table_move(target, Vector2(500,100)), "completed")
 	target.card_rotation = 90
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
@@ -185,6 +192,8 @@ func test_card_rotated():
 			"Card stayed face-up since filter_degrees didn't match")
 	assert_false(cards[3].is_faceup,
 			"Card turned face-down since filter_degrees matches")
+	assert_true(cards[4].is_faceup,
+			"Card stayed face-up since 0 filter_degrees didn't match")
 
 
 func test_card_flipped():
@@ -401,7 +410,7 @@ func test_card_token_modified():
 				"subject": "self",
 				"set_faceup": false}],
 			"filter_token_difference": "decreased",
-			"filter_token_count": 0,
+			"filter_token_count": 1,
 			"filter_token_name": "Void",
 			"trigger": "another"}}
 	# This card should stay face-up since some limits will not match
@@ -411,18 +420,18 @@ func test_card_token_modified():
 				"subject": "self",
 				"set_faceup": false}],
 			"filter_token_difference": "decreased",
-			"filter_token_count": 1,
+			"filter_token_count": 0,
 			"filter_token_name": "Tech",
 			"trigger": "another"}}
 	# warning-ignore:return_value_discarded
-	target.tokens.mod_token("void", -5)
+	target.tokens.mod_token("void", -4)
 	yield(yield_for(0.1), YIELD)
 	assert_signal_emitted_with_parameters(
 				target,"card_token_modified",
 				[target,"card_token_modified",
 				{"token_name": "Void",
 				"previous_token_value": 5,
-				"new_token_value": 0}])
+				"new_token_value": 1}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,

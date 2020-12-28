@@ -751,7 +751,7 @@ static func filter_trigger(
 		is_valid = false
 
 	# Card Rotation filter checks
-	if card_scripts.get(FILTER_DEGREES) \
+	if card_scripts.get(FILTER_DEGREES) != null \
 			and card_scripts.get(FILTER_DEGREES) != \
 			signal_details.get(TRIGGER_DEGREES):
 		is_valid = false
@@ -773,7 +773,7 @@ static func filter_trigger(
 		is_valid = false
 
 	# Card Tokens filter checks
-	if card_scripts.get(FILTER_TOKEN_COUNT) \
+	if card_scripts.get(FILTER_TOKEN_COUNT) != null \
 			and card_scripts.get(FILTER_TOKEN_COUNT) != \
 			signal_details.get(TRIGGER_NEW_TOKEN_VALUE):
 		is_valid = false
@@ -819,11 +819,11 @@ static func filter_trigger(
 			var mod_prop_values = mod_prop_dict.get(signal_modified_property)
 			# Finally we check if it requires a specific new or old property
 			# value. If it does, we check it against the signal details
-			if mod_prop_values.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) \
+			if mod_prop_values.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) != null \
 					and mod_prop_values.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) != \
 					signal_details.get(TRIGGER_NEW_PROPERTY_VALUE):
 				is_valid = false
-			if mod_prop_values.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) \
+			if mod_prop_values.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) != null \
 					and mod_prop_values.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) != \
 					signal_details.get(TRIGGER_PREV_PROPERTY_VALUE):
 				is_valid = false
