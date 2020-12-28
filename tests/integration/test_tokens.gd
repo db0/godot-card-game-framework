@@ -14,17 +14,14 @@ func test_board_tokens():
 	var card : Card
 	card = cards[0]
 	yield(table_move(card, Vector2(600,200)), 'completed')
-	board._UT_mouse_position = card.position
-	card._on_Card_mouse_entered()
-	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
+	yield(move_mouse(card.global_position), 'completed')
 	assert_false(card.tokens.is_drawer_open, "is_drawer_open flag should be false")
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer does not appear card hover when no card has no tokens")
 	assert_eq(Vector2(card.get_node("Control").rect_size.x - 35,20),
 			card.get_node("Control/Tokens/Drawer").rect_position,
 			"Drawer does not extend when card hover when no card has no tokens")
-	board._UT_mouse_position = Vector2(1100,200)
-	card._on_Card_mouse_exited()
+	yield(move_mouse(Vector2(1100,200)), 'completed')
 
 	assert_eq(CFConst.ReturnCode.FAILED,card.tokens.mod_token("Should Fail"),
 			"Adding non-defined token returns a FAILED")
@@ -54,15 +51,12 @@ func test_board_tokens():
 			"Token change increases label counter too")
 	assert_eq(2,card.tokens.get_all_tokens().size(),
 			"tokens.get_all_tokens() returns correct dict keys")
-	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
 # Below doesn' seem to work. Always returns emptry string
 #	assert_eq(cfc.PATH_TOKENS + cfc.TOKENS_MAP["tech"],
 #			tech_token.get_node("CenterContainer/TokenIcon").texture.resource_path,
 #			"New token texture uses the correct file")
 
-	board._UT_mouse_position = card.position
-	card._on_Card_mouse_entered()
-	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
+	yield(move_mouse(card.global_position), 'completed')
 	assert_true(tech_token.get_node("Name").visible,
 			"Token label should be visible when card hovered")
 	assert_true(tech_token.get_node("MarginContainer").visible,
@@ -82,16 +76,16 @@ func test_board_tokens():
 	yield(yield_for(0.1), YIELD) # Wait to allow drawer to expand
 	assert_lt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
 			"When adding more tokens, visible drawer size expands")
-	board._UT_mouse_position = Vector2(600,600)
-	card._on_Card_mouse_exited()
-	yield(yield_for(0.3), YIELD) # Wait to allow drawer to close
+	yield(move_mouse(Vector2(1000,600)), 'completed')
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer does not appear without card hover when card has tokens")
 	assert_almost_eq(Vector2(card.get_node("Control").rect_size.x - 35,20),
 			card.get_node("Control/Tokens/Drawer").rect_position, Vector2(2,2),
-			"Drawer does not extend when without card hover when card has tokens")
+			"Drawer does not extend without card hover when card has tokens")
 	assert_eq(CFConst.ReturnCode.FAILED,card.tokens.mod_token("Should Fail", -1),
 			"Removing non-defined token returns a fail")
+	assert_eq(CFConst.ReturnCode.FAILED,card.tokens.mod_token("Industry", -1),
+			"Removing non-existent token returns a fail")
 	assert_eq(CFConst.ReturnCode.CHANGED, card.tokens.mod_token("tech", -1),
 			"Removing token returns a CHANGED result")
 	assert_eq(1,tech_token.count,"remove_token() buttons decreases amount")
@@ -105,24 +99,13 @@ func test_board_tokens():
 	assert_gt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
 			"When less tokens drawer size decreases")
 
-	board._UT_mouse_position = Vector2(600,300)
-	yield(yield_for(0.3), YIELD)
-	card._on_Card_mouse_entered()
-	yield(yield_for(0.3), YIELD) # Wait to allow drawer to expand
-	click_card(card)
-	yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
-	board._UT_interpolate_mouse_move(Vector2(200,100),card.position,3)
-	yield(yield_for(0.3), YIELD)
+	yield(drag_card(card, Vector2(200,100)), 'completed')
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer closes when card is being dragged")
-	yield(yield_for(0.3), YIELD)
 	drop_card(card,board._UT_mouse_position)
-	board._UT_mouse_position = Vector2(1000,300)
-	card._on_Card_mouse_exited()
-	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 1), YIELD)
-	board._UT_mouse_position = card.position
-	card._on_Card_mouse_entered()
-	yield(yield_for(1	), YIELD) # Wait to allow drawer to expand
+	yield(move_mouse(Vector2(1000,300)), 'completed')
+	yield(move_mouse(card.global_position), 'completed')
+	yield(yield_for(0.6), YIELD) # Wait to allow drawer to expand
 	card.is_faceup = false
 	yield(yield_to(card.get_node('Control/Tokens/Tween'), "tween_all_completed", 0.5), YIELD)
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
