@@ -330,7 +330,8 @@ func _on_Card_gui_input(event) -> void:
 				and not tokens.are_hovered():
 			# If it's a double-click, then it's not a card drag
 			# But rather it's script execution
-			if event.doubleclick:
+			if event.doubleclick\
+					and check_play_costs() != CFConst.CostsState.IMPOSSIBLE:
 				cfc.card_drag_ongoing = null
 				execute_scripts()
 			# If it's a long click it might be because
@@ -342,7 +343,7 @@ func _on_Card_gui_input(event) -> void:
 					# See CFConst documentation.
 					if state == CardState.FOCUSED_IN_HAND \
 							and (CFConst.DISABLE_DRAGGING_FROM_HAND
-							or not check_play_costs()):
+							or check_play_costs() == CFConst.CostsState.IMPOSSIBLE):
 						return
 					if state == CardState.FOCUSED_ON_BOARD \
 							and CFConst.DISABLE_DRAGGING_FROM_BOARD:
@@ -1341,8 +1342,8 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 #
 # If it returns false, the card will be highlighted with a red tint, and the
 # player will not be able to drag it out of the hand.
-func check_play_costs() -> bool:
-	return(true)
+func check_play_costs() -> Color:
+	return(CFConst.CostsState.OK)
 
 
 # This function can be overriden by any class extending Card, in order to provide
@@ -1689,8 +1690,7 @@ func _process_card_state() -> void:
 			# always over its neighbours
 			z_index = 1
 			set_focus(true)
-			if not check_play_costs():
-				highlight.set_highlight(true,CFConst.CANNOT_PAY_COST_COLOUR)
+			highlight.set_highlight(true, check_play_costs())
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
 			# warning-ignore:return_value_discarded

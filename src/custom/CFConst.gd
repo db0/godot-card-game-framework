@@ -154,6 +154,17 @@ const ATTACHMENT_OFFSET := [
 	# BOTTOM_RIGHT
 	Vector2(0.2,0.2),
 ]
+# Returns a color code to be used to mark the state of cost to pay for a card
+# * IMPOSSIBLE: The cost of the card cannot be paid.
+# * INCREASED: The cost of the card can be paid but is increased for some reason.
+# * DECREASED: The cost of the card can be paid and is decreased for some reason.
+# * OK: The cost of the card can be paid exactly.
+const CostsState := {
+	"IMPOSSIBLE": Color(1, 0, 0) * 1.3,
+	"INCREASED": Color(1, 0.5, 0) * 1.3,
+	"DECREASED": Color(0.5, 1, 0) * 1.3,
+	"OK": Color(1, 0, 0) * 1.3,
+}
 # The colour to use when hovering over a card.
 #
 # Reduce the multiplier to reduce glow effect or stop it altogether
