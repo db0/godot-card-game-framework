@@ -993,6 +993,7 @@ func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
 		signal_details: Dictionary = {}):
+	common_pre_execution_scripts(trigger)
 	var card_scripts
 	var sceng = null
 	# If scripts have been defined directly in this Card object
@@ -1356,9 +1357,22 @@ func check_play_costs() -> bool:
 func common_move_scripts(new_host: Node, old_host: Node) -> void:
 	pass
 
+
 # This function can be overriden by any class extending Card, in order to provide
 # a way of running scripts for a whole class of cards, based on what the trigger was
+# before all normal scripts have been executed
 #
+# This is useful for example, for paying the costs of one-use cards before executing them
+# warning-ignore:unused_argument
+func common_pre_execution_scripts(trigger: String) -> void:
+	pass
+
+
+# This function can be overriden by any class extending Card, in order to provide
+# a way of running scripts for a whole class of cards, based on what the trigger was
+# after all normal scripts have been executed
+#
+# This is useful for example, for discarding one-use cards after playing them
 # warning-ignore:unused_argument
 func common_post_execution_scripts(trigger: String) -> void:
 	pass
