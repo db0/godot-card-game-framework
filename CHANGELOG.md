@@ -2,6 +2,16 @@
 
 ## 1.5 (Ongoing)
 
+**Important:** CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
+
+* CANNOT_PAY_COST_COLOUR has been removed
+* CostsState has been added as a dictionary of Colors (name is CameCase to simulate enum usage). The entry "OK" is mandatory.
+
+### New Features
+
+* Added common_pre_execution_scripts() which is executed before each script call. It is meant to be overriden for use in for common scripts per card type, instead of adding the same task on each card.
+* Added common_post_execution_scripts() which is executed after each script call. Similar purpose to common_pre_execution_scripts()
+
 ### Tweaks
 
 * GridPlacementSlots won't highlight anymore when the card doesn't belong in them (i.e. the card cannot be placed on the board, it can only be placed in a differently named grid)
@@ -30,7 +40,7 @@
 * Specified compensation label will increase when other labels are hidden because they are empty
 * Now can specify specific number properties which will cause the label to hide when they're set to 0
 * Added common_move_scripts() method in CardTemplate which is called after a card moves. This can be overriden by developers to call scripts for whole groups of cards.
-* Added a way  to generate a random seed each game.. Demonstration board displays the random seed.
+* Added a way to generate a random seed each game.. Demonstration board displays the random seed.
 
 #### ScriptingEngine
 

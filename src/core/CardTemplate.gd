@@ -1206,8 +1206,7 @@ func set_focus(requestedFocus: bool) -> void:
 	# We only modify the highlight though, if the card is not being
 	# highlighted by another effect (such as a targetting arrow etc)
 	if highlight.visible != requestedFocus and \
-			highlight.modulate in \
-			[CFConst.FOCUS_HOVER_COLOUR, CFConst.CANNOT_PAY_COST_COLOUR]:
+			highlight.modulate in CFConst.CostsState.values():
 		highlight.set_highlight(requestedFocus,CFConst.FOCUS_HOVER_COLOUR)
 	if cfc.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
