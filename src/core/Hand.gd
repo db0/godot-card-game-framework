@@ -12,8 +12,6 @@ var bottom_margin: float = CFConst.CARD_SIZE.y * CFConst.BOTTOM_MARGIN_MULTIPLIE
 
 func _ready() -> void:
 	add_to_group("hands")
-	# warning-ignore:return_value_discarded
-	$Control/ManipulationButtons/DiscardRandom.connect("pressed",self,'_on_DiscardRandom_Button_pressed')
 
 
 # Button which shuffles the children [Card] objects
