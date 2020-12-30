@@ -187,3 +187,34 @@ func test_card_not_draggable_without_focus_first():
 	yield(yield_for(0.2), YIELD)
 	assert_eq(Card.CardState.IN_HAND, card.state,
 			"Card state is still InHand because it wasn't focused first")
+
+func test_excess_cards_disallowed():
+	hand.excess_cards = Hand.ExcessCardsBehaviour.DISALLOW
+	hand.hand_size = 3
+	var cards = draw_test_cards(5, false)
+	assert_eq(hand.get_card_count(), 3)
+	assert_eq(cards[3], cards[4])
+
+func test_excess_cards_allowed():
+	hand.excess_cards = Hand.ExcessCardsBehaviour.ALLOW
+	hand.hand_size = 3
+	var cards = draw_test_cards(5, false)
+	assert_eq(hand.get_card_count(), 5)
+	assert_ne(cards[3], cards[4])
+
+func test_excess_cards_discard_drawn():
+	hand.excess_cards = Hand.ExcessCardsBehaviour.DISCARD_DRAWN
+	hand.hand_size = 3
+	var cards = draw_test_cards(5, false)
+	assert_eq(hand.get_card_count(), 3)
+	assert_eq(cards[3].get_parent(), discard)
+	assert_eq(cards[4].get_parent(), discard)
+
+func test_excess_cards_discard_oldest():
+	hand.excess_cards = Hand.ExcessCardsBehaviour.DISCARD_OLDEST
+	hand.hand_size = 3
+	var cards = draw_test_cards(5, false)
+	assert_eq(hand.get_card_count(), 3)
+	assert_eq(cards[0].get_parent(), discard)
+	assert_eq(cards[1].get_parent(), discard)
+

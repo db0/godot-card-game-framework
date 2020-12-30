@@ -9,6 +9,9 @@ font_data = ExtResource( 2 )
 
 [node name="Hand" instance=ExtResource( 1 )]
 script = ExtResource( 3 )
+placement = 7
+excess_discard_pile_name = "discard"
+excess_cards = 2
 
 [node name="DiscardRandom" type="Button" parent="Control/ManipulationButtons" index="2" groups=[
 "manipulation_button",

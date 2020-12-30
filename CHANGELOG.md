@@ -2,16 +2,23 @@
 
 ## 1.5 (Ongoing)
 
-### CFConst
-**Important:** CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
+### Important
+
+CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
 
 * CANNOT_PAY_COST_COLOUR has been removed
-* CostsState has been added as a dictionary of Colors (name is CameCase to simulate enum usage). The entry "OK" is mandatory.
+* CostsState has been added as a dictionary of Colors (name is CameCase to simulate enum usage). The entry "OK" is mandatory to exist.
+
+Hand class has been adjusted to export some more vars. Check them out and make sure you haven't lost any other exported var settings.
 
 ### New Features
 
 * Added common_pre_execution_scripts() which is executed before each script call. It is meant to be overriden for use in for common scripts per card type, instead of adding the same task on each card.
 * Added common_post_execution_scripts() which is executed after each script call. Similar purpose to common_pre_execution_scripts()
+* Can now specify the hand size for each Hand class on the editor
+* Now can specify on each hand, if cards over the maximum are allowed to be drawn and what happens then
+	In case DISCARD_DRAWN or DISCARD_OLDEST is specified, then an excess_discard_pile_name has to be also specified. The game then will seek a pile with this name and put the excess cards in there as specified.
+	ScriptingEngine will also respect this setting.
 
 ### Tweaks
 
@@ -25,9 +32,9 @@
 
 ## 1.4
 
-### CFConst
+### Important
 
-**Important:** CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  or add the following constants
+CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  or add the following constants
 
 * PATH_PER_ENGINE (New Addition)
 * ATTACHMENT_OFFSET (Modified to be an array)

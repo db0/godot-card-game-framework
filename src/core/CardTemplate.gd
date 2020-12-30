@@ -764,6 +764,7 @@ func move_to(targetHost: Node,
 	# This checks ensure we don't change parent to the board,
 	# if the placement to the board requested is invalid
 	# depending on the board_placement variable
+	targetHost = targetHost.get_final_placement_node(self)
 	if targetHost == cfc.NMAP.board and not board_position:
 		match board_placement:
 			BoardPlacement.NONE:

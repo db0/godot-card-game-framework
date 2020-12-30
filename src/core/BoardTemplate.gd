@@ -89,3 +89,6 @@ func get_grid(grid_name: String) -> BoardPlacementGrid:
 		if grid.name_label.text == grid_name:
 			found_grid = grid
 	return(found_grid)
+
+func get_final_placement_node(card: Card) -> Node:
+	return(self)

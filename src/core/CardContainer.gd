@@ -238,6 +238,13 @@ func shuffle_cards() -> void:
 	for card in cardsArray:
 		move_child(card, cardsArray.find(card))
 
+# Overridable function to allow the container to specify different
+# effects to happen when a card is attempted to be added
+# It should always return a valid node to put the card in
+#
+# For example, this can be used by a [Hand] to discard excess cards
+func get_final_placement_node(card: Card) -> Node:
+	return(self)
 
 # Translates requested card index to true node index.
 # By that, we mean the index the Card object it would have among all its

@@ -3,20 +3,51 @@
 class_name Hand
 extends CardContainer
 
+# Specifies the behaviour to follow when trying to draw a card and we
+# exceed our hand size
+enum ExcessCardsBehaviour {
+	DISALLOW
+	ALLOW
+	DISCARD_DRAWN
+	DISCARD_OLDEST
+}
 
 # The maximum amount of cards allowed to draw in this hand
-var hand_size := 12
 # Offsets the hand position based on the configuration
 var bottom_margin: float = CFConst.CARD_SIZE.y * CFConst.BOTTOM_MARGIN_MULTIPLIER
+# During _read(), this variable will be populated with a node from cfc.NMAP
+# according to the name specified in excess_discard_pile_name
+var _excess_discard_pile : Pile = null
+
+# Specify the name of the pile to discard excess cards
+# When "Discard Drawn" or "Discard Oldest" is specified
+# in excess_cards
+export var excess_discard_pile_name : String
+# The maximum hand size. What happens if this is exceeded is determined
+# by `excess_cards`
+export var hand_size := 10
+# Determines the behaviour of cards over the hand limit
+# * DISALLOWED: When hand is at limit, no more cards will be added to it
+# * ALLOWED: More cards than the limit can be added to the hand. The developer
+#	has to provide some logic on how to deal with the excess
+# * "DISCARD_DRAWN": When cards exceed the limit, the new card will be
+#	automatically discarded
+# * "DISCARD_OLDEST": When cards exceed the limit, the oldest card in the
+#	hand will be automatically discarded
+export(ExcessCardsBehaviour) var excess_cards
 
 onready var _counter_cards = $Counters/Cards
 
 func _ready() -> void:
 	add_to_group("hands")
+	if excess_discard_pile_name:
+		_excess_discard_pile = cfc.NMAP[excess_discard_pile_name.to_lower()]
+
 
 func _process(_delta: float) -> void:
 	_counter_cards.text = "Hand: " + str(get_card_count()) \
 			+ "/" + str(hand_size)
+
 
 # Button which shuffles the children [Card] objects
 func _on_Shuffle_Button_pressed() -> void:
@@ -59,9 +90,34 @@ func shuffle_cards() -> void:
 func draw_card(pile : Pile = cfc.NMAP.deck) -> Card:
 	var card: Card = pile.get_top_card()
 	# A basic function to pull a card from out deck into our hand.
-	if card and get_card_count() < hand_size: # prevent from exceeding our hand size
+	if card:
 		card.move_to(self)
 	return card
+
+
+func get_final_placement_node(card: Card) -> Node:
+	var container : Node = self
+	match excess_cards:
+		ExcessCardsBehaviour.DISALLOW:
+			if get_card_count() < hand_size:
+				container = self
+			else:
+				container = card.get_parent()
+		ExcessCardsBehaviour.ALLOW:
+			container = self
+		ExcessCardsBehaviour.DISCARD_DRAWN:
+			if get_card_count() < hand_size:
+				container = self
+			elif _excess_discard_pile:
+				container = _excess_discard_pile
+			else:
+				container = card.get_parent()
+		ExcessCardsBehaviour.DISCARD_OLDEST:
+			container = self
+			if get_card_count() >= hand_size \
+					and _excess_discard_pile:
+				get_card(0).move_to(_excess_discard_pile)
+	return(container)
 
 
 # Overrides the re_place() function of [CardContainer] in order
