@@ -18,6 +18,10 @@ var _UT_mouse_speed := 3
 var _UT_interpolation_requested := false
 # Used for interpolating
 var _t = 0
+# Used for finding the counters node and modifying them
+# This variable has to exist if the [mod_counters](ScriptingEngine#mod_counters)
+# task is to be used.
+var counters : Counters
 
 onready var mouse_pointer = \
 	load(CFConst.PATH_CORE + "MousePointer.tscn").instance()

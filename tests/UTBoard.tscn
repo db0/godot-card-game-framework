@@ -1,10 +1,11 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=13 format=2]
 
 [ext_resource path="res://src/custom/CGFDiscard.gd" type="Script" id=1]
 [ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/custom/CGFHand.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/custom/CGFDeck.gd" type="Script" id=4]
 [ext_resource path="res://src/custom/CGFBoard.gd" type="Script" id=5]
+[ext_resource path="res://src/custom/CGFCounters.tscn" type="PackedScene" id=6]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=7]
 [ext_resource path="res://src/core/BoardPlacementSlot.tscn" type="PackedScene" id=8]
 [ext_resource path="res://src/core/BoardPlacementGrid.gd" type="Script" id=9]
@@ -60,7 +61,10 @@ self_modulate = Color( 1, 1, 1, 0.501961 )
 custom_styles/panel = SubResource( 1 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
-placement = 7
+
+[node name="Counters" parent="." instance=ExtResource( 6 )]
+margin_top = 259.0
+margin_bottom = 273.0
 
 [node name="FancyMovementToggle" type="CheckButton" parent="."]
 visible = false

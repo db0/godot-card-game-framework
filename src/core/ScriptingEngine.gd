@@ -422,3 +422,21 @@ func add_grid(script: ScriptTask) -> void:
 		# than 1 column.
 		grid.rect_position.y += \
 				iter * CFConst.CARD_SIZE.y * CFConst.PLAY_AREA_SCALE.y
+
+# Task for modifying a a counter.
+# If this task is specified, the variable counters **has** to be set
+# inside the board script
+func mod_counter(script: ScriptTask) -> int:
+	var counter_name: String = script.get_property(SP.KEY_COUNTER)
+	var modification: int
+	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
+		modification = stored_integer
+	else:
+		modification = script.get_property(SP.KEY_MODIFICATION)
+	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
+	var retcode: int = cfc.NMAP.board.counters.mod_counter(
+			counter_name,
+			modification,
+			set_to_mod,
+			costs_dry_run)
+	return(retcode)

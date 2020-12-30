@@ -324,3 +324,20 @@ func test_create_grid():
 	for grid in gut_grids:
 		assert_eq(grid.name_label.text, "GUT Grid",
 				"Created grid has correct label")
+
+func test_mod_counter():
+	card.scripts = {"manual": {"hand": [
+			{"name": "mod_counter",
+			"modification": 5,
+			"counter_name":  "research"}]}}
+	card.execute_scripts()
+	assert_eq(5,board.counters.get_counter("research"),
+			"Counter increased by specified amount")
+	card.scripts = {"manual": {"hand": [
+			{"name": "mod_counter",
+			"modification": 2,
+			"set_to_mod": true,
+			"counter_name": "credits"}]}}
+	card.execute_scripts()
+	assert_eq(2,board.counters.get_counter("credits"),
+			"Counter set to the specified amount")
