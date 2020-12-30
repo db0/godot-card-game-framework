@@ -9,10 +9,14 @@ var hand_size := 12
 # Offsets the hand position based on the configuration
 var bottom_margin: float = CFConst.CARD_SIZE.y * CFConst.BOTTOM_MARGIN_MULTIPLIER
 
+onready var _counter_cards = $Counters/Cards
 
 func _ready() -> void:
 	add_to_group("hands")
 
+func _process(_delta: float) -> void:
+	_counter_cards.text = "Hand: " + str(get_card_count()) \
+			+ "/" + str(hand_size)
 
 # Button which shuffles the children [Card] objects
 func _on_Shuffle_Button_pressed() -> void:

@@ -2,6 +2,7 @@
 
 ## 1.5 (Ongoing)
 
+### CFConst
 **Important:** CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
 
 * CANNOT_PAY_COST_COLOUR has been removed
@@ -15,6 +16,7 @@
 ### Tweaks
 
 * GridPlacementSlots won't highlight anymore when the card doesn't belong in them (i.e. the card cannot be placed on the board, it can only be placed in a differently named grid)
+* The demo now has a custom instance of Hand.tcsn and the DiscardRandom is a set as a custom button in it.
 
 ### Bugfixes
 
@@ -23,7 +25,7 @@
 
 ## 1.4
 
-## CFConst
+### CFConst
 
 **Important:** CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  or add the following constants
 

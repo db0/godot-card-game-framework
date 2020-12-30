@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/core/Hand.gd" type="Script" id=1]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
@@ -11,6 +11,19 @@ font_data = ExtResource( 2 )
 
 [sub_resource type="RectangleShape2D" id=3]
 extents = Vector2( 490, 120 )
+
+[sub_resource type="StyleBoxFlat" id=4]
+bg_color = Color( 0.392157, 0.364706, 0.364706, 1 )
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="DynamicFont" id=5]
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
+font_data = ExtResource( 2 )
 
 [node name="Hand" type="Area2D" groups=[
 "hands",
@@ -72,3 +85,22 @@ margin_bottom = 32.0
 margin_top = 36.0
 margin_right = 39.0
 margin_bottom = 50.0
+
+[node name="Counters" type="PanelContainer" parent="."]
+margin_left = -0.392883
+margin_top = -46.4221
+margin_right = 19.6071
+margin_bottom = -16.4221
+custom_styles/panel = SubResource( 4 )
+__meta__ = {
+"_edit_group_": true,
+"_edit_use_anchors_": false
+}
+
+[node name="Cards" type="Label" parent="Counters"]
+margin_top = 5.0
+margin_right = 20.0
+margin_bottom = 25.0
+custom_fonts/font = SubResource( 5 )
+align = 1
+valign = 1
