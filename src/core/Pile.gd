@@ -150,6 +150,7 @@ func remove_child(node, _legible_unique_name=false) -> void:
 	# When we put the first card in the pile, we make sure the
 	# Panel is made transparent so that the card backs are seen instead
 	if get_card_count() == 0:
+		.re_place()
 		if not $Tween.is_active():
 			$Tween.remove($Control,'self_modulate:a')
 			$Tween.interpolate_property($Control,'self_modulate:a',
@@ -180,10 +181,10 @@ func reorganize_stack() -> void:
 	# since we're adding cards towards the top, we do not want the re_place()
 	# function to push the pile higher than the edge of the screen
 	# it is supposed to be
-	if "bottom" in get_groups() or "top" in get_groups():
+	if "top" in get_groups():
 		position.y += get_card_count()
-#	if "right" in get_groups():
-#		position.x -= get_card_count() * 0.5
+	if "right" in get_groups():
+		position.x -= get_card_count() * 0.5
 
 
 # Override the godot builtin move_child() method,
