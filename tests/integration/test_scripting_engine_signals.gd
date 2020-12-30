@@ -411,7 +411,7 @@ func test_card_token_modified():
 				"set_faceup": false}],
 			"filter_token_difference": "decreased",
 			"filter_token_count": 1,
-			"filter_token_name": "Void",
+			"filter_token_name": "void",
 			"trigger": "another"}}
 	# This card should stay face-up since some limits will not match
 	cards[7].scripts = {"card_token_modified": {
@@ -429,7 +429,7 @@ func test_card_token_modified():
 	assert_signal_emitted_with_parameters(
 				target,"card_token_modified",
 				[target,"card_token_modified",
-				{"token_name": "Void",
+				{"token_name": "void",
 				"previous_token_value": 5,
 				"new_token_value": 1}])
 	assert_false(card.is_faceup,

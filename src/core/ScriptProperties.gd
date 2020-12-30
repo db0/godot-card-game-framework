@@ -155,6 +155,11 @@ const KEY_SUBJECT_INDEX_V_TOP := "top"
 #
 # If specified, explicitly looks for the "bottom" card of a pile
 const KEY_SUBJECT_INDEX_V_BOTTOM := "bottom"
+# Special entry to be used with [KEY_SUBJECT_INDEX](#KEY_SUBJECT_INDEX)
+# instead of an integer.
+#
+# If specified, picks a random index in the container
+const KEY_SUBJECT_INDEX_V_RANDOM := "random"
 # Value Type: Dynamic (Default = [KEY_SUBJECT_INDEX_V_TOP](#KEY_SUBJECT_INDEX_V_TOP))
 # * int
 # * [KEY_SUBJECT_INDEX_V_TOP](#KEY_SUBJECT_INDEX_V_TOP)

@@ -5,6 +5,7 @@ class_name ScriptObject
 extends Reference
 
 # Sent when the _init() method has completed
+# warning-ignore:unused_signal
 signal completed_init
 
 
@@ -128,6 +129,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				index = src_container.get_card_index(src_container.get_last_card())
 			elif str(index) == SP.KEY_SUBJECT_INDEX_V_BOTTOM:
 				index = src_container.get_card_index(src_container.get_first_card())
+			elif str(index) == SP.KEY_SUBJECT_INDEX_V_RANDOM:
+				index = src_container.get_card_index(src_container.get_random_card())
 			elif str(index) == SP.VALUE_RETRIEVE_INTEGER:
 				index = stored_integer
 			# Just to prevent typos since we don't enforce integers on index

@@ -89,7 +89,6 @@ func complete_targeting() -> void:
 func _on_ArrowHead_area_entered(card: Card) -> void:
 	if card and not card in _potential_cards:
 		_potential_cards.append(card)
-		_potential_cards.sort_custom(CFUtils,"sort_index_ascending")
 		owner_card.highlight.highlight_potential_card(CFConst.TARGET_HOVER_COLOUR,
 				_potential_cards)
 
@@ -104,7 +103,9 @@ func _on_ArrowHead_area_exited(card: Card) -> void:
 		# And we explicitly hide its cards focus since we don't care about it anymore
 		card.highlight.set_highlight(false)
 		# Finally, we make sure we highlight any other cards we're still hovering
-		owner_card.highlight.highlight_potential_card(CFConst.TARGET_HOVER_COLOUR,
+		if not _potential_cards.empty():
+			owner_card.highlight.highlight_potential_card(
+				CFConst.TARGET_HOVER_COLOUR,
 				_potential_cards)
 
 

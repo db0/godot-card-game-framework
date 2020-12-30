@@ -1201,13 +1201,13 @@ func interruptTweening() ->void:
 
 
 # Changes card focus (highlighted and put on the focus viewport)
-func set_focus(requestedFocus: bool) -> void:
+func set_focus(requestedFocus: bool, colour := CFConst.FOCUS_HOVER_COLOUR) -> void:
 	# We use an if to avoid performing constant operations in _process
 	# We only modify the highlight though, if the card is not being
 	# highlighted by another effect (such as a targetting arrow etc)
 	if highlight.visible != requestedFocus and \
 			highlight.modulate in CFConst.CostsState.values():
-		highlight.set_highlight(requestedFocus,CFConst.FOCUS_HOVER_COLOUR)
+		highlight.set_highlight(requestedFocus,colour)
 	if cfc.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
 			cfc.NMAP.main.focus_card(self)
@@ -1688,8 +1688,7 @@ func _process_card_state() -> void:
 			# We increase the z_index to allow the focused card appear
 			# always over its neighbours
 			z_index = 1
-			set_focus(true)
-			highlight.set_highlight(true, check_play_costs())
+			set_focus(true,check_play_costs())
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
 			# warning-ignore:return_value_discarded

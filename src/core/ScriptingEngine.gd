@@ -183,6 +183,10 @@ func move_card_to_container(script: ScriptTask) -> int:
 			dest_index = -1
 		elif str(dest_index) == SP.KEY_SUBJECT_INDEX_V_BOTTOM:
 			dest_index = 0
+		# If we're placing in a random index, we're simply choosing a random
+		# card in the container, and placing in its position
+		elif str(dest_index) == SP.KEY_SUBJECT_INDEX_V_RANDOM:
+			dest_index = dest_container.get_card_index(dest_container.get_random_card())
 		for card in script.subjects:
 			card.move_to(dest_container,dest_index)
 			yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
