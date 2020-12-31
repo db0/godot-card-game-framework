@@ -72,6 +72,7 @@ var scripting_engine = load(CFConst.PATH_SCRIPTING_ENGINE)
 # If we do, it is parsed by the compiler who then considers it
 # a cyclic reference as the scripting engine refers back to the Card class.
 var per_engine = load(CFConst.PATH_PER_ENGINE)
+var alterant_engine = load(CFConst.PATH_ALTERANT_ENGINE)
 
 func _ready() -> void:
 	# We reset our node mapping variables every time

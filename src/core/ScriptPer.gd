@@ -5,10 +5,10 @@ extends ScriptObject
 
 
 # prepares the properties needed by the task to function.
-func _init(card: Card,
+func _init(owner_card: Card,
 		script: Dictionary,
-		per_seek: String).(card,
-		script) -> void:
+		per_seek: String,
+		trigger_card = null).(owner_card, script, trigger_card) -> void:
 	# The name of the type of per we're seeking gets its own var
 	script_name = per_seek
 	var ret =_find_subjects()
@@ -62,7 +62,7 @@ func _count_property() -> int:
 # Do something per counter amount
 func _count_counter() -> int:
 	var ret: int
-	var counter_name = get_property(SP.KEY_COUNTER)
+	var counter_name = get_property(SP.KEY_COUNTER_NAME)
 	ret = cfc.NMAP.board.counters.get_counter(counter_name)
 	return(ret)
 

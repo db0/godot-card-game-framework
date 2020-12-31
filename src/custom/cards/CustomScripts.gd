@@ -15,7 +15,7 @@ func _init(dry_run_req) -> void:
 # And to have a self-reference in case it affects itself
 #
 # You can pass a predefined subject, but it's optional.
-func custom_script(script: ScriptTask) -> void:
+func custom_script(script: ScriptObject) -> void:
 	var card: Card = script.owner_card
 	var subjects: Array = script.subjects
 	# I don't like the extra indent caused by this if, 
@@ -35,3 +35,7 @@ func custom_script(script: ScriptTask) -> void:
 						+ " to find a convenient target")
 				print("Destroying: " + subjects[0].card_name)
 				subjects[0].queue_free()
+
+func custom_alterants(script: ScriptObject) -> int:
+	var alteration := 0
+	return(alteration)

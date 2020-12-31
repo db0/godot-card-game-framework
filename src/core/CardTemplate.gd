@@ -994,23 +994,9 @@ func move_to(targetHost: Node,
 func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
-		signal_details: Dictionary = {}):
+		trigger_details: Dictionary = {}):
 	common_pre_execution_scripts(trigger)
-	var card_scripts
-	var sceng = null
-	# If scripts have been defined directly in this Card object
-	# They take precedence over CardScriptDefinitions.gd
-	#
-	# This allows us to modify a card's scripts during runtime
-	# in isolation from other cards of the same name
-	if not scripts.empty():
-		card_scripts = scripts.get(trigger,{}).duplicate()
-	else:
-		# This retrieves all the script from the card, stored in cfc
-		# The seeks in them the specific trigger we're using in this
-		# execution
-		card_scripts = cfc.set_scripts.get(card_name,{}).get(trigger,{}).duplicate()
-
+	var card_scripts = retrieve_card_scripts(trigger)
 	# I use this spot to add a breakpoint when testing script behaviour
 	# especially on filters
 	if _debugger_hook:
@@ -1022,25 +1008,11 @@ func execute_scripts(
 			card_scripts,
 			trigger_card,
 			self,
-			signal_details):
+			trigger_details):
 		card_scripts.clear()
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state
-	var state_exec := "NONE"
-	match state:
-		CardState.ON_PLAY_BOARD,\
-				CardState.FOCUSED_ON_BOARD,\
-				CardState.DROPPING_TO_BOARD:
-			# We assume only faceup cards can execute scripts on the board
-			if is_faceup:
-				state_exec = "board"
-		CardState.IN_HAND,\
-				CardState.FOCUSED_IN_HAND,\
-				CardState.REORGANIZING,\
-				CardState.PUSHED_ASIDE:
-				state_exec = "hand"
-		CardState.IN_POPUP, CardState.FOCUSED_IN_POPUP:
-				state_exec = "pile"
+	var state_exec := get_state_exec()
 	state_scripts = card_scripts.get(state_exec, [])
 	# Here we check for confirmation of optional trigger effects
 	# There should be an SP.KEY_IS_OPTIONAL definition per state
@@ -1074,7 +1046,8 @@ func execute_scripts(
 		choices_menu.queue_free()
 
 	# To avoid unnecessary operations
-	# we evoce the ScriptingEngine only if we have something to execute
+	# we evoke the ScriptingEngine only if we have something to execute
+	var sceng = null
 	if len(state_scripts):
 		# This evocation of the ScriptingEngine, checks the card for
 		# cost-defined tasks, and performs a dry-run on them
@@ -1100,6 +1073,55 @@ func execute_scripts(
 					state_scripts)
 	common_post_execution_scripts(trigger)
 	return(sceng)
+
+
+# Retrieves the card scripts either from those defined on the card
+# itself, or from those defined in the script definition files
+#
+# Returns a dictionary of card scripts for this specific card
+# based on the current trigger.
+func retrieve_card_scripts(trigger: String) -> Dictionary:
+	var found_scripts: Dictionary
+	# If scripts have been defined directly in this Card object
+	# They take precedence over CardScriptDefinitions.gd
+	#
+	# This allows us to modify a card's scripts during runtime
+	# in isolation from other cards of the same name
+	if not scripts.empty():
+		found_scripts = scripts.get(trigger,{}).duplicate()
+	else:
+		# This retrieves all the script from the card, stored in cfc
+		# The seeks in them the specific trigger we're using in this
+		# execution
+		found_scripts = cfc.set_scripts.get(card_name,{}).get(trigger,{}).duplicate()
+	return(found_scripts)
+
+
+# Determines which play position (board, pile or hand)
+# a script should look for to find card scripts
+# based on the card's state.
+#
+# Returns either "board", "hand", "pile" or "NONE".
+func get_state_exec() -> String:
+	var state_exec := "NONE"
+	# We don't check according to the parent name
+	# as that can change.
+	# Might consier checking on the parent class if this gets too complicated.
+	match state:
+		CardState.ON_PLAY_BOARD,\
+				CardState.FOCUSED_ON_BOARD,\
+				CardState.DROPPING_TO_BOARD:
+			# We assume only faceup cards can execute scripts on the board
+			if is_faceup:
+				state_exec = "board"
+		CardState.IN_HAND,\
+				CardState.FOCUSED_IN_HAND,\
+				CardState.REORGANIZING,\
+				CardState.PUSHED_ASIDE:
+				state_exec = "hand"
+		CardState.IN_POPUP, CardState.FOCUSED_IN_POPUP, CardState.IN_PILE:
+				state_exec = "pile"
+	return(state_exec)
 
 
 # Handles the card becoming an attachment for a specified host Card object

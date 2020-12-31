@@ -98,37 +98,33 @@ func run_next_script(card_owner: Card,
 			# card.
 			var custom := CustomScripts.new(costs_dry_run)
 			custom.custom_script(script)
-		elif script.script_name:
-			if script.is_valid \
-					and (not costs_dry_run
-						or (costs_dry_run and script.get_property(SP.KEY_IS_COST))):
-				#print(script.is_valid,':',costs_dry_run)
-				var retcode = call(script.script_name, script)
-				# When
-				if script.script_name in wait_for_tasks \
-						and retcode is GDScriptFunctionState:
-					retcode = yield(retcode, "completed")
-				if costs_dry_run:
-					if retcode != CFConst.ReturnCode.CHANGED:
-						can_all_costs_be_paid = false
-					else:
-						# We check for confirmation of optional cost tasks
-						# only after checking that they are feasible
-						# because there's no point in asking the player
-						# about a task they cannot perform anyway.
-						var confirm_return = CFUtils.confirm(
-							script.script_definition,
-							card_owner.card_name,
-							script.script_name)
-						if confirm_return is GDScriptFunctionState: # Still working.
-							confirm_return = yield(confirm_return, "completed")
-							# If the player chooses not to play an optional cost
-							# We consider the whole cost dry run unsuccesful
-							if not confirm_return:
-								can_all_costs_be_paid = false
-		else:
-			 # If card has a script but it's null, it probably not coded yet. Just go on...
-			print("[WARN] Found empty script. Ignoring...")
+		elif script.is_valid \
+				and (not costs_dry_run
+					or (costs_dry_run and script.get_property(SP.KEY_IS_COST))):
+			#print(script.is_valid,':',costs_dry_run)
+			var retcode = call(script.script_name, script)
+			# When
+			if script.script_name in wait_for_tasks \
+					and retcode is GDScriptFunctionState:
+				retcode = yield(retcode, "completed")
+			if costs_dry_run:
+				if retcode != CFConst.ReturnCode.CHANGED:
+					can_all_costs_be_paid = false
+				else:
+					# We check for confirmation of optional cost tasks
+					# only after checking that they are feasible
+					# because there's no point in asking the player
+					# about a task they cannot perform anyway.
+					var confirm_return = CFUtils.confirm(
+						script.script_definition,
+						card_owner.card_name,
+						script.script_name)
+					if confirm_return is GDScriptFunctionState: # Still working.
+						confirm_return = yield(confirm_return, "completed")
+						# If the player chooses not to play an optional cost
+						# We consider the whole cost dry run unsuccesful
+						if not confirm_return:
+							can_all_costs_be_paid = false
 		# At the end of the task run, we loop back to the start, but of course
 		# with one less item in our scripts_queue.
 		run_next_script(card_owner,scripts_queue,script.subjects)
@@ -263,10 +259,11 @@ func move_card_to_board(script: ScriptTask) -> int:
 func mod_tokens(script: ScriptTask) -> int:
 	var retcode: int
 	var modification: int
+	var alteration := 0
 	var token_name: String = script.get_property(SP.KEY_TOKEN_NAME)
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
-	elif "per_" in str(script.get_property(SP.KEY_MODIFICATION)):
+	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		modification = ScriptObject.count_per(
 				script.get_property(SP.KEY_MODIFICATION),
 				script.owner_card,
@@ -274,9 +271,11 @@ func mod_tokens(script: ScriptTask) -> int:
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
+	if not set_to_mod:
+		alteration = _check_for_alterants(script, modification)
 	for card in script.subjects:
 		retcode = card.tokens.mod_token(token_name,
-				modification,set_to_mod,costs_dry_run)
+				modification + alteration,set_to_mod,costs_dry_run)
 	return(retcode)
 
 
@@ -293,23 +292,25 @@ func mod_tokens(script: ScriptTask) -> int:
 func spawn_card(script: ScriptTask) -> void:
 	var card: Card
 	var count: int
+	var alteration := 0
 	var card_scene: String = script.get_property(SP.KEY_SCENE_PATH)
 	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
 		count = stored_integer
-	elif "per_" in str(script.get_property(SP.KEY_OBJECT_COUNT)):
+	elif SP.VALUE_PER in str(script.get_property(SP.KEY_OBJECT_COUNT)):
 		count = ScriptObject.count_per(
 				script.get_property(SP.KEY_OBJECT_COUNT),
 				script.owner_card,
 				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)))
 	else:
 		count = script.get_property(SP.KEY_OBJECT_COUNT)
+	alteration = _check_for_alterants(script, count)
 	if grid_name:
 		var grid: BoardPlacementGrid
 		var slot: BoardPlacementSlot
 		grid = cfc.NMAP.board.get_grid(grid_name)
 		if grid:
-			for _iter in range(count):
+			for _iter in range(count + alteration):
 				slot = grid.find_available_slot()
 				# We need a small delay, to allow a potential new slot to instance
 				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
@@ -321,7 +322,7 @@ func spawn_card(script: ScriptTask) -> void:
 					slot.occupying_card = card
 					card.state = Card.CardState.ON_PLAY_BOARD
 	else:
-		for iter in range(count):
+		for iter in range(count + alteration):
 			card = load(card_scene).instance()
 			var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)
 			cfc.NMAP.board.add_child(card)
@@ -427,16 +428,39 @@ func add_grid(script: ScriptTask) -> void:
 # If this task is specified, the variable counters **has** to be set
 # inside the board script
 func mod_counter(script: ScriptTask) -> int:
-	var counter_name: String = script.get_property(SP.KEY_COUNTER)
+	var counter_name: String = script.get_property(SP.KEY_COUNTER_NAME)
 	var modification: int
+	var alteration := 0
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
+	elif SP.VALUE_PER in str(script.get_property(SP.KEY_OBJECT_COUNT)):
+		modification = ScriptObject.count_per(
+				script.get_property(SP.KEY_OBJECT_COUNT),
+				script.owner_card,
+				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)))
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
+	# We do not not modify
+	if not set_to_mod:
+		alteration = _check_for_alterants(script, modification)
 	var retcode: int = cfc.NMAP.board.counters.mod_counter(
 			counter_name,
-			modification,
+			modification + alteration,
 			set_to_mod,
 			costs_dry_run)
 	return(retcode)
+
+
+# Initiates a seek through the table to see if there's any cards
+# which modify the intensity of the current task
+func _check_for_alterants(script: ScriptTask, value: int) -> int:
+	var alteration = ScriptObject.get_altered_value(
+		script.owner_card,
+		script.script_name,
+		script.script_definition,
+		value)
+	if alteration is GDScriptFunctionState:
+		alteration = yield(alteration, "completed")
+	return(alteration)
+

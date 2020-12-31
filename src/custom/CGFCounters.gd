@@ -7,7 +7,7 @@ func _ready() -> void:
 	needed_counters = {
 		"credits": {
 			"CounterTitle": "Available Credits: ",
-			"Value": 10},
+			"Value": 100},
 		"research":{
 			 "CounterTitle": "Research: ",
 			"Value": 0},

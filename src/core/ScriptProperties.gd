@@ -28,13 +28,18 @@ extends Reference
 # If key does not exist, we set value to [], assuming there's no subjects
 # in the task.
 const KEY_SUBJECT := "subject"
-# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
+# If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # we initiate targetting from the owner card
 const KEY_SUBJECT_V_TARGET := "target"
-# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
+# If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then the task affects the owner card only.
 const KEY_SUBJECT_V_SELF := "self"
-# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
+# This is only used during alterant scripts using the [KEY_PER](#KEY_PER)
+#
+# If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
+# Then the script will count the properties of the trigger card only.
+const KEY_SUBJECT_V_TRIGGER := "trigger"
+# If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we search all cards on the table
 # by node order, and return candidates equal to
 # [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT) that match the filters.
@@ -42,15 +47,15 @@ const KEY_SUBJECT_V_SELF := "self"
 # This allows us to make tasks which will affect more than 1 card at
 # the same time (e.g. "All Soldiers")
 const KEY_SUBJECT_V_BOARDSEEK := "boardseek"
-# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
+# If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we search all cards on the specified
 # pile by node order, and pick the first candidate that matches the filter
 const KEY_SUBJECT_V_TUTOR := "tutor"
-# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
+# If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we pick the card on the specified
 # source pile by its index among other cards.
 const KEY_SUBJECT_V_INDEX := "index"
-# * If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
+# If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we use the subject specified in the previous task
 const KEY_SUBJECT_V_PREVIOUS := "previous"
 # Value Type: Dynamic (Default = 1)
@@ -204,7 +209,7 @@ const KEY_GRID_NAME := "grid_name"
 #
 # Used with the [mod_counter](ScriptingEngine#mod_counter) task to specify
 # Which counter to modify with this task
-const KEY_COUNTER := "counter_name"
+const KEY_COUNTER_NAME := "counter_name"
 # Value Type: bool (Default = false).
 #
 # Used when a script is using one of the following tasks:
@@ -257,6 +262,65 @@ const KEY_ASK_INTEGER_MIN := "ask_int_min"
 # Used by the [ask_integer](ScriptingEngine#ask_integer) task.
 # Specifies the maximum value the number needs to have
 const KEY_ASK_INTEGER_MAX := "ask_int_max"
+# Value Type: Array of Strings
+#
+# A number of keywords you can assign to your script, which details
+# what function it is serving.
+# These can be hooked one by the [AlterantEngine]
+# to figure out if this script effects should be altered.
+#
+# A script has to have all the tags an alterant is looking for before it
+# will be considered to be altered.
+const KEY_TAGS := "tags"
+# Value Type: Dictionary
+#
+# Used in place of a task name. This key allows the card to be marked as
+# an alterant. I.e. a card which will modify the values of other scripts or
+# effects.
+#
+# For example cards which reduce or increase costs,
+# or cards which intensify the effect of other cards would be alterants.
+#
+# The dictionary inside follows a similar format to the normal script,
+# with the position of the card being the next key, specifying when the
+# alterant is active, and inside that, an array of mulitple alterants to check
+# against.
+#
+# A sample alterant definition might look like this
+#```
+#{"alterants": {
+#	"board": [
+#		{"filter_task": "mod_counter",
+#		"trigger": "another",
+#		"filter_tags": ["PlayCost"],
+#		"filter_counter_name": "research",
+#		"filter_state_trigger": [{
+#			"filter_properties": {"Type": "Science"}
+#		}],
+#		"alteration": -1}
+#	]
+#}}
+#```
+# The above would roughly translate to "Whenever you are playing a Science card
+# reduce it's research cost by 1"
+#
+# The main Difference being that triggers are checked inside each individual
+# alterant task, rather than on the whole script. This allows the same card
+# to modify different sort of cards and triggers, in different ways.
+#
+# Currently the following tasks support being altered during runtime via alterants
+# * [mod_tokens](ScriptingEngine#mod_tokens)
+# * [mod_counter](ScriptingEngine#mod_counter)
+# * [spawn_card](ScriptingEngine#spawn_card)
+const KEY_ALTERANTS := "alterants"
+# Value Type: int
+#
+# Used by the [AlterantEngine] to determine by how much it should modify
+# the currently performed task.
+#
+# It can accept a [VALUE_PER](#VALUE_PER) value which allows one to script an
+# effect like "Increase the cost by the number of Soldiers on the table"
+const KEY_ALTERATION := "alteration"
 # This is a versatile value that can be inserted into any various keys
 # when a task needs to calculate the amount of subjects to look for
 # or the number of things to do, based on the state of the board at that point
@@ -346,8 +410,7 @@ const KEY_PER_BOARDSEEK := "per_boardseek"
 # A [VALUE_PER](#VALUE_PER) key for perfoming an effect
 # equal to the value of a counter.
 const KEY_PER_COUNTER := "per_counter"
-
-# Value Type: String
+# Value Type: String. One of the below:
 # * "eq" (Defaut): Equal
 # * "ne": Not equal (This can be used to againsr strings as well)
 # * "gt": Greater than
@@ -427,7 +490,8 @@ const KEY_IS_OPTIONAL := "is_optional_"
 # against the trigger card, or the subjects card.
 #
 # One of the following strings HAS to be appended at the end:
-# * "trigger": Will only filter cards triggering this effect via signals.
+# * "trigger": Will only filter cards triggering this effect via signals
+#	or cards triggering an alterant effect.
 # * "subject": Will only filter cards that are looked up as targets for the effect.
 # * "seek": Will only filter cards that are automatically sought on the board.
 # * "tutor": Will only filter cards that are automaticaly sought in a pile.
@@ -511,6 +575,10 @@ const FILTER_TOKEN_DIFFERENCE := "filter_token_difference"
 # Filter used for checking against [TRIGGER_TOKEN_NAME](#TRIGGER_TOKEN_NAME)
 # and in [check_state](#check_state)
 const FILTER_TOKEN_NAME := "filter_token_name"
+# Value Type: String.
+#
+# Filter used for checking against [TRIGGER_COUNTER_NAME](#TRIGGER_COUNTER_NAME)
+const FILTER_COUNTER_NAME := "filter_counter_name"
 # Value Type: Dictionary
 #
 # Filter used for checking in [check_state](#check_state)
@@ -602,26 +670,38 @@ const FILTER_MODIFIED_PROPERTY_NEW_VALUE := "new_value"
 #
 # Filter used for checking against [TRIGGER_PREV_PROPERTY_VALUE](#TRIGGER_PREV_PROPERTY_VALUE)
 const FILTER_MODIFIED_PROPERTY_PREV_VALUE := "previous_value"
-
-
+# Value Type: String or Array of Strings
+#
+# A number of keywords to try and match against [KEY_TAGS](#KEY_TAGS)
+# passed by the script definition.
+const FILTER_TAGS := "filter_tags"
+# Value Type: String
+#
+# Filter used for checking against [TRIGGER_TASK_NAME](#TRIGGER_TASK_NAME)
+const FILTER_TASK = "filter_task"
+# Value Type: String
+#
+# Filter used for checking against [KEY_SCENE_PATH](#KEY_SCENE_PATH)
+const FILTER_SCENE_PATH = "filter_scene_path"
 #---------------------------------------------------------------------
-# Signal Properties
+# Trigger Properties
 #
 # The below are all the possible dictionary keys send in the dictionary
-# passed by a card trigger signal (See Card signals)
+# passed by a card trigger signal (See Card signals) or by a script looking
+# for alterant cards
 #
 # Most of them are only relevant for a specific task type
 #---------------------------------------------------------------------
 
 # Value Type: int.
 #
-# Filter value sent by the trigger Card `card_rotated` [signal](Card#signals).
+# Filter value sent by the Card trigger `card_rotated` [signal](Card#signals).
 #
 # These are the degress in multiples of 90, that the subjects was rotated.
 const TRIGGER_DEGREES := "degrees"
 # Value Type: bool.
 #
-# Filter value sent by the trigger Card `card_flipped` [signal](Card#signals).
+# Filter value sent by the Card trigger `card_flipped` [signal](Card#signals).
 #
 # This is the facing of trigger.
 # * true: Trigger turned face-up
@@ -629,19 +709,19 @@ const TRIGGER_DEGREES := "degrees"
 const TRIGGER_FACEUP := "is_faceup"
 # Value Type: String.
 #
-# Filter value sent by the trigger `card_properties_modified` [signal](Card#signals).
+# Filter value sent by the Card trigger `card_properties_modified` [signal](Card#signals).
 #
 # This is the property name
 const TRIGGER_MODIFIED_PROPERTY_NAME := "property_name"
 # Value Type: String.
 #
-# Filter value sent by the trigger `card_properties_modified` [signal](Card#signals).
+# Filter value sent by the Card trigger `card_properties_modified` [signal](Card#signals).
 #
 # This is the current value of the property.
 const TRIGGER_NEW_PROPERTY_VALUE := "new_property_value"
 # Value Type: String.
 #
-# Filter value sent by the trigger `card_properties_modified` [signal](Card#signals).
+# Filter value sent by the Card trigger `card_properties_modified` [signal](Card#signals).
 #
 # This is the value the property had before it was modified
 const TRIGGER_PREV_PROPERTY_VALUE := "previous_property_value"
@@ -667,24 +747,32 @@ const TRIGGER_SOURCE := "source"
 const TRIGGER_DESTINATION := "destination"
 # Value Type: int.
 #
-# Filter value sent by the trigger Card `card_token_modified` [signal](Card#signals).
+# Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
 #
 # This is the current value of the token.
 # If token was removed value will be 0
 const TRIGGER_NEW_TOKEN_VALUE := "new_token_value"
 # Value Type: int.
 #
-# Filter value sent by the trigger Card `card_token_modified` [signal](Card#signals).
+# Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
 #
 # This is the value the token had before it was modified
 # If token was removed value will be 0
 const TRIGGER_PREV_TOKEN_VALUE := "previous_token_value"
 # Value Type: String.
 #
-# Filter value sent by the trigger Card `card_token_modified` [signal](Card#signals).
+# Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
+# as well as via the mod_tokens alterant script
 #
 # This is the value of the token name modified
 const TRIGGER_TOKEN_NAME = "token_name"
+# Value Type: String.
+#
+# Filter value sent by the Counters trigger `counter_modified` [signal](Counters#signals).
+# as well as via the mod_counters alterant script
+#
+# This is the value of the token name modified
+const TRIGGER_COUNTER_NAME = "counter_name"
 # Value Type: Card.
 #
 # Filter value sent by the following [signals](Card#signals).
@@ -693,12 +781,15 @@ const TRIGGER_TOKEN_NAME = "token_name"
 # It contains the host object onto which this card attached
 # or from which it unattached
 const TRIGGER_HOST = "host"
-
+# Sent to the [AlterantEngine] by a task which allows alterations,
+# which allows a alterant cards to filter on whether to modify this value.
+# See [FILTER_TASK](#FILTER_TASK).
+const TRIGGER_TASK_NAME = "task_name"
 
 #---------------------------------------------------------------------
-# Signal Values
+# Trigger Values
 #
-# Some filter check signals against constants. They are defined below
+# Some filter check signals against specific constants. They are defined below
 #---------------------------------------------------------------------
 
 # Value is sent by trigger when new token count is higher than old token count.
@@ -738,6 +829,8 @@ static func get_default(property: String):
 			default = ""
 		KEY_COMPARISON:
 			default = "eq"
+		KEY_TAGS:
+			default = []
 		_:
 			default = null
 	return(default)
@@ -751,7 +844,7 @@ static func filter_trigger(
 		card_scripts,
 		trigger_card,
 		owner_card,
-		signal_details) -> bool:
+		trigger_details) -> bool:
 	# Checking card properties is its own function as it might be
 	# called from other places as well
 	var is_valid := check_validity(trigger_card, card_scripts, "trigger")
@@ -766,36 +859,59 @@ static func filter_trigger(
 	if card_scripts.get("trigger") == "another" and trigger_card == owner_card:
 		is_valid = false
 
+	# Script tags filter checks
+	var filter_tags = card_scripts.get(FILTER_TAGS)
+	if filter_tags:
+		# We set the variable manually here because `.get(key,[])` returns null
+		var script_tags = trigger_details.get(KEY_TAGS)
+		if not script_tags:
+			script_tags = []
+		# FILTER_TAGS can handle one tag as a string
+		# or multiple tags as an array.
+		if typeof(filter_tags) == TYPE_ARRAY:
+			for tag in filter_tags:
+				if not tag in script_tags:
+					is_valid = false
+		else:
+			if not filter_tags in script_tags:
+				is_valid = false
+
+	# Card task name filter checks
+	if card_scripts.get(FILTER_TASK) \
+			and card_scripts.get(FILTER_TASK) != \
+			trigger_details.get(TRIGGER_TASK_NAME):
+		is_valid = false
+
 	# Card Rotation filter checks
 	if card_scripts.get(FILTER_DEGREES) != null \
 			and card_scripts.get(FILTER_DEGREES) != \
-			signal_details.get(TRIGGER_DEGREES):
+			trigger_details.get(TRIGGER_DEGREES):
 		is_valid = false
 
 	# Card Flip filter checks
 	if card_scripts.get(FILTER_FACEUP) \
 			and card_scripts.get(FILTER_FACEUP) != \
-			signal_details.get(TRIGGER_FACEUP):
+			trigger_details.get(TRIGGER_FACEUP):
 		is_valid = false
 
 	# Card move filter checks
 	if card_scripts.get(FILTER_SOURCE) \
 			and card_scripts.get(FILTER_SOURCE) != \
-			signal_details.get(TRIGGER_SOURCE):
+			trigger_details.get(TRIGGER_SOURCE):
 		is_valid = false
 	if card_scripts.get(FILTER_DESTINATION) \
 			and card_scripts.get(FILTER_DESTINATION) != \
-			signal_details.get(TRIGGER_DESTINATION):
+			trigger_details.get(TRIGGER_DESTINATION):
 		is_valid = false
 
 	# Card Tokens filter checks
 	if card_scripts.get(FILTER_TOKEN_COUNT) != null \
 			and card_scripts.get(FILTER_TOKEN_COUNT) != \
-			signal_details.get(TRIGGER_NEW_TOKEN_VALUE):
+			trigger_details.get(TRIGGER_NEW_TOKEN_VALUE):
 		is_valid = false
 	if card_scripts.get(FILTER_TOKEN_DIFFERENCE):
-		var prev_count = signal_details.get(TRIGGER_PREV_TOKEN_VALUE)
-		var new_count = signal_details.get(TRIGGER_NEW_TOKEN_VALUE)
+		var prev_count = trigger_details.get(TRIGGER_PREV_TOKEN_VALUE)
+		var new_count = trigger_details.get(TRIGGER_NEW_TOKEN_VALUE)
 		# Is true if the amount of tokens decreased
 		if card_scripts.get(FILTER_TOKEN_DIFFERENCE) == \
 				TRIGGER_V_TOKENS_INCREASED and prev_count > new_count:
@@ -806,7 +922,19 @@ static func filter_trigger(
 			is_valid = false
 	if card_scripts.get(FILTER_TOKEN_NAME) \
 			and card_scripts.get(FILTER_TOKEN_NAME) != \
-			signal_details.get(TRIGGER_TOKEN_NAME):
+			trigger_details.get(TRIGGER_TOKEN_NAME):
+		is_valid = false
+
+	# Counter filter checks
+	if card_scripts.get(FILTER_COUNTER_NAME) \
+			and card_scripts.get(FILTER_COUNTER_NAME) != \
+			trigger_details.get(TRIGGER_COUNTER_NAME):
+		is_valid = false
+
+	# Counter filter checks
+	if card_scripts.get(FILTER_SCENE_PATH) \
+			and card_scripts.get(FILTER_SCENE_PATH) != \
+			trigger_details.get(KEY_SCENE_PATH):
 		is_valid = false
 	# Modified Property filter checks
 	# See FILTER_MODIFIED_PROPERTIES documentation
@@ -817,7 +945,7 @@ static func filter_trigger(
 		var mod_prop_dict = card_scripts.get(FILTER_MODIFIED_PROPERTIES)
 		# Each signal for modified properties will provide the property name
 		# We store that in signal_modified_property
-		var signal_modified_property = signal_details.get(TRIGGER_MODIFIED_PROPERTY_NAME)
+		var signal_modified_property = trigger_details.get(TRIGGER_MODIFIED_PROPERTY_NAME)
 		# If the property changed that is mentioned in the signal
 		# does not match any of the properties requested in the filter,
 		# then the trigger does not match
@@ -837,11 +965,11 @@ static func filter_trigger(
 			# value. If it does, we check it against the signal details
 			if mod_prop_values.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) != null \
 					and mod_prop_values.get(FILTER_MODIFIED_PROPERTY_NEW_VALUE) != \
-					signal_details.get(TRIGGER_NEW_PROPERTY_VALUE):
+					trigger_details.get(TRIGGER_NEW_PROPERTY_VALUE):
 				is_valid = false
 			if mod_prop_values.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) != null \
 					and mod_prop_values.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) != \
-					signal_details.get(TRIGGER_PREV_PROPERTY_VALUE):
+					trigger_details.get(TRIGGER_PREV_PROPERTY_VALUE):
 				is_valid = false
 	return(is_valid)
 

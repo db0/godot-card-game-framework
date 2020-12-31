@@ -1,5 +1,5 @@
 # This is a parent class containing the methods for lookup of subjects.
-# 
+#
 # It is typically never instanced directly.
 class_name ScriptObject
 extends Reference
@@ -27,15 +27,20 @@ var has_init_completed := false
 var is_valid := true
 # The amount of subjects card the script requested to modify
 # We use this to compare against costs during dry_runs
+#
+# This is typically set during the _find_subjects() call
 var requested_subjects: int
+# The card which triggered this script.
+var trigger_card: Card
 var per_engine
 
 # prepares the properties needed by the script to function.
-func _init(card: Card, script: Dictionary) -> void:
+func _init(card: Card, script: Dictionary, _trigger_card = null) -> void:
 	# We store the card which executes this task
 	owner_card = card
 	# We store all the task properties in our own dictionary
 	script_definition = script
+	trigger_card = _trigger_card
 
 
 # Returns the specified property of the string.
@@ -176,6 +181,13 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 					if index - iter < 0:
 						break
 					subjects_array.append(src_container.get_card(index - iter))
+		SP.KEY_SUBJECT_V_TRIGGER:
+			# We check, just to make sure we didn't mess up
+			if trigger_card:
+				is_valid = SP.check_validity(trigger_card, script_definition, "subject")
+				subjects_array.append(trigger_card)
+			else:
+				print_debug("WARNING: Subject: trigger requested, but no trigger card passed")
 		SP.KEY_SUBJECT_V_SELF:
 			is_valid = SP.check_validity(owner_card, script_definition, "subject")
 			subjects_array.append(owner_card)
@@ -202,16 +214,76 @@ func _initiate_card_targeting() -> Card:
 	return(target)
 
 
+# Handles looking for intensifiers of a current effect via the board state
+#
+# Returns the amount of things the script is trying to count.
 static func count_per(
 			per_seek: String,
 			script_owner: Card,
-			per_definitions: Dictionary) -> int:
+			per_definitions: Dictionary,
+			_trigger_card = null) -> int:
 	var found_things := 0
 	var per_discovery = cfc.per_engine.new(
 			script_owner,
 			per_definitions,
-			per_seek)
+			per_seek,
+			_trigger_card)
 #	if not per_discovery.has_init_completed:
 #		yield(per_discovery,"completed_init")
 	found_things = per_discovery.return_per_count()
 	return(found_things)
+
+
+# Handles modifying the intensity of tasks based on altering scripts on cards
+#
+# Returns the modification to the provided value.
+static func get_altered_value(
+		_owner_card: Card,
+		task_name: String,
+		task_properties: Dictionary,
+		value: int) -> int:
+	var value_alteration := 0
+	for card in cfc.get_tree().get_nodes_in_group("cards"):
+		var card_scripts = card.retrieve_card_scripts(SP.KEY_ALTERANTS)
+		# We select which scripts to run from the card, based on it state
+		var state_scripts = card_scripts.get(card.get_state_exec(), [])
+		# To avoid unnecessary operations
+		# we evoke the AlterantEngine only if we have something to execute
+		var task_details = generate_trigger_details(task_name, task_properties)
+		if len(state_scripts):
+			var alteng = cfc.alterant_engine.new(
+					_owner_card,
+					card,
+					state_scripts,
+					task_details)
+			if not alteng.all_alterations_completed:
+				yield(alteng,"alterations_completed")
+			value_alteration += alteng.alteration
+	# As a general rule, we don't want a positive number to turn
+	# negative (and the other way around) due to an alteration
+	# For example: if a card says, "decrease all costs by 3",
+	# we don't want a card with 1 cost, to end up giving the player 2 money.
+	if value < 0 and value + value_alteration > 0:
+		# warning-ignore:narrowing_conversion
+		value_alteration = abs(value)
+	elif value > 0 and value + value_alteration < 0:
+		value_alteration = -value
+	return(value_alteration)
+
+
+# Parses a [ScriptTask]'s properties and extracts the details a [ScriptAlter]
+# needs to check if its allowed to modify that task.
+static func generate_trigger_details(task_name, task_properties) -> Dictionary:
+	var details = {
+		SP.KEY_TAGS: task_properties.get(SP.KEY_TAGS),
+		SP.TRIGGER_TASK_NAME: task_name}
+	# This dictionary key is a ScriptEngine task name which can be modified
+	# by alterants. The value is an array or task properties we need to pass
+	# to the trigger filter, to check if this task is relevant to be altered.
+	var details_needed_per_task := {
+		"mod_tokens": [SP.KEY_TOKEN_NAME,],
+		"mod_counter": [SP.KEY_COUNTER_NAME,],
+		"spawn_card": [SP.KEY_SCENE_PATH,]}
+	for property in details_needed_per_task.get(task_name,[]):
+		details[property] = task_properties.get(property)
+	return(details)

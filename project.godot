@@ -9,6 +9,11 @@
 config_version=4
 
 _global_script_classes=[ {
+"base": "Reference",
+"class": "AlterantEngine",
+"language": "GDScript",
+"path": "res://src/core/AlterantEngine.gd"
+}, {
 "base": "Control",
 "class": "Board",
 "language": "GDScript",
@@ -114,6 +119,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/ScriptProperties.gd"
 }, {
+"base": "ScriptObject",
+"class": "ScriptAlter",
+"language": "GDScript",
+"path": "res://src/core/ScriptAlter.gd"
+}, {
 "base": "Reference",
 "class": "ScriptObject",
 "language": "GDScript",
@@ -160,6 +170,7 @@ _global_script_classes=[ {
 "path": "res://src/core/ViewportCardFocus.gd"
 } ]
 _global_script_class_icons={
+"AlterantEngine": "",
 "Board": "",
 "BoardPlacementGrid": "",
 "BoardPlacementSlot": "",
@@ -181,6 +192,7 @@ _global_script_class_icons={
 "MousePointer": "",
 "Pile": "",
 "SP": "",
+"ScriptAlter": "",
 "ScriptObject": "",
 "ScriptPer": "",
 "ScriptTask": "",

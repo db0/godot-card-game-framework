@@ -6,11 +6,6 @@
 class_name ScriptTask
 extends ScriptObject
 
-# The card which triggered this Task.
-#
-# It is typically `"self"` during manual execution,
-# but is `"another"` card during signal-based execution
-var trigger: Card
 # Stores the details arg passed the signal to use for filtering
 var signal_details : Dictionary
 # If true if this task has been confirmed to run by the player
@@ -19,11 +14,11 @@ var is_accepted := true
 
 
 # prepares the script_definition needed by the task to function.
-func _init(card: Card,
+func _init(owner_card: Card,
 		script: Dictionary,
 		prev_subjects: Array,
 		cost_dry_run: bool,
-		sceng_stored_int).(card, script) -> void:
+		sceng_stored_int).(owner_card, script) -> void:
 	# The function name to be called gets its own var
 	script_name = get_property("name")
 	if ((not cost_dry_run and not get_property(SP.KEY_IS_COST))

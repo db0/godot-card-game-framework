@@ -243,6 +243,7 @@ func shuffle_cards() -> void:
 # It should always return a valid node to put the card in
 #
 # For example, this can be used by a [Hand] to discard excess cards
+# warning-ignore:unused_argument
 func get_final_placement_node(card: Card) -> Node:
 	return(self)
 
