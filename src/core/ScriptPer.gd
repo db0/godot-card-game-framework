@@ -3,6 +3,7 @@
 class_name ScriptPer
 extends ScriptObject
 
+
 # prepares the properties needed by the task to function.
 func _init(card: Card,
 		script: Dictionary,
@@ -18,6 +19,7 @@ func _init(card: Card,
 	emit_signal("completed_init")
 	has_init_completed = true
 
+
 # Goes through the subjects specied for this per calculation
 # and counts the number of "things" requested
 func return_per_count() -> int:
@@ -27,13 +29,16 @@ func return_per_count() -> int:
 			ret = _count_tokens()
 		SP.KEY_PER_PROPERTY:
 			ret = _count_property()
-		# These two keys simply count the number 
+		# These two keys simply count the number
 		# of subjects found
 		SP.KEY_PER_TUTOR,SP.KEY_PER_BOARDSEEK:
 			ret = subjects.size()
+		SP.KEY_PER_COUNTER:
+			ret = _count_counter()
 		_:
 			ret = _count_custom()
 	return(ret)
+
 
 # Do something per token count
 func _count_tokens() -> int:
@@ -42,6 +47,7 @@ func _count_tokens() -> int:
 		var token = card.tokens.get_token(get_property(SP.KEY_TOKEN_NAME))
 		ret += token.count
 	return(ret)
+
 
 # Do something per property amount
 func _count_property() -> int:
@@ -52,7 +58,19 @@ func _count_property() -> int:
 			ret += card.properties.get(get_property(SP.KEY_PROPERTY_NAME))
 	return(ret)
 
+
+# Do something per counter amount
+func _count_counter() -> int:
+	var ret: int
+	var counter_name = get_property(SP.KEY_COUNTER)
+	ret = cfc.NMAP.board.counters.get_counter(counter_name)
+	return(ret)
+
+
 # Overridable function for scripts extending this class
 # to add their own methods
 func _count_custom() -> int:
 	return(1)
+
+
+

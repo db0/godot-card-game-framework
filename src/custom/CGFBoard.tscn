@@ -1,10 +1,11 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://src/custom/CGFDiscard.gd" type="Script" id=1]
 [ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/custom/CGFHand.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/custom/CGFDeck.gd" type="Script" id=4]
 [ext_resource path="res://src/custom/CGFBoard.gd" type="Script" id=5]
+[ext_resource path="res://src/custom/CGFCounters.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/custom/CGFPlacementGridDemo.tscn" type="PackedScene" id=7]
 [ext_resource path="res://src/custom/CGFModifiedLabelGrid.tscn" type="PackedScene" id=8]
 [ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=9]
@@ -52,6 +53,10 @@ custom_styles/panel = SubResource( 1 )
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )
 excess_cards = 0
+
+[node name="Counters" parent="." instance=ExtResource( 6 )]
+margin_top = 205.0
+margin_bottom = 219.0
 
 [node name="FancyMovementToggle" type="CheckButton" parent="."]
 margin_right = 12.0

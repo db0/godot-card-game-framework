@@ -200,6 +200,11 @@ const KEY_BOARD_POSITION := "board_position"
 # mandatory grid name matches the grid name. The game has to be developed
 # to not cause this situation.
 const KEY_GRID_NAME := "grid_name"
+# Value Type: String.
+#
+# Used with the [mod_counter](ScriptingEngine#mod_counter) task to specify
+# Which counter to modify with this task
+const KEY_COUNTER := "counter_name"
 # Value Type: bool (Default = false).
 #
 # Used when a script is using one of the following tasks:
@@ -336,6 +341,12 @@ const KEY_PER_TUTOR := "per_tutor"
 # [KEY_SUBJECT_COUNT_V_ALL](#KEY_SUBJECT_COUNT_V_ALL),
 # but a [FILTER_STATE](#FILTER_STATE) should also be typically specified
 const KEY_PER_BOARDSEEK := "per_boardseek"
+# Value Type: Dictionary
+#
+# A [VALUE_PER](#VALUE_PER) key for perfoming an effect
+# equal to the value of a counter.
+const KEY_PER_COUNTER := "per_counter"
+
 # Value Type: String
 # * "eq" (Defaut): Equal
 # * "ne": Not equal (This can be used to againsr strings as well)

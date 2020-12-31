@@ -1,11 +1,9 @@
 # Code for a sample playspace, you're expected to provide your own ;)
 extends Board
 
-var allCards := [] # A pseudo-deck array to hold the card objects we want to pull
-
-
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	counters = $Counters
 	cfc.map_node(self)
 	# We use the below while to wait until all the nodes we need have been mapped
 	# "hand" should be one of them.
@@ -68,7 +66,7 @@ func _on_ScalingFocusOptions_item_selected(index) -> void:
 
 # Button to make all cards act as attachments
 func _on_EnableAttach_toggled(button_pressed: bool) -> void:
-	for c in allCards:
+	for c in get_tree().get_nodes_in_group("cards"):
 		c.is_attachment = button_pressed
 
 
@@ -95,5 +93,4 @@ func load_test_cards(extras := 11) -> void:
 		$Deck.add_child(card)
 		#card.set_is_faceup(false,true)
 		card._determine_idle_state()
-		allCards.append(card) # Just keeping track of all the instanced card objects for demo purposes
 

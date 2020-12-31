@@ -19,6 +19,14 @@ Hand class has been adjusted to export some more vars. Check them out and make s
 * Now can specify on each hand, if cards over the maximum are allowed to be drawn and what happens then
 	In case DISCARD_DRAWN or DISCARD_OLDEST is specified, then an excess_discard_pile_name has to be also specified. The game then will seek a pile with this name and put the excess cards in there as specified.
 	ScriptingEngine will also respect this setting.
+* Added a counter framework. Developers can add a counters node to their board and store it in a counters variable. Inside they can define as many counters as they need, and they can also change the layout of the scene
+
+
+#### ScriptingEngine
+
+* New task added "mod_counters" to make use of the new counters framework.
+* counters will also be taken into account via the PerEngine using "per_counter".
+# counters can be set as script costs.
 
 ### Tweaks
 

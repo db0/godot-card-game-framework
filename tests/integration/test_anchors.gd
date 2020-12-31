@@ -15,7 +15,7 @@ func before_each():
 func test_anchor_positioning_and_groups():
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()
-	assert_almost_eq(deck.position, Vector2(0,495), Vector2(5,5),
+	assert_almost_eq(deck.position, Vector2(0,480), Vector2(5,5),
 			"Bottom left anchor placement works")
 	assert_true("bottom" in deck.get_groups(), "bottom Position group assigned")
 	assert_true("left" in deck.get_groups(), "left Position group assigned")
@@ -71,7 +71,7 @@ func test_overlap_shift_up():
 		container.re_place()
 	assert_almost_eq(deck2.position, Vector2(0,219), Vector2(5,5),
 			"overlapping deck2 shifted up")
-	assert_almost_eq(deck.position, Vector2(0,495), Vector2(5,5),
+	assert_almost_eq(deck.position, Vector2(0,480), Vector2(5,5),
 			"OverlapShiftDirection == NONE allowed the deck to stay where it is")
 	assert_almost_eq(hand.position, Vector2(160.5,600), Vector2(5,5),
 			"Hand didn't shift when overlap was displaced upwards")
@@ -115,7 +115,7 @@ func test_overlap_shift_right():
 		container.re_place()
 	assert_almost_eq(deck2.position, Vector2(160.5,480), Vector2(5,5),
 			"overlapping deck2 shifted left")
-	assert_almost_eq(deck.position, Vector2(0,495), Vector2(5,5),
+	assert_almost_eq(deck.position, Vector2(0,480), Vector2(5,5),
 			"OverlapShiftDirection == NONE allowed the discard to stay where it is")
 	assert_almost_eq(hand.position, Vector2(306,600), Vector2(5,5),
 			"Hand didn't shift when right containers shifted")
@@ -130,7 +130,7 @@ func test_overlap_shift_right():
 
 func test_changing_viewport_size():
 	get_viewport().size = Vector2(1920, 1080)
-	assert_almost_eq(deck.position, Vector2(0,855), Vector2(5,5),
+	assert_almost_eq(deck.position, Vector2(0,840), Vector2(5,5),
 			"Bottom left anchor placement works")
 	assert_almost_eq(discard.position, Vector2(1770,840), Vector2(5,5),
 			"Bottom right anchor placement works")

@@ -313,3 +313,43 @@ func test_move_card_to_grid_cost():
 			"card should turn face-down because "
 			+ "grid auto-extended to host all cards")
 
+func test_counters_cost():
+	card.scripts = {"manual": {"board": [
+			{"name": "mod_counter",
+			"is_cost": true,
+			"counter_name":  "research",
+			"modification": 3},
+			{"name": "rotate_card",
+			"subject": "self",
+			"degrees": 90}]}}
+	yield(table_move(card, Vector2(200,200)), "completed")
+	card.execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(90,card.card_rotation,
+			"Card rotated because positive counter cost can always be paid")
+	card.scripts = {"manual": {"board": [
+			{"name": "mod_counter",
+			"is_cost": true,
+			"counter_name":  "research",
+			"modification": -2},
+			{"name": "rotate_card",
+			"subject": "self",
+			"degrees": 180}]}}
+	card.execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(180,card.card_rotation,
+			"Card rotated because negative counter cost could be be paid")
+	card.scripts = {"manual": {"board": [
+			{"name": "mod_counter",
+			"is_cost": true,
+			"counter_name":  "research",
+			"modification": -2},
+			{"name": "rotate_card",
+			"subject": "self",
+			"degrees": 0}]}}
+	card.execute_scripts()
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(180,card.card_rotation,
+			"Card not rotated because negative counter cost could not be be paid")
+	assert_eq(1,board.counters.get_counter("research"),
+			"Token count that could not be paid remains the same")
