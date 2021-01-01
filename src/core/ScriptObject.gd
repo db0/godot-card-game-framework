@@ -1,4 +1,5 @@
-# This is a parent class containing the methods for lookup of subjects.
+# This is a parent class containing the methods for lookup of subjects
+# and script properties.
 #
 # It is typically never instanced directly.
 class_name ScriptObject

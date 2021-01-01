@@ -3,11 +3,9 @@
 #
 # The automation is based on [ScriptTask]s. Each such "task" performs a very specific
 # manipulation of the board state, based on using existing functions
-# in the object manipulated.
-# Therefore each task function provides effectively a text-based API
+# in the object manipulated. Therefore each task function effectively provides a text-based API.
 #
-# This class is loaded by each card invidually, and contains a link
-# back to the card object itself
+# This class is loaded by each card invidually during execution.
 class_name ScriptingEngine
 extends Reference
 
@@ -453,7 +451,7 @@ func mod_counter(script: ScriptTask) -> int:
 
 
 # Initiates a seek through the table to see if there's any cards
-# which modify the intensity of the current task
+# which have scripts which modify the intensity of the current task
 func _check_for_alterants(script: ScriptTask, value: int) -> int:
 	var alteration = ScriptObject.get_altered_value(
 		script.owner_card,

@@ -1,8 +1,5 @@
-# This contains information about one specific task requested by the card
+# This contains information about one specific alteration requested by the card
 # automation
-#
-# It also contains methods to return properties of the task and to find
-# the required objects in the game
 class_name ScriptAlter
 extends ScriptObject
 
@@ -13,13 +10,14 @@ var trigger_details : Dictionary
 var is_accepted := true
 
 
-# prepares the script_definition needed by the task to function.
+# Prepares the script_definition needed by the alteration to function and
+# checks the ongoing task and its owner_card against defined filters.
 func _init(
 		alteration_script: Dictionary,
 		trigger_card: Card,
 		alterant_card: Card,
 		task_details: Dictionary).(alterant_card, alteration_script, trigger_card) -> void:
-	# The function name to be called gets its own var
+	# The alteration name gets its own var
 	script_name = get_property("filter_task")
 	trigger_details = task_details
 	if not SP.filter_trigger(
