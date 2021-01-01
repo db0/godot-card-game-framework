@@ -26,7 +26,10 @@ Hand class has been adjusted to export some more vars. Check them out and make s
 
 * New task added "mod_counters" to make use of the new counters framework.
 * counters will also be taken into account via the PerEngine using "per_counter".
-# counters can be set as script costs.
+* counters can be set as script costs.
+* Alterants added to ScriptingEngine. These are scripts which are always active on the card, and modify other scripts before they take effect
+	They are added under a new key: ["Alterants"](https://github.com/db0/godot-card-game-framework/wiki/SP#key_alterants) and each has its own filter specifying which kind of scripts it can modify.
+
 
 ### Tweaks
 
