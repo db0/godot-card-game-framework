@@ -1,3 +1,8 @@
+# This class contains details about layout of the card front and the various
+# labels which compose it.
+#
+# It also contains methods to adjust the text of the various labels,
+# while keeping it inside its rect area.
 class_name CardFront
 extends Panel
 
@@ -11,7 +16,9 @@ extends Panel
 var card_labels := {}
 # Simply points to the container which holds all the labels
 var _card_text
-# Stores the amount of
+# Stores the amount of adjustment that has happened to the height of all
+# labels, so that they fit their required text. This adjustment is then
+# reversed on the compensation_label.
 var _rect_adjustment := 0.0
 # This dictionary defines how much more a text field is allowed
 # to expand their rect in order to fit its text before shrinking its font size.
@@ -91,4 +98,7 @@ func set_label_text(node: Label, value):
 	node.set("custom_fonts/font", label_font)
 	node.rect_min_size = label_size
 	node.text = value
-
+	# After any adjustmen of labels, we make sure the compensation_label font size
+	# is adjusted again, if needed, to avoid exceeding the card borders.
+	if not node.name in compensation_label and _rect_adjustment != 0.0:
+		set_label_text(card_labels[compensation_label], card_labels[compensation_label].text)
