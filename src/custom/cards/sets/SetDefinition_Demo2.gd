@@ -12,7 +12,7 @@ const CARDS := {
 				+ "and rotate 180 degrees a target." \
 				+ "\n\nWhile on the hand, this card will remove " \
 				+ "a target card from the game" \
-				+ "\n\nAfter another card is flipped, gain a blood token.",
+				+ "\n\nAfter another card is rotated, gain a blood token.",
 		"Cost": 0,
 		"Power": 9001,
 	},
