@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.5 (Ongoing)
+## 1.5
 
 ### Important
 
