@@ -156,6 +156,12 @@ var potential_container = null
 # If the card is placed in a placement grid, this will hold
 # a reference to the slot where this card is placed
 var _placement_slot : BoardPlacementSlot = null
+# This hold modifiers to card properties that will be active temporarily.
+# This avoids triggering the card_properties_modified signal.
+#
+# Typically used during
+# an [execute_scripts()](ScriptingEngine#execute_scripts] task.
+var temp_properties_modifiers := {}
 
 # Used for picking a card to start the compiler on
 var _debugger_hook := false
@@ -486,6 +492,18 @@ func modify_property(property: String, value, is_init = false, check := false) -
 					# If we have an empty property, we let the other labels
 					# use the space vertical space it would have taken.
 	return(retcode)
+
+
+# Retrieves the value of a property. This should always be used instead of
+# properties.get() as it takes into account the temp_properties_modifiers var
+func get_property(property: String):
+	var property_value = properties.get(property)
+	if property in CardConfig.PROPERTIES_NUMBERS:
+		var prop_mod = temp_properties_modifiers.get(property,0)
+		property_value += prop_mod
+		if property_value < 0:
+			property_value = 0
+	return(property_value)
 
 
 func set_card_size(value: Vector2) -> void:

@@ -450,6 +450,24 @@ func mod_counter(script: ScriptTask) -> int:
 	return(retcode)
 
 
+# Task for executing scripts on subject cards
+func execute_scripts(script: ScriptTask) -> void:
+	# If your subject is "self" make sure you know what you're doing 
+	# or you might end up in an inifinite loop
+	for card in script.subjects:
+		var requested_exec_state = script.get_property(SP.KEY_REQUIRE_EXEC_STATE)
+		# If not specific exec_state has been requested
+		# we execute whatever scripts of the state the card is currently in.
+		if not requested_exec_state or requested_exec_state == card.get_state_exec():
+			card.temp_properties_modifiers = \
+					script.get_property(SP.KEY_EXEC_TEMP_MOD_PROPERTIES)
+			cfc.NMAP.board.counters.temp_count_modifiers = \
+					script.get_property(SP.KEY_EXEC_TEMP_MOD_COUNTERS)
+			card.execute_scripts(script.owner_card,
+					script.get_property(SP.KEY_EXEC_TRIGGER))
+			card.temp_properties_modifiers.clear()
+			cfc.NMAP.board.counters.temp_count_modifiers.clear()
+
 # Initiates a seek through the table to see if there's any cards
 # which have scripts which modify the intensity of the current task
 func _check_for_alterants(script: ScriptTask, value: int) -> int:

@@ -7,6 +7,17 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 * SCRRIPT_SET_NAME_PREPEND renamed to **SCRIPT_SET_NAME_PREPEND**
 * PATH_PER_ENGINE renamed to **PATH_SCRIPT_PER**
 
+
+### New Features
+
+#### ScriptingEngine
+
+* The scripts property of a card, can be populated with some triggers, without affecting the other triggers defined in Script Definitions
+	This allows, for example, for some cardscripts to be added during runtime with a custom trigger, then executed immediately.
+* Added new task: `execute_script` which allows one to execute scripts on other cards. This can be useful when, for example, you want a card that activates other cards with modifiers.
+	In fact, also added two new keys for use with this task, which temporary modify counters or card propeties during execution.
+	
+	
 ## 1.5
 
 ### Important

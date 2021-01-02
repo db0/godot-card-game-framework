@@ -17,6 +17,11 @@ var _labels := {}
 # to the counter_scene
 # and each value, is the text value for the label
 var needed_counters: Dictionary
+# This hold modifiers to counters that will be only active temporarily. 
+# 
+# Typically only used during 
+# an [execute_scripts()](ScriptingEngine#execute_scripts] task.
+var temp_count_modifiers := {}
 
 # Holds the counter scene which has been created by the developer
 export(PackedScene) var counter_scene
@@ -96,5 +101,10 @@ func mod_counter(counter_name: String,
 
 
 # Returns the value of the specified counter.
+# Takes into account temp_count_modifiers
 func get_counter(counter_name: String) -> int:
-	return(counters[counter_name])
+	var count = counters[counter_name]
+	count += temp_count_modifiers.get(counter_name,0)
+	if count < 0: 
+		count = 0
+	return(count)
