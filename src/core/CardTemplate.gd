@@ -1087,7 +1087,7 @@ func retrieve_card_scripts(trigger: String) -> Dictionary:
 	#
 	# This allows us to modify a card's scripts during runtime
 	# in isolation from other cards of the same name
-	if not scripts.empty():
+	if not scripts.empty() and not scripts.get(trigger,{}).empty():
 		found_scripts = scripts.get(trigger,{}).duplicate()
 	else:
 		# This retrieves all the script from the card, stored in cfc
