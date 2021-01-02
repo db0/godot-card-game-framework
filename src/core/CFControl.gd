@@ -73,6 +73,7 @@ var scripting_engine = load(CFConst.PATH_SCRIPTING_ENGINE)
 # a cyclic reference as the scripting engine refers back to the Card class.
 var script_per = load(CFConst.PATH_SCRIPT_PER)
 var alterant_engine = load(CFConst.PATH_ALTERANT_ENGINE)
+var temp_counter_modifiers := {}
 
 func _ready() -> void:
 	# We reset our node mapping variables every time

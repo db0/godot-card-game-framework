@@ -55,7 +55,7 @@ func _count_property() -> int:
 	# Only number properties can be used for per
 	if get_property(SP.KEY_PROPERTY_NAME) in CardConfig.PROPERTIES_NUMBERS:
 		for card in subjects:
-			ret += card.properties.get(get_property(SP.KEY_PROPERTY_NAME))
+			ret += card.get_property(get_property(SP.KEY_PROPERTY_NAME))
 	return(ret)
 
 
