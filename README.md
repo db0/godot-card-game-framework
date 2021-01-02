@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework [1.4](CHANGELOG.md)
+# Godot Card Game Framework [1.5](CHANGELOG.md)
 
 ![Codot Card Game Framework preview image](preview.png "Codot Card Game Framework preview image")
 
@@ -36,7 +36,7 @@ Pull requests are more than welcome ;)
 ### Scripting Engine Features
 
 * Can define card scripts in plain text, using simple json.
-* Can set cards to trigger off of any booard manipulation.
+* Can set cards to trigger off of any board manipulation.
 * Can filter the triggers based on card properties, or a special subset.
 * Can define optional abilities.
 * Can define multiple-choice abilities.

@@ -371,6 +371,37 @@ const VALUE_PER := "per_"
 # to specify which property to base the per upon. The property **has** to be
 # a number.
 const KEY_PROPERTY_NAME := "property_name"
+# Value Type: String (Default = "manual").
+#
+# This is used with the [execute_scripts](ScriptingEngine#execute_scripts)
+# task to determine which execution trigger to run.
+const KEY_EXEC_TRIGGER := "exec_trigger"
+# Value Type: String
+#
+# This is used with the [execute_scripts](ScriptingEngine#execute_scripts)
+# task to limit execution, only to cards in the right state ("board","hand" or "pile)
+#
+# If this is not defined, it will execute the specified exec_trigger of the
+# state the card is currently in, if any exists for it.
+const KEY_REQUIRE_EXEC_STATE := "require_exec_state"
+# Value Type: Dictionary
+#
+# This key is used in [execute_scripts](ScriptingEngine#execute_scripts)
+# to temporary alter the value of a counter by a specified amount. 
+#
+# The value has to be a Dictionary where each key is an counter's name
+# and the value is the modification to use on that counter.
+const KEY_EXEC_TEMP_MOD_COUNTERS := "exec_temp_mod_counters"
+# Value Type: Dictionary
+#
+# This key is used in [execute_scripts](ScriptingEngine#execute_scripts)
+# to temporary alter the numerical properties the target card think is has,
+# by a specified amount. 
+#
+# The value has to be a Dictionary where each key is an number property's name
+# As defined in [PROPERTIES_NUMBERS](CardConfig#PROPERTIES_NUMBERS) 
+# and the value is the modification to use on that number
+const KEY_EXEC_TEMP_MOD_PROPERTIES := "exec_temp_mod_properties"
 # Value Type: Dictionary
 #
 # A [VALUE_PER](#VALUE_PER) key for perfoming an effect equal to a number of tokens on the subject(s)
@@ -821,7 +852,9 @@ static func get_default(property: String):
 			default = 1
 		KEY_IS_OPTIONAL:
 			default = false
-		KEY_MODIFY_PROPERTIES:
+		KEY_MODIFY_PROPERTIES,\
+				KEY_EXEC_TEMP_MOD_PROPERTIES,\
+				KEY_EXEC_TEMP_MOD_COUNTERS:
 			default = {}
 		KEY_SUBJECT_COUNT, KEY_OBJECT_COUNT:
 			default = 1
@@ -831,6 +864,8 @@ static func get_default(property: String):
 			default = "eq"
 		KEY_TAGS:
 			default = []
+		KEY_EXEC_TRIGGER:
+			default = "manual"
 		_:
 			default = null
 	return(default)
@@ -987,23 +1022,23 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 		if property in CardConfig.PROPERTIES_ARRAYS:
 			# If it's an array, we assume they passed on element
 			# of that array to check against the card properties
-			if not property_filters[property] in card.properties[property]\
+			if not property_filters[property] in card.get_property(property)\
 					and comparison_type == "eq":
 				card_matches = false
 			# We use the "ne" as a "not in" operator for Arrays.
-			elif property_filters[property] in card.properties[property]\
+			elif property_filters[property] in card.get_property(property)\
 					and comparison_type == "ne":
 				card_matches = false
 		elif property in CardConfig.PROPERTIES_NUMBERS:
 			if not CFUtils.compare_numbers(
-					card.properties[property],
+					card.get_property(property),
 					property_filters[property],
 					comparison_type):
 				card_matches = false
 		else:
 			if not CFUtils.compare_strings(
 					property_filters[property],
-					card.properties[property],
+					card.get_property(property),
 					comparison_type):
 				card_matches = false
 	return(card_matches)
