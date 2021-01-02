@@ -33,7 +33,6 @@ var is_valid := true
 var requested_subjects: int
 # The card which triggered this script.
 var trigger_card: Card
-var per_engine
 
 # prepares the properties needed by the script to function.
 func _init(card: Card, script: Dictionary, _trigger_card = null) -> void:
@@ -224,7 +223,7 @@ static func count_per(
 			per_definitions: Dictionary,
 			_trigger_card = null) -> int:
 	var found_things := 0
-	var per_discovery = cfc.per_engine.new(
+	var per_discovery = cfc.script_per.new(
 			script_owner,
 			per_definitions,
 			per_seek,

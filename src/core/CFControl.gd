@@ -71,7 +71,7 @@ var scripting_engine = load(CFConst.PATH_SCRIPTING_ENGINE)
 #
 # If we do, it is parsed by the compiler who then considers it
 # a cyclic reference as the scripting engine refers back to the Card class.
-var per_engine = load(CFConst.PATH_PER_ENGINE)
+var script_per = load(CFConst.PATH_SCRIPT_PER)
 var alterant_engine = load(CFConst.PATH_ALTERANT_ENGINE)
 
 func _ready() -> void:
@@ -171,7 +171,7 @@ func load_card_definitions() -> Dictionary:
 # Returns a Dictionary with the combined Script definitions of all set files
 func load_script_definitions() -> Dictionary:
 	var script_definitions := CFUtils.list_files_in_directory(
-				CFConst.PATH_SETS, CFConst.SCRRIPT_SET_NAME_PREPEND)
+				CFConst.PATH_SETS, CFConst.SCRIPT_SET_NAME_PREPEND)
 	var combined_scripts := {}
 	for card_name in card_definitions.keys():
 		for script_file in script_definitions:

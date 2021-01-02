@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.6 (Ongoing)
+
+CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
+
+* SCRRIPT_SET_NAME_PREPEND renamed to **SCRIPT_SET_NAME_PREPEND**
+* PATH_PER_ENGINE renamed to **PATH_SCRIPT_PER**
+
 ## 1.5
 
 ### Important
