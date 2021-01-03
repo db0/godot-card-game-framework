@@ -488,8 +488,12 @@ func execute_scripts(script: ScriptTask) -> void:
 					script.get_property(SP.KEY_EXEC_TEMP_MOD_PROPERTIES)
 			cfc.NMAP.board.counters.temp_count_modifiers = \
 					script.get_property(SP.KEY_EXEC_TEMP_MOD_COUNTERS)
-			card.execute_scripts(script.owner_card,
+			var function_return = card.execute_scripts(script.owner_card,
 					script.get_property(SP.KEY_EXEC_TRIGGER))
+			# We make sure we wait until the execution is finished
+			# before cleaning out the temp properties/counters
+			if function_return is GDScriptFunctionState: # Still working.
+				function_return = yield(function_return, "completed")
 			card.temp_properties_modifiers.clear()
 			cfc.NMAP.board.counters.temp_count_modifiers.clear()
 

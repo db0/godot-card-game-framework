@@ -1089,7 +1089,13 @@ func execute_scripts(
 			sceng = cfc.scripting_engine.new(
 					self,
 					state_scripts)
-	common_post_execution_scripts(trigger)
+			if not sceng.all_tasks_completed:
+				yield(sceng,"tasks_completed")
+	var func_return = common_post_execution_scripts(trigger)
+	# We make sure this function does to return until all
+	# custom post execution scripts have also finished
+	if func_return is GDScriptFunctionState: # Still working.
+		func_return = yield(func_return, "completed")
 	return(sceng)
 
 
