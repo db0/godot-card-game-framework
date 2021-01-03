@@ -96,7 +96,7 @@ func mod_counter(counter_name: String,
 					counters[counter_name] = value
 				else:
 					counters[counter_name] += value
-			_labels[counter_name].text = str(counters[counter_name])
+				_labels[counter_name].text = str(counters[counter_name])
 	return(retcode)
 
 

@@ -71,3 +71,15 @@ func test_targetting():
 	card.targeting_arrow.complete_targeting()
 	assert_eq(card.targeting_arrow.target_card,cards[1],
 			"Test that card on board can target card in hand")
+
+func test_signals():
+	var card: Card
+	card = cards[0]
+	watch_signals(card.targeting_arrow)
+	card.targeting_arrow.initiate_targeting()
+	assert_signal_emitted(card.targeting_arrow,"initiated_targeting",
+			"initiated_targeting emited")
+	yield(move_mouse(Vector2(1000,100)), 'completed')
+	card.targeting_arrow.complete_targeting()
+	assert_signal_emitted(card.targeting_arrow,"target_selected",
+			"Targetting empty space, still emits target_selected")

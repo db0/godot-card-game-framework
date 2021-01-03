@@ -76,7 +76,7 @@ func complete_targeting() -> void:
 #				self.name," targeted ",
 #				target_card.name, " in ",
 #				target_card.get_parent().name)
-		emit_signal("target_selected",target_card)
+	emit_signal("target_selected",target_card)
 	is_targeting = false
 	clear_points()
 	$ArrowHead.visible = false
