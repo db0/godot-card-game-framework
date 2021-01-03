@@ -41,7 +41,7 @@ func _ready() -> void:
 	pass # Replace with function body.
 
 
-# Sets the owner of this Scripting Engine
+# Simply initiates the [run_next_script()](#run_next_script) loop
 func _init(card_owner: Card,
 		scripts_queue: Array,
 		check_costs := false) -> void:
@@ -51,8 +51,8 @@ func _init(card_owner: Card,
 
 
 # The main engine starts here.
-# It receives array with all the scripts to execute,
-# then turns each array element into a ScriptTask object and
+# It receives array with all the tasks to execute,
+# then turns each array element into a [ScriptTask] object and
 # send it to the appropriate tasks.
 func run_next_script(card_owner: Card,
 		scripts_queue: Array,
@@ -129,11 +129,10 @@ func run_next_script(card_owner: Card,
 
 
 # Task for rotating cards
-#
-# Supports [KEY_IS_COST](SP#KEY_IS_COST).
-#
-# Requires the following keys:
-# * [KEY_DEGREES](SP#KEY_DEGREES)
+# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Requires the following keys:
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_DEGREES](SP#KEY_DEGREES)
 func rotate_card(script: ScriptTask) -> int:
 	var retcode: int
 	for card in script.subjects:
@@ -146,11 +145,10 @@ func rotate_card(script: ScriptTask) -> int:
 
 
 # Task for flipping cards
-#
-# Supports [KEY_IS_COST](SP#KEY_IS_COST).
-#
-# Requires the following keys:
-# * [KEY_SET_FACEUP](SP#KEY_SET_FACEUP)
+# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Requires the following keys:
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_SET_FACEUP](SP#KEY_SET_FACEUP)
 func flip_card(script: ScriptTask) -> int:
 	var retcode: int
 	for card in script.subjects:
@@ -160,11 +158,14 @@ func flip_card(script: ScriptTask) -> int:
 
 
 # Task for moving card to a [CardContainer]
-#
-# Supports [KEY_IS_COST](SP#KEY_IS_COST).
-#
-# * [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER): [CardContainer]
-# * (Optional) [KEY_DEST_INDEX](SP#KEY_DEST_INDEX): int
+# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Requires the following keys:
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER)
+# * Optionally uses the following keys:
+#	* [KEY_DEST_INDEX](SP#KEY_DEST_INDEX)
+#	* [KEY_SUBJECT_INDEX](SP#KEY_SUBJECT_INDEX)
+#	* [KEY_SRC_CONTAINER](SP#KEY_SRC_CONTAINER)
 func move_card_to_container(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
 	var dest_container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
@@ -191,14 +192,15 @@ func move_card_to_container(script: ScriptTask) -> int:
 
 
 # Task for playing a card to the board directly.
-#
-# Supports [KEY_IS_COST](SP#KEY_IS_COST).
-#
-# Requires one of the following keys
-# * [KEY_GRID_NAME](SP#KEY_GRID_NAME): String.
-#	The board grid name to place the card.
-# * [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): Vector2.
-#	The exact position to place the card.
+# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Requires the following keys
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* One of the following:
+#		* [KEY_GRID_NAME](SP#KEY_GRID_NAME)
+#		* [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION)
+# * Optionally uses the following keys:
+#	* [KEY_SUBJECT_INDEX](SP#KEY_SUBJECT_INDEX)
+#	* [KEY_SRC_CONTAINER](SP#KEY_SRC_CONTAINER)
 func move_card_to_board(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
 	if len(script.subjects) < script.requested_subjects:
@@ -246,14 +248,16 @@ func move_card_to_board(script: ScriptTask) -> int:
 				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 	return(retcode)
 
+
 # Task from modifying tokens on a card
-#
-# Supports [KEY_IS_COST](SP#KEY_IS_COST).
-#
-# Requires the following keys:
-# * [KEY_TOKEN_NAME](SP#KEY_TOKEN_NAME): String
-# * [KEY_MODIFICATION](SP#KEY_MODIFICATION): int
-# * (Optional) [KEY_SET_TO_MOD](SP#KEY_SET_TO_MOD): bool
+# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Can be affected by [Alterants](SP#KEY_ALTERANTS).
+# * Requires the following keys:
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_TOKEN_NAME](SP#KEY_TOKEN_NAME)
+#	* [KEY_MODIFICATION](SP#KEY_MODIFICATION)
+# * Optionally uses the following keys:
+#	* [KEY_SET_TO_MOD](SP#KEY_SET_TO_MOD)
 func mod_tokens(script: ScriptTask) -> int:
 	var retcode: int
 	var modification: int
@@ -278,15 +282,14 @@ func mod_tokens(script: ScriptTask) -> int:
 
 
 # Task from creating a new card instance on the board
-#
-# Requires the following keys:
-# * [KEY_SCENE_PATH](SP#KEY_SCENE_PATH): path to CardTemplate .tscn file
-# * One of the following:
-#	* [KEY_GRID_NAME](SP#KEY_GRID_NAME): String.
-#	The board grid name to place the card.
-#	* [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): Vector2.
-#	The exact position to place the card.
-# * (Optional) [KEY_OBJECT_COUNT](SP#KEY_OBJECT_COUNT): int
+# * Can be affected by [Alterants](SP#KEY_ALTERANTS)
+# * Requires the following keys:
+#	* [KEY_SCENE_PATH](SP#KEY_SCENE_PATH): path to a Card .tscn file
+#	* One of the following:
+#		* [KEY_GRID_NAME](SP#KEY_GRID_NAME)
+#		* [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION)
+# * Optionally uses the following keys:
+#	* [KEY_OBJECT_COUNT](SP#KEY_OBJECT_COUNT)
 func spawn_card(script: ScriptTask) -> void:
 	var card: Card
 	var count: int
@@ -333,31 +336,34 @@ func spawn_card(script: ScriptTask) -> void:
 
 
 # Task from shuffling a CardContainer
-#
-# Requires the following keys:
-# * [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER): CardContainer
+# * Requires the following keys:
+#	* [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER)
 func shuffle_container(script: ScriptTask) -> void:
 	var container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
 	container.shuffle_cards()
 
 
-# Task from making the owner card an attachment to another card
+# Task from making the owner card an attachment to the subject card.
+# * Requires the following keys:
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
 func attach_to_card(script: ScriptTask) -> void:
 	for card in script.subjects:
 		script.owner_card.attach_to_host(card)
 
 
-# Task for attaching another card to the owner
+# Task from making the subject card an attachment to the owner card.
+# * Requires the following keys:
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
 func host_card(script: ScriptTask) -> void:
-	# host_card can only ever have one subject
+	# host_card can only ever use one subject
 	var card: Card = script.subjects[0]
 	card.attach_to_host(script.owner_card)
 
 
 # Task for modifying a card's properties
-#
-# Requires the following values:
-# * [KEY_MODIFY_PROPERTIES](SP#KEY_MODIFY_PROPERTIES)
+# * Requires the following keys:
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_MODIFY_PROPERTIES](SP#KEY_MODIFY_PROPERTIES)
 func modify_properties(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.OK
 	for card in script.subjects:
@@ -377,6 +383,9 @@ func modify_properties(script: ScriptTask) -> int:
 
 # Requests the player input an integer, then stores it in a script-global
 # variable to be used by any subsequent task
+# * Requires the following keys:
+#	* [KEY_ASK_INTEGER_MIN](SP#KEY_ASK_INTEGER_MIN)
+#	* [KEY_ASK_INTEGER_MAX](SP#KEY_ASK_INTEGER_MAX)
 func ask_integer(script: ScriptTask) -> void:
 	var integer_dialog = _ASK_INTEGER_SCENE.instance()
 	# AskInteger tasks have to always provide a min and max value
@@ -391,12 +400,14 @@ func ask_integer(script: ScriptTask) -> void:
 
 
 # Adds a specified BoardPlacementGrid scene to the board at the specified position
-#
-# Requires the following keys:
-# * [KEY_SCENE_PATH](SP#KEY_SCENE_PATH): path to BoardPlacementGrid .tscn file
-# * (Optional) [KEY_GRID_NAME](SP#KEY_GRID_NAME): String.
-# * [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION): Vector2.
-# * (Optional) [KEY_OBJECT_COUNT](SP#KEY_OBJECT_COUNT): int
+# * Requires the following keys:
+#	* [KEY_SCENE_PATH](SP#KEY_SCENE_PATH): path to BoardPlacementGrid .tscn file
+#	* One of the following:
+#		* [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION)
+#		* [KEY_GRID_NAME](SP#KEY_GRID_NAME)
+# * Optionally uses the following keys:
+#	* [KEY_OBJECT_COUNT](SP#KEY_OBJECT_COUNT)
+#	* [KEY_GRID_NAME](SP#KEY_GRID_NAME)
 func add_grid(script: ScriptTask) -> void:
 	var count: int
 	var grid_name : String = script.get_property(SP.KEY_GRID_NAME)
@@ -423,19 +434,26 @@ func add_grid(script: ScriptTask) -> void:
 				iter * CFConst.CARD_SIZE.y * CFConst.PLAY_AREA_SCALE.y
 
 # Task for modifying a a counter.
-# If this task is specified, the variable counters **has** to be set
+# If this task is specified, the variable [counters](Board#counters) **has** to be set
 # inside the board script
+# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Can be affected by [Alterants](SP#KEY_ALTERANTS)
+# * Requires the following keys:
+#	* [KEY_COUNTER_NAME](SP#KEY_COUNTER_NAME)
+#	* [KEY_MODIFICATION](SP#KEY_MODIFICATION)
+# * Optionally uses the following keys:
+#	* [KEY_SET_TO_MOD](SP#KEY_SET_TO_MOD)
 func mod_counter(script: ScriptTask) -> int:
 	var counter_name: String = script.get_property(SP.KEY_COUNTER_NAME)
 	var modification: int
 	var alteration := 0
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
-	elif SP.VALUE_PER in str(script.get_property(SP.KEY_OBJECT_COUNT)):
+	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		modification = ScriptObject.count_per(
-				script.get_property(SP.KEY_OBJECT_COUNT),
+				script.get_property(SP.KEY_MODIFICATION),
 				script.owner_card,
-				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)))
+				script.get_property(script.get_property(SP.KEY_MODIFICATION)))
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
@@ -451,8 +469,15 @@ func mod_counter(script: ScriptTask) -> int:
 
 
 # Task for executing scripts on subject cards
+# * Requires the following keys:
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+# * Optionally uses the following keys:
+#	* [KEY_REQUIRE_EXEC_STATE](SP#KEY_REQUIRE_EXEC_STATE)
+#	* [KEY_EXEC_TEMP_MOD_PROPERTIES](SP#KEY_EXEC_TEMP_MOD_PROPERTIES)
+#	* [KEY_EXEC_TEMP_MOD_COUNTERS](SP#KEY_EXEC_TEMP_MOD_COUNTERS)
+#	* [KEY_EXEC_TRIGGER](SP#KEY_EXEC_TRIGGER)
 func execute_scripts(script: ScriptTask) -> void:
-	# If your subject is "self" make sure you know what you're doing 
+	# If your subject is "self" make sure you know what you're doing
 	# or you might end up in an inifinite loop
 	for card in script.subjects:
 		var requested_exec_state = script.get_property(SP.KEY_REQUIRE_EXEC_STATE)
@@ -468,8 +493,9 @@ func execute_scripts(script: ScriptTask) -> void:
 			card.temp_properties_modifiers.clear()
 			cfc.NMAP.board.counters.temp_count_modifiers.clear()
 
+
 # Initiates a seek through the table to see if there's any cards
-# which have scripts which modify the intensity of the current task
+# which have scripts which modify the intensity of the current task.
 func _check_for_alterants(script: ScriptTask, value: int) -> int:
 	var alteration = ScriptObject.get_altered_value(
 		script.owner_card,

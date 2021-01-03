@@ -25,8 +25,11 @@ extends Reference
 #
 # Determines which card, if any, this script will try to affect.
 #
-# If key does not exist, we set value to [], assuming there's no subjects
-# in the task.
+# If key does not exist, we set value to [],  thereogr assuming
+# there's no card subjects needed for the task.
+#
+# If you need to adjust the amount of cards modified by the script
+# also use [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT)
 const KEY_SUBJECT := "subject"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # we initiate targetting from the owner card
@@ -34,7 +37,8 @@ const KEY_SUBJECT_V_TARGET := "target"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then the task affects the owner card only.
 const KEY_SUBJECT_V_SELF := "self"
-# This is only used during alterant scripts using the [KEY_PER](#KEY_PER)
+# This is only used during [KEY_ALTERANTS](#KEY_ALTERANTS) scripts
+# using [KEY_PER](#KEY_PER)
 #
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # Then the script will count the properties of the trigger card only.
@@ -50,10 +54,16 @@ const KEY_SUBJECT_V_BOARDSEEK := "boardseek"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we search all cards on the specified
 # pile by node order, and pick the first candidate that matches the filter
+#
+# When this value is used [KEY_SRC_CONTAINER](KEY_SRC_CONTAINER)
+# has to also be used.
 const KEY_SUBJECT_V_TUTOR := "tutor"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we pick the card on the specified
 # source pile by its index among other cards.
+#
+# When this value is used [KEY_SRC_CONTAINER](KEY_SRC_CONTAINER)
+# has to also be used.
 const KEY_SUBJECT_V_INDEX := "index"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we use the subject specified in the previous task
@@ -64,7 +74,8 @@ const KEY_SUBJECT_V_PREVIOUS := "previous"
 # * [VALUE_RETRIEVE_INTEGER](#VALUE_RETRIEVE_INTEGER)
 #
 # Used when we're seeking a card
-# to limit the amount to retrieve to this amount
+# to limit the amount to retrieve to this amount.
+#
 # Works with the following tasks and [KEY_SUBJECT](#KEY_SUBJECT) values:
 # * [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
 # * [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
@@ -73,11 +84,11 @@ const KEY_SUBJECT_COUNT := "subject_count"
 # When specified as the value of [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT),
 # will retrieve as many cards as match the criteria.
 #
-# Useful with the following VALUES:
+# Useful with the following values:
 # * [KEY_SUBJECT_V_BOARDSEEK](#KEY_SUBJECT_V_BOARDSEEK)
 # * [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
 const KEY_SUBJECT_COUNT_V_ALL := "all"
-# Value Type: bool.
+# Value Type: bool (Default = false).
 #
 # This key is used to mark a task as being a cost requirement before the
 # rest of the defined tasks can execute.
@@ -89,6 +100,7 @@ const KEY_SUBJECT_COUNT_V_ALL := "all"
 # * [rotate_card](ScriptingEngine#rotate_card)
 # * [flip_card](ScriptingEngine#flip_card)
 # * [mod_tokens](ScriptingEngine#mod_tokens)
+# * [mod_counter](ScriptingEngine#mod_tokens)
 # * [move_card_to_container](ScriptingEngine#move_card_to_container)
 # * [move_card_to_board](ScriptingEngine#move_card_to_board)
 const KEY_IS_COST := "is_cost"
@@ -142,6 +154,7 @@ const KEY_DEST_CONTAINER := "dest_container"
 # * int
 # * [KEY_SUBJECT_INDEX_V_TOP](#KEY_SUBJECT_INDEX_V_TOP)
 # * [KEY_SUBJECT_INDEX_V_BOTTOM](#KEY_SUBJECT_INDEX_V_BOTTOM)
+# * [KEY_SUBJECT_INDEX_V_RANDOM](#KEY_SUBJECT_INDEX_V_RANDOM)
 #
 # Used when we're seeking a card inside a [CardContainer]
 # in one of the following tasks
@@ -218,18 +231,20 @@ const KEY_COUNTER_NAME := "counter_name"
 # It specifies if we're modifying the existing amount
 # or setting it to the exact one
 const KEY_SET_TO_MOD := "set_to_mod"
-# Value Type: String (Default = 1).
+# Value Type: String
 #
 # Used when a script is using the [mod_tokens](ScriptingEngine#mod_tokens) task.
 #
 # It specifies the name of the token we're modifying
 const KEY_TOKEN_NAME := "token_name"
 # Value Type: Dynamic
-# * int.
+# * int
 # * [VALUE_RETRIEVE_INTEGER](#VALUE_RETRIEVE_INTEGER)
+# * [VALUE_PER](#VALUE_PER)
 #
 # Used when a script is using one of the following tasks:
 # * [mod_tokens](ScriptingEngine#mod_tokens)
+# * [mod_counter](ScriptingEngine#mod_counter)
 #
 # It specifies the amount we're setting/modifying
 # or setting it to the exact one
@@ -237,7 +252,8 @@ const KEY_MODIFICATION := "modification"
 # Value Type: Dynamic (Default = 1).
 # * int.
 # * [VALUE_RETRIEVE_INTEGER](#VALUE_RETRIEVE_INTEGER)
-#
+# * [VALUE_PER](#VALUE_PER)
+
 # Used in conjunction with the following tasks
 # * [spawn_card](ScriptingEngine#spawn_card)
 # * [add_grid](ScriptingEngine#add_grid)
@@ -269,22 +285,22 @@ const KEY_ASK_INTEGER_MAX := "ask_int_max"
 # These can be hooked one by the [AlterantEngine]
 # to figure out if this script effects should be altered.
 #
-# A script has to have all the tags an alterant is looking for before it
-# will be considered to be altered.
+# A script has to have all the tags a [KEY_ALTERANTS](#KEY_ALTERANTS) task
+# is looking for, before it will be considered to be altered.
 const KEY_TAGS := "tags"
 # Value Type: Dictionary
 #
-# Used in place of a task name. This key allows the card to be marked as
-# an alterant. I.e. a card which will modify the values of other scripts or
+# Used in place of a trigger name (e.g. 'manual'). This key allows the card to be marked as
+# an "Alterant". I.e. a card which will modify the values of other scripts or
 # effects.
 #
 # For example cards which reduce or increase costs,
 # or cards which intensify the effect of other cards would be alterants.
 #
-# The dictionary inside follows a similar format to the normal script,
-# with the position of the card being the next key, specifying when the
-# alterant is active, and inside that, an array of mulitple alterants to check
-# against.
+# The dictionary inside follows a similar format to a typical script,
+# with the [state_exec](Card#get_state_exec) of the card being the next key,
+# specifying when the alterant is active, and inside that,
+# an array of mulitple alterants to check against.
 #
 # A sample alterant definition might look like this
 #```
@@ -301,17 +317,20 @@ const KEY_TAGS := "tags"
 #	]
 #}}
 #```
-# The above would roughly translate to "Whenever you are playing a Science card
-# reduce it's research cost by 1"
+# The above would roughly translate to *"Whenever you are playing a Science card
+# reduce it's research cost by 1"*
 #
-# The main Difference being that triggers are checked inside each individual
-# alterant task, rather than on the whole script. This allows the same card
+# The main difference from other scripts being that
+# triggers are checked inside each individual alterant task,
+# rather than on the whole script. This allows the same card
 # to modify different sort of cards and triggers, in different ways.
 #
 # Currently the following tasks support being altered during runtime via alterants
 # * [mod_tokens](ScriptingEngine#mod_tokens)
 # * [mod_counter](ScriptingEngine#mod_counter)
 # * [spawn_card](ScriptingEngine#spawn_card)
+#
+# When this is used [KEY_ALTERATION](KEY_ALTERATION) also needs to be defined.
 const KEY_ALTERANTS := "alterants"
 # Value Type: int
 #
@@ -331,6 +350,7 @@ const KEY_ALTERATION := "alteration"
 # * [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
 # * [KEY_PER_TUTOR](#KEY_PER_TUTOR)
 # * [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK)
+# * [KEY_PER_COUNTER](#KEY_PER_COUNTER)
 #
 # When this value is set, the relevant key **must** also exist in the
 # Script definition. They key shall contain a dictionary which will
@@ -363,7 +383,7 @@ const KEY_ALTERATION := "alteration"
 #}
 #```
 # The above example can be tranlated to:
-# "Draw 1 card for each card with 0 power on the board"
+# *"Draw 1 card for each card with 0 power on the board"*
 const VALUE_PER := "per_"
 # Value Type: String
 #
@@ -387,7 +407,7 @@ const KEY_REQUIRE_EXEC_STATE := "require_exec_state"
 # Value Type: Dictionary
 #
 # This key is used in [execute_scripts](ScriptingEngine#execute_scripts)
-# to temporary alter the value of a counter by a specified amount. 
+# to temporary alter the value of a counter by a specified amount.
 #
 # The value has to be a Dictionary where each key is an counter's name
 # and the value is the modification to use on that counter.
@@ -396,10 +416,10 @@ const KEY_EXEC_TEMP_MOD_COUNTERS := "exec_temp_mod_counters"
 #
 # This key is used in [execute_scripts](ScriptingEngine#execute_scripts)
 # to temporary alter the numerical properties the target card think is has,
-# by a specified amount. 
+# by a specified amount.
 #
 # The value has to be a Dictionary where each key is an number property's name
-# As defined in [PROPERTIES_NUMBERS](CardConfig#PROPERTIES_NUMBERS) 
+# As defined in [PROPERTIES_NUMBERS](CardConfig#PROPERTIES_NUMBERS)
 # and the value is the modification to use on that number
 const KEY_EXEC_TEMP_MOD_PROPERTIES := "exec_temp_mod_properties"
 # Value Type: Dictionary
@@ -443,17 +463,18 @@ const KEY_PER_BOARDSEEK := "per_boardseek"
 const KEY_PER_COUNTER := "per_counter"
 # Value Type: String. One of the below:
 # * "eq" (Defaut): Equal
-# * "ne": Not equal (This can be used to againsr strings as well)
+# * "ne": Not equal
 # * "gt": Greater than
 # * "lt": Less than
 # * "le": Less than or Equal
 # * "ge": Geater than or equal
 #
-# Key is used typically to do numerical comparisons during filters involving
-# numerical numbers.
+# Key is used typically to do comparisons during filters involving
+# numerical numbers. However the "eq" and "ne" can be used to compare strings
+# as well.
 #
 # I.e. it allows to write the script for something like:
-# "Destroy all Monsters with cost equal or higher than 3"
+# *"Destroy all Monsters with cost equal or higher than 3"*
 const KEY_COMPARISON := "comparison"
 # This is a versatile value that can be inserted into any various keys
 # when a task needs to use a previously inputed integer provided
@@ -469,11 +490,8 @@ const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
 #
 # Specifies whether this script or task can be skipped by the owner.
 #
-# This value needs to be prepended and placed
-# depending on what it is making optional
-#
 # If it is making a sigle task optional, you need to add "task" at the end
-# and place it inside a task definition
+# and place it inside a single task definition
 # Example:
 # ```
 #"manual": {
@@ -484,8 +502,9 @@ const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
 #		"degrees": 90},
 #	]}
 # ```
-# If you want to make a whole script optional, then you need to place it on
-# the same level as the state and append the state name
+# If you need to make a whole [state_exec](Card#get_state_exec) optional,
+# then you need to place it on the same level as the state_exec
+# and append the state_exec name
 # Example:
 # ```
 #"card_flipped": {
@@ -501,7 +520,8 @@ const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
 # when this script/task is about to execute.
 #
 # At the task level, it will ask the player before activating that task only
-# If that task is a cost, it will also prevent subsequent tasks from firing
+# If that task [is a cost](#KEY_IS_COST), it will also prevent subsequent tasks
+# from firing
 #
 # At the script level, the whole script if cancelled.
 const KEY_IS_OPTIONAL := "is_optional_"
@@ -517,10 +537,10 @@ const KEY_IS_OPTIONAL := "is_optional_"
 #
 # Filter used for checking against the Card state
 #
-# This is open ended to be appended, as the check can be run either
+# The name of this key is left open ended, as the check can be run either
 # against the trigger card, or the subjects card.
 #
-# One of the following strings HAS to be appended at the end:
+# One of the following strings **has** to be appended at the end of this string:
 # * "trigger": Will only filter cards triggering this effect via signals
 #	or cards triggering an alterant effect.
 # * "subject": Will only filter cards that are looked up as targets for the effect.
