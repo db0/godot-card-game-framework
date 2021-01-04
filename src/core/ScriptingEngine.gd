@@ -33,7 +33,7 @@ var stored_integer: int
 # needs to wait for their completion
 #
 # This variable can be extended when this class is extended with new tasks
-var wait_for_tasks = ["ask_integer"]
+var wait_for_tasks = ["ask_integer","execute_scripts"]
 
 
 # Called when the node enters the scene tree for the first time.
@@ -59,7 +59,7 @@ func run_next_script(card_owner: Card,
 		prev_subjects := []) -> void:
 	var ta: TargetingArrow = card_owner.targeting_arrow
 	if scripts_queue.empty():
-		#print('Scripting: All done!') # Debug
+#		print_debug(str(card_owner) + 'Scripting: All done!') # Debug
 		# If we're doing a try run, we don't clean the targeting
 		# as we will re-use it in the targeting phase.
 		# We do clear it though if all the costs cannot be paid.
@@ -123,6 +123,11 @@ func run_next_script(card_owner: Card,
 						# We consider the whole cost dry run unsuccesful
 						if not confirm_return:
 							can_all_costs_be_paid = false
+		# If a cost script is not valid
+		# (such as because the subjects cannot be matched)
+		# Then we consider the costs cannot be paid.
+		elif not script.is_valid and script.get_property(SP.KEY_IS_COST):
+			can_all_costs_be_paid = false
 		# At the end of the task run, we loop back to the start, but of course
 		# with one less item in our scripts_queue.
 		run_next_script(card_owner,scripts_queue,script.subjects)
@@ -468,7 +473,9 @@ func mod_counter(script: ScriptTask) -> int:
 	return(retcode)
 
 
-# Task for executing scripts on subject cards
+# Task for executing scripts on subject cards.
+# * Supports [KEY_IS_COST](SP#KEY_IS_COST). If it is set, the cost check
+#	will fail, if any of the target card's cost checks also fail.
 # * Requires the following keys:
 #	* [KEY_SUBJECT](SP#KEY_SUBJECT)
 # * Optionally uses the following keys:
@@ -476,7 +483,8 @@ func mod_counter(script: ScriptTask) -> int:
 #	* [KEY_EXEC_TEMP_MOD_PROPERTIES](SP#KEY_EXEC_TEMP_MOD_PROPERTIES)
 #	* [KEY_EXEC_TEMP_MOD_COUNTERS](SP#KEY_EXEC_TEMP_MOD_COUNTERS)
 #	* [KEY_EXEC_TRIGGER](SP#KEY_EXEC_TRIGGER)
-func execute_scripts(script: ScriptTask) -> void:
+func execute_scripts(script: ScriptTask) -> int:
+	var retcode : int = CFConst.ReturnCode.CHANGED
 	# If your subject is "self" make sure you know what you're doing
 	# or you might end up in an inifinite loop
 	for card in script.subjects:
@@ -485,18 +493,31 @@ func execute_scripts(script: ScriptTask) -> void:
 		# we execute whatever scripts of the state the card is currently in.
 		if not requested_exec_state or requested_exec_state == card.get_state_exec():
 			card.temp_properties_modifiers = \
-					script.get_property(SP.KEY_EXEC_TEMP_MOD_PROPERTIES)
+					script.get_property(SP.KEY_EXEC_TEMP_MOD_PROPERTIES).duplicate()
 			cfc.NMAP.board.counters.temp_count_modifiers = \
-					script.get_property(SP.KEY_EXEC_TEMP_MOD_COUNTERS)
-			var function_return = card.execute_scripts(script.owner_card,
-					script.get_property(SP.KEY_EXEC_TRIGGER))
+					script.get_property(SP.KEY_EXEC_TEMP_MOD_COUNTERS).duplicate()
+			var sceng = card.execute_scripts(
+					script.owner_card,
+					script.get_property(SP.KEY_EXEC_TRIGGER),
+					{}, costs_dry_run)
+			# Executing scripts on other cards need to noy only check their
+			# own costs are possible, but the target cards as well
+			# but only if the subject is explictly specified, such as
+			# target. We don't want to play a card which will not affect its
+			# explicit target, but we do want to be able to play a card
+			# which, for example, tries to affect all cards on the table,
+			# but none of them is actually affected.
+			if sceng and not sceng.can_all_costs_be_paid\
+					and not script.get_property(SP.KEY_SUBJECT)\
+					in [SP.KEY_SUBJECT_V_BOARDSEEK, SP.KEY_SUBJECT_V_TUTOR]:
+				retcode = CFConst.ReturnCode.FAILED
 			# We make sure we wait until the execution is finished
 			# before cleaning out the temp properties/counters
-			if function_return is GDScriptFunctionState: # Still working.
-				function_return = yield(function_return, "completed")
+			if sceng is GDScriptFunctionState:
+				sceng = yield(sceng, "completed")
 			card.temp_properties_modifiers.clear()
 			cfc.NMAP.board.counters.temp_count_modifiers.clear()
-
+	return(retcode)
 
 # Initiates a seek through the table to see if there's any cards
 # which have scripts which modify the intensity of the current task.

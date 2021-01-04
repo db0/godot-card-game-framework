@@ -22,6 +22,7 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 
 
 * TargetingArrow will now signal targeting_completed when it didn't find a target as well
+* execute_scripts will now properly check for is_cost for itself and its target
 
 #### ScriptingEngine
 

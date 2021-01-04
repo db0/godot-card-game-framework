@@ -1012,7 +1012,8 @@ func move_to(targetHost: Node,
 func execute_scripts(
 		trigger_card: Card = self,
 		trigger: String = "manual",
-		trigger_details: Dictionary = {}):
+		trigger_details: Dictionary = {},
+		only_cost_check := false):
 	common_pre_execution_scripts(trigger)
 	var card_scripts = retrieve_card_scripts(trigger)
 	# I use this spot to add a breakpoint when testing script behaviour
@@ -1081,7 +1082,7 @@ func execute_scripts(
 			yield(sceng,"tasks_completed")
 		# If the dry-run of the ScriptingEngine returns that all
 		# costs can be paid, then we proceed with the actual run
-		if sceng.can_all_costs_be_paid:
+		if sceng.can_all_costs_be_paid and not only_cost_check:
 			#print("DEBUG:" + str(state_scripts))
 			# The ScriptingEngine is where we execute the scripts
 			# We cannot use its class reference,
@@ -1091,11 +1092,13 @@ func execute_scripts(
 					state_scripts)
 			if not sceng.all_tasks_completed:
 				yield(sceng,"tasks_completed")
-	var func_return = common_post_execution_scripts(trigger)
-	# We make sure this function does to return until all
-	# custom post execution scripts have also finished
-	if func_return is GDScriptFunctionState: # Still working.
-		func_return = yield(func_return, "completed")
+			var func_return = common_post_execution_scripts(trigger)
+			# We make sure this function does to return until all
+			# custom post execution scripts have also finished
+			if func_return is GDScriptFunctionState: # Still working.
+				func_return = yield(func_return, "completed")
+		else:
+			targeting_arrow.target_dry_run_card = null
 	return(sceng)
 
 
