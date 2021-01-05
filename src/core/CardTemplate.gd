@@ -783,6 +783,7 @@ func move_to(targetHost: Node,
 	# if the placement to the board requested is invalid
 	# depending on the board_placement variable
 	targetHost = targetHost.get_final_placement_node(self)
+	targetHost = common_pre_move_scripts(targetHost, parentHost)
 	if targetHost == cfc.NMAP.board and not board_position:
 		match board_placement:
 			BoardPlacement.NONE:
@@ -1002,7 +1003,7 @@ func move_to(targetHost: Node,
 				raise()
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP
-	common_move_scripts(targetHost, parentHost)
+	common_post_move_scripts(targetHost, parentHost)
 
 
 # Executes the tasks defined in the card's scripts in order.
@@ -1396,6 +1397,19 @@ func check_play_costs() -> Color:
 
 
 # This function can be overriden by any class extending Card, in order to provide
+# a way of running scripts which might change where a card moves
+#
+# This method will be called before the card moves anywhere,
+# but before board_placement is evaluted. This allows a card which has been
+# setup to not allow moves to the board,
+# (which would normally send it back to its origin container)
+# to instead be redirected to a pile.
+# warning-ignore:unused_argument
+# warning-ignore:unused_argument
+func common_pre_move_scripts(new_host: Node, old_host: Node) -> Node:
+	return(new_host)
+
+# This function can be overriden by any class extending Card, in order to provide
 # a way of running scripts for a whole class of cards, based on where the card moves.
 #
 # This method will be called after the card moves anywhere, to a different
@@ -1404,7 +1418,7 @@ func check_play_costs() -> Color:
 # places on the table.
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
-func common_move_scripts(new_host: Node, old_host: Node) -> void:
+func common_post_move_scripts(new_host: Node, old_host: Node) -> void:
 	pass
 
 

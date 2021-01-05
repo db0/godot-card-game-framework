@@ -10,6 +10,8 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 
 ### New Features
 
+* Added new overridable common_pre_move_scripts() method to Card to allow developers to modify the end location of a card.
+
 #### ScriptingEngine
 
 * The scripts property of a card, can be populated with some triggers, without affecting the other triggers defined in Script Definitions
@@ -17,6 +19,10 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 * Added new task: `execute_script` which allows one to execute scripts on other cards. This can be useful when, for example, you want a card that activates other cards with modifiers.
 	In fact, also added two new keys for use with this task, which temporary modify counters or card propeties during execution.
 
+
+### Tweaks
+
+* Card.common_move_scripts() has been renamed to Card.common_post_move_scripts()
 
 ### Bugfixes
 
