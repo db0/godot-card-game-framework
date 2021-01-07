@@ -140,7 +140,12 @@ func _discover_focus() -> void:
 #		if area.get_parent() as BoardPlacementSlot and cfc.card_drag_ongoing and cfc.card_drag_ongoing.is_attachment and not potential_cards.empty():
 #			print_debug(potential_cards)
 		if area as CardContainer and cfc.card_drag_ongoing:
-			potential_containers.append(area)
+		# If disable_dropping_to_cardcontainers is set to true, we still
+		# Allow the player to return the card where they got it.
+			if not cfc.card_drag_ongoing.disable_dropping_to_cardcontainers\
+					or (cfc.card_drag_ongoing.disable_dropping_to_cardcontainers
+					and cfc.card_drag_ongoing.get_parent() == area):
+				potential_containers.append(area)
 	# Dragging into containers takes priority over draggging onto board
 	if not potential_containers.empty():
 		cfc.card_drag_ongoing.potential_container = \

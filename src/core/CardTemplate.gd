@@ -126,6 +126,33 @@ export var card_name : String setget set_card_name, get_card_name
 # It needs to be scene which uses a CardBack class script.
 export(PackedScene) var card_back_design : PackedScene
 export(PackedScene) var card_front_design : PackedScene
+# If true, the player will not be able to drop dragged cards back into
+# CardContainers. The player will only be allowed to drop cards to the board
+# or back into the container they picked them front
+# The game logic will have to provide another way to send cards to the various
+# piles
+# Be careful with this setting, as it will allow the player to drop cards
+# on top of the hand or pile areas.
+export var disable_dropping_to_cardcontainers := false
+# If true, the player will not be able to drag cards out of the hand manually
+export var disable_dragging_from_hand := false
+# If true, the player will not be able to drag cards around the board manually
+export var disable_dragging_from_board := false
+# If true, the player will not be able to drag cards out of piles
+# (Either directly from top, or from popup window
+export var disable_dragging_from_pile := false
+# If true, and the player attempt to drag the card out of hand
+#	then the card will be check on whether it has scripts
+#	which are [targeting other cards](SP#KEY_SUBJECT_V_TARGET) and if so
+#	will initiate them.
+#
+# Be aware that if the targeting task is not [is_cost](SP#KEY_IS_COST), then
+# other costs and effects of the card will trigger, even if player
+# decided not to, or couldn't, target anything.
+#
+# If not, it will act according to
+# [disable_dragging_from_hand](#disable_dragging_from_hand)
+export var hand_drag_starts_targeting := false
 
 # Ensures all nodes fit inside this rect.
 var card_size := CFConst.CARD_SIZE setget set_card_size
@@ -346,17 +373,6 @@ func _on_Card_gui_input(event) -> void:
 				if state in [CardState.FOCUSED_IN_HAND,
 						CardState.FOCUSED_ON_BOARD,
 						CardState.FOCUSED_IN_POPUP]:
-					# See CFConst documentation.
-					if state == CardState.FOCUSED_IN_HAND \
-							and (CFConst.DISABLE_DRAGGING_FROM_HAND
-							or check_play_costs() == CFConst.CostsState.IMPOSSIBLE):
-						return
-					if state == CardState.FOCUSED_ON_BOARD \
-							and CFConst.DISABLE_DRAGGING_FROM_BOARD:
-						return
-					if state == CardState.FOCUSED_IN_POPUP \
-							and CFConst.DISABLE_DRAGGING_FROM_PILE:
-						return
 					# But first we check if the player does a long-press.
 					# We don't want to start dragging the card immediately.
 					cfc.card_drag_ongoing = self
@@ -368,9 +384,24 @@ func _on_Card_gui_input(event) -> void:
 					# We also check if another card is already selected for dragging,
 					# to prevent from picking 2 cards at the same time.
 					if cfc.card_drag_ongoing == self:
-						# While the mouse is kept pressed, we tell the engine
-						# that a card is being dragged
-						_start_dragging()
+						if state == CardState.FOCUSED_IN_HAND\
+								and  _has_targeting_cost_hand_script():
+							var sceng = execute_scripts()
+							cfc.card_drag_ongoing = null
+						elif state == CardState.FOCUSED_IN_HAND\
+								and (disable_dragging_from_hand
+								or check_play_costs() == CFConst.CostsState.IMPOSSIBLE):
+							cfc.card_drag_ongoing = null
+						elif state == CardState.FOCUSED_ON_BOARD \
+								and disable_dragging_from_board:
+							cfc.card_drag_ongoing = null
+						elif state == CardState.FOCUSED_IN_POPUP \
+								and disable_dragging_from_pile:
+							cfc.card_drag_ongoing = null
+						else:
+							# While the mouse is kept pressed, we tell the engine
+							# that a card is being dragged
+							_start_dragging()
 			# If the mouse button was released we drop the dragged card
 			# This also means a card clicked once won't try to immediately drag
 		elif not event.is_pressed() and event.get_button_index() == 1:
@@ -1093,6 +1124,7 @@ func execute_scripts(
 					state_scripts)
 			if not sceng.all_tasks_completed:
 				yield(sceng,"tasks_completed")
+			# warning-ignore:void_assignment
 			var func_return = common_post_execution_scripts(trigger)
 			# We make sure this function does to return until all
 			# custom post execution scripts have also finished
@@ -1440,6 +1472,21 @@ func common_pre_execution_scripts(trigger: String) -> void:
 # warning-ignore:unused_argument
 func common_post_execution_scripts(trigger: String) -> void:
 	pass
+
+# Returns true is the card has hand_drag_starts_targeting set to true
+# is currently in hand, and has a targetting task.
+# 
+# This is used by the _on_Card_gui_input to determine if it should fire
+# scripts on the card during an attempt to drag it from hand.
+func _has_targeting_cost_hand_script() -> bool:
+	var ret := false
+	var hand_scripts = retrieve_card_scripts("manual").get("hand",[])
+	# We don't check multiple choice cards
+	if hand_drag_starts_targeting and typeof(hand_scripts) == TYPE_ARRAY:
+		for task in hand_scripts:
+			if task.get(SP.KEY_SUBJECT) == SP.KEY_SUBJECT_V_TARGET:
+				ret = true
+	return(ret)
 
 
 # Makes attachments always move with their parent around the board

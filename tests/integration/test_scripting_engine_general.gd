@@ -226,7 +226,7 @@ func test_subject_tutor():
 			{"name": "move_card_to_board",
 			"subject": "tutor",
 			"src_container":  cfc.NMAP.deck,
-			"filter_state_tutor": [{"filter_properties": 
+			"filter_state_tutor": [{"filter_properties":
 				{"Name": "Multiple Choices Test Card"}}],
 			"board_position":  Vector2(100,200)}]}}
 	card.execute_scripts()
@@ -278,3 +278,82 @@ func test_CardScripts():
 	yield(yield_to(cards[4].get_node("Tween"), "tween_all_completed", 1), YIELD)
 	assert_false(cards[4].is_faceup,
 			"Ensure targeting is cleared after first ScriptingEngine")
+
+
+func test_target_script_on_drag_from_hand():
+	cfc.NMAP.board.counters.mod_counter("credits", 10, true)
+	card.scripts = {"manual": {"hand": [
+				{"name": "mod_counter",
+				"modification": -2,
+				"is_cost": true,
+				"counter_name": "credits"},
+				{"name": "flip_card",
+				"subject": "target",
+				"set_faceup": false}]}}
+	card.hand_drag_starts_targeting = true
+	yield(drag_card(card, Vector2(300,300)), 'completed')
+	assert_true(card.get_node("TargetLine/ArrowHead").visible,
+			"Targeting has started on long-click")
+	yield(target_card(card,target), "completed")
+	assert_eq(8,board.counters.get_counter("credits"),
+			"Counter reduced by 2")
+	assert_false(target.is_faceup,
+			"Target is face-down")
+	card.scripts = {"manual": {"hand": [
+				{"name": "mod_counter",
+				"modification": -10,
+				"is_cost": true,
+				"counter_name": "credits"},
+				{"name": "flip_card",
+				"subject": "target",
+				"set_faceup": false}]}}
+	target = cards[2]
+	yield(drag_card(card, Vector2(300,300)), 'completed')
+	assert_false(card.get_node("TargetLine/ArrowHead").visible,
+			"Targeting not started because costs cannot be paid")
+	yield(target_card(card,target), "completed")
+	assert_eq(8,board.counters.get_counter("credits"),
+			"Counter not reduced")
+	assert_true(target.is_faceup,
+			"Target stayed face-up since cost could not be paid")
+	card.scripts = {"manual": {"hand": [
+				{"name": "flip_card",
+				"subject": "target",
+				"is_cost": true,
+				"set_faceup": false},
+				{"name": "mod_counter",
+				"modification": -10,
+				"is_cost": true,
+				"counter_name": "credits"}]}}
+	yield(drag_card(card, Vector2(300,300)), 'completed')
+	assert_true(card.get_node("TargetLine/ArrowHead").visible,
+			"Targeting started because targeting is_cost")
+	yield(target_card(card,target), "completed")
+	assert_eq(8,board.counters.get_counter("credits"),
+			"Counter not reduced")
+	assert_true(target.is_faceup,
+			"Target stayed face-up since cost could not be paid")
+	card.scripts = {"manual": {"hand": [
+				{"name": "flip_card",
+				"subject": "target",
+				"is_cost": true,
+				"set_faceup": false},
+				{"name": "mod_counter",
+				"modification": -3,
+				"counter_name": "credits"}]}}
+	yield(drag_card(card, Vector2(300,300)), 'completed')
+	unclick_card_anywhere(card)
+	assert_eq(8,board.counters.get_counter("credits"),
+			"Counter not reduced since nothing was targeted")
+	card.scripts = {"manual": {"hand": [
+				{"name": "flip_card",
+				"subject": "target",
+				"set_faceup": false},
+				{"name": "mod_counter",
+				"modification": -3,
+				"is_cost": true,
+				"counter_name": "credits"}]}}
+	yield(drag_card(card, Vector2(300,300)), 'completed')
+	unclick_card_anywhere(card)
+	assert_eq(5,board.counters.get_counter("credits"),
+			"Counter reduced since targeting was not a cost")

@@ -33,8 +33,9 @@ func custom_script(script: ScriptObject) -> void:
 			if not costs_dry_run:
 				print("This custom script uses the _find_subject()"
 						+ " to find a convenient target")
-				print("Destroying: " + subjects[0].card_name)
-				subjects[0].queue_free()
+				for subject in subjects:
+					subjects[0].queue_free()
+					print("Destroying: " + subjects[0].card_name)
 
 func custom_alterants(script: ScriptObject) -> int:
 	var alteration := 0
