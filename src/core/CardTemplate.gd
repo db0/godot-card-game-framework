@@ -801,7 +801,8 @@ func get_potential_placement_slot() -> BoardPlacementSlot:
 # among other card. If it's -1, card will be placed on the bottom of the pile
 func move_to(targetHost: Node,
 		index := -1,
-		board_position = null) -> void:
+		board_position = null,
+		scripted_move = false) -> void:
 #	if cfc.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -814,7 +815,7 @@ func move_to(targetHost: Node,
 	# if the placement to the board requested is invalid
 	# depending on the board_placement variable
 	targetHost = targetHost.get_final_placement_node(self)
-	targetHost = common_pre_move_scripts(targetHost, parentHost)
+	targetHost = common_pre_move_scripts(targetHost, parentHost, scripted_move)
 	if targetHost == cfc.NMAP.board and not board_position:
 		match board_placement:
 			BoardPlacement.NONE:
@@ -1034,7 +1035,7 @@ func move_to(targetHost: Node,
 				raise()
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP
-	common_post_move_scripts(targetHost, parentHost)
+	common_post_move_scripts(targetHost, parentHost, scripted_move)
 
 
 # Executes the tasks defined in the card's scripts in order.
@@ -1438,7 +1439,7 @@ func check_play_costs() -> Color:
 # to instead be redirected to a pile.
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
-func common_pre_move_scripts(new_host: Node, old_host: Node) -> Node:
+func common_pre_move_scripts(new_host: Node, old_host: Node, scripted_move: bool) -> Node:
 	return(new_host)
 
 # This function can be overriden by any class extending Card, in order to provide
@@ -1450,7 +1451,7 @@ func common_pre_move_scripts(new_host: Node, old_host: Node) -> Node:
 # places on the table.
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
-func common_post_move_scripts(new_host: Node, old_host: Node) -> void:
+func common_post_move_scripts(new_host: Node, old_host: Node, scripted_move: bool) -> void:
 	pass
 
 

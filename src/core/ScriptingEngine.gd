@@ -191,7 +191,7 @@ func move_card_to_container(script: ScriptTask) -> int:
 			# We don't allow to draw more cards than the hand size
 			# But we don't consider it a failed cost (as most games allow you
 			# to try and draw more cards when you're full but just won't draw any)
-			card.move_to(dest_container,dest_index)
+			card.move_to(dest_container,dest_index, null, true)
 			yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 	return(retcode)
 
@@ -231,7 +231,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 					if slot:
 						# Setting the highlight lets the move_to() method
 						# Know we're moving into that slot
-						card.move_to(cfc.NMAP.board, -1, slot)
+						card.move_to(cfc.NMAP.board, -1, slot, true)
 		else:
 			# If the named grid  was not found, we inform the developer.
 			print_debug("WARNING: Script from card '"
