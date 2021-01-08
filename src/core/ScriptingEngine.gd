@@ -509,6 +509,10 @@ func execute_scripts(script: ScriptTask) -> int:
 					script.owner_card,
 					script.get_property(SP.KEY_EXEC_TRIGGER),
 					{}, costs_dry_run)
+			# We make sure we wait until the execution is finished
+			# before cleaning out the temp properties/counters
+			if sceng is GDScriptFunctionState:
+				sceng = yield(sceng, "completed")
 			# Executing scripts on other cards need to noy only check their
 			# own costs are possible, but the target cards as well
 			# but only if the subject is explictly specified, such as
@@ -520,10 +524,6 @@ func execute_scripts(script: ScriptTask) -> int:
 					and not script.get_property(SP.KEY_SUBJECT)\
 					in [SP.KEY_SUBJECT_V_BOARDSEEK, SP.KEY_SUBJECT_V_TUTOR]:
 				retcode = CFConst.ReturnCode.FAILED
-			# We make sure we wait until the execution is finished
-			# before cleaning out the temp properties/counters
-			if sceng is GDScriptFunctionState:
-				sceng = yield(sceng, "completed")
 	return(retcode)
 
 # Initiates a seek through the table to see if there's any cards
