@@ -21,6 +21,10 @@ var needed_counters: Dictionary
 # 
 # Typically only used during 
 # an [execute_scripts()](ScriptingEngine#execute_scripts] task.
+#
+# Each key is a ScriptingEngine reference, and each value is a dictionary
+# with a counter and its modifiers.
+# This means multiple modifiers may be active at the same time.
 var temp_count_modifiers := {}
 
 # Holds the counter scene which has been created by the developer
@@ -104,7 +108,10 @@ func mod_counter(counter_name: String,
 # Takes into account temp_count_modifiers
 func get_counter(counter_name: String) -> int:
 	var count = counters[counter_name]
-	count += temp_count_modifiers.get(counter_name,0)
+	# We iterate through the values, where each value is a dictionary
+	# with key being the counter name, and value being the temp modifier
+	for modifier in temp_count_modifiers.values():
+		count += modifier.get(counter_name,0)
 	if count < 0: 
 		count = 0
 	return(count)

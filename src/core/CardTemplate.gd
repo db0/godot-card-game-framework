@@ -530,7 +530,9 @@ func modify_property(property: String, value, is_init = false, check := false) -
 func get_property(property: String):
 	var property_value = properties.get(property)
 	if property in CardConfig.PROPERTIES_NUMBERS:
-		var prop_mod = temp_properties_modifiers.get(property,0)
+		var prop_mod : int
+		for modifier in temp_properties_modifiers.values():
+			prop_mod += modifier.get(property,0)
 		property_value += prop_mod
 		if property_value < 0:
 			property_value = 0

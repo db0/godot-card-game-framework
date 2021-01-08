@@ -73,7 +73,7 @@ func test_execute_scripts_with_temp_mod_property():
 			{"name": "execute_scripts",
 			"subject": "target",
 			"exec_trigger":  "manual",
-			"exec_temp_mod_properties": {"Cost": 1},
+			"temp_mod_properties": {"Cost": 1},
 			"require_exec_state": "hand"}]}}
 	target.scripts = {"manual": {
 		"hand": [
@@ -98,7 +98,7 @@ func test_execute_scripts_with_temp_mod_property():
 			{"name": "execute_scripts",
 			"subject": "target",
 			"exec_trigger":  "manual",
-			"exec_temp_mod_properties": {"Cost": -5},
+			"temp_mod_properties": {"Cost": -5},
 			"require_exec_state": "hand"}]}}
 	card.execute_scripts()
 	yield(target_card(card,target, "slow"), "completed")
@@ -115,7 +115,7 @@ func test_execute_scripts_with_temp_mod_counter():
 			{"name": "execute_scripts",
 			"subject": "target",
 			"exec_trigger":  "manual",
-			"exec_temp_mod_counters": {"research": 1},
+			"temp_mod_counters": {"research": 1},
 			"require_exec_state": "hand"}]}}
 	target.scripts = {"manual": {
 		"hand": [
@@ -139,7 +139,7 @@ func test_execute_scripts_with_temp_mod_counter():
 			{"name": "execute_scripts",
 			"subject": "target",
 			"exec_trigger":  "manual",
-			"exec_temp_mod_counters": {"research": -5},
+			"temp_mod_counters": {"research": -5},
 			"require_exec_state": "hand"}]}}
 	card.execute_scripts()
 	yield(target_card(card,target, "slow"), "completed")

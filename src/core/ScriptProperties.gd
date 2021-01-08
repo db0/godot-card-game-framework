@@ -411,7 +411,7 @@ const KEY_REQUIRE_EXEC_STATE := "require_exec_state"
 #
 # The value has to be a Dictionary where each key is an counter's name
 # and the value is the modification to use on that counter.
-const KEY_EXEC_TEMP_MOD_COUNTERS := "exec_temp_mod_counters"
+const KEY_TEMP_MOD_COUNTERS := "temp_mod_counters"
 # Value Type: Dictionary
 #
 # This key is used in [execute_scripts](ScriptingEngine#execute_scripts)
@@ -421,7 +421,7 @@ const KEY_EXEC_TEMP_MOD_COUNTERS := "exec_temp_mod_counters"
 # The value has to be a Dictionary where each key is an number property's name
 # As defined in [PROPERTIES_NUMBERS](CardConfig#PROPERTIES_NUMBERS)
 # and the value is the modification to use on that number
-const KEY_EXEC_TEMP_MOD_PROPERTIES := "exec_temp_mod_properties"
+const KEY_TEMP_MOD_PROPERTIES := "temp_mod_properties"
 # Value Type: Dictionary
 #
 # A [VALUE_PER](#VALUE_PER) key for perfoming an effect equal to a number of tokens on the subject(s)
@@ -873,8 +873,8 @@ static func get_default(property: String):
 		KEY_IS_OPTIONAL:
 			default = false
 		KEY_MODIFY_PROPERTIES,\
-				KEY_EXEC_TEMP_MOD_PROPERTIES,\
-				KEY_EXEC_TEMP_MOD_COUNTERS:
+				KEY_TEMP_MOD_PROPERTIES,\
+				KEY_TEMP_MOD_COUNTERS:
 			default = {}
 		KEY_SUBJECT_COUNT, KEY_OBJECT_COUNT:
 			default = 1

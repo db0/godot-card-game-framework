@@ -17,8 +17,9 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 * The scripts property of a card, can be populated with some triggers, without affecting the other triggers defined in Script Definitions
 	This allows, for example, for some cardscripts to be added during runtime with a custom trigger, then executed immediately.
 * Added new task: `execute_script` which allows one to execute scripts on other cards. This can be useful when, for example, you want a card that activates other cards with modifiers.
-	In fact, also added two new keys for use with this task, which temporary modify counters or card propeties during execution.
+* Two new keys added which temporary modify counters or subject card propeties during execution of a task. 
 * Added new exported var for a Card: `initiate_targeting_scripts_from_hand_drag`. It allows to initiate scripts which require targeting, by long-clicking the card while in hand. Great for use with Action cards.
+* Card's move_to will now be aware when it's moving cards due to scripts. This can give more flexibility to developers
 
 ### Tweaks
 

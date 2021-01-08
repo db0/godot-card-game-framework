@@ -85,6 +85,8 @@ func run_next_script(card_owner: Card,
 				stored_integer)
 		# In case the task involves targetting, we need to wait on further
 		# execution until targetting has completed
+		cfc.NMAP.board.counters.temp_count_modifiers[self] = \
+				script.get_property(SP.KEY_TEMP_MOD_COUNTERS).duplicate()
 		if not script.has_init_completed:
 			yield(script,"completed_init")
 		#print("Scripting Subjects: " + str(script.subjects)) # Debug
@@ -100,8 +102,10 @@ func run_next_script(card_owner: Card,
 				and (not costs_dry_run
 					or (costs_dry_run and script.get_property(SP.KEY_IS_COST))):
 			#print(script.is_valid,':',costs_dry_run)
+			for card in script.subjects:
+				card.temp_properties_modifiers[self] = \
+						script.get_property(SP.KEY_TEMP_MOD_PROPERTIES).duplicate()
 			var retcode = call(script.script_name, script)
-			# When
 			if script.script_name in wait_for_tasks \
 					and retcode is GDScriptFunctionState:
 				retcode = yield(retcode, "completed")
@@ -130,6 +134,9 @@ func run_next_script(card_owner: Card,
 			can_all_costs_be_paid = false
 		# At the end of the task run, we loop back to the start, but of course
 		# with one less item in our scripts_queue.
+		cfc.NMAP.board.counters.temp_count_modifiers.erase(self)
+		for card in script.subjects:
+			card.temp_properties_modifiers.erase(self)
 		run_next_script(card_owner,scripts_queue,script.subjects)
 
 
@@ -266,7 +273,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 func mod_tokens(script: ScriptTask) -> int:
 	var retcode: int
 	var modification: int
-	var alteration := 0
+	var alteration = 0
 	var token_name: String = script.get_property(SP.KEY_TOKEN_NAME)
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
@@ -280,6 +287,8 @@ func mod_tokens(script: ScriptTask) -> int:
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
 	if not set_to_mod:
 		alteration = _check_for_alterants(script, modification)
+		if alteration is GDScriptFunctionState:
+			alteration = yield(alteration, "completed")
 	for card in script.subjects:
 		retcode = card.tokens.mod_token(token_name,
 				modification + alteration,set_to_mod,costs_dry_run)
@@ -298,7 +307,7 @@ func mod_tokens(script: ScriptTask) -> int:
 func spawn_card(script: ScriptTask) -> void:
 	var card: Card
 	var count: int
-	var alteration := 0
+	var alteration = 0
 	var card_scene: String = script.get_property(SP.KEY_SCENE_PATH)
 	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
@@ -311,6 +320,8 @@ func spawn_card(script: ScriptTask) -> void:
 	else:
 		count = script.get_property(SP.KEY_OBJECT_COUNT)
 	alteration = _check_for_alterants(script, count)
+	if alteration is GDScriptFunctionState:
+		alteration = yield(alteration, "completed")
 	if grid_name:
 		var grid: BoardPlacementGrid
 		var slot: BoardPlacementSlot
@@ -451,7 +462,7 @@ func add_grid(script: ScriptTask) -> void:
 func mod_counter(script: ScriptTask) -> int:
 	var counter_name: String = script.get_property(SP.KEY_COUNTER_NAME)
 	var modification: int
-	var alteration := 0
+	var alteration = 0
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
@@ -465,6 +476,8 @@ func mod_counter(script: ScriptTask) -> int:
 	# We do not not modify
 	if not set_to_mod:
 		alteration = _check_for_alterants(script, modification)
+		if alteration is GDScriptFunctionState:
+			alteration = yield(alteration, "completed")
 	var retcode: int = cfc.NMAP.board.counters.mod_counter(
 			counter_name,
 			modification + alteration,
@@ -492,10 +505,6 @@ func execute_scripts(script: ScriptTask) -> int:
 		# If not specific exec_state has been requested
 		# we execute whatever scripts of the state the card is currently in.
 		if not requested_exec_state or requested_exec_state == card.get_state_exec():
-			card.temp_properties_modifiers = \
-					script.get_property(SP.KEY_EXEC_TEMP_MOD_PROPERTIES).duplicate()
-			cfc.NMAP.board.counters.temp_count_modifiers = \
-					script.get_property(SP.KEY_EXEC_TEMP_MOD_COUNTERS).duplicate()
 			var sceng = card.execute_scripts(
 					script.owner_card,
 					script.get_property(SP.KEY_EXEC_TRIGGER),
@@ -515,8 +524,6 @@ func execute_scripts(script: ScriptTask) -> int:
 			# before cleaning out the temp properties/counters
 			if sceng is GDScriptFunctionState:
 				sceng = yield(sceng, "completed")
-			card.temp_properties_modifiers.clear()
-			cfc.NMAP.board.counters.temp_count_modifiers.clear()
 	return(retcode)
 
 # Initiates a seek through the table to see if there's any cards
