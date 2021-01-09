@@ -543,7 +543,7 @@ func get_property(property: String):
 #
 # Returns a dictionary with the following keys:
 # * value: The final value of this property after all modifications
-# * alteration: The "alterants_details" dictionary returned by
+# * alteration: The  full dictionary returned by
 #	CFScriptUtils.get_altered_value() but including details about
 #	temp_properties_modifiers
 func get_property_and_alterants(property: String) -> Dictionary:

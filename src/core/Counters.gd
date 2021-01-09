@@ -116,7 +116,7 @@ func get_counter(counter_name: String, requesting_card: Card = null) -> int:
 #
 # Returns a dictionary with the following keys:
 # * count: The final value of this counter after all modifications
-# * alteration: The "alterants_details" dictionary returned by
+# * alteration: The full dictionary returned by
 #	CFScriptUtils.get_altered_value() but including details about
 #	temp_count_modifiers
 func get_counter_and_alterants(

@@ -55,6 +55,17 @@ func set_count(value := 1) -> void:
 
 # Returns the amount of tokens of this type
 func get_count() -> int:
+	return(get_count_and_alterants().count)
+
+
+# Discovers the modified value of this token
+# from alterants
+#
+# Returns a dictionary with the following keys:
+# * count: The final value of this token after all modifications
+# * alteration: The full dictionary returned by
+#	CFScriptUtils.get_altered_value()
+func get_count_and_alterants() -> Dictionary:
 	var alteration = {
 		"value_alteration": 0,
 		"alterants_details": {}
@@ -69,7 +80,11 @@ func get_count() -> int:
 			count)
 		if alteration is GDScriptFunctionState:
 			alteration = yield(alteration, "completed")
-	return(count + alteration.value_alteration)
+	var return_dict := {
+		"count": count + alteration.value_alteration,
+		"alteration": alteration
+	}
+	return(return_dict)
 
 
 # Reveals the Name label.
