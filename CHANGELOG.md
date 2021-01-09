@@ -20,6 +20,7 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 * Two new keys added which temporary modify counters or subject card propeties during execution of a task. 
 * Added new exported var for a Card: `initiate_targeting_scripts_from_hand_drag`. It allows to initiate scripts which require targeting, by long-clicking the card while in hand. Great for use with Action cards.
 * Card's move_to will now be aware when it's moving cards due to scripts. This can give more flexibility to developers
+* Alterants can now affect the retrieved number of counters, tokens or numeric card properties. This allows effects such as "Increase the power of all soldiers by 1"
 
 ### Tweaks
 

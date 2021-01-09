@@ -6,6 +6,8 @@ extends HBoxContainer
 
 export var count := 0 setget set_count, get_count
 
+var token_drawer
+
 onready var count_label = $CenterContainer/Count
 
 # Called when the node enters the scene tree for the first time.
@@ -27,8 +29,9 @@ func _on_Remove_pressed() -> void:
 
 # Initializes the token with the right texture and name 
 # based on the values in the configuration
-func setup(token_name: String) -> void:
+func setup(token_name: String, _token_drawer = null) -> void:
 	name = token_name
+	token_drawer = _token_drawer
 	var textrect : TextureRect = $CenterContainer/TokenIcon
 	var new_texture = ImageTexture.new();
 	var tex = load(CFConst.PATH_TOKENS + CFConst.TOKENS_MAP[token_name])
@@ -52,7 +55,18 @@ func set_count(value := 1) -> void:
 
 # Returns the amount of tokens of this type
 func get_count() -> int:
-	return(count)
+	var alteration = 0
+	# We do this check because in UT the token might not be
+	# assigned to a token_drawer
+	if token_drawer:
+		alteration = CFScriptUtils.get_altered_value(
+			token_drawer.owner_card,
+			"get_token",
+			{SP.KEY_TOKEN_NAME: name,},
+			count)
+		if alteration is GDScriptFunctionState:
+			alteration = yield(alteration, "completed")
+	return(count + alteration)
 
 
 # Reveals the Name label.

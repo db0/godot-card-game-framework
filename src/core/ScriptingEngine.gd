@@ -529,7 +529,7 @@ func execute_scripts(script: ScriptTask) -> int:
 # Initiates a seek through the table to see if there's any cards
 # which have scripts which modify the intensity of the current task.
 func _check_for_alterants(script: ScriptTask, value: int) -> int:
-	var alteration = ScriptObject.get_altered_value(
+	var alteration = CFScriptUtils.get_altered_value(
 		script.owner_card,
 		script.script_name,
 		script.script_definition,

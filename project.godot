@@ -40,6 +40,11 @@ _global_script_classes=[ {
 "path": "res://src/core/CFControl.gd"
 }, {
 "base": "Reference",
+"class": "CFScriptUtils",
+"language": "GDScript",
+"path": "res://src/core/CFScriptUtils.gd"
+}, {
+"base": "Reference",
 "class": "CFUtils",
 "language": "GDScript",
 "path": "res://src/core/CFUtils.gd"
@@ -176,6 +181,7 @@ _global_script_class_icons={
 "BoardPlacementSlot": "",
 "CFConst": "",
 "CFControl": "",
+"CFScriptUtils": "",
 "CFUtils": "",
 "Card": "",
 "CardBack": "",

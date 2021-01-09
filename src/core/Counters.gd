@@ -17,9 +17,9 @@ var _labels := {}
 # to the counter_scene
 # and each value, is the text value for the label
 var needed_counters: Dictionary
-# This hold modifiers to counters that will be only active temporarily. 
-# 
-# Typically only used during 
+# This hold modifiers to counters that will be only active temporarily.
+#
+# Typically only used during
 # an [execute_scripts()](ScriptingEngine#execute_scripts] task.
 #
 # Each key is a ScriptingEngine reference, and each value is a dictionary
@@ -31,7 +31,7 @@ var temp_count_modifiers := {}
 export(PackedScene) var counter_scene
 
 # This variable should hold the path to the Control container
-# Which will hold the counter objects. 
+# Which will hold the counter objects.
 #
 # It should be set in the _ready() function of the script which extends this class
 var counters_container : Container
@@ -57,7 +57,7 @@ func spawn_needed_counters() -> void:
 		var counter_labels = needed_counters[counter_name]
 		for label in counter_labels:
 			counter.get_node(label).text = str(counter_labels[label])
-			# The value_node is also used determine the initial values 
+			# The value_node is also used determine the initial values
 			# of the counters dictionary
 			if label == value_node:
 				counters[counter_name] = counter_labels[label]
@@ -69,7 +69,7 @@ func spawn_needed_counters() -> void:
 
 # Modifies the value of a counter. The counter has to have been specified
 # in the `needed_counters`
-# 
+#
 # * Returns CFConst.ReturnCode.CHANGED if a modification happened
 # * Returns CFConst.ReturnCode.OK if the modification requested is already the case
 # * Returns CFConst.ReturnCode.FAILED if for any reason the modification cannot happen
@@ -79,7 +79,7 @@ func spawn_needed_counters() -> void:
 #
 # If set_to_mod is true, then the counter will be set to exactly the value
 # requested. otherwise the value will be modified from the current value
-func mod_counter(counter_name: String, 
+func mod_counter(counter_name: String,
 		value: int,
 		set_to_mod := false,
 		check := false) -> int:
@@ -106,12 +106,22 @@ func mod_counter(counter_name: String,
 
 # Returns the value of the specified counter.
 # Takes into account temp_count_modifiers
-func get_counter(counter_name: String) -> int:
+func get_counter(counter_name: String, requesting_card: Card = null) -> int:
 	var count = counters[counter_name]
 	# We iterate through the values, where each value is a dictionary
 	# with key being the counter name, and value being the temp modifier
 	for modifier in temp_count_modifiers.values():
 		count += modifier.get(counter_name,0)
-	if count < 0: 
+	var alteration = 0
+	if requesting_card:
+		alteration = CFScriptUtils.get_altered_value(
+			requesting_card,
+			"get_counter",
+			{SP.KEY_COUNTER_NAME: counter_name,},
+			counters[counter_name])
+		if alteration is GDScriptFunctionState:
+			alteration = yield(alteration, "completed")
+	count += alteration
+	if count < 0:
 		count = 0
 	return(count)

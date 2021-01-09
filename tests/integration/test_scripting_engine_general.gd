@@ -130,10 +130,12 @@ func test_subject_target():
 		yield(card.targeting_arrow, "initiated_targeting")
 	#watch_signals(scripting_engine)
 	yield(target_card(card,card), "completed")
+	yield(yield_for(0.1), YIELD)
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 270,
 			"First rotation should happen before targetting second time")
 	yield(target_card(card,card), "completed")
+	yield(yield_for(0.1), YIELD)
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(card.card_rotation, 90,
 			"Second rotation should also happen")

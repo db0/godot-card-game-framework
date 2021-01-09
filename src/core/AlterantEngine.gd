@@ -15,7 +15,7 @@ const _ASK_INTEGER_SCENE = preload(_ASK_INTEGER_SCENE_FILE)
 # Emitted when all alterations have been run succesfully
 signal alterationss_completed
 
-# This is checked by the yield in [ScriptObject] get_altered_value()
+# This is checked by the yield in [get_altered_value](CFScriptUtils#get_altered_value)
 # to know execution has completed.
 var all_alterations_completed := false
 # The total amount of alterations that this card's script will perform.

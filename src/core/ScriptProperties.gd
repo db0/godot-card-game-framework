@@ -340,6 +340,7 @@ const KEY_ALTERANTS := "alterants"
 # It can accept a [VALUE_PER](#VALUE_PER) value which allows one to script an
 # effect like "Increase the cost by the number of Soldiers on the table"
 const KEY_ALTERATION := "alteration"
+const KEY_MODIFIERS := "modifiers"
 # This is a versatile value that can be inserted into any various keys
 # when a task needs to calculate the amount of subjects to look for
 # or the number of things to do, based on the state of the board at that point

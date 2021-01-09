@@ -319,3 +319,60 @@ func test_spawn_card_alterants():
 	card.execute_scripts()
 	assert_eq(4,board.get_card_count(),
 		"Correct amount of cards spawned on board")
+
+func test_get_counter_alterants():
+	card.scripts = {"alterants": {"hand": [
+			{"filter_task": "get_counter",
+			"trigger": "another",
+			"filter_counter_name": "research",
+			"alteration": 3},]}}
+	assert_eq(board.counters.get_counter("research",target),3,
+			"Alterant modifies retrieved counter value")
+	assert_eq(board.counters.get_counter("research",card),0,
+			"Alterant not modified retrieved counter value when trigger is self")
+	var type : String = target.properties["Type"]
+	card.scripts = {"alterants": {"hand": [
+			{"filter_task": "get_counter",
+			"filter_counter_name": "research",
+			"alteration": 3,
+			"filter_state_trigger": [{
+				"filter_properties": {"Type": type}
+			}],},]}}
+	assert_eq(board.counters.get_counter("research",target),3,
+			"Alterant modifies retrieved counter value when filter matches")
+	assert_eq(board.counters.get_counter("research",card),0,
+			"Alterant not modified retrieved counter value when filter does not match")
+
+func test_get_token_alterants():
+	yield(table_move(target, Vector2(200,200)), "completed")
+	target.tokens.mod_token("blood")
+	target.tokens.mod_token("industry")
+	var industry_token: Token = target.tokens.get_token("industry")
+	var blood_token: Token = target.tokens.get_token("blood")
+	card.scripts = {"alterants": {"hand": [
+			{"filter_task": "get_token",
+			"trigger": "another",
+			"filter_token_name": "industry",
+			"alteration": 1},
+			{"filter_task": "get_token",
+			"trigger": "self",
+			"filter_token_name": "blood",
+			"alteration": 2},]}}
+	assert_eq(industry_token.count,2,
+			"Token retrieved as specified amount + alterant")
+	assert_eq(blood_token.count,1,
+			"Token retrieved as specified amount + alterant")
+
+
+func test_get_property_alterants():
+	target.modify_property("Cost", 2)
+	card.modify_property("Cost", 2)
+	card.scripts = {"alterants": {"hand": [
+			{"filter_task": "get_property",
+			"trigger": "another",
+			"filter_property_name": "cost",
+			"alteration": 3},]}}
+	assert_eq(target.get_property("Cost"),5,
+			"Alterant modifies retrieved property value")
+	assert_eq(card.get_property("Cost"),2,
+			"Alterant not modified retrieved counter value when trigger is self")

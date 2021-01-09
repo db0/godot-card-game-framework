@@ -112,7 +112,7 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false, check := fals
 		# and set it to 1
 		if not token and mod > 0:
 			token = _TOKEN_SCENE.instance()
-			token.setup(token_name)
+			token.setup(token_name, self)
 			$Drawer/VBoxContainer.add_child(token)
 		# If the token node of this name has already been added to the card
 		# We just increment it by 1
