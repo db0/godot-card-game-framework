@@ -198,7 +198,9 @@ var temp_properties_modifiers := {}
 var _debugger_hook := false
 # Debug for stuck tweens
 var _tween_stuck_time = 0
-
+# This variable is being used to avoid an infinite loop when alterants
+# are altering get_property based on filtering properties of cards
+var _is_property_being_altered := false
 # The node which has the design of the card back
 # And the methods which are used for its potential animation.
 # This will be loaded in `_init_card_back()`
@@ -539,14 +541,19 @@ func get_property(property: String):
 		for modifier in temp_properties_modifiers.values():
 			prop_mod += modifier.get(property,0)
 		property_value += prop_mod
-		var alteration = CFScriptUtils.get_altered_value(
-			self,
-			"get_property",
-			{SP.KEY_PROPERTY_NAME: property,},
-			properties.get(property))
-		if alteration is GDScriptFunctionState:
-			alteration = yield(alteration, "completed")
-		property_value += alteration
+		# We use this flag to avoid an alteranty which alters get_property
+		# by filtering the card's properties, causing an infinite loop.
+		if not _is_property_being_altered:
+			_is_property_being_altered = true
+			var alteration = CFScriptUtils.get_altered_value(
+				self,
+				"get_property",
+				{SP.KEY_PROPERTY_NAME: property,},
+				properties.get(property))
+			if alteration is GDScriptFunctionState:
+				alteration = yield(alteration, "completed")
+			_is_property_being_altered = false
+			property_value += alteration
 		if property_value < 0:
 			property_value = 0
 	return(property_value)
