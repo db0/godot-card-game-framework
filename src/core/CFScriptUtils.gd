@@ -37,6 +37,9 @@ static func get_altered_value(
 			value_alteration += alteng.alteration
 			# We don't want to register alterants which didn't modify the number.
 			if alteng.alteration != 0:
+				# Each key in the alterants_details dictionary is the
+				# card object of the alterant. The value is the alteration
+				# this alterant has added to the total.
 				alterants_details[card] = alteng.alteration
 	# As a general rule, we don't want a positive number to turn
 	# negative (and the other way around) due to an alteration

@@ -187,8 +187,14 @@ var _placement_slot : BoardPlacementSlot = null
 # This avoids triggering the card_properties_modified signal.
 #
 # Each key is a ScriptingEngine reference, and each value is a dictionary
-# with  property names as keys and modifiers as their values
-# This means multiple modifiers may be active at the same time.
+# With the following keys:
+# * requesting_card: The card object which has requested this temp modifier
+# * modifer: A dictionary with all the modifications requested by this card
+#	Each key is a (numerical) property name,
+#	and value is the temp modifier requested for this property.
+#
+# This allows multiple modifiers may be active at the same time, even from
+# nested tasks on the same card during an execute_scripts task.
 #
 # Typically used during
 # an [execute_scripts()](ScriptingEngine#execute_scripts] task.
@@ -552,11 +558,20 @@ func get_property_and_alterants(property: String) -> Dictionary:
 		"value_alteration": 0,
 		"alterants_details": {}
 	}
+	var temp_modifiers = {
+		"value_modification": 0,
+		"modifier_details": {}
+	}
 	if property in CardConfig.PROPERTIES_NUMBERS:
-		var prop_mod : int
-		for modifier in temp_properties_modifiers.values():
-			prop_mod += modifier.get(property,0)
-		property_value += prop_mod
+		for modifiers_dict in temp_properties_modifiers.values():
+			temp_modifiers.value_modification += \
+					modifiers_dict.modifier.get(property,0)
+			# Each value in the modifier_details dictionary is another dictionary
+			# Where the key is the card object which has added this modifier
+			# And the value is the modifier this specific card added to the total
+			temp_modifiers.modifier_details[modifiers_dict.requesting_card] =\
+					modifiers_dict.modifier.get(property,0)
+		property_value += temp_modifiers.value_modification
 		# We use this flag to avoid an alteranty which alters get_property
 		# by filtering the card's properties, causing an infinite loop.
 		if not _is_property_being_altered:
@@ -575,7 +590,8 @@ func get_property_and_alterants(property: String) -> Dictionary:
 			property_value = 0
 	var return_dict := {
 		"value": property_value,
-		"alteration": alteration
+		"alteration": alteration,
+		"temp_modifiers": temp_modifiers
 	}
 	return(return_dict)
 

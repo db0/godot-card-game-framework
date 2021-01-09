@@ -85,8 +85,10 @@ func run_next_script(card_owner: Card,
 				stored_integer)
 		# In case the task involves targetting, we need to wait on further
 		# execution until targetting has completed
-		cfc.NMAP.board.counters.temp_count_modifiers[self] = \
-				script.get_property(SP.KEY_TEMP_MOD_COUNTERS).duplicate()
+		cfc.NMAP.board.counters.temp_count_modifiers[self] = {
+				"requesting_card": script.owner_card,
+				"modifier": script.get_property(SP.KEY_TEMP_MOD_COUNTERS).duplicate()
+			}
 		if not script.has_init_completed:
 			yield(script,"completed_init")
 		#print("Scripting Subjects: " + str(script.subjects)) # Debug
@@ -103,8 +105,11 @@ func run_next_script(card_owner: Card,
 					or (costs_dry_run and script.get_property(SP.KEY_IS_COST))):
 			#print(script.is_valid,':',costs_dry_run)
 			for card in script.subjects:
-				card.temp_properties_modifiers[self] = \
-						script.get_property(SP.KEY_TEMP_MOD_PROPERTIES).duplicate()
+				card.temp_properties_modifiers[self] = {
+					"requesting_card": script.owner_card,
+					"modifier": script.get_property(SP.KEY_TEMP_MOD_PROPERTIES)\
+							.duplicate()
+				}
 			var retcode = call(script.script_name, script)
 			if script.script_name in wait_for_tasks \
 					and retcode is GDScriptFunctionState:

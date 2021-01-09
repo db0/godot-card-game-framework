@@ -23,8 +23,14 @@ var needed_counters: Dictionary
 # an [execute_scripts()](ScriptingEngine#execute_scripts] task.
 #
 # Each key is a ScriptingEngine reference, and each value is a dictionary
-# with a counter and its modifiers.
-# This means multiple modifiers may be active at the same time.
+# With the following keys:
+# * requesting_card: The card object which has requested this temp modifier
+# * modifer: A dictionary with all the modifications requested by this card
+#	Each key is a counter name, and value is the temp modifier requested
+#	for this counter
+#
+# This allows multiple modifiers may be active at the same time, even from
+# nested tasks on the same card during an execute_scripts task.
 var temp_count_modifiers := {}
 
 # Holds the counter scene which has been created by the developer
@@ -118,6 +124,8 @@ func get_counter(counter_name: String, requesting_card: Card = null) -> int:
 # * count: The final value of this counter after all modifications
 # * alteration: The full dictionary returned by
 #	CFScriptUtils.get_altered_value() but including details about
+# * temp_modifiers: A custom dictionary, following the format of the alteration
+#	dictionary, but holding modifications done by temp_count_modifiers
 #	temp_count_modifiers
 func get_counter_and_alterants(
 		counter_name: String,
@@ -125,11 +133,9 @@ func get_counter_and_alterants(
 	var count = counters[counter_name]
 	# We iterate through the values, where each value is a dictionary
 	# with key being the counter name, and value being the temp modifier
-	for modifier in temp_count_modifiers.values():
-		count += modifier.get(counter_name,0)
 	var alteration = {
 		"value_alteration": 0,
-		"alterants_details": {"counter_name": counter_name}
+		"alterants_details": {}
 	}
 	if requesting_card:
 		alteration = CFScriptUtils.get_altered_value(
@@ -141,11 +147,26 @@ func get_counter_and_alterants(
 			alteration = yield(alteration, "completed")
 	# The first element is always the total modifier from all alterants
 	count += alteration.value_alteration
+	var temp_modifiers = {
+		"value_modification": 0,
+		"modifier_details": {}
+	}
+	for modifiers_dict in temp_count_modifiers.values():
+		# The value_modification key hold the total modification done by
+		# all temp modifiers.
+		temp_modifiers.value_modification += modifiers_dict.modifier.get(counter_name,0)
+		# Each value in the modifier_details dictionary is another dictionary
+		# Where the key is the card object which has added this modifier
+		# And the value is the modifier this specific card added to the total
+		temp_modifiers.modifier_details[modifiers_dict.requesting_card] =\
+				modifiers_dict.modifier.get(counter_name,0)
+	count += temp_modifiers.value_modification
 	if count < 0:
 		count = 0
 	var return_dict = {
 		"count": count,
-		"alteration": alteration
+		"alteration": alteration,
+		"temp_modifiers": temp_modifiers,
 	}
 	return(return_dict)
 
