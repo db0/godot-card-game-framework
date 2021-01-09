@@ -107,12 +107,21 @@ func mod_counter(counter_name: String,
 # Returns the value of the specified counter.
 # Takes into account temp_count_modifiers
 func get_counter(counter_name: String, requesting_card: Card = null) -> int:
+	var count = get_counter_and_alterants(counter_name, requesting_card).count
+	return(count)
+
+func get_counter_and_alterants(
+		counter_name: String,
+		requesting_card: Card = null) -> Dictionary:
 	var count = counters[counter_name]
 	# We iterate through the values, where each value is a dictionary
 	# with key being the counter name, and value being the temp modifier
 	for modifier in temp_count_modifiers.values():
 		count += modifier.get(counter_name,0)
-	var alteration = 0
+	var alteration = {
+		"value_alteration": 0,
+		"alterants_details": {"counter_name": counter_name}
+	}
 	if requesting_card:
 		alteration = CFScriptUtils.get_altered_value(
 			requesting_card,
@@ -121,7 +130,13 @@ func get_counter(counter_name: String, requesting_card: Card = null) -> int:
 			counters[counter_name])
 		if alteration is GDScriptFunctionState:
 			alteration = yield(alteration, "completed")
-	count += alteration
+	# The first element is always the total modifier from all alterants
+	count += alteration.value_alteration
 	if count < 0:
 		count = 0
-	return(count)
+	var return_dict = {
+		"count": count,
+		"alteration": alteration
+	}
+	return(return_dict)
+	

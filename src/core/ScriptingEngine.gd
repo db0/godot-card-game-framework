@@ -536,5 +536,6 @@ func _check_for_alterants(script: ScriptTask, value: int) -> int:
 		value)
 	if alteration is GDScriptFunctionState:
 		alteration = yield(alteration, "completed")
-	return(alteration)
+	print(alteration.value_alteration)
+	return(alteration.value_alteration)
 

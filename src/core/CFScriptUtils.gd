@@ -12,8 +12,9 @@ static func get_altered_value(
 		_owner_card,
 		task_name: String,
 		task_properties: Dictionary,
-		value: int) -> int:
+		value: int) -> Dictionary:
 	var value_alteration := 0
+	var alterants_details := {}
 	for card in cfc.get_tree().get_nodes_in_group("cards"):
 		var card_scripts = card.retrieve_card_scripts(SP.KEY_ALTERANTS)
 		# We select which scripts to run from the card, based on it state
@@ -30,6 +31,7 @@ static func get_altered_value(
 			if not alteng.all_alterations_completed:
 				yield(alteng,"alterations_completed")
 			value_alteration += alteng.alteration
+			alterants_details[card] = alteng.alteration
 	# As a general rule, we don't want a positive number to turn
 	# negative (and the other way around) due to an alteration
 	# For example: if a card says, "decrease all costs by 3",
@@ -39,7 +41,11 @@ static func get_altered_value(
 		value_alteration = abs(value)
 	elif value > 0 and value + value_alteration < 0:
 		value_alteration = -value
-	return(value_alteration)
+	var return_dict := {
+		"value_alteration": value_alteration,
+		"alterants_details": alterants_details
+	}
+	return(return_dict)
 	
 
 # Parses a [ScriptTask]'s properties and extracts the details a [ScriptAlter]

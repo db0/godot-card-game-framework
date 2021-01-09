@@ -535,7 +535,14 @@ func modify_property(property: String, value, is_init = false, check := false) -
 # properties.get() as it takes into account the temp_properties_modifiers var
 # and also checks for alterant scripts
 func get_property(property: String):
+	return(get_property_and_alterants(property).value)
+
+func get_property_and_alterants(property: String) -> Dictionary:
 	var property_value = properties.get(property)
+	var alteration = {
+		"value_alteration": 0,
+		"alterants_details": {}
+	}
 	if property in CardConfig.PROPERTIES_NUMBERS:
 		var prop_mod : int
 		for modifier in temp_properties_modifiers.values():
@@ -545,7 +552,7 @@ func get_property(property: String):
 		# by filtering the card's properties, causing an infinite loop.
 		if not _is_property_being_altered:
 			_is_property_being_altered = true
-			var alteration = CFScriptUtils.get_altered_value(
+			alteration = CFScriptUtils.get_altered_value(
 				self,
 				"get_property",
 				{SP.KEY_PROPERTY_NAME: property,},
@@ -553,10 +560,15 @@ func get_property(property: String):
 			if alteration is GDScriptFunctionState:
 				alteration = yield(alteration, "completed")
 			_is_property_being_altered = false
-			property_value += alteration
+			# The first element is always the total modifier from all alterants
+			property_value += alteration.value_alteration
 		if property_value < 0:
 			property_value = 0
-	return(property_value)
+	var return_dict := {
+		"value": property_value,
+		"alteration": alteration
+	}
+	return(return_dict)
 
 
 func set_card_size(value: Vector2) -> void:
