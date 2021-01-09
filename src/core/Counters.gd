@@ -105,11 +105,20 @@ func mod_counter(counter_name: String,
 
 
 # Returns the value of the specified counter.
-# Takes into account temp_count_modifiers
+# Takes into account temp_count_modifiers and alterants
 func get_counter(counter_name: String, requesting_card: Card = null) -> int:
 	var count = get_counter_and_alterants(counter_name, requesting_card).count
 	return(count)
 
+
+# Discovers the modified value of the specified counter based
+# on temp_count_modifiers and alterants.
+#
+# Returns a dictionary with the following keys:
+# * count: The final value of this counter after all modifications
+# * alteration: The "alterants_details" dictionary returned by
+#	CFScriptUtils.get_altered_value() but including details about
+#	temp_count_modifiers
 func get_counter_and_alterants(
 		counter_name: String,
 		requesting_card: Card = null) -> Dictionary:
@@ -139,4 +148,4 @@ func get_counter_and_alterants(
 		"alteration": alteration
 	}
 	return(return_dict)
-	
+

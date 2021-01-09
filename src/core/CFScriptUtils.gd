@@ -7,7 +7,11 @@ extends Reference
 
 # Handles modifying the intensity of tasks based on altering scripts on cards
 #
-# Returns the modification to the provided value.
+# Returns a Dictionary holding two keys
+# * value_alteration: The total modification found from all alterants
+# * alterants_details: A dictionary where each key is the Card object
+# 	of each alterant, and each value is the modification done by that
+#	specific alterant.
 static func get_altered_value(
 		_owner_card,
 		task_name: String,
@@ -31,7 +35,9 @@ static func get_altered_value(
 			if not alteng.all_alterations_completed:
 				yield(alteng,"alterations_completed")
 			value_alteration += alteng.alteration
-			alterants_details[card] = alteng.alteration
+			# We don't want to register alterants which didn't modify the number.
+			if alteng.alteration != 0:
+				alterants_details[card] = alteng.alteration
 	# As a general rule, we don't want a positive number to turn
 	# negative (and the other way around) due to an alteration
 	# For example: if a card says, "decrease all costs by 3",
@@ -46,7 +52,7 @@ static func get_altered_value(
 		"alterants_details": alterants_details
 	}
 	return(return_dict)
-	
+
 
 # Parses a [ScriptTask]'s properties and extracts the details a [ScriptAlter]
 # needs to check if its allowed to modify that task.
@@ -66,4 +72,4 @@ static func _generate_trigger_details(task_name, task_properties) -> Dictionary:
 		"get_counter": [SP.KEY_COUNTER_NAME,],}
 	for property in details_needed_per_task.get(task_name,[]):
 		details[property] = task_properties.get(property)
-	return(details)	
+	return(details)

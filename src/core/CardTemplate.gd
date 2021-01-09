@@ -537,6 +537,15 @@ func modify_property(property: String, value, is_init = false, check := false) -
 func get_property(property: String):
 	return(get_property_and_alterants(property).value)
 
+
+# Discovers the modified value of the specified property based
+# on temp_properties_modifiers and alterants (if it's a number).
+#
+# Returns a dictionary with the following keys:
+# * value: The final value of this property after all modifications
+# * alteration: The "alterants_details" dictionary returned by
+#	CFScriptUtils.get_altered_value() but including details about
+#	temp_properties_modifiers
 func get_property_and_alterants(property: String) -> Dictionary:
 	var property_value = properties.get(property)
 	var alteration = {
@@ -571,6 +580,7 @@ func get_property_and_alterants(property: String) -> Dictionary:
 	return(return_dict)
 
 
+# Sets the card size and adjusts all nodes depending on it.
 func set_card_size(value: Vector2) -> void:
 	card_size = value
 	_control.rect_min_size = value

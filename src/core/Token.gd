@@ -89,6 +89,7 @@ func retract() -> void:
 	$MarginContainer.visible = false
 	$Buttons.visible = false
 
+
 # Returns the lowercase name of the token
 func get_token_name() -> String:
 	return($Name.text.to_lower())
