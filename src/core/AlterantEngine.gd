@@ -13,7 +13,7 @@ const _ASK_INTEGER_SCENE_FILE = CFConst.PATH_CORE + "AskInteger.tscn"
 const _ASK_INTEGER_SCENE = preload(_ASK_INTEGER_SCENE_FILE)
 
 # Emitted when all alterations have been run succesfully
-signal alterationss_completed
+signal alterations_completed
 
 # This is checked by the yield in [get_altered_value](CFScriptUtils#get_altered_value)
 # to know execution has completed.
