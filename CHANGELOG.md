@@ -29,12 +29,14 @@ Some ScriptProperty consts have been adjusted to allow `counter_modified` signal
 * Card's move_to will now be aware when it's moving cards due to scripts. This can give more flexibility to developers
 * Alterants can now affect the retrieved number of counters, tokens or numeric card properties. This allows effects such as "Increase the power of all soldiers by 1"
 * Added counter_modified signal.
+* Added new trigger filters where a card can decide to activate or not, based on the amount of cards on board/cardcontainer. I.e. have an effect such as "if there's at least 3 creatures in discard pile".
 
 ### Tweaks
 
 * Card.common_move_scripts() has been renamed to Card.common_post_move_scripts()
 * DISABLE_DROPPING_TO_CARDCONTAINERS, DISABLE_DRAGGING_FROM_HAND, DISABLE_DRAGGING_FROM_BOARD, and DISABLE_DRAGGING_FROM_PILE have been moved as exported variables to the CardTemplate now
 	Each card type can have its own settings that fit how it works.
+* Renamed SignalPropagato's `_on_Card_signal_received()` to `_on_signal_received()`
 
 ### Bugfixes
 

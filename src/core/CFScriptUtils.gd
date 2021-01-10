@@ -2,6 +2,8 @@
 #
 # This is a library of static functions we had to separate to avoid
 # cyclic dependencies
+#
+# This class needs to have no references to [ScriptingObject]
 class_name CFScriptUtils
 extends Reference
 
@@ -55,7 +57,6 @@ static func get_altered_value(
 		"alterants_details": alterants_details
 	}
 	return(return_dict)
-
 
 # Parses a [ScriptTask]'s properties and extracts the details a [ScriptAlter]
 # needs to check if its allowed to modify that task.

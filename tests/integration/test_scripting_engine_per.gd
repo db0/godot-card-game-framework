@@ -143,3 +143,108 @@ func test_per_counter():
 	yield(yield_for(0.5), YIELD)
 	assert_eq(hand.get_card_count(), 8,
 		"Draw 1 card per counter specified")
+
+
+func test_filter_per_boardseek():
+	yield(table_move(cards[1], Vector2(100,200)), "completed")
+	yield(table_move(cards[2], Vector2(300,200)), "completed")
+	yield(table_move(cards[3], Vector2(500,200)), "completed")
+	yield(table_move(cards[4], Vector2(700,200)), "completed")
+	# Flip the card facedown if there's 3 cards on board
+	card.scripts = {"manual": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_per_boardseek_count": {
+				"subject": "boardseek",
+				"subject_count": "all",
+				"filter_card_count": 3,}}}
+	card.execute_scripts()
+	yield(yield_for(0.3), YIELD)
+	assert_true(card.is_faceup,
+			"Card stayed face-up since filter_per_boardseek didn't match")
+	# Flip the card facedown if there's 4 cards on board
+	card.scripts = {"manual": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_per_boardseek_count": {
+				"subject": "boardseek",
+				"subject_count": "all",
+				"filter_card_count": 4,}}}
+	card.execute_scripts()
+	yield(yield_for(0.3), YIELD)
+	assert_false(card.is_faceup,
+			"Card flipped face-down since filter_per_boardseek matched")
+
+func test_filter_per_tutor():
+	# Flip the card facedown if there's less than 5 cards in deck
+	card.scripts = {"manual": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_per_tutor_count": {
+				"subject": "tutor",
+				"subject_count": "all",
+				"comparison": "lt",
+				"src_container":  cfc.NMAP.deck,
+				"filter_card_count": 5,}}}
+	card.execute_scripts()
+	yield(yield_for(0.3), YIELD)
+	assert_true(card.is_faceup,
+			"Card stayed face-up since filter_per_tutor didn't match")
+	# Flip the card facedown if there's more than 5 cards in deck
+	card.scripts = {"manual": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_per_tutor_count": {
+				"subject": "tutor",
+				"subject_count": "all",
+				"comparison": "gt",
+				"src_container":  cfc.NMAP.deck,
+				"filter_card_count": 5,}}}
+	card.execute_scripts()
+	yield(yield_for(0.3), YIELD)
+	assert_false(card.is_faceup,
+			"Card flipped face-down since filter_per_tutor matched")
+
+func test_filter_per_tutor_in_hand():
+	# Flip the card facedown if there's 1 blue cards in hand
+	card.scripts = {"manual": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_per_tutor_count": {
+				"subject": "tutor",
+				"subject_count": "all",
+				"src_container":  cfc.NMAP.hand,
+				"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}],
+				"filter_card_count": 1,}}}
+	card.execute_scripts()
+	yield(yield_for(0.3), YIELD)
+	assert_true(card.is_faceup,
+			"Card stayed face-up since filter_per_tutor didn't match")
+	# Flip the card facedown if there's 3 or more blue cards in hand
+	card.scripts = {"manual": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_per_tutor_count": {
+				"subject": "tutor",
+				"subject_count": "all",
+				"src_container":  cfc.NMAP.hand,
+				"comparison": "ge",
+				"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}],
+				"filter_card_count": 3,}}}
+	card.execute_scripts()
+	yield(yield_for(0.3), YIELD)
+	assert_false(card.is_faceup,
+			"Card flipped face-down since filter_per_tutor matched")
+

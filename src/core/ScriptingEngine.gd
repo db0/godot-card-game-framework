@@ -283,7 +283,7 @@ func mod_tokens(script: ScriptTask) -> int:
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
-		modification = ScriptObject.count_per(
+		modification = CFMoreScriptUtils.count_per(
 				script.get_property(SP.KEY_MODIFICATION),
 				script.owner_card,
 				script.get_property(script.get_property(SP.KEY_MODIFICATION)))
@@ -318,7 +318,7 @@ func spawn_card(script: ScriptTask) -> void:
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
 		count = stored_integer
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_OBJECT_COUNT)):
-		count = ScriptObject.count_per(
+		count = CFMoreScriptUtils.count_per(
 				script.get_property(SP.KEY_OBJECT_COUNT),
 				script.owner_card,
 				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)))
@@ -471,7 +471,7 @@ func mod_counter(script: ScriptTask) -> int:
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
-		modification = ScriptObject.count_per(
+		modification = CFMoreScriptUtils.count_per(
 				script.get_property(SP.KEY_MODIFICATION),
 				script.owner_card,
 				script.get_property(script.get_property(SP.KEY_MODIFICATION)))
@@ -542,6 +542,5 @@ func _check_for_alterants(script: ScriptTask, value: int) -> int:
 		value)
 	if alteration is GDScriptFunctionState:
 		alteration = yield(alteration, "completed")
-	print(alteration.value_alteration)
 	return(alteration.value_alteration)
 
