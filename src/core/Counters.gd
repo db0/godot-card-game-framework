@@ -7,6 +7,8 @@
 class_name Counters
 extends Control
 
+signal counter_modified(card,trigger,details)
+
 # Hold the actual values of the various counters requested
 var counters := {}
 # Holds the label nodes which display the counter values to the user
@@ -49,7 +51,8 @@ var value_node: String
 
 
 func _ready() -> void:
-	pass
+	# For the counter signal, we "push" connect it instead from this node.
+	self.connect("counter_modified", cfc.signal_propagator, "_on_Card_signal_received")
 
 
 # This function should be called by the _ready() function of the script which
@@ -88,7 +91,8 @@ func spawn_needed_counters() -> void:
 func mod_counter(counter_name: String,
 		value: int,
 		set_to_mod := false,
-		check := false) -> int:
+		check := false,
+		requesting_card: Card = null) -> int:
 	var retcode = CFConst.ReturnCode.CHANGED
 	if counters.get(counter_name, null) == null:
 		retcode = CFConst.ReturnCode.FAILED
@@ -102,11 +106,16 @@ func mod_counter(counter_name: String,
 				retcode = CFConst.ReturnCode.FAILED
 				value = -counters[counter_name]
 			if not check:
+				var prev_value = counters[counter_name]
 				if set_to_mod:
 					counters[counter_name] = value
 				else:
 					counters[counter_name] += value
 				_labels[counter_name].text = str(counters[counter_name])
+				emit_signal("counter_modified", requesting_card, "counter_modified",
+						{SP.TRIGGER_COUNTER_NAME: counter_name,
+						SP.TRIGGER_PREV_COUNT: prev_value,
+						SP.TRIGGER_NEW_COUNT: counters[counter_name]})
 	return(retcode)
 
 

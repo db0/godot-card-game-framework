@@ -615,13 +615,13 @@ const FILTER_SOURCE := "filter_source"
 const FILTER_DESTINATION := "filter_destination"
 # Value Type: int.
 #
-# Filter used for checking against [TRIGGER_NEW_TOKEN_VALUE](#TRIGGER_NEW_TOKEN_VALUE)
+# Filter used for checking against [TRIGGER_NEW_COUNT](#TRIGGER_NEW_COUNT)
 # and in [check_state](#check_state)
-const FILTER_TOKEN_COUNT := "filter_token_count"
+const FILTER_COUNT := "filter_count"
 # Value Type: String
-# * [TRIGGER_V_TOKENS_INCREASED](#TRIGGER_V_TOKENS_INCREASED)
-# * [TRIGGER_V_TOKENS_DECREASED](#TRIGGER_V_TOKENS_DECREASED)
-const FILTER_TOKEN_DIFFERENCE := "filter_token_difference"
+# * [TRIGGER_V_COUNT_INCREASED](#TRIGGER_V_COUNT_INCREASED)
+# * [TRIGGER_V_COUNT_DECREASED](#TRIGGER_V_COUNT_DECREASED)
+const FILTER_COUNT_DIFFERENCE := "filter_count_difference"
 # Value Type: String.
 #
 # Filter used for checking against [TRIGGER_TOKEN_NAME](#TRIGGER_TOKEN_NAME)
@@ -800,17 +800,21 @@ const TRIGGER_DESTINATION := "destination"
 # Value Type: int.
 #
 # Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
+# and by the Counter trigger `counter_modified` [signal](Counters#signals)
 #
-# This is the current value of the token.
+# This is the current value of the token or counter.
+#
 # If token was removed value will be 0
-const TRIGGER_NEW_TOKEN_VALUE := "new_token_value"
+const TRIGGER_NEW_COUNT := "new_count"
 # Value Type: int.
 #
 # Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
+# and by the Counter trigger `counter_modified` [signal](Counters#signals)
 #
-# This is the value the token had before it was modified
-# If token was removed value will be 0
-const TRIGGER_PREV_TOKEN_VALUE := "previous_token_value"
+# This is the value the token/counter had before it was modified.
+#
+# If token didn't exist, value will be 0
+const TRIGGER_PREV_COUNT := "previous_count"
 # Value Type: String.
 #
 # Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
@@ -846,10 +850,10 @@ const TRIGGER_TASK_NAME = "task_name"
 
 # Value is sent by trigger when new token count is higher than old token count.
 # Compared against [FILTER_TOKEN_DIFFERENCE](#FILTER_TOKEN_DIFFERENCE)
-const TRIGGER_V_TOKENS_INCREASED := "increased"
+const TRIGGER_V_COUNT_INCREASED := "increased"
 # Value is sent by trigger when new token count is lower than old token count.
 # Compared against [FILTER_TOKEN_DIFFERENCE](#FILTER_TOKEN_DIFFERENCE)
-const TRIGGER_V_TOKENS_DECREASED := "decreased"
+const TRIGGER_V_COUNT_DECREASED := "decreased"
 
 
 # Returns the default value any script definition key should have
@@ -961,21 +965,22 @@ static func filter_trigger(
 		is_valid = false
 
 	# Card Tokens filter checks
-	if card_scripts.get(FILTER_TOKEN_COUNT) != null \
-			and card_scripts.get(FILTER_TOKEN_COUNT) != \
-			trigger_details.get(TRIGGER_NEW_TOKEN_VALUE):
+	if card_scripts.get(FILTER_COUNT) != null \
+			and card_scripts.get(FILTER_COUNT) != \
+			trigger_details.get(TRIGGER_NEW_COUNT):
 		is_valid = false
-	if card_scripts.get(FILTER_TOKEN_DIFFERENCE):
-		var prev_count = trigger_details.get(TRIGGER_PREV_TOKEN_VALUE)
-		var new_count = trigger_details.get(TRIGGER_NEW_TOKEN_VALUE)
+	if card_scripts.get(FILTER_COUNT_DIFFERENCE):
+		var prev_count = trigger_details.get(TRIGGER_PREV_COUNT)
+		var new_count = trigger_details.get(TRIGGER_NEW_COUNT)
 		# Is true if the amount of tokens decreased
-		if card_scripts.get(FILTER_TOKEN_DIFFERENCE) == \
-				TRIGGER_V_TOKENS_INCREASED and prev_count > new_count:
+		if card_scripts.get(FILTER_COUNT_DIFFERENCE) == \
+				TRIGGER_V_COUNT_INCREASED and prev_count > new_count:
 			is_valid = false
 		# Is true if the amount of tokens increased
-		if card_scripts.get(FILTER_TOKEN_DIFFERENCE) == \
-				TRIGGER_V_TOKENS_DECREASED and prev_count < new_count:
+		if card_scripts.get(FILTER_COUNT_DIFFERENCE) == \
+				TRIGGER_V_COUNT_DECREASED and prev_count < new_count:
 			is_valid = false
+
 	if card_scripts.get(FILTER_TOKEN_NAME) \
 			and card_scripts.get(FILTER_TOKEN_NAME) != \
 			trigger_details.get(TRIGGER_TOKEN_NAME):
@@ -1080,19 +1085,19 @@ static func check_token_filter(card, token_states: Array) -> bool:
 			var token = card.tokens.get_token(
 					token_state.get(FILTER_TOKEN_NAME))
 			if not token:
-				if token_state.get(FILTER_TOKEN_COUNT):
+				if token_state.get(FILTER_COUNT):
 					match comparison_type:
 						"eq","ge":
-							if token_state.get(FILTER_TOKEN_COUNT) != 0:
+							if token_state.get(FILTER_COUNT) != 0:
 								card_matches = false
 						"gt":
 							card_matches = false
 				else:
 					card_matches = false
-			elif token_state.get(FILTER_TOKEN_COUNT):
+			elif token_state.get(FILTER_COUNT):
 				if not CFUtils.compare_numbers(
 						token.count,
-						token_state.get(FILTER_TOKEN_COUNT),
+						token_state.get(FILTER_COUNT),
 						comparison_type):
 					card_matches = false
 	return(card_matches)

@@ -385,7 +385,7 @@ func test_card_token_modified():
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_token_count": 10,
+			"filter_count": 10,
 			"trigger": "another"}}
 	# This card should stay face-up since token_difference will not have incr.
 	cards[4].scripts = {"card_token_modified": {
@@ -393,7 +393,7 @@ func test_card_token_modified():
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_token_difference": "increased",
+			"filter_count_difference": "increased",
 			"trigger": "another"}}
 	# This card should turn face-down since token_difference will decrease
 	cards[5].scripts = {"card_token_modified": {
@@ -401,7 +401,7 @@ func test_card_token_modified():
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_token_difference": "decreased",
+			"filter_count_difference": "decreased",
 			"trigger": "another"}}
 	# This card should turn face-down since all limits will match
 	cards[6].scripts = {"card_token_modified": {
@@ -409,8 +409,8 @@ func test_card_token_modified():
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_token_difference": "decreased",
-			"filter_token_count": 1,
+			"filter_count_difference": "decreased",
+			"filter_count": 1,
 			"filter_token_name": "void",
 			"trigger": "another"}}
 	# This card should stay face-up since some limits will not match
@@ -419,8 +419,8 @@ func test_card_token_modified():
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_token_difference": "decreased",
-			"filter_token_count": 0,
+			"filter_count_difference": "decreased",
+			"filter_count": 0,
 			"filter_token_name": "Tech",
 			"trigger": "another"}}
 	# warning-ignore:return_value_discarded
@@ -430,18 +430,106 @@ func test_card_token_modified():
 				target,"card_token_modified",
 				[target,"card_token_modified",
 				{"token_name": "void",
-				"previous_token_value": 5,
-				"new_token_value": 1}])
+				"previous_count": 5,
+				"new_count": 1}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
 			"Card stayed face-up filter_token_name does not match")
 	assert_true(cards[3].is_faceup,
-			"Card stayed face-up since filter_token_count does not match")
+			"Card stayed face-up since filter_count does not match")
 	assert_true(cards[4].is_faceup,
-			"Card stayed face-up since filter_token_difference does not match")
+			"Card stayed face-up since filter_difference does not match")
 	assert_false(cards[5].is_faceup,
-			"Card turned face-down since filter_token_difference matches")
+			"Card turned face-down since filter_difference matches")
+	assert_false(cards[6].is_faceup,
+			"Card turned face-down since all limits match")
+	assert_true(cards[7].is_faceup,
+			"Card stayed face-up since some limits do not match")
+
+func test_counter_modified():
+	# warning-ignore:return_value_discarded
+	board.counters.mod_counter("research",5)
+	watch_signals(board.counters)
+	# This card should turn face-down since there's no limit
+	card.scripts = {"counter_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"trigger": "another"}}
+
+	# This card should stay face-up since counter_name limit will not match
+	cards[2].scripts = {"counter_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_counter_name": "Bio",
+			"trigger": "another"}}
+	# This card should stay face-up since count will not match
+	cards[3].scripts = {"counter_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_count": 10,
+			"trigger": "another"}}
+	# This card should stay face-up since difference will not have incr.
+	cards[4].scripts = {"counter_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_count_difference": "increased",
+			"trigger": "another"}}
+	# This card should turn face-down since difference will decrease
+	cards[5].scripts = {"counter_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_count_difference": "decreased",
+			"trigger": "another"}}
+	# This card should turn face-down since all limits will match
+	cards[6].scripts = {"counter_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_count_difference": "decreased",
+			"filter_count": 1,
+			"filter_counter_name": "research",
+			"trigger": "another"}}
+	# This card should stay face-up since some limits will not match
+	cards[7].scripts = {"counter_modified": {
+			"hand": [
+				{"name": "flip_card",
+				"subject": "self",
+				"set_faceup": false}],
+			"filter_count_difference": "decreased",
+			"filter_count": 0,
+			"filter_token_name": "Tech",
+			"trigger": "another"}}
+	# warning-ignore:return_value_discarded
+	board.counters.mod_counter("research",-4)
+	yield(yield_for(0.1), YIELD)
+	assert_signal_emitted_with_parameters(
+				board.counters,"counter_modified",
+				[null,"counter_modified",
+				{"counter_name": "research",
+				"previous_count": 5,
+				"new_count": 1}])
+	assert_false(card.is_faceup,
+			"Card turned face-down after signal trigger")
+	assert_true(cards[2].is_faceup,
+			"Card stayed face-up filter_counter_name does not match")
+	assert_true(cards[3].is_faceup,
+			"Card stayed face-up since filter_count does not match")
+	assert_true(cards[4].is_faceup,
+			"Card stayed face-up since filter_difference does not match")
+	assert_false(cards[5].is_faceup,
+			"Card turned face-down since filter_difference matches")
 	assert_false(cards[6].is_faceup,
 			"Card turned face-down since all limits match")
 	assert_true(cards[7].is_faceup,

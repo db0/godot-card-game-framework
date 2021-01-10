@@ -487,7 +487,8 @@ func mod_counter(script: ScriptTask) -> int:
 			counter_name,
 			modification + alteration,
 			set_to_mod,
-			costs_dry_run)
+			costs_dry_run,
+			script.owner_card)
 	return(retcode)
 
 
