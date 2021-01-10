@@ -213,7 +213,7 @@ class SignalPropagator:
 	# to the SignalPropagator
 	func connect_new_card(card):
 		for sgn in known_card_signals:
-			card.connect(sgn, self, "_on_Card_signal_received")
+			card.connect(sgn, self, "_on_signal_received")
 
 
 	# When a known signal is received, it asks all existing cards to check
@@ -221,7 +221,7 @@ class SignalPropagator:
 	#
 	# This method requirses that each signal also passes its own name in the
 	# trigger variable, is this is the key sought in the CardScriptDefinitions
-	func _on_Card_signal_received(
+	func _on_signal_received(
 			trigger_card: Card, trigger: String, details: Dictionary):
 		# We use Godot groups to ask every card to check if they
 		# have [ScriptingEngine] triggers for this signal.

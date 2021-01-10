@@ -107,7 +107,7 @@ func test_tokens_filter_gt_ge_lt_le():
 			"filter_state_seek": [{
 				"filter_tokens": [{
 					"filter_token_name": "void",
-					"filter_token_count": 2,
+					"filter_count": 2,
 					"comparison": "gt"
 					}]
 			}],
@@ -129,7 +129,7 @@ func test_tokens_filter_gt_ge_lt_le():
 			"filter_state_seek": [{
 				"filter_tokens": [{
 					"filter_token_name": "void",
-					"filter_token_count": 2,
+					"filter_count": 2,
 					"comparison": "ge"
 					}]
 			}],
@@ -151,7 +151,7 @@ func test_tokens_filter_gt_ge_lt_le():
 			"filter_state_seek": [{
 				"filter_tokens": [{
 					"filter_token_name": "void",
-					"filter_token_count": 2,
+					"filter_count": 2,
 					"comparison": "lt"
 					}]
 			}],
@@ -173,7 +173,7 @@ func test_tokens_filter_gt_ge_lt_le():
 			"filter_state_seek": [{
 				"filter_tokens": [{
 					"filter_token_name": "void",
-					"filter_token_count": 2,
+					"filter_count": 2,
 					"comparison": "le"
 					}]
 			}],
@@ -324,7 +324,7 @@ func test_state_filter_tokens():
 			"filter_state_seek": [{
 				"filter_tokens": [{
 					"filter_token_name": "void",
-					"filter_token_count": 4
+					"filter_count": 4
 					}]
 			}],
 			"degrees": 0}]}}
@@ -343,7 +343,7 @@ func test_state_filter_tokens():
 				"filter_tokens": [
 					{"filter_token_name": "void"},
 					{"filter_token_name": "bio",
-					"filter_token_count": 1},
+					"filter_count": 1},
 					]
 			}],
 			"degrees": 270}]}}

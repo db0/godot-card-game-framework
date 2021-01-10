@@ -52,7 +52,7 @@ var value_node: String
 
 func _ready() -> void:
 	# For the counter signal, we "push" connect it instead from this node.
-	self.connect("counter_modified", cfc.signal_propagator, "_on_Card_signal_received")
+	self.connect("counter_modified", cfc.signal_propagator, "_on_signal_received")
 
 
 # This function should be called by the _ready() function of the script which

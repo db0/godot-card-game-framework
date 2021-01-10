@@ -7,6 +7,13 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 * SCRRIPT_SET_NAME_PREPEND renamed to **SCRIPT_SET_NAME_PREPEND**
 * PATH_PER_ENGINE renamed to **PATH_SCRIPT_PER**
 
+Some ScriptProperty consts have been adjusted to allow `counter_modified` signal to work using the same trigger filter code.
+
+* FILTER_TOKEN_COUNT > FILTER_COUNT
+* TRIGGER_V_TOKENS_INCREASED > TRIGGER_V_COUNT_INCREASED
+* TRIGGER_V_TOKENS_DECREASED > TRIGGER_V_COUNT_DECREASED
+* TRIGGER_NEW_TOKEN_VALUE > TRIGGER_NEW_COUNT
+* TRIGGER_PREV_TOKEN_VALUE > TRIGGER_PREV_COUNT
 
 ### New Features
 
@@ -21,6 +28,7 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 * Added new exported var for a Card: `initiate_targeting_scripts_from_hand_drag`. It allows to initiate scripts which require targeting, by long-clicking the card while in hand. Great for use with Action cards.
 * Card's move_to will now be aware when it's moving cards due to scripts. This can give more flexibility to developers
 * Alterants can now affect the retrieved number of counters, tokens or numeric card properties. This allows effects such as "Increase the power of all soldiers by 1"
+* Added counter_modified signal.
 
 ### Tweaks
 

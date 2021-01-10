@@ -23,9 +23,9 @@ func before_each():
 func test_signals():
 	for sgn in  cfc.signal_propagator.known_card_signals:
 		assert_connected(card, cfc.signal_propagator, sgn,
-				"_on_Card_signal_received")
+				"_on_signal_received")
 		assert_connected(target, cfc.signal_propagator, sgn,
-				"_on_Card_signal_received")
+				"_on_signal_received")
 	watch_signals(target)
 	watch_signals(card)
 	# Test "self" trigger works
