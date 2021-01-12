@@ -167,10 +167,12 @@ To use this class:
 
 1. Create any Control node, and add it anywhere you need in your scene tree (typically somewhere under Board).
 1. Assign its path inside your custom board's script `_ready()`. This will allow the framework to always be able to locate your counters scene.
+
 	```
 func _ready() -> void:
 	counters = $Counters
 	```
+
 1. Create a new script for your Counters scene by extending `res://core/Counters.gd`.
 1. Inside the new script's `_ready()` function, you need to specify which counters you'll need. See documentation in the provided sample `res://src/custom/CGFCounters.gd`
 1. Create a new scene for each individual counter. It has to have at least 1 label on the root node, which will hold the value of the counter to display to the player.
