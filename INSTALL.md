@@ -31,11 +31,13 @@ All other files, especially those starting with "CGF" can be deleted, or you can
 ## Global configuration
 
 The framework uses a common singleton called CFControl to control overall configuration.
+
 It also uses a core reference class called CFConst which defines the behaviour of the framework
+
 
 1. Add CFControl.gd as an autoloaded singleton with name 'cfc'
 
-2. Edit the CFConst.gdand adjust any properties according to your game. For example CARD_SIZE will adjust the size of all your cards in the game as well as the CardContainers that host them.
+2. Edit the CFConst.gd and adjust any properties according to your game. For example CARD_SIZE will adjust the size of all your cards in the game as well as the CardContainers that host them.
 
 Whenever your game is loaded, all your card containers and your board will be mapped inside cfc.NMAP.
 This way if you want to quickly refer to your pile called, say, "SuperCards" all you need to do is refer to `cfc.NMAP.supercards` (in lowercase always)
@@ -50,7 +52,7 @@ The below instructions will set up your game to use the `Card` class as a framew
 1. If you have designed your own card back scene, modify the card_back variable to point it to your own card back scene. Make sure your card back extends CardBack.
 1. Either use the provided template `res://src/custom/CGFCardFront.tscn` or create your own. Then adjust the card_front variable to point it. To design from scratch, make sure its script extends CardFront.
 	Ensure you populate the card_labels dictionary within with the paths to all your text labels.
-1. Either use the provided template `res://src/custom/CGFCardManipulationButton.tscn` or create your own. Then adjust the manipulation_button variable on the ManipulationButtons node to point to it. 
+1. Either use the provided template `res://src/custom/CGFCardManipulationButton.tscn` or create your own. Then adjust the manipulation_button variable on the ManipulationButtons node to point to it.
 
 If you're going to add extra code for your own game in the card scenes, then:
 	* If it's relevant to all cards in your game:
@@ -154,6 +156,26 @@ The framework will utilize it automatically if it detects a scene called "Main" 
 
 If you do not want or need the viewport focus, then you can simply ignore it use use your own Board scene as your Main scene.
 However you'll need to make sure table cards are legible as they are since there's no other good way to get a closeup of them without viewports.
+
+
+## Counters
+
+While not strictly needed for Card Games, it's a very typical aspect where a game will need to modify some numberical value outside of cards. For this purpose we have provided the Counters class.
+This class is in turn connected to the ScriptingEngine, so by utilizing it properly, you can make your card scripts interact with the counters of your game.
+
+To use this class:
+
+1. Create any Control node, and add it anywhere you need in your scene tree (typically somewhere under Board).
+1. Assign its path inside your custom board's script `_ready()`. This will allow the framework to always be able to locate your counters scene.
+	```
+func _ready() -> void:
+	counters = $Counters
+	```
+1. Create a new script for your Counters scene by extending `res://core/Counters.gd`.
+1. Inside the new script's `_ready()` function, you need to specify which counters you'll need. See documentation in the provided sample `res://src/custom/CGFCounters.gd`
+1. Create a new scene for each individual counter. It has to have at least 1 label on the root node, which will hold the value of the counter to display to the player.
+	The label names should match the definitions in the script extended from Counters.
+
 
 ## Upgrading
 

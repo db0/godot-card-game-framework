@@ -1183,7 +1183,7 @@ static func check_validity(card, card_scripts, type := "trigger") -> bool:
 	# This way a script can be limited on more than one thing according to
 	# state. For example limit on the state of the trigger card
 	# and the state of the subject cards.
-	if card_scripts.get(FILTER_STATE + type):
+	if card and card_scripts.get(FILTER_STATE + type):
 		# each "filter_state_" FILTER is an array.
 		# Each element in this array is dictionary of "AND" conditions
 		# The filter will fail, only if ALL the or elements in this array
