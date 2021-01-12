@@ -169,8 +169,8 @@ To use this class:
 1. Assign its path inside your custom board's script `_ready()`. This will allow the framework to always be able to locate your counters scene.
 
 	```
-func _ready() -> void:
-	counters = $Counters
+	func _ready() -> void:
+		counters = $Counters
 	```
 
 1. Create a new script for your Counters scene by extending `res://core/Counters.gd`.
