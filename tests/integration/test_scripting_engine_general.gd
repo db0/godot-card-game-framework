@@ -370,7 +370,7 @@ func test_subject_previous_with_filters():
 						"is_cost": true,
 						"filter_state_subject": [
 							{"filter_properties1": {"Type": "Blue"}},
-							{"filter_properties1": {"Type": "Green"}},
+							{"filter_properties1": {"Type": "Red"}},
 						],
 					},
 					{
@@ -379,7 +379,7 @@ func test_subject_previous_with_filters():
 						"modification": 1,
 						"subject": "previous",
 						"filter_state_subject": [
-							{"filter_properties1": {"Type": "Blue"}},
+							{"filter_properties": {"Type": "Blue"}},
 						],
 					},
 					{
@@ -388,15 +388,15 @@ func test_subject_previous_with_filters():
 						"modification": 2,
 						"subject": "previous",
 						"filter_state_subject": [{
-							"filter_properties1": {"Type": "Green"},
+							"filter_properties": {"Type": "Red"},
 						}],
 					},
 				],
 			},
 		}
-	yield(execute_with_target(card,cards[1]), "completed")
+	yield(execute_with_target(card,cards[2]), "completed")
 	assert_eq(2,board.counters.get_counter("research"),
 			"Counter increased by specified amount")
-	yield(execute_with_target(card,cards[3]), "completed")
+	yield(execute_with_target(card,cards[4]), "completed")
 	assert_eq(3,board.counters.get_counter("research"),
 			"Counter increased by specified amount")

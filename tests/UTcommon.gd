@@ -117,7 +117,8 @@ func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fas
 	card._on_Card_mouse_exited()
 
 # Interpolates the virtual mouse so that it correctly targets a card
-func target_card(source, target, interpolation_speed := "fast") -> void:
+func target_card(source: Card,
+		target: Card, interpolation_speed := "fast") -> void:
 	var mouse_speed = MOUSE_SPEED[interpolation_speed][0]
 	var mouse_yield_wait = MOUSE_SPEED[interpolation_speed][1]
 	if source == target:
@@ -132,6 +133,12 @@ func target_card(source, target, interpolation_speed := "fast") -> void:
 	board._UT_interpolate_mouse_move(target.global_position + extra_offset,
 			source.global_position,mouse_speed)
 	yield(yield_for(mouse_yield_wait), YIELD)
+	var repeat := 0
+	while not target.highlight.visible and repeat <= 3:
+		board._UT_interpolate_mouse_move(target.global_position + extra_offset,
+				board._UT_mouse_position,mouse_speed)
+		yield(yield_for(mouse_yield_wait), YIELD)
+		repeat += 1
 	unclick_card_anywhere(source)
 
 
@@ -149,13 +156,12 @@ func move_mouse(target_position: Vector2, interpolation_speed := "fast") -> void
 
 func execute_with_yield(card: Card) -> void:
 	var sceng = card.execute_scripts()
-	if sceng is GDScriptFunctionState:
+	if sceng is GDScriptFunctionState and sceng.is_valid():
 		sceng = yield(yield_to(sceng, "completed", 1), YIELD)
 	return sceng
 
 
 func execute_with_target(card: Card, target: Card) -> void:
 	var sceng = card.execute_scripts()
-	yield(target_card(card,target), "completed")
-	if sceng is GDScriptFunctionState:
-		sceng = yield(yield_to(sceng, "completed", 1), YIELD)
+	target_card(card,target,"slow")
+	sceng = yield(sceng, "completed")

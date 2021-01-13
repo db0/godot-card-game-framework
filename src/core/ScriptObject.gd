@@ -64,9 +64,10 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 		# if the value "previous" is given to the "subjects" key,
 		# it simple reuses the same ones.
 		SP.KEY_SUBJECT_V_PREVIOUS:
-			for c in prev_subjects:
-				if SP.check_validity(c, script_definition, "subject"):
-					subjects_array.append(c)
+			subjects_array = prev_subjects
+			for c in subjects_array:
+				if not SP.check_validity(c, script_definition, "subject"):
+					is_valid = false
 			# If we have requested to use the previous target,
 			# but the subject_array is empty, we check if there's a dry
 			# run target available and try to use that instead.
