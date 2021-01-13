@@ -52,6 +52,7 @@ var value_node: String
 
 func _ready() -> void:
 	# For the counter signal, we "push" connect it instead from this node.
+	# warning-ignore:return_value_discarded
 	self.connect("counter_modified", cfc.signal_propagator, "_on_signal_received")
 
 
@@ -106,6 +107,7 @@ func mod_counter(counter_name: String,
 				retcode = CFConst.ReturnCode.FAILED
 				value = -counters[counter_name]
 			if not check:
+				cfc.flush_cache()
 				var prev_value = counters[counter_name]
 				if set_to_mod:
 					counters[counter_name] = value

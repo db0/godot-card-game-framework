@@ -46,6 +46,7 @@ func test_is_cost_with_alterants():
 			"trigger": "another",
 			"filter_counter_name": "research",
 			"alteration": 4}]}}
+	cfc.flush_cache()
 	card.execute_scripts()
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(board.counters.get_counter("research"),4,
@@ -358,6 +359,7 @@ func test_get_token_alterants():
 			"trigger": "self",
 			"filter_token_name": "blood",
 			"alteration": 2},]}}
+	cfc.flush_cache()
 	assert_eq(industry_token.count,2,
 			"Token retrieved as specified amount + alterant")
 	assert_eq(blood_token.count,1,

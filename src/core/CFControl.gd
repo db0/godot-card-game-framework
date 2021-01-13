@@ -66,19 +66,34 @@ var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 # If we do, it is parsed by the compiler who then considers it
 # a cyclic reference as the scripting engine refers back to the Card class.
 var scripting_engine = load(CFConst.PATH_SCRIPTING_ENGINE)
-# We cannot preload the scripting engine as a const for the same reason
+# We cannot preload the per script as a const for the same reason
 # We cannot refer to it via class name.
 #
 # If we do, it is parsed by the compiler who then considers it
 # a cyclic reference as the scripting engine refers back to the Card class.
 var script_per = load(CFConst.PATH_SCRIPT_PER)
+# We cannot preload the alterant engine as a const for the same reason
+# We cannot refer to it via class name.
+#
+# If we do, it is parsed by the compiler who then considers it
+# a cyclic reference as the scripting engine refers back to the Card class.
 var alterant_engine = load(CFConst.PATH_ALTERANT_ENGINE)
-var temp_counter_modifiers := {}
+# Stores the alterations returned for a specific card-script-value combination.
+#
+# As the Alterant Engine is scanning all cards in game for alterant scripts
+# then those scripts can further scan cards in play and trigger other alterants
+# this can be a quite heavy operations, when there's a few alterants in play.
+#
+# To avoid this, after each alterant operation, we store the results in this
+# dictionary, and use them for the next time. This scripts which read properties
+# or counters to be placed even in _process() while there's alterants in play.
+var alterant_cache: Dictionary
 
 func _ready() -> void:
 	# We reset our node mapping variables every time
 	# as they repopulate during unit testing many times.
 	# warning-ignore:return_value_discarded
+	flush_cache()
 	connect("all_nodes_mapped", self, "_on_all_nodes_mapped")
 	# We need to reset these values for UNIT testing
 	NMAP = {}
@@ -193,6 +208,7 @@ func load_script_definitions() -> Dictionary:
 # the board loads for the first time. Only works when you're running
 # off of the Main scene.
 func reset_game() -> void:
+	flush_cache()
 	var main = cfc.NMAP.main
 	are_all_nodes_mapped = false
 	card_drag_ongoing = null
@@ -202,6 +218,15 @@ func reset_game() -> void:
 	NMAP.clear()
 	main._ready()
 
+
+# Empties the alterants cache (only thing cached for now) which will cause
+# all the alterants engine fire anew for all requests.
+#
+# This is called after most game-state changes, but there's one notable exception:
+# if you add an alterant to a card's `scripts` variable manually, then you need
+# to flush the cache afterwards using this function.
+func flush_cache() -> void:
+	alterant_cache.clear()
 
 # The SignalPropagator is responsible for collecting all card signals
 # and asking all cards to check if there's any automation they need to perform

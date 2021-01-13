@@ -30,6 +30,7 @@ Some ScriptProperty consts have been adjusted to allow `counter_modified` signal
 * Alterants can now affect the retrieved number of counters, tokens or numeric card properties. This allows effects such as "Increase the power of all soldiers by 1"
 * Added counter_modified signal.
 * Added new trigger filters where a card can decide to activate or not, based on the amount of cards on board/cardcontainer. I.e. have an effect such as "if there's at least 3 creatures in discard pile".
+* Added a caching feature for alterants. The cache is flushed after every game-state change.
 
 ### Tweaks
 

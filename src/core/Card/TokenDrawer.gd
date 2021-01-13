@@ -137,6 +137,7 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false, check := fals
 			else:
 				retcode = CFConst.ReturnCode.CHANGED
 		else:
+			cfc.flush_cache()
 			var prev_value = token.count
 			# The set_to_mod value means that we want to set the tokens to the
 			# exact value specified
