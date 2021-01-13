@@ -125,23 +125,19 @@ func test_subject_target():
 			"degrees": 90}
 			]}}
 	var scripting_engine = card.execute_scripts()
-	yield(yield_for(0.1), YIELD)
 	if scripting_engine is GDScriptFunctionState: # Still seeking...
-		yield(card.targeting_arrow, "initiated_targeting")
+		yield(yield_to(card.targeting_arrow, "initiated_targeting", 0.2), YIELD)
 	#watch_signals(scripting_engine)
-	yield(target_card(card,card), "completed")
-	yield(yield_for(0.1), YIELD)
-	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+	yield(yield_to(target_card(card,card), "completed", 0.1), YIELD)
+#	yield(target_card(card,card), "completed")
+	yield(yield_to(card._tween, "tween_all_completed", 0.4), YIELD)
 	assert_eq(card.card_rotation, 270,
 			"First rotation should happen before targetting second time")
-	yield(target_card(card,card), "completed")
-	yield(yield_for(0.1), YIELD)
-	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+	yield(yield_to(target_card(card,card), "completed", 0.1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 0.4), YIELD)
 	assert_eq(card.card_rotation, 90,
 			"Second rotation should also happen")
-# Cannot figure out how to catch this signal...
-#	assert_signal_emitted(scripting_engine,"tasks_completed",
-#			"Scripts finished signal fires")
+
 
 func test_subject_boardseek():
 	var target2: Card = cards[2]
@@ -359,3 +355,48 @@ func test_target_script_on_drag_from_hand():
 	unclick_card_anywhere(card)
 	assert_eq(5,board.counters.get_counter("credits"),
 			"Counter reduced since targeting was not a cost")
+
+
+func test_subject_previous_with_filters():
+	target = cfc.NMAP.deck.get_card(1)
+	# Discard a Blue card to get 1 research.
+	# Discard a Green card to get 2 research.
+	card.scripts = {"manual": {
+				"hand":[
+					{
+						"name": "move_card_to_container",
+						SP.KEY_DEST_CONTAINER: cfc.NMAP.discard,
+						"subject": "target",
+						"is_cost": true,
+						"filter_state_subject": [
+							{"filter_properties1": {"Type": "Blue"}},
+							{"filter_properties1": {"Type": "Green"}},
+						],
+					},
+					{
+						"name": "mod_counter",
+						"counter_name": "research",
+						"modification": 1,
+						"subject": "previous",
+						"filter_state_subject": [
+							{"filter_properties1": {"Type": "Blue"}},
+						],
+					},
+					{
+						"name": "mod_counter",
+						"counter_name": "research",
+						"modification": 2,
+						"subject": "previous",
+						"filter_state_subject": [{
+							"filter_properties1": {"Type": "Green"},
+						}],
+					},
+				],
+			},
+		}
+	yield(execute_with_target(card,cards[1]), "completed")
+	assert_eq(2,board.counters.get_counter("research"),
+			"Counter increased by specified amount")
+	yield(execute_with_target(card,cards[3]), "completed")
+	assert_eq(3,board.counters.get_counter("research"),
+			"Counter increased by specified amount")

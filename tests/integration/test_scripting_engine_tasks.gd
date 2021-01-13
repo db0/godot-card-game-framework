@@ -159,8 +159,7 @@ func test_move_card_cont_to_board():
 			"src_container":  cfc.NMAP.deck,
 			"grid_name":  "BoardPlacementGrid"}]}}
 	board.get_node("BoardPlacementGrid").visible = true
-	card.execute_scripts()
-	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	yield(execute_with_yield(card), "completed")
 	assert_not_null(target._placement_slot,
 			"Card should have moved to a grid slot")
 	assert_not_null(target2._placement_slot,
@@ -305,8 +304,7 @@ func test_create_grid():
 			"scene_path": "res://src/custom/CGFPlacementGridDemo.tscn",
 			"object_count": 2,
 			"board_position":  Vector2(50,50)}]}}
-	card.execute_scripts()
-	yield(yield_for(0.1), YIELD)
+	yield(execute_with_yield(card), "completed")
 	var grids: Array = get_tree().get_nodes_in_group("placement_grid")
 	assert_eq(grids.size(), 3, "All grids were created")
 	card.scripts = {"manual": {"hand": [
@@ -315,8 +313,7 @@ func test_create_grid():
 			"grid_name": "GUT Grid",
 			"object_count": 3,
 			"board_position":  Vector2(600,50)}]}}
-	card.execute_scripts()
-	yield(yield_for(0.1), YIELD)
+	yield(execute_with_yield(card), "completed")
 	var gut_grids := []
 	for g in get_tree().get_nodes_in_group("placement_grid"):
 		if not g in grids:

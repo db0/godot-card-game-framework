@@ -146,3 +146,17 @@ func move_mouse(target_position: Vector2, interpolation_speed := "fast") -> void
 	var mouse_yield_wait = MOUSE_SPEED[interpolation_speed][1]
 	board._UT_interpolate_mouse_move(target_position,board._UT_mouse_position,mouse_speed)
 	yield(yield_for(mouse_yield_wait), YIELD)
+
+func execute_with_yield(card: Card) -> void:
+	var sceng = card.execute_scripts()
+	if sceng is GDScriptFunctionState:
+		sceng = yield(sceng, "completed")
+	return sceng
+
+
+func execute_with_target(card: Card, target: Card) -> void:
+	var sceng = card.execute_scripts()
+	yield(target_card(card,target), "completed")
+	if sceng is GDScriptFunctionState:
+		sceng = yield(sceng, "completed")
+
