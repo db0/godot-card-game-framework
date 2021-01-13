@@ -150,7 +150,7 @@ func move_mouse(target_position: Vector2, interpolation_speed := "fast") -> void
 func execute_with_yield(card: Card) -> void:
 	var sceng = card.execute_scripts()
 	if sceng is GDScriptFunctionState:
-		sceng = yield(sceng, "completed")
+		sceng = yield(yield_to(sceng, "completed", 1), YIELD)
 	return sceng
 
 
@@ -158,5 +158,4 @@ func execute_with_target(card: Card, target: Card) -> void:
 	var sceng = card.execute_scripts()
 	yield(target_card(card,target), "completed")
 	if sceng is GDScriptFunctionState:
-		sceng = yield(sceng, "completed")
-
+		sceng = yield(yield_to(sceng, "completed", 1), YIELD)

@@ -592,6 +592,14 @@ const FILTER_STATE := "filter_state_"
 # Each value is a dictionary where the  key is a card property, and the value
 # is the desired property value to match on the filtered card.
 const FILTER_PROPERTIES := "filter_properties"
+#Value Type: Node.
+#
+# Filter used for checking against the parent node of a subject.
+# Only used within the [FILTER_STATE](#FILTER_STATE) Dictionary
+#
+# The value should be either the board, or a CardContainer.
+const FILTER_PARENT := "filter_parent"
+
 # Value Type: int.
 #
 # Filter used in for checking against [TRIGGER_DEGREES](#KEY_MODIFICATION)
@@ -964,6 +972,11 @@ static func filter_trigger(
 		is_valid = false
 
 	# Card Rotation filter checks
+	if is_valid and card_scripts.get(FILTER_PARENT) \
+			and check_parent_filter(trigger_card,card_scripts.get(FILTER_PARENT)):
+		is_valid = false
+
+	# Card Rotation filter checks
 	if is_valid and card_scripts.get(FILTER_DEGREES) != null \
 			and card_scripts.get(FILTER_DEGREES) != \
 			trigger_details.get(TRIGGER_DEGREES):
@@ -1175,6 +1188,15 @@ static func check_faceup_filter(card, flip_state: bool) -> bool:
 	return(card_matches)
 
 
+# Returns true if the faceup state of the card matches the specified filter
+# or the filter key was not defined. Otherwise returns false.
+static func check_parent_filter(card, parent: Node) -> bool:
+	var card_matches := true
+	if parent != card.get_parent():
+		card_matches = false
+	return(card_matches)
+
+
 # Check if the card is a valid subject or trigger, according to its state.
 static func check_validity(card, card_scripts, type := "trigger") -> bool:
 	var card_matches := true
@@ -1211,6 +1233,10 @@ static func check_validity(card, card_scripts, type := "trigger") -> bool:
 				# There's no possible "AND" state for a boolean filter.
 				elif filter == FILTER_FACEUP\
 						and not check_faceup_filter(card,state_filters[filter]):
+					card_matches = false
+				# There's no possible "AND" state for a boolean filter.
+				elif filter == FILTER_PARENT\
+						and not check_parent_filter(card,state_filters[filter]):
 					card_matches = false
 			# If at least one of our "or" array elements matches,
 			# We do not need to check the others.

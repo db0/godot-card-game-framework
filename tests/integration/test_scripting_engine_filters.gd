@@ -353,3 +353,18 @@ func test_state_filter_tokens():
 			"Card on board not matching tokens stays 90 degrees")
 	assert_eq(cards[2].card_rotation, 270,
 			"Card on board matching token name rotated 270 degrees")
+
+
+func test_state_filter_parent():
+	yield(table_move(cards[1], Vector2(500,200)), "completed")
+	card.scripts = {"manual": {"hand": [
+			{"name": "flip_card",
+			"subject": "target",
+			"filter_state_subject": [{"filter_parent": board}],
+			"set_faceup": false}]}}
+	yield(execute_with_target(card,cards[1]), "completed")
+	yield(execute_with_target(card,cards[2]), "completed")
+	assert_true(cards[2].is_faceup,
+			"Card stayed face-up since filter_parent didn't match")
+	assert_false(cards[1].is_faceup,
+			"Card turned face-down since filter_parent matches")
