@@ -42,15 +42,15 @@ var text_expansion_multiplier : Dictionary
 # This string is set inside the script extending this class
 # according to the needs of their labels defined within.
 var compensation_label: String
-
+var original_font_sizes : Dictionary
 
 # Stores a reference to the Card that is hosting this node
 onready var card_owner = get_parent().get_parent()
 
-
 # Set a label node's text.
 # As the string becomes longer, the font size becomes smaller
 func set_label_text(node: Label, value):
+	_capture_original_font_size(node)
 	# We do not want some fields, like the name, to be too small.
 	# see CardConfig.TEXT_EXPANSION_MULTIPLIER documentation
 	var allowed_expansion = text_expansion_multiplier.get(node.name,1)
@@ -61,6 +61,8 @@ func set_label_text(node: Label, value):
 		adjust_size = _rect_adjustment
 	var label_size = node.rect_min_size
 	var label_font = node.get("custom_fonts/font").duplicate()
+	# We always start shrinking the size, starting from the original size.
+	label_font.size = original_font_sizes[node]
 	var line_height = label_font.get_height()
 	# line_spacing should be calculated into rect_size
 	var line_spacing = node.get("custom_constants/line_spacing")
@@ -91,7 +93,7 @@ func set_label_text(node: Label, value):
 	# We store the amount we increased in size from the
 	# initial amount,m for this purpose.
 	if label_rect_y > label_size.y:
-		_rect_adjustment = label_rect_y - label_size.y
+		_rect_adjustment += label_rect_y - label_size.y
 	if value == "":
 		_rect_adjustment -= node.rect_size.y
 		node.visible = false
@@ -102,3 +104,10 @@ func set_label_text(node: Label, value):
 	# is adjusted again, if needed, to avoid exceeding the card borders.
 	if not node.name in compensation_label and _rect_adjustment != 0.0:
 		set_label_text(card_labels[compensation_label], card_labels[compensation_label].text)
+
+# Stores the original font size this label had.
+# We use this to start shrinking the label from this size, which allows us to
+# also increase it's size when its text changes to be smaller.
+func _capture_original_font_size(label: Label) -> void:
+	if not original_font_sizes.get(label):
+		original_font_sizes[label] = label.get("custom_fonts/font").size

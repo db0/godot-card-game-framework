@@ -31,6 +31,7 @@ Some ScriptProperty consts have been adjusted to allow `counter_modified` signal
 * Added counter_modified signal.
 * Added new trigger filters where a card can decide to activate or not, based on the amount of cards on board/cardcontainer. I.e. have an effect such as "if there's at least 3 creatures in discard pile".
 * Added a caching feature for alterants. The cache is flushed after every game-state change.
+* Tasks which use `"subject": "previous"` can now be put before a task which finds the target, as long as they're not `is_cost` and the targeting task `is_cost`.
 
 ### Tweaks
 
@@ -40,7 +41,6 @@ Some ScriptProperty consts have been adjusted to allow `counter_modified` signal
 * Renamed SignalPropagato's `_on_Card_signal_received()` to `_on_signal_received()`
 
 ### Bugfixes
-
 
 * TargetingArrow will now signal targeting_completed when it didn't find a target as well
 * execute_scripts will now properly check for is_cost for itself and its target
