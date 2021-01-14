@@ -1227,7 +1227,7 @@ static func check_validity(card, card_scripts, type := "trigger") -> bool:
 				elif FILTER_TOKENS in filter\
 						and not check_token_filter(card, state_filters[filter]):
 					card_matches = false
-				elif FILTER_DEGREES in filter\
+				elif filter == FILTER_DEGREES\
 						and not check_rotation_filter(card,state_filters[filter]):
 					card_matches = false
 				# There's no possible "AND" state for a boolean filter.
