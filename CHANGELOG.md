@@ -44,6 +44,7 @@ Some ScriptProperty consts have been adjusted to allow `counter_modified` signal
 
 * TargetingArrow will now signal targeting_completed when it didn't find a target as well
 * execute_scripts will now properly check for is_cost for itself and its target
+* When muliple card fields are empty, the compensation text will not properly increase its font to utilize the extra space
 
 #### ScriptingEngine
 

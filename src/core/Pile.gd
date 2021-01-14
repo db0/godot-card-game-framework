@@ -150,7 +150,7 @@ func remove_child(node, _legible_unique_name=false) -> void:
 	# When we put the first card in the pile, we make sure the
 	# Panel is made transparent so that the card backs are seen instead
 	if get_card_count() == 0:
-		.re_place()
+		reorganize_stack()
 		if not $Tween.is_active():
 			$Tween.remove($Control,'self_modulate:a')
 			$Tween.interpolate_property($Control,'self_modulate:a',
@@ -171,20 +171,26 @@ func reorganize_stack() -> void:
 	# of the card stack
 	# TODO: This logic has to be adapted depending on where on the viewport
 	# This pile is anchored. The below calculations assume bottom-left.
-	$Control.rect_size = Vector2(CFConst.CARD_SIZE.x + 3 + .5 * get_card_count(),
+	$Control.rect_size = Vector2(CFConst.CARD_SIZE.x + 3 + 0.5 * get_card_count(),
 			CFConst.CARD_SIZE.y + 6 + get_card_count())
 	$Control/Highlight.rect_size = $Control.rect_size
 	# The highlight has to also be shifted higher or else it will just extend
 	# below the viewport
-	$Control/Highlight.rect_position.y = -get_card_count()
+#	$Control/Highlight.rect_position.y = -get_card_count()
 	.re_place()
 	# since we're adding cards towards the top, we do not want the re_place()
 	# function to push the pile higher than the edge of the screen
 	# it is supposed to be
+	$Control.rect_position = Vector2(0,0)
+	$Control.rect_position.y -= get_card_count()
 	if "top" in get_groups():
 		position.y += get_card_count()
 	if "right" in get_groups():
 		position.x -= get_card_count() * 0.5
+	$CollisionShape2D.shape.extents = $Control.rect_size / 2
+	$CollisionShape2D.position = $Control.rect_position + $Control.rect_size /2
+
+
 
 
 # Override the godot builtin move_child() method,

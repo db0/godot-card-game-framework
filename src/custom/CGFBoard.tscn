@@ -47,7 +47,6 @@ pile_name = "Discard"
 faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
-self_modulate = Color( 1, 1, 1, 0.501961 )
 custom_styles/panel = SubResource( 1 )
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
