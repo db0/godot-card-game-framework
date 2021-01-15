@@ -171,8 +171,8 @@ func reorganize_stack() -> void:
 	# of the card stack
 	# TODO: This logic has to be adapted depending on where on the viewport
 	# This pile is anchored. The below calculations assume bottom-left.
-	$Control.rect_size = Vector2(CFConst.CARD_SIZE.x + 3 + 0.5 * get_card_count(),
-			CFConst.CARD_SIZE.y + 6 + get_card_count())
+	$Control.rect_size = Vector2(CFConst.CARD_SIZE.x + 3 + _shift_x() * get_card_count(),
+			CFConst.CARD_SIZE.y + 6 + _shift_y() * get_card_count())
 	$Control/Highlight.rect_size = $Control.rect_size
 	# The highlight has to also be shifted higher or else it will just extend
 	# below the viewport
@@ -184,9 +184,9 @@ func reorganize_stack() -> void:
 	$Control.rect_position = Vector2(0,0)
 	$Control.rect_position.y -= get_card_count()
 	if "top" in get_groups():
-		position.y += get_card_count()
+		position.y += get_card_count() * _shift_y()
 	if "right" in get_groups():
-		position.x -= get_card_count() * 0.5
+		position.x -= get_card_count() * _shift_x()
 	$CollisionShape2D.shape.extents = $Control.rect_size / 2
 	$CollisionShape2D.position = $Control.rect_position + $Control.rect_size /2
 
@@ -230,8 +230,14 @@ func get_bottom_card() -> Card:
 
 # Returns the position among other cards the specified card should have.
 func get_stack_position(card: Card) -> Vector2:
-	return Vector2(0.5 * get_card_index(card), -1 * get_card_index(card))
+	var shift_x = 0.5 - 0.0014 * get_card_count()
+	return Vector2(_shift_x() * get_card_index(card), -_shift_y() * get_card_index(card))
 
+func _shift_x() -> float:
+	return(0.5 - 0.0014 * get_card_count())
+
+func _shift_y() -> float:
+	return(1 - 0.0022 * get_card_count())
 
 # Prepares a [Card] object to be added to the popup grid
 func _slot_card_into_popup(card: Card) -> void:

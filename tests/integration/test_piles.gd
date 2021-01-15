@@ -22,13 +22,13 @@ func test_move_to_container():
 			"The correct amount of cards are hosted")
 
 func test_move_to_multiple_container():
-	yield(drag_drop(cards[2], cfc.NMAP.discard.position), 'completed')
+	yield(drag_drop(cards[2], cfc.NMAP.discard.position + Vector2(10,10)), 'completed')
 	yield(move_mouse(Vector2(500,300)), 'completed')
-	yield(drag_drop(cards[4], cfc.NMAP.deck.position), 'completed')
+	yield(drag_drop(cards[4], cfc.NMAP.deck.position + Vector2(10,10)), 'completed')
 	yield(move_mouse(Vector2(500,300)), 'completed')
-	yield(drag_drop(cards[1], cfc.NMAP.discard.position), 'completed')
+	yield(drag_drop(cards[1], cfc.NMAP.discard.position + Vector2(10,10)), 'completed')
 	yield(move_mouse(Vector2(500,300)), 'completed')
-	yield(drag_drop(cards[0], cfc.NMAP.deck.position), 'completed')
+	yield(drag_drop(cards[0], cfc.NMAP.deck.position + Vector2(10,10)), 'completed')
 	yield(yield_to(cards[0]._tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(cards[0]._tween, "tween_all_completed", 0.5), YIELD)
 	assert_almost_eq(cards[2].global_position,

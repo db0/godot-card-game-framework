@@ -39,6 +39,7 @@ Some ScriptProperty consts have been adjusted to allow `counter_modified` signal
 * DISABLE_DROPPING_TO_CARDCONTAINERS, DISABLE_DRAGGING_FROM_HAND, DISABLE_DRAGGING_FROM_BOARD, and DISABLE_DRAGGING_FROM_PILE have been moved as exported variables to the CardTemplate now
 	Each card type can have its own settings that fit how it works.
 * Renamed SignalPropagato's `_on_Card_signal_received()` to `_on_signal_received()`
+* Improved performance when a lot of cards are in the game.
 
 ### Bugfixes
 
