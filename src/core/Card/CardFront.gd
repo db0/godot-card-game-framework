@@ -60,7 +60,7 @@ func set_label_text(node: Label, value):
 	if node.name in compensation_label:
 		adjust_size = _rect_adjustment
 	var label_size = node.rect_min_size
-	var label_font = node.get("custom_fonts/font").duplicate()
+	var label_font : Font = node.get("custom_fonts/font").duplicate()
 	# We always start shrinking the size, starting from the original size.
 	label_font.size = original_font_sizes[node]
 	var line_height = label_font.get_height()

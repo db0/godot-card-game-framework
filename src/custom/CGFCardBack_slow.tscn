@@ -1,0 +1,242 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://assets/icons/view.svg" type="Texture" id=1]
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://src/core/Card/CardBackGlow.gd" type="Script" id=3]
+
+[sub_resource type="StyleBoxFlat" id=1]
+bg_color = Color( 0.164706, 0.203922, 0.223529, 1 )
+
+[sub_resource type="DynamicFont" id=2]
+size = 12
+font_data = ExtResource( 2 )
+
+[node name="CGFCardBack" type="Panel"]
+margin_right = 150.0
+margin_bottom = 240.0
+rect_min_size = Vector2( 150, 240 )
+mouse_filter = 2
+custom_styles/panel = SubResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WireLeftTop" type="Line2D" parent="."]
+points = PoolVector2Array( 50, 0, 50, 25, 25, 50, 0, 50 )
+width = 2.0
+default_color = Color( 2, 0.6, 0, 1 )
+
+[node name="WireRighTop" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 100.961, 0, 100.961, 25, 126.451, 50, 151.941, 50 )
+width = 2.0
+default_color = Color( 2, 0.6, 0, 1 )
+
+[node name="WireMid" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 0.195405, 80.5686, 6.43074, 65.2745, 22.0191, 65.2745, 22.0191, 75.4706, 47.9997, 75.4706, 73.9802, 100.961, 99.9608, 75.4706, 125.941, 75.4706, 125.941, 65.2745, 141.53, 65.2745, 147.765, 80.5686 )
+width = 2.0
+default_color = Color( 1.8, 0.6, 0, 1 )
+
+[node name="WireRhombus" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 47.9997, 75.4706, 73.9802, 49.9804, 99.9608, 75.4706 )
+width = 2.0
+default_color = Color( 1.8, 0.6, 0, 1 )
+
+[node name="WireStraight1" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( -3.96149, 100.961, 151.922, 100.961 )
+width = 2.0
+default_color = Color( 1.8, 0.6, 0, 1 )
+
+[node name="WireStraight2" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( -3.96149, 126.451, 151.922, 126.451 )
+width = 2.0
+default_color = Color( 1.8, 0.6, 0, 1 )
+
+[node name="WireLeft1" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( -3.96149, 182.529, 47.9997, 182.529, 47.9997, 172.333 )
+width = 2.0
+default_color = Color( 1.8, 0.6, 0, 1 )
+
+[node name="WireLeft2" type="Line2D" parent="."]
+position = Vector2( 4.15061, 0.98077 )
+scale = Vector2( 1.03051, 0.980769 )
+points = PoolVector2Array( -3.96149, 187.627, 49.3439, 187.627, 49.3439, 172.333 )
+width = 2.0
+default_color = Color( 1.8, 0.6, 0, 1 )
+
+[node name="WireRight1" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 151.922, 182.529, 99.9608, 182.529, 99.9608, 172.333 )
+width = 2.0
+default_color = Color( 1.8, 0.6, 0, 1 )
+
+[node name="WireRight2" type="Line2D" parent="."]
+position = Vector2( -4.13816, 0.98077 )
+scale = Vector2( 1.01425, 0.980769 )
+points = PoolVector2Array( 151.922, 187.627, 97.7453, 187.627, 97.7453, 172.333 )
+width = 2.0
+default_color = Color( 1.8, 0.6, 0, 1 )
+
+[node name="WireBot1" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 68.7841, 243.706, 68.7841, 218.216, 58.3919, 218.216 )
+width = 2.0
+default_color = Color( 2, 0.6, 0, 1 )
+
+[node name="WireBot2" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 73.9802, 243.706, 73.9802, 208.02 )
+width = 2.0
+default_color = Color( 2, 0.6, 0, 1 )
+
+[node name="WireBot3" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 79.1763, 243.706, 79.1763, 218.216, 89.5686, 218.216 )
+width = 2.0
+default_color = Color( 2, 0.6, 0, 1 )
+
+[node name="WireTop" type="Line2D" parent="."]
+position = Vector2( 3.81197, 0.98077 )
+scale = Vector2( 0.962257, 0.980769 )
+points = PoolVector2Array( 73.9802, -1, 73.9802, 19.3922 )
+width = 2.0
+default_color = Color( 2, 0.6, 0, 1 )
+
+[node name="LeftCon1" type="Polygon2D" parent="."]
+position = Vector2( -46, -87 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="LeftTopCon1" type="Polygon2D" parent="."]
+position = Vector2( -48, -118 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="TopMidCon" type="Polygon2D" parent="."]
+position = Vector2( 25, -147 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="TopCon1" type="Polygon2D" parent="."]
+position = Vector2( 0, -166 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="TopCon2" type="Polygon2D" parent="."]
+position = Vector2( 51, -166 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="RightCon1" type="Polygon2D" parent="."]
+position = Vector2( 96, -87 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="RightTopCon1" type="Polygon2D" parent="."]
+position = Vector2( 98, -118 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="WireCon1" type="Polygon2D" parent="."]
+position = Vector2( 5, 1 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="WireCon2" type="Polygon2D" parent="."]
+position = Vector2( 45, 1 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="WireCon3" type="Polygon2D" parent="."]
+position = Vector2( 50, 1 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="WireCon4" type="Polygon2D" parent="."]
+position = Vector2( 0, 1 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="BotCon1" type="Polygon2D" parent="."]
+position = Vector2( 25, 36 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="BotCon2" type="Polygon2D" parent="."]
+position = Vector2( 41, 47 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="BotCon3" type="Polygon2D" parent="."]
+position = Vector2( 9, 47 )
+color = Color( 3, 0.2, 0, 1 )
+polygon = PoolVector2Array( 50, 166, 48, 168, 50, 170, 52, 168 )
+
+[node name="Pulse" type="Tween" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
+margin_right = 150.0
+margin_bottom = 50.0
+mouse_filter = 2
+custom_constants/margin_top = 50
+
+[node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
+margin_top = 54.0
+margin_right = 150.0
+margin_bottom = 94.0
+rect_min_size = Vector2( 0, 40 )
+mouse_filter = 2
+
+[node name="Viewed" type="TextureRect" parent="VBoxContainer/CenterContainer"]
+visible = false
+modulate = Color( 1.5, 0.2, 0, 1 )
+margin_left = 55.0
+margin_right = 95.0
+margin_bottom = 40.0
+mouse_filter = 2
+texture = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer"]
+margin_top = 98.0
+margin_right = 150.0
+margin_bottom = 101.0
+mouse_filter = 2
+custom_constants/margin_top = 3
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+margin_top = 105.0
+margin_right = 150.0
+margin_bottom = 121.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color = Color( 1, 0.2, 0, 1 )
+text = "Card Game Framework"
+__meta__ = {
+"_edit_use_anchors_": false
+}
