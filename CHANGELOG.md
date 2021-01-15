@@ -40,6 +40,7 @@ Some ScriptProperty consts have been adjusted to allow `counter_modified` signal
 	Each card type can have its own settings that fit how it works.
 * Renamed SignalPropagato's `_on_Card_signal_received()` to `_on_signal_received()`
 * Improved performance when a lot of cards are in the game.
+* Size of pile will now stay reasonable, even with massive amount of cards.
 
 ### Bugfixes
 

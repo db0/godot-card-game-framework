@@ -67,7 +67,9 @@ static func list_files_in_directory(path: String, prepend_needed := "") -> Array
 		var file := dir.get_next()
 		if file == "":
 			break
-		elif not file.begins_with('.') and file.begins_with(prepend_needed):
+		elif not file.begins_with('.')\
+				and file.begins_with(prepend_needed)\
+				and not file.ends_with(".remap"):
 			files.append(file)
 	dir.list_dir_end()
 	return files
