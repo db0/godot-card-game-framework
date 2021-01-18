@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.6 (Ongoing)
+## 1.6
 
 CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
 
