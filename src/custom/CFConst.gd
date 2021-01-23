@@ -124,6 +124,10 @@ const PATH_SCRIPT_PER := PATH_CORE + "ScriptPer.gd"
 # The alterant engine functionality with your own tasks,
 # Point this to your own script file.
 const PATH_ALTERANT_ENGINE := PATH_CORE + "AlterantEngine.gd"
+# This specifies the path to the MousePointer. If you wish to extend
+# The mouse pointer functionality with your own code,
+# Point this to your own scene file with a scrip extending Mouse Pointer.
+const PATH_MOUSE_POINTER := PATH_CORE + "MousePointer.tscn"
 # The amount of distance neighboring cards are pushed during card focus
 #
 # It's based on the card width. Bigger percentage means larger push.
