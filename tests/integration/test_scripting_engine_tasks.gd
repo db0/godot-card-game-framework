@@ -70,6 +70,25 @@ func test_flip_card():
 	assert_true(target.is_faceup,
 			"Target should be face-up again")
 
+func test_view_card():
+	target.is_faceup = false
+	card.scripts = {"manual": {"hand": [
+				{"name": "view_card",
+				"subject": "target"}]}}
+	card.execute_scripts()
+	yield(target_card(card,target), "completed")
+	assert_true(target.is_viewed,
+			"Target should be viewed")
+	target = cfc.NMAP.deck.get_top_card()
+	card.scripts = {"manual": {"hand": [
+				{"name": "view_card",
+				"src_container":  cfc.NMAP.deck,
+				"subject_index": "top",
+				"subject": "index"}]}}
+	card.execute_scripts()
+	assert_true(target.is_viewed,
+			"Target should be viewed")
+
 
 func test_move_card_to_container():
 	card.scripts = {"manual": {"hand": [

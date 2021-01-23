@@ -168,6 +168,16 @@ func flip_card(script: ScriptTask) -> int:
 	return(retcode)
 
 
+# Task for viewing face-down cards
+# * Requires the following keys:
+#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+func view_card(script: ScriptTask) -> int:
+	var retcode: int
+	for card in script.subjects:
+		retcode = card.set_is_viewed(true)
+	return(retcode)
+
+
 # Task for moving card to a [CardContainer]
 # * Supports [KEY_IS_COST](SP#KEY_IS_COST).
 # * Requires the following keys:
