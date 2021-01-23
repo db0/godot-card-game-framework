@@ -87,6 +87,7 @@ func focus_card(card: Card) -> void:
 				$Focus.modulate, Color(1,1,1,1), 0.25,
 				Tween.TRANS_SINE, Tween.EASE_IN)
 		$Focus/Tween.start()
+#		print_debug("aa")
 
 
 # Hides the focus viewport when we're done looking at it

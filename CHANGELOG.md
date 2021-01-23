@@ -6,6 +6,14 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 
 * New constant added: PATH_MOUSE_POINTER. This allows the game to add extra functionality to the mouse pointer script. This constant needs to exist but can be redirected to a custom scene.
 
+## New Features
+
+* If the top card of a Pile is Faceup or Facedown and viewed, it will now be seen in the viewport focus when mouse hovers over the pile.
+
+#### ScriptingEngine
+
+* Added new `view_card` task which allows scripts to mark a card as viewed while face-down
+
 ## 1.6
 
 ### Important

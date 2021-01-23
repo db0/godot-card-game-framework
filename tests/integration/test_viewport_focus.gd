@@ -39,6 +39,7 @@ func test_for_leftover_focus_objects():
 	var card : Card = cards[2]
 	yield(drag_drop(card,cfc.NMAP.discard.position), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	yield(move_mouse(Vector2(0,0), 'slow'), 'completed')
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
 			"Duplicate card has been removed from focus")
 
@@ -55,3 +56,11 @@ func test_card_back_focus():
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
 			"Duplicate card has been removed from focus")
+
+func test_viewed_card_in_pile():
+	var card : Card = deck.get_top_card()
+	card.is_viewed = true
+	yield(move_mouse(deck.global_position), 'completed')
+	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),
+			"Duplicate card has been added for viewport focus")

@@ -24,9 +24,10 @@ enum CardState {
 	ON_PLAY_BOARD			#7
 	FOCUSED_ON_BOARD		#8
 	IN_PILE					#10
-	IN_POPUP				#11
-	FOCUSED_IN_POPUP		#12
-	VIEWPORT_FOCUS			#13
+	VIEWED_IN_PILE			#11
+	IN_POPUP				#12
+	FOCUSED_IN_POPUP		#13
+	VIEWPORT_FOCUS			#14
 }
 # Specifies where a card is allowed to drop on the board
 #
@@ -312,6 +313,7 @@ func _process(delta) -> void:
 			"ON_PLAY_BOARD",
 			"FOCUSED_ON_BOARD",
 			"IN_PILE",
+			"VIEWED_IN_PILE",
 			"IN_POPUP",
 			"FOCUSED_IN_POPUP",
 			"VIEWPORT_FOCUS",
@@ -709,7 +711,9 @@ func set_is_viewed(value: bool) -> int:
 			retcode = CFConst.ReturnCode.OK
 		else:
 			is_viewed = true
-			if get_parent() != null and get_tree().get_root().has_node('Main'):
+			if get_parent() != null\
+					and get_tree().get_root().has_node('Main')\
+					and cfc.NMAP.main._previously_focused_cards.size():
 				var dupe_front = cfc.NMAP.main._previously_focused_cards.back()\
 						.get_node("Control/Front")
 				var dupe_back = cfc.NMAP.main._previously_focused_cards.back()\
@@ -988,6 +992,9 @@ func move_to(targetHost: Node,
 						self,
 						"card_moved_to_pile",
 						{"destination": targetHost, "source": parentHost})
+				# We start the flipping animation here, even though it also
+				# set in the card state, because we want to see it while the
+				# card is moving to the CardContainer
 				if set_is_faceup(targetHost.faceup_cards) == CFConst.ReturnCode.FAILED:
 					print("ERROR: Something went unexpectedly in set_is_faceup")
 				# If we have fancy movement, we need to wait for 2 tweens to finish
@@ -1242,7 +1249,9 @@ func get_state_exec() -> String:
 				CardState.REORGANIZING,\
 				CardState.PUSHED_ASIDE:
 				state_exec = "hand"
-		CardState.IN_POPUP, CardState.FOCUSED_IN_POPUP, CardState.IN_PILE:
+		CardState.IN_POPUP, CardState.FOCUSED_IN_POPUP,\
+				 CardState.IN_PILE,\
+				 CardState.VIEWED_IN_PILE:
 				state_exec = "pile"
 	return(state_exec)
 
@@ -2110,6 +2119,17 @@ func _process_card_state() -> void:
 		CardState.IN_PILE:
 			z_index = 0
 			set_focus(false)
+			set_control_mouse_filters(false)
+			buttons.set_active(false)
+			# warning-ignore:return_value_discarded
+			set_card_rotation(0)
+			if scale != Vector2(1,1):
+				scale = Vector2(1,1)
+			set_is_faceup(get_parent().faceup_cards, true)
+
+		CardState.VIEWED_IN_PILE:
+			z_index = 0
+			cfc.NMAP.main.focus_card(self)
 			set_control_mouse_filters(false)
 			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
