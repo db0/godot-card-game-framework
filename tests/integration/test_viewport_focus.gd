@@ -39,6 +39,9 @@ func test_for_leftover_focus_objects():
 	var card : Card = cards[2]
 	yield(drag_drop(card,cfc.NMAP.discard.position), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	yield(yield_for(0.5), YIELD)
+	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),
+			"The top face-up card of the deck is now in focus")
 	yield(move_mouse(Vector2(0,0), 'slow'), 'completed')
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
 			"Duplicate card has been removed from focus")
@@ -51,7 +54,6 @@ func test_card_back_focus():
 	var focus_dupe = main._previously_focused_cards[0]
 	assert_eq(focus_dupe.card_back.modulate.a, 1,
 			"Duplicate card back does not modulate out")
-
 	yield(move_mouse(Vector2(0,0)), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),

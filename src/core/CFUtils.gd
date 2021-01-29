@@ -69,7 +69,9 @@ static func list_files_in_directory(path: String, prepend_needed := "") -> Array
 			break
 		elif not file.begins_with('.')\
 				and file.begins_with(prepend_needed)\
-				and not file.ends_with(".remap"):
+				and not file.ends_with(".remap")\
+				and not file.ends_with(".import")\
+				and not file.ends_with(".md"):
 			files.append(file)
 	dir.list_dir_end()
 	return files
