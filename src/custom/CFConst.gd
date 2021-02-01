@@ -83,11 +83,16 @@ const FOCUS_STYLE = FocusStyle.BOTH
 # If set to true, the hand will be presented in the form of an oval shape
 # If set to false, the hand will be presented with all cards
 # horizontally aligned
+#
+# If you allow the player to modify this with cfc.set_settings()
+# Then that will always take priority
 const HAND_USE_OVAL_SHAPE := true
 # The below scales down cards down while being dragged.
 #
 # if you don't want this behaviour, change it to Vector2(1,1)
 const CARD_SCALE_WHILE_DRAGGING := Vector2(0.4, 0.4)
+# The location and name of the file into which to store game settings
+const SETTINGS_FILENAME := "user://CGFSettings.json"
 # The path where the Card Game Framework core files exist.
 # (i.e. mandatory scenes and scripts)
 const PATH_CORE := "res://src/core/"

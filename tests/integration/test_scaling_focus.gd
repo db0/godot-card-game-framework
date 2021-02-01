@@ -10,7 +10,7 @@ func before_each():
 	yield(yield_for(0.1), YIELD)
 
 func test_single_card_focus_use_rectangle():
-	cfc.hand_use_oval_shape = false
+	cfc.game_settings.hand_use_oval_shape = false
 	cards[0]._on_Card_mouse_entered()
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_almost_eq(Vector2(44.5, -240),cards[0].position,Vector2(2,2),
@@ -23,10 +23,10 @@ func test_single_card_focus_use_rectangle():
 			"Card placed in correct global position")
 	assert_almost_eq(Vector2(1, 1),cards[0].scale,Vector2(0.1,0.1),
 			"Card has correct scale")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 
 func test_single_card_focus_use_oval():
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 	cards[0]._on_Card_mouse_entered()
 	yield(yield_to(cards[0].get_node('Tween'), "tween_all_completed", 1), YIELD)
 	assert_almost_eq(Vector2(103.0, -240.0),cards[0].position,Vector2(2,2),
@@ -39,10 +39,10 @@ func test_single_card_focus_use_oval():
 			"Card placed in correct global position")
 	assert_almost_eq(Vector2(1, 1),cards[0].scale,Vector2(0.1,0.1),
 			"Card has correct scale")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 
 func test_card_focus_neighbour_push_use_rectangle():
-	cfc.hand_use_oval_shape = false
+	cfc.game_settings.hand_use_oval_shape = false
 	cards[2]._on_Card_mouse_entered()
 	yield(yield_for(1), YIELD)
 	assert_almost_eq(Vector2(25.75, 0),cards[0].position,Vector2(2,2),
@@ -53,9 +53,9 @@ func test_card_focus_neighbour_push_use_rectangle():
 			"Card dragged in correct global position")
 	assert_almost_eq(Vector2(798.25, 0),cards[4].position,Vector2(2,2),
 			"Card dragged in correct global position")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 func test_card_focus_neighbour_push_use_oval():
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 	cards[2]._on_Card_mouse_entered()
 	yield(yield_for(1), YIELD)
 	assert_almost_eq(Vector2(102.718, -22.392),cards[0].position,Vector2(2,2),
@@ -66,7 +66,7 @@ func test_card_focus_neighbour_push_use_oval():
 			"Card dragged in correct global position")
 	assert_almost_eq(Vector2(722.0, -22.5),cards[4].position,Vector2(2,2),
 			"Card dragged in correct global position")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 func test_card_change_focus_to_neighbour():
 	var YIELD_TIME := 0.07
 	var YIELD_TIME2 := 0.5

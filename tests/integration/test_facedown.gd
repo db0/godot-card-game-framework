@@ -3,10 +3,10 @@ extends "res://tests/UTcommon.gd"
 var cards := []
 
 func before_all():
-	cfc.fancy_movement = false
+	cfc.game_settings.fancy_movement = false
 
 func after_all():
-	cfc.fancy_movement = true
+	cfc.game_settings.fancy_movement = true
 
 func before_each():
 	var confirm_return = setup_main()

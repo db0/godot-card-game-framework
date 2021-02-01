@@ -11,9 +11,9 @@ func _ready() -> void:
 	# instead of defining them on the scene.
 	# This way any they will work with any size of viewport in a game.
 	# Discard pile goes bottom right
-	$FancyMovementToggle.pressed = cfc.fancy_movement
-	$OvalHandToggle.pressed = cfc.hand_use_oval_shape
-	$ScalingFocusOptions.selected = cfc.focus_style
+	$FancyMovementToggle.pressed = cfc.game_settings.fancy_movement
+	$OvalHandToggle.pressed = cfc.game_settings.hand_use_oval_shape
+	$ScalingFocusOptions.selected = cfc.game_settings.focus_style
 	$Debug.pressed = cfc._debug
 	# Fill up the deck for demo purposes
 	if not cfc.ut:
@@ -29,11 +29,12 @@ func _ready() -> void:
 # You can remove this function and the FancyMovementToggle button
 # without issues
 func _on_FancyMovementToggle_toggled(_button_pressed) -> void:
-	cfc.fancy_movement = $FancyMovementToggle.pressed
+#	cfc.game_settings.fancy_movement = $FancyMovementToggle.pressed
+	cfc.set_setting('fancy_movement', $FancyMovementToggle.pressed)
 
 
 func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
-	cfc.hand_use_oval_shape = $OvalHandToggle.pressed
+	cfc.set_setting("hand_use_oval_shape", $OvalHandToggle.pressed)
 	for c in cfc.NMAP.hand.get_all_cards():
 		c.reorganize_self()
 
@@ -61,7 +62,7 @@ func reshuffle_all_in_pile(pile = cfc.NMAP.deck):
 
 # Button to change focus mode
 func _on_ScalingFocusOptions_item_selected(index) -> void:
-	cfc.focus_style = index
+	cfc.set_setting('focus_style', index)
 
 
 # Button to make all cards act as attachments

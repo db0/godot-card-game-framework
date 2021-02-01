@@ -11,7 +11,7 @@ func before_each():
 
 
 func test_card_table_drop_location_and_rotation_use_rectangle():
-	cfc.hand_use_oval_shape = false
+	cfc.game_settings.hand_use_oval_shape = false
 	for c in cfc.NMAP.hand.get_all_cards():
 		c.reorganize_self()
 	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
@@ -56,10 +56,10 @@ func test_card_table_drop_location_and_rotation_use_rectangle():
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(0.0,card.get_node("Control").rect_rotation,
 			"Rotation reset to 0 while card is moving to hand")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 
 func test_card_table_drop_location_use_oval():
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 	# Reminder that card should not have trigger script definitions, to avoid
 	# messing with the tests
 	var card = cards[1]
@@ -70,7 +70,7 @@ func test_card_table_drop_location_use_oval():
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_almost_eq(12.461,card.get_node("Control").rect_rotation,2.0,
 			"Rotation reset to a hand angle when card moved back to hand")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 
 
 func test_card_hand_drop_recovery():

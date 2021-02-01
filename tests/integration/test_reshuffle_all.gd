@@ -10,10 +10,10 @@ func before_each():
 	yield(yield_for(0.1), YIELD)
 
 func after_each():
-	cfc.fancy_movement = true
+	cfc.game_settings.fancy_movement = true
 
 func test_fancy_reshuffle_all():
-	cfc.fancy_movement = true
+	cfc.game_settings.fancy_movement = true
 	yield(drag_drop(cards[0], Vector2(300,300)), "completed")
 	yield(drag_drop(cards[4], Vector2(1000,10)), "completed")
 	board.reshuffle_all_in_pile()
@@ -25,7 +25,7 @@ func test_fancy_reshuffle_all():
 	yield(yield_to(cards[4].get_node('Tween'), "tween_all_completed", 1), YIELD)
 
 func test_basic_reshuffle_all():
-	cfc.fancy_movement = false
+	cfc.game_settings.fancy_movement = false
 	yield(drag_drop(cards[0], Vector2(300,300)), "completed")
 	yield(drag_drop(cards[4], Vector2(1000,10)), "completed")
 	board.reshuffle_all_in_pile()

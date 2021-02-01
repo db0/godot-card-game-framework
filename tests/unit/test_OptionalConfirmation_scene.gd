@@ -6,10 +6,10 @@ var test_script: Dictionary
 var confirm: ConfirmationDialog
 
 func before_all():
-	cfc.fancy_movement = false
+	cfc.game_settings.fancy_movement = false
 
 func after_all():
-	cfc.fancy_movement = true
+	cfc.game_settings.fancy_movement = true
 
 func before_each():
 	var confirm_return = setup_board()

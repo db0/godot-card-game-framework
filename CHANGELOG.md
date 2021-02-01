@@ -5,10 +5,12 @@
 CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
 
 * New constant added: PATH_MOUSE_POINTER. This allows the game to add extra functionality to the mouse pointer script. This constant needs to exist but can be redirected to a custom scene.
+* New constant added: SETTINGS_FILENAME. This determines the position in which to store game settings on the disk.
 
 ## New Features
 
 * If the top card of a Pile is Faceup or Facedown and viewed, it will now be seen in the viewport focus when mouse hovers over the pile.
+* Added framework which enables to store game settings to disk
 
 #### ScriptingEngine
 

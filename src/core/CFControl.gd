@@ -5,28 +5,8 @@ class_name CFControl
 extends Node
 
 signal all_nodes_mapped()
-#-----------------------------------------------------------------------------
-# BEGIN Control Variables
-# These variables change the way the cards behave.
-# They initiate with the value from CFConst, but they can be modified
-# during runtime as well
-#-----------------------------------------------------------------------------
 
-# Switch this off to disable fancy movement of cards during draw/discard
-var fancy_movement := CFConst.FANCY_MOVEMENT
-# If true, then the game will use the card focusing method
-# where it scales up the card itself.
-#
-# It will also mean you cannot focus on card on the table.
-var focus_style := CFConst.FOCUS_STYLE
-# If set to true, the hand will be presented in the form of an oval shape
-# If set to false, the hand will be presented with all cards
-# horizontally aligned
-var hand_use_oval_shape := CFConst.HAND_USE_OVAL_SHAPE
 
-#-----------------------------------------------------------------------------
-# END Control Variables
-#-----------------------------------------------------------------------------
 #-----------------------------------------------------------------------------
 # BEGIN Unit Testing Variables
 #-----------------------------------------------------------------------------
@@ -40,6 +20,10 @@ var _ut_show_token_buttons := CFConst.SHOW_TOKEN_BUTTONS
 # END Unit Testing Variables
 #-----------------------------------------------------------------------------
 
+# This variable stores all custom settings for each game.
+# It is initiated by looking for [CFConst#SETTINGS_FILENAME], but if it
+# doesn't exist, defaults to the values specified in CFConst, if applicable.
+var game_settings := {}
 # If this is false, all CardContainers will pause in their ready() scene
 # until all other CardContainers have been mapped.
 var are_all_nodes_mapped := false
@@ -90,6 +74,13 @@ var alterant_engine = load(CFConst.PATH_ALTERANT_ENGINE)
 var alterant_cache: Dictionary
 
 func _ready() -> void:
+	init_settings_from_file()
+	if not game_settings.has('fancy_movement'):
+		game_settings['fancy_movement'] = CFConst.FANCY_MOVEMENT
+	if not game_settings.has('focus_style'):
+		game_settings['focus_style'] = CFConst.FOCUS_STYLE
+	if not game_settings.has('hand_use_oval_shape'):
+		game_settings['hand_use_oval_shape'] = CFConst.HAND_USE_OVAL_SHAPE
 	# We reset our node mapping variables every time
 	# as they repopulate during unit testing many times.
 	# warning-ignore:return_value_discarded
@@ -108,15 +99,17 @@ func _ready() -> void:
 	card_definitions = load_card_definitions()
 
 
+# Run when all necessary nodes (Board, CardContainers etc) for the game
+# have been initialized. Allows them to proceed with their ready() functions.
 func _on_all_nodes_mapped() -> void:
 	if get_tree().get_root().has_node('Main'):
 		# When Unit Testing, we want to always have both scaling options possible
 		if ut:
-			focus_style = CFConst.FocusStyle.BOTH
+			game_settings['focus_style'] = CFConst.FocusStyle.BOTH
 	else:
 		# If we're not using the main viewport scene, we need to fallback
 		# to the basic focus
-		focus_style = CFConst.FocusStyle.SCALED
+		game_settings['focus_style'] = CFConst.FocusStyle.SCALED
 		# To prevent accidental switching this option when there's no other
 		# viewports active
 		if NMAP.board and NMAP.board.has_node("ScalingFocusOptions"): # Needed for UT
@@ -202,6 +195,27 @@ func load_script_definitions() -> Dictionary:
 			if not card_script.empty():
 				combined_scripts[card_name] = card_script
 	return(combined_scripts)
+
+
+# Whenever a setting is changed via this function, it also stores it 
+# permanently on-disk.
+func set_setting(setting_name: String, value) -> void:
+	game_settings[setting_name] = value
+	var file = File.new()
+	file.open(CFConst.SETTINGS_FILENAME, File.WRITE)
+	file.store_string(to_json(game_settings))
+	file.close()
+
+
+# Initiates game_settings from the contents of CFConst.SETTINGS_FILENAME
+func init_settings_from_file() -> void:
+	var file = File.new()
+	if file.file_exists(CFConst.SETTINGS_FILENAME):
+		file.open(CFConst.SETTINGS_FILENAME, File.READ)
+		var data = parse_json(file.get_as_text())
+		file.close()
+		if typeof(data) == TYPE_DICTIONARY:
+			game_settings = data.duplicate()
 
 
 # This function resets the game to the same state as when

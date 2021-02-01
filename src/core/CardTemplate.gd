@@ -800,7 +800,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 		# so we ensure that the displayed rotation of a card
 		# which is not in hand, matches our expectations
 		if get_parent() != cfc.NMAP.hand \
-				and cfc.hand_use_oval_shape \
+				and cfc.game_settings.hand_use_oval_shape \
 				and $Control.rect_rotation != 0.0 \
 				and not $Tween.is_active():
 			_add_tween_rotation($Control.rect_rotation,value)
@@ -819,7 +819,7 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 			# rotation we apply to the card will be their hand oval rotation
 			if value == 0 \
 					and get_parent() == cfc.NMAP.hand \
-					and cfc.hand_use_oval_shape:
+					and cfc.game_settings.hand_use_oval_shape:
 				value = int(_recalculate_rotation())
 			$CollisionShape2D.rotation_degrees = value
 			# We make sure to remove other tweens of the same type
@@ -867,7 +867,7 @@ func move_to(targetHost: Node,
 		index := -1,
 		board_position = null,
 		scripted_move = false) -> void:
-#	if cfc.focus_style:
+#	if cfc.game_settings.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
 #		cfc.NMAP.main.unfocus()
@@ -1003,7 +1003,7 @@ func move_to(targetHost: Node,
 				# If we don't then the card will appear to teleport
 				# to the pile before starting animation
 				yield($Tween, "tween_all_completed")
-				if cfc.fancy_movement:
+				if cfc.game_settings.fancy_movement:
 					yield($Tween, "tween_all_completed")
 				targetHost.reorganize_stack()
 		else:
@@ -1348,7 +1348,7 @@ func interruptTweening() ->void:
 	# still doing the first part, don't interrupt
 	# If you've finished the first part and are not still in the
 	# move to another container movement, then you can interrupt.
-	if not cfc.fancy_movement or (cfc.fancy_movement
+	if not cfc.game_settings.fancy_movement or (cfc.game_settings.fancy_movement
 			and (_fancy_move_second_part
 			or state != CardState.MOVING_TO_CONTAINER)):
 		$Tween.remove_all()
@@ -1363,7 +1363,7 @@ func set_focus(requestedFocus: bool, colour := CFConst.FOCUS_HOVER_COLOUR) -> vo
 	if highlight.visible != requestedFocus and \
 			highlight.modulate in CFConst.CostsState.values():
 		highlight.set_highlight(requestedFocus,colour)
-	if cfc.focus_style: # value 0 means only scaling focus
+	if cfc.game_settings.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
 			cfc.NMAP.main.focus_card(self)
 		else:
@@ -1415,7 +1415,7 @@ func set_control_mouse_filters(value = true) -> void:
 # Get card position in hand by index
 # if use oval shape, the card has a certain offset according to the angle
 func recalculate_position(index_diff = null) -> Vector2:
-	if cfc.hand_use_oval_shape:
+	if cfc.game_settings.hand_use_oval_shape:
 		return _recalculate_position_use_oval(index_diff)
 	return _recalculate_position_use_rectangle(index_diff)
 
@@ -1859,7 +1859,7 @@ func _process_card_state() -> void:
 			# warning-ignore:return_value_discarded
 			# When we have an oval shape, we ensure the cards stay
 			# in the rotation expected of their position
-			if cfc.hand_use_oval_shape:
+			if cfc.game_settings.hand_use_oval_shape:
 				_target_rotation  = _recalculate_rotation()
 				if not $Tween.is_active() \
 						and $Control.rect_rotation != _target_rotation:
@@ -1878,7 +1878,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not _focus_completed and \
-					cfc.focus_style != CFConst.FocusStyle.VIEWPORT:
+					cfc.game_settings.focus_style != CFConst.FocusStyle.VIEWPORT:
 				var expected_position: Vector2 = recalculate_position()
 				var expected_rotation: float = _recalculate_rotation()
 				# We figure out our neighbours by their index
@@ -1923,7 +1923,7 @@ func _process_card_state() -> void:
 				_add_tween_position(expected_position, _target_position, 0.3)
 				_add_tween_scale(scale, Vector2(1.5,1.5))
 
-				if cfc.hand_use_oval_shape:
+				if cfc.game_settings.hand_use_oval_shape:
 					_add_tween_rotation($Control.rect_rotation,0)
 				else:
 					# warning-ignore:return_value_discarded
@@ -1946,7 +1946,7 @@ func _process_card_state() -> void:
 				var intermediate_position: Vector2
 				if not scale.is_equal_approx(Vector2(1,1)):
 					_add_tween_scale(scale, Vector2(1,1),0.4)
-				if cfc.fancy_movement:
+				if cfc.game_settings.fancy_movement:
 					# The below calculations figure out
 					# the intermediate position as a spot,
 					# offset towards the viewport center by an amount proportional
@@ -2311,7 +2311,7 @@ func _recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 # Calculates the rotation the card should have based on its parent.
 func _recalculate_rotation(index_diff = null)-> float:
 	var calculated_rotation := float(card_rotation)
-	if get_parent() == cfc.NMAP.hand and cfc.hand_use_oval_shape:
+	if get_parent() == cfc.NMAP.hand and cfc.game_settings.hand_use_oval_shape:
 		calculated_rotation = 90.0 - _get_oval_angle_by_index(null, index_diff)
 	return(calculated_rotation)
 

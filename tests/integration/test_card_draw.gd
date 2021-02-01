@@ -7,7 +7,7 @@ func before_each():
 
 
 func test_single_card_draw_use_rectangle():
-	cfc.hand_use_oval_shape = false
+	cfc.game_settings.hand_use_oval_shape = false
 	var card0: Card = hand.draw_card()
 	assert_eq(len(hand.get_children()), 5,
 			"Correct amount of cards drawn")
@@ -24,11 +24,11 @@ func test_single_card_draw_use_rectangle():
 			"Card placed in correct global position")
 	assert_almost_eq(card0.recalculate_position(),card0.position,Vector2(2,2),
 			"Card placed in correct position")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 
 
 func test_single_card_draw_use_oval():
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 	var card0: Card = hand.draw_card()
 	assert_eq(len(hand.get_children()), 5,
 			"Correct amount of cards drawn")
@@ -45,11 +45,11 @@ func test_single_card_draw_use_oval():
 			"Card placed in correct global position")
 	assert_almost_eq(card0.recalculate_position(),card0.position,Vector2(2,2),
 			"Card placed in correct position")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 
 
 func test_draw_multiple_cards_slow_use_rectangle():
-	cfc.hand_use_oval_shape = false
+	cfc.game_settings.hand_use_oval_shape = false
 	var card0: Card = hand.draw_card()
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)
@@ -81,11 +81,11 @@ func test_draw_multiple_cards_slow_use_rectangle():
 			"Card at index 1 placed in correct position")
 	assert_almost_eq(card2.recalculate_position(),card2.position,Vector2(2,2),
 			"Card at index 2 placed in correct position")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 
 
 func test_draw_multiple_cards_slow_use_oval():
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 	var card0: Card = hand.draw_card()
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	yield(yield_to(card0.get_node('Tween'), "tween_all_completed", 1), YIELD)
@@ -117,7 +117,7 @@ func test_draw_multiple_cards_slow_use_oval():
 			"Card at index 1 placed in correct position")
 	assert_almost_eq(card2.recalculate_position(),card2.position,Vector2(2,2),
 			"Card at index 2 placed in correct position")
-	cfc.hand_use_oval_shape = true
+	cfc.game_settings.hand_use_oval_shape = true
 
 
 func test_draw_multiple_cards_fast():
