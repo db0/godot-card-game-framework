@@ -95,3 +95,6 @@ func load_test_cards(extras := 11) -> void:
 		#card.set_is_faceup(false,true)
 		card._determine_idle_state()
 
+
+func _on_GamePaused_toggled(button_pressed: bool) -> void:
+	cfc.game_paused = button_pressed

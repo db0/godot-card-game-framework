@@ -22,6 +22,8 @@ var current_focused_card : Card = null
 #
 # Instead we populate according to signals,which are more immediate
 var overlaps := []
+# When set to false, prevents the player from disable interacting with the game.
+var is_disabled := false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -55,24 +57,24 @@ func _process(_delta: float) -> void:
 # Adds the overlapping area to the list of overlaps, and triggers the
 # discover_focus()
 func _on_MousePointer_area_entered(area: Area2D) -> void:
-	overlaps.append(area)
-	#print("enter:",area.name)
-	_discover_focus()
+	if not is_disabled:
+		overlaps.append(area)
+		#print("enter:",area.name)
+		_discover_focus()
 
 
 # Removes the overlapping area from the list of overlaps, and triggers the
 # discover_focus()
 func _on_MousePointer_area_exited(area: Area2D) -> void:
-	# We stop the highlight on any areas we exit with the mouse.
-	if area as Card or area as CardContainer:
-		area.highlight.set_highlight(false)
-	elif area.get_parent() as BoardPlacementSlot:
-		area.get_parent().set_highlight(false)
-	overlaps.erase(area)
-	#print("exit:",area.name)
-	_discover_focus()
-
-
+	if not is_disabled:
+		# We stop the highlight on any areas we exit with the mouse.
+		if area as Card or area as CardContainer:
+			area.highlight.set_highlight(false)
+		elif area.get_parent() as BoardPlacementSlot:
+			area.get_parent().set_highlight(false)
+		overlaps.erase(area)
+		#print("exit:",area.name)
+		_discover_focus()
 
 
 # We're using this helper function, to allow our mouse-position relevant code
@@ -96,6 +98,25 @@ func determine_global_mouse_pos() -> Vector2:
 		mouse_position = cfc.NMAP.board._UT_mouse_position
 	else: mouse_position = offset_mouse_position
 	return mouse_position
+
+
+# Disables the mouse from interacting with the board
+func disable() -> void:
+	is_disabled = true
+	for area in overlaps:
+		# We stop the highlight on any areas we were currently highlighting
+		if area as Card or area as CardContainer:
+			area.highlight.set_highlight(false)
+		elif area.get_parent() as BoardPlacementSlot:
+			area.get_parent().set_highlight(false)
+	overlaps.clear()
+
+
+# Re-enables the mouse interacting with the board
+func enable() -> void:
+	is_disabled = false
+	overlaps = get_overlapping_areas().duplicate()
+	_discover_focus()
 
 
 # Parses all collided objects and figures out which card, if any, to focus on and

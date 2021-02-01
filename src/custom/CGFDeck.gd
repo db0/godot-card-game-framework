@@ -13,5 +13,7 @@ func _ready() -> void:
 	#print(get_signal_connection_list("input_event")[0]['target'].name)
 
 func _on_Deck_input_event(event) -> void:
-	if event.is_pressed() and event.get_button_index() == 1:
+	if event.is_pressed()\
+		and not cfc.game_paused\
+		and event.get_button_index() == 1:
 		emit_signal("draw_card", self)

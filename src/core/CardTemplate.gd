@@ -1116,6 +1116,8 @@ func execute_scripts(
 		trigger: String = "manual",
 		trigger_details: Dictionary = {},
 		only_cost_check := false):
+	if cfc.game_paused:
+		return
 	common_pre_execution_scripts(trigger)
 	var card_scripts = retrieve_card_scripts(trigger)
 	# I use this spot to add a breakpoint when testing script behaviour

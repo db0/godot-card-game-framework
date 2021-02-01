@@ -120,6 +120,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="GamePaused" type="CheckButton" parent="."]
+margin_left = 207.0
+margin_top = 41.0
+margin_right = 396.0
+margin_bottom = 81.0
+text = "Game Paused"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Debug" type="CheckButton" parent="."]
 margin_left = 789.192
 margin_top = 3.36737
@@ -154,12 +164,14 @@ text = "Game Seed is: "
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
 [connection signal="item_selected" from="ScalingFocusOptions" to="." method="_on_ScalingFocusOptions_item_selected"]
 [connection signal="pressed" from="ReshuffleAllDeck" to="." method="_on_ReshuffleAllDeck_pressed"]
 [connection signal="pressed" from="ReshuffleAllDiscard" to="." method="_on_ReshuffleAllDiscard_pressed"]
 [connection signal="toggled" from="OvalHandToggle" to="." method="_on_OvalHandToggle_toggled"]
+[connection signal="toggled" from="GamePaused" to="." method="_on_GamePaused_toggled"]
 [connection signal="toggled" from="Debug" to="." method="_on_Debug_toggled"]
 
 [editable path="Discard"]

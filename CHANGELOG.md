@@ -11,6 +11,7 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 
 * If the top card of a Pile is Faceup or Facedown and viewed, it will now be seen in the viewport focus when mouse hovers over the pile.
 * Added framework which enables to store game settings to disk
+* Game can now be paused which prevents all interaction from the player
 
 #### ScriptingEngine
 

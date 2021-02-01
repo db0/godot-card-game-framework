@@ -24,6 +24,8 @@ var _ut_show_token_buttons := CFConst.SHOW_TOKEN_BUTTONS
 # It is initiated by looking for [CFConst#SETTINGS_FILENAME], but if it
 # doesn't exist, defaults to the values specified in CFConst, if applicable.
 var game_settings := {}
+# If set to true, the player will be prevented from interacting with the game
+var game_paused := false setget set_game_paused
 # If this is false, all CardContainers will pause in their ready() scene
 # until all other CardContainers have been mapped.
 var are_all_nodes_mapped := false
@@ -197,7 +199,13 @@ func load_script_definitions() -> Dictionary:
 	return(combined_scripts)
 
 
-# Whenever a setting is changed via this function, it also stores it 
+# Setter for game_paused
+func set_game_paused(value: bool) -> void:
+	NMAP.board.mouse_pointer.is_disabled = value
+	game_paused = value
+
+
+# Whenever a setting is changed via this function, it also stores it
 # permanently on-disk.
 func set_setting(setting_name: String, value) -> void:
 	game_settings[setting_name] = value
