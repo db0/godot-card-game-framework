@@ -117,3 +117,21 @@ func test_board_to_board_move():
 	yield(drag_drop(card, Vector2(800,200)), 'completed')
 	assert_eq(90.0,card.get_node("Control").rect_rotation,
 			"Card should stay in the same rotation when moved around the board")
+
+
+func test_pause():
+	var card: Card
+	card = cards[0]
+	yield(table_move(card, Vector2(100,200)), "completed")
+	yield(move_mouse(Vector2(0,0)), 'completed')
+	cfc.game_paused = true
+	yield(drag_drop(card, Vector2(700,300)), 'completed')
+	assert_almost_eq(Vector2(100, 200),card.global_position,Vector2(2,2),
+			"Card not moved while game paused")
+	yield(move_mouse(deck.position + Vector2(10,10)), 'completed')
+	for button in deck.get_all_manipulation_buttons():
+		assert_eq(button.modulate[3],0.0)
+	cfc.game_paused = false
+	yield(drag_drop(card, Vector2(700,300)), 'completed')
+	assert_almost_eq(Vector2(700, 300),card.global_position,Vector2(5,5),
+			"Game unpaused correctly")

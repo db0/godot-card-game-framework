@@ -581,7 +581,7 @@ func test_card_un_attached():
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	target.move_to(discard)
-	yield(yield_for(0.5), YIELD)
+	yield(yield_for(1), YIELD)
 	assert_signal_emitted_with_parameters(
 				target,"card_unattached",
 				[target,"card_unattached",
