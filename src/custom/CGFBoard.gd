@@ -21,6 +21,7 @@ func _ready() -> void:
 		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
+	$DeckBuilderPopup.connect('popup_hide', self, '_on_DeckBuilder_hide')
 
 
 
@@ -95,6 +96,9 @@ func load_test_cards(extras := 11) -> void:
 		#card.set_is_faceup(false,true)
 		card._determine_idle_state()
 
+func _on_DeckBuilder_pressed() -> void:
+	cfc.game_paused = true
+	$DeckBuilderPopup.popup_centered_minsize()
 
-func _on_GamePaused_toggled(button_pressed: bool) -> void:
-	cfc.game_paused = button_pressed
+func _on_DeckBuilder_hide() -> void:
+	cfc.game_paused = false

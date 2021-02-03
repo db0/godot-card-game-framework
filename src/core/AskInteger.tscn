@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/core/AskInteger.gd" type="Script" id=1]
+[ext_resource path="res://src/core/IntegerLineEdit.gd" type="Script" id=2]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 1, 1, 1, 1 )
@@ -53,16 +54,19 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="LineEdit" type="LineEdit" parent="."]
+[node name="IntegerLineEdit" type="LineEdit" parent="."]
 margin_left = 8.0
 margin_top = 8.0
 margin_right = 174.0
 margin_bottom = 32.0
 caret_blink = true
 caret_blink_speed = 0.5
+script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
 [connection signal="confirmed" from="." to="." method="_on_AskInteger_confirmed"]
-[connection signal="text_changed" from="LineEdit" to="." method="_on_LineEdit_text_changed"]
-[connection signal="text_entered" from="LineEdit" to="." method="_on_LineEdit_text_entered"]
+[connection signal="text_changed" from="IntegerLineEdit" to="IntegerLineEdit" method="_on_IntegerLineEdit_text_changed"]
+[connection signal="text_entered" from="IntegerLineEdit" to="." method="_on_LineEdit_text_entered"]
+[connection signal="text_entered" from="IntegerLineEdit" to="IntegerLineEdit" method="_on_IntegerLineEdit_text_entered"]

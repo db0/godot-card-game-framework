@@ -45,7 +45,7 @@ var card_drag_ongoing: Card = null
 # Switch used for seeing debug info
 var _debug := false
 # Game random number generator
-var game_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var game_rng := RandomNumberGenerator.new()
 # We cannot preload the scripting engine as a const for the same reason
 # We cannot refer to it via class name.
 #
@@ -211,7 +211,7 @@ func set_setting(setting_name: String, value) -> void:
 	game_settings[setting_name] = value
 	var file = File.new()
 	file.open(CFConst.SETTINGS_FILENAME, File.WRITE)
-	file.store_string(to_json(game_settings))
+	file.store_string(JSON.print(game_settings, '\t'))
 	file.close()
 
 

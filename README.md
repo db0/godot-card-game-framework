@@ -33,6 +33,7 @@ Pull requests are more than welcome ;)
 * Can select layout of your CardContainers from a simple drop-down menu.
 * Automatic and manual Grid-based, or Free-form placement on the board, or a combination of both, on a per-card-type basis.
 * Functions from saving/loading settings from disk.
+* A functional and customizable Deck Builder.
 
 ### Scripting Engine Features
 
