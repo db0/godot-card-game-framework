@@ -42,7 +42,6 @@ func setup_main() -> void:
 	deck = cfc.NMAP.deck
 	discard = cfc.NMAP.discard
 
-
 func setup_board() -> void:
 	cfc._ready()
 	board = autoqfree(BOARD_SCENE.instance())

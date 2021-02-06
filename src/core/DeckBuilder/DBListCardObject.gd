@@ -100,15 +100,25 @@ func setup(_card_name: String, count = 0) -> void:
 #
 # If 6 or more cards of the same name are allowed in the deck, then we provide
 # the users with +/- buttons and a freeform integer line editor.
-func setup_max_quantity() -> void:
-	if card_properties.get("_max_allowed",0):
+func setup_max_quantity(force := 0) -> void:
+	if force:
+		 max_allowed = force
+	elif card_properties.get("_max_allowed",0):
 		 max_allowed = card_properties.get("_max_allowed")
 	_quantity_edit.maximum = max_allowed
 	_quantity_edit.placeholder_text = \
 			"Max " + str(max_allowed)
+	# We reset the visibility of all objects first.
+	# This allows us to change the maximum quantity of a card
+	# during runtime as well
+	for n in $Quantity.get_children():
+		if n.name != '0':
+			n.visible = false
+	# For max 1-5 cards, we use the buttons
 	if max_allowed <= 5:
 		for iter in range(1,max_allowed+1):
 			_qbuttons[iter].visible = true
+	# For max 6+ cards, we use the +/- symbol and the IntegerLineEdit
 	else:
 		_plus_button.visible = true
 		_minus_button.visible = true

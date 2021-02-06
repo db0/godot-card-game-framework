@@ -1,5 +1,6 @@
 # A Deckbuilder which allows players to construct, save and load decks
 # to use in the game
+class_name DeckBuilder
 extends PanelContainer
 
 # Contains a link to the random deck name generator reference
@@ -50,14 +51,14 @@ const _FILTER_BUTTON_SCENE_FILE = CFConst.PATH_CORE\
 const _FILTER_BUTTON_SCENE = preload(_FILTER_BUTTON_SCENE_FILE)
 
 
-onready var _available_cards = $VBC/HBC/MC2/AvailableCards/ScrollContainer/CardList
-onready var _deck_cards = $VBC/HBC/MC/CurrentDeck/CardsInDeck
-onready var _deck_name = $VBC/HBC/MC/CurrentDeck/DeckNameEdit
-onready var _deck_min_label = $VBC/HBC/MC/CurrentDeck/DeckDetails/CardCount
-onready var _load_button = $VBC/HBC/MC/CurrentDeck/Buttons/Load
-onready var _filter_line = $VBC/HBC/MC2/AvailableCards/HBC/FilterLine
-onready var _filter_buttons = $VBC/HBC/MC2/AvailableCards/CC/ButtonFilters
-onready var _notice = $VBC/HBC/MC/CurrentDeck/HBoxContainer/NoticeLabel
+onready var _available_cards := $VBC/HBC/MC2/AvailableCards/ScrollContainer/CardList
+onready var _deck_cards := $VBC/HBC/MC/CurrentDeck/CardsInDeck
+onready var _deck_name := $VBC/HBC/MC/CurrentDeck/DeckNameEdit
+onready var _deck_min_label := $VBC/HBC/MC/CurrentDeck/DeckDetails/CardCount
+onready var _load_button := $VBC/HBC/MC/CurrentDeck/Buttons/Load
+onready var _filter_line := $VBC/HBC/MC2/AvailableCards/HBC/FilterLine
+onready var _filter_buttons := $VBC/HBC/MC2/AvailableCards/CC/ButtonFilters
+onready var _notice := $VBC/HBC/MC/CurrentDeck/HBoxContainer/NoticeLabel
 
 func _ready() -> void:
 	_load_button.connect("deck_loaded", self,"_on_deck_loaded")

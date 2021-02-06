@@ -293,8 +293,6 @@ class SignalPropagator:
 		# drags the card on the grid itself. If the player drags the card
 		# To an empty spot, it works fine
 		# It also fails to execute if I use any other flag than GROUP_CALL_UNIQUE
-		if trigger == "counter_modified":
-			pass
 		for card in cfc.get_tree().get_nodes_in_group("cards"):
 			card.execute_scripts(trigger_card,trigger,details)
 #		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_UNIQUE  ,"cards",

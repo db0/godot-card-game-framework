@@ -318,6 +318,7 @@ func _process(delta) -> void:
 			"IN_POPUP",
 			"FOCUSED_IN_POPUP",
 			"VIEWPORT_FOCUS",
+			"PREVIEW",
 		]
 		$Debug.visible = true
 		$Debug/id.text = "ID:  " + str(self)

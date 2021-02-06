@@ -26,7 +26,8 @@ var adjectives = [
 	"Hyperactive", "Ghostly", "Grim", "Repeating", "Recycled", "Growing", "Sick",
 	"Gentle", "Guiding", "Ascending", "Calm", "Stumbling", "Crying", "Infinite",
 	"Petty", "Pretty", "Pointy", "Lovable", "Professional", "Juggling",
-	"Cruel", "Gold", "Silver", "Sterile", "Stimulating", "Filthy",
+	"Cruel", "Gold", "Silver", "Sterile", "Stimulating", "Filthy", "Boneless",
+	
 ]
 var nouns = [
 	"Deck", "Deck", "Deck", "Bible", "Weapon", "Jank", "Pattern",
@@ -55,7 +56,9 @@ var nouns = [
 	"Risotto", "Robot", "Punk", "Bowl", "Hash", "Glasses", "Mucus", "Sonata",
 	"Balet", "Exercise", "Pain", "Hex", "Diamond", "Gem", "Peanut", "Vortex",
 	"Butterfly", "Snowflake", "Wisdom", "Tower", "Virus", "Ambrosia", "Colony",
-	"Island", "Swamp", "Worm", "Maggots", "Printer", "Spawn", "Box"
+	"Island", "Swamp", "Worm", "Maggots", "Printer", "Spawn", "Box", "Cartography",
+	"Queen", "Sandal", "Choreography", "Survival", "School", "Kindergarten",
+	
 ]
 var appends = [
 	"of Death", "of Madness", "of Steel", "of Ichor", "of Cards",
@@ -72,8 +75,6 @@ var appends = [
 	"that sucks", "that slaps", "that rocks", "with massive faults",
 	"with bugs", "which never sleeps", "from the depths", "which should not be",
 	"- alpha version", "on special offer", "from the future", "from the past",
-	"from an alternate dimension", "with special needs",
-
-
-
+	"from an alternate dimension", "with special needs", "and stuff", 
+	"which shall not be named", 
 ]

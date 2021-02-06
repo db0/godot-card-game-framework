@@ -9,7 +9,8 @@ var value: String
 func setup(_property: String, _value: String) -> void:
 	property = _property
 	value = _value
-	text = value
+	text = _value
+	name = _value
 
 func _ready() -> void:
 	pass
