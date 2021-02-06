@@ -35,19 +35,19 @@ export var filter_button_properties := ["Type"]
 # The path to the ListCardObject scene. This has to be defined explicitly
 # here, in order to use it in its preload, otherwise the parser gives an error
 const _LIST_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
-		+ "/Deckbuilder/DBListCardObject.tscn"
+		+ "DeckBuilder/DBListCardObject.tscn"
 const _LIST_CARD_OBJECT_SCENE = preload(_LIST_CARD_OBJECT_SCENE_FILE)
 # The path to the DeckCardObject scene.
 const _DECK_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
-		+ "/Deckbuilder/DBDeckCardObject.tscn"
+		+ "DeckBuilder/DBDeckCardObject.tscn"
 const _DECK_CARD_OBJECT_SCENE = preload(_DECK_CARD_OBJECT_SCENE_FILE)
 # The path to the CategoryScene scene.
 const _DECK_CATEGORY_SCENE_FILE = CFConst.PATH_CORE\
-		+ "/Deckbuilder/CategoryContainer.tscn"
+		+ "DeckBuilder/CategoryContainer.tscn"
 const _DECK_CATEGORY_SCENE = preload(_DECK_CATEGORY_SCENE_FILE)
 # The path to the DBFilterButton scene.
 const _FILTER_BUTTON_SCENE_FILE = CFConst.PATH_CORE\
-		+ "/Deckbuilder/DBFilterButton.tscn"
+		+ "DeckBuilder/DBFilterButton.tscn"
 const _FILTER_BUTTON_SCENE = preload(_FILTER_BUTTON_SCENE_FILE)
 
 
