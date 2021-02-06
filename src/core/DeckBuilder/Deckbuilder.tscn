@@ -32,6 +32,12 @@ outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 3 )
 
+[sub_resource type="DynamicFont" id=8]
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
+font_data = ExtResource( 2 )
+
 [sub_resource type="DynamicFont" id=6]
 use_filter = true
 font_data = ExtResource( 3 )
@@ -40,12 +46,6 @@ font_data = ExtResource( 3 )
 size = 14
 use_filter = true
 font_data = ExtResource( 3 )
-
-[sub_resource type="DynamicFont" id=8]
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 2 )
 
 [node name="DeckBuilder" type="PanelContainer"]
 anchor_right = 1.0
@@ -106,25 +106,34 @@ custom_styles/panel = SubResource( 4 )
 [node name="CardsInDeck" type="VBoxContainer" parent="VBC/HBC/MC/CurrentDeck"]
 margin_top = 26.0
 margin_right = 633.0
-margin_bottom = 590.0
+margin_bottom = 583.0
 size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBC/HBC/MC/CurrentDeck"]
-margin_top = 594.0
+margin_top = 587.0
 margin_right = 633.0
 margin_bottom = 613.0
 
 [node name="DeckNameEditLabel" type="Label" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer"]
+margin_top = 3.0
 margin_right = 49.0
-margin_bottom = 19.0
+margin_bottom = 22.0
 custom_fonts/font = SubResource( 5 )
 text = "Name"
 
+[node name="RandomizeName" type="Button" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer"]
+margin_left = 53.0
+margin_right = 77.0
+margin_bottom = 26.0
+custom_fonts/font = SubResource( 8 )
+text = "R"
+
 [node name="NoticeLabel" type="Label" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer"]
 modulate = Color( 1, 1, 1, 0 )
-margin_left = 53.0
+margin_left = 81.0
+margin_top = 3.0
 margin_right = 633.0
-margin_bottom = 19.0
+margin_bottom = 22.0
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 1, 0.992157, 0, 1 )
@@ -264,6 +273,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[connection signal="pressed" from="VBC/HBC/MC/CurrentDeck/HBoxContainer/RandomizeName" to="." method="_on_RandomizeName_pressed"]
 [connection signal="pressed" from="VBC/HBC/MC/CurrentDeck/Buttons/Save" to="." method="_on_Save_pressed"]
 [connection signal="pressed" from="VBC/HBC/MC/CurrentDeck/Buttons/Reset" to="." method="_on_Reset_pressed"]
 [connection signal="pressed" from="VBC/HBC/MC/CurrentDeck/Buttons/Delete" to="." method="_on_Delete_pressed"]

@@ -27,7 +27,7 @@ var adjectives = [
 	"Gentle", "Guiding", "Ascending", "Calm", "Stumbling", "Crying", "Infinite",
 	"Petty", "Pretty", "Pointy", "Lovable", "Professional", "Juggling",
 	"Cruel", "Gold", "Silver", "Sterile", "Stimulating", "Filthy", "Boneless",
-	
+	"Moldy", "Absorbing", "Grainy", "Fuzzy"
 ]
 var nouns = [
 	"Deck", "Deck", "Deck", "Bible", "Weapon", "Jank", "Pattern",
@@ -58,7 +58,8 @@ var nouns = [
 	"Butterfly", "Snowflake", "Wisdom", "Tower", "Virus", "Ambrosia", "Colony",
 	"Island", "Swamp", "Worm", "Maggots", "Printer", "Spawn", "Box", "Cartography",
 	"Queen", "Sandal", "Choreography", "Survival", "School", "Kindergarten",
-	
+	"Frog Leg", "Hairball", "Swinger", "Trumpet", "Bunny", "Joystick",
+	"Opossum", "Spray", "Battle", "Algae", "Lint", "Dust"
 ]
 var appends = [
 	"of Death", "of Madness", "of Steel", "of Ichor", "of Cards",
