@@ -2,6 +2,8 @@
 
 ## 1.7 
 
+### Important
+
 CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
 
 * New constant added: PATH_MOUSE_POINTER. This allows the game to add extra functionality to the mouse pointer script. This constant needs to exist but can be redirected to a custom scene.
