@@ -1,6 +1,5 @@
 # A Deckbuilder which allows players to construct, save and load decks
 # to use in the game
-class_name DeckBuilder
 extends PanelContainer
 
 # Contains a link to the random deck name generator reference

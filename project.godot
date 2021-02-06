@@ -129,11 +129,6 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/DeckBuilder/DBListCardObject.gd"
 }, {
-"base": "PanelContainer",
-"class": "DeckBuilder",
-"language": "GDScript",
-"path": "res://src/core/DeckBuilder/DeckBuilder.gd"
-}, {
 "base": "MenuButton",
 "class": "DeckLoader",
 "language": "GDScript",
@@ -259,7 +254,6 @@ _global_script_class_icons={
 "DBFilterButton": "",
 "DBFilterLine": "",
 "DBListCardObject": "",
-"DeckBuilder": "",
 "DeckLoader": "",
 "DeckNameRandomizer": "",
 "Hand": "",
