@@ -3,7 +3,7 @@
 [ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/DeckBuilder/CardLabel.gd" type="Script" id=2]
 
-[sub_resource type="DynamicFont" id=4]
+[sub_resource type="DynamicFont" id=1]
 size = 15
 use_filter = true
 font_data = ExtResource( 1 )
@@ -14,7 +14,7 @@ margin_right = 105.0
 margin_bottom = 18.0
 mouse_filter = 1
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 1 )
 text = "Test Card 1"
 script = ExtResource( 2 )
 __meta__ = {

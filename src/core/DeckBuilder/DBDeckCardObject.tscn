@@ -5,13 +5,13 @@
 [ext_resource path="res://src/core/DeckBuilder/DBDeckCardObject.gd" type="Script" id=3]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=4]
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=1]
 size = 14
 outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 4 )
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="DynamicFont" id=2]
 size = 15
 use_filter = true
 font_data = ExtResource( 1 )
@@ -28,7 +28,7 @@ __meta__ = {
 margin_right = 24.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 24, 0 )
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
 text = "+"
 
 [node name="Minus" type="Button" parent="."]
@@ -36,7 +36,7 @@ margin_left = 28.0
 margin_right = 52.0
 margin_bottom = 24.0
 rect_min_size = Vector2( 24, 0 )
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
 text = "-"
 
 [node name="CardCount" type="Label" parent="."]
@@ -44,7 +44,7 @@ margin_left = 56.0
 margin_top = 3.0
 margin_right = 70.0
 margin_bottom = 21.0
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "1x"
 
 [node name="CardLabel" parent="." instance=ExtResource( 2 )]

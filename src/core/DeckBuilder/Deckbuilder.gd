@@ -5,12 +5,12 @@ extends PanelContainer
 
 # Contains a link to the random deck name generator reference
 export(Script) var deck_name_randomizer
-# Controls how often an random adjective will 
+# Controls how often an random adjective will
 # not appear in front of the deck name. The higher the number, the less likely
 # to get an adjective
 export var random_adjective_miss := 1.1
-# Controls how often an random append will 
-# not appear in front of the deck name. 
+# Controls how often an random append will
+# not appear in front of the deck name.
 # The higher the number, the less likely to get an append
 export var random_append_miss := 2
 # Controls how often a second noun will appear in the name.
@@ -96,7 +96,6 @@ func _process(_delta: float) -> void:
 		_deck_min_label.text += ' (min ' + str(deck_minimum) + ')'
 	elif deck_maximum:
 		_deck_min_label.text += ' (max ' + str(deck_maximum) + ')'
-
 
 # Populates the list of available cards, with all defined cards in the game
 func populate_available_cards() -> void:

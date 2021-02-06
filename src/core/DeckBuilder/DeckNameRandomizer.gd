@@ -32,7 +32,10 @@ var adjectives = [
 	"Military", "Industrial", "High", "Low", "Sad", "Emotional", "Depressed",
 	"Psychotic", "Manic", "Bigoted", "Hated", "Theoretical", "Straight",
 	"Crooked", "Brutal", "Stretching", "Controlling", "Juicy", "Thicc",
-	"Arousing", "Pimpled", "Dotted", "Rebelious", "Dominating",
+	"Arousing", "Pimpled", "Dotted", "Rebelious", "Dominating", "Giant",
+	"Ravenous", "Native", "Invasive", "Invading", "Charging", "First",
+	"Last", "Classic", "Hyper", "Honest", "Delicious", "Sonic", "Hilarious",
+	"4D", "Homeless", "Lonely", "Popular", "Prismatic", "Furious"
 ]
 var nouns = [
 	"Deck", "Deck", "Deck", "Bible", "Weapon", "Jank", "Pattern",
@@ -70,7 +73,13 @@ var nouns = [
 	"Fart", "Fedora", "Goth", "Man", "Woman", "Child", "Werewolf", "Fairy",
 	"Nanny", "Crone", "Iron", "Maiden", "Virgin", "Current", "Voltage", "Power",
 	"Moon", "Death", "Shackles", "Control", "Mouthfeel", "Blitz", "Jank", "Secret",
-	"Police", "Authority", "Revolution", "Blood", "Anarchist"
+	"Police", "Authority", "Revolution", "Blood", "Anarchist", "Murder", "Bomb",
+	"Boot", "Broth", "Mammoth", "Berserker", "Barbarian", "Omega", "Sanctions",
+	"Chicken", "Piggy", "Chocolate", "Stick", "Membrane", "Mix", "Cell", "DNA",
+	"Protein", "Medicine", "Venom", "Stalker", "Fanatic", "Dice", "Chips",
+	"Chess", "Street", "Armadillo", "Armor", "Color", "Hook", "Rum", "Beaver",
+	"River", "Bingo", "Jackpot", "House", "Dungeon", "Revenge",
+
 ]
 var appends = [
 	"of Death", "of Madness", "of Steel", "of Ichor", "of Cards",
@@ -90,4 +99,6 @@ var appends = [
 	"from an alternate dimension", "with special needs", "and stuff",
 	"which shall not be named", "of Justice", "with sprinkles",
 	"with a cherry on top", "and a Bottle o' Rum", "of Hate", "of the Tides",
+	"of the Wolf", "of Truth", "of the Four Winds", "of Darkness", "of Light",
+	"of Glory"
 ]

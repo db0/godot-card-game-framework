@@ -1,20 +1,20 @@
 # A special LineEdit which compiles the text written
 # into distinct [DBFilter] objects
 #
-# The filters use roughly the same syntax as 
+# The filters use roughly the same syntax as
 # [netrunnerdb](https://netrunnerdb.com/en/syntax)
 # but have different criteria (see [criteria_map](#criteria_map))
 class_name DBFilterLine
 extends LineEdit
 
-# Emited whenever the line text is changed. The deckbuilder grabs it and 
+# Emited whenever the line text is changed. The deckbuilder grabs it and
 # filters the cards based on the compiled filters sent with it
 signal filters_changed(filters)
 
 # Defines the available criteria for this game's filters.
 #
 # Developers can customize this dictionary based on each game's card properties
-# Each character key defined here, corresponds to one property and when 
+# Each character key defined here, corresponds to one property and when
 # inserted as the criteria, will check the expression against that property
 export var criteria_map = {
 	'a': 'Abilities',
@@ -33,11 +33,33 @@ func _ready() -> void:
 	# This variable holds a regex group to check for criteria, based on the
 	# keys of criteria_map
 	var criteria_regex_group := ''
+	# This variable will hold the criteria legend
+	var criteria_syntax_help := ''
 	for criterion in criteria_map:
 		criteria_regex_group += criterion
+		criteria_syntax_help += criterion + " - " + criteria_map[criterion] + '\n'
 	var filter_parse_regex = "^([" + criteria_regex_group + "])?([:!><])(\\w+)"
 	_filter_parse.compile(filter_parse_regex)
+	$Syntax/Label.text =\
+			"Syntax\n"\
+			+ "-------\n"\
+			+ "Criteria:\n"\
+			+ criteria_syntax_help\
+			+ "default - Name\n"\
+			+ "-------\n"\
+			+ "Operators:\n"\
+			+ ": - equals\n"\
+			+ "! - not equals\n"\
+			+ "< - less than\n"\
+			+ "> - greater than\n"
 	connect("text_changed", self, "on_text_changed")
+	connect("mouse_entered", self, "_on_FilterLine_mouse_entered")
+	connect("mouse_exited", self, "_on_FilterLine_mouse_exited")
+
+func _process(_delta: float) -> void:
+	if $Syntax.visible:
+		$Syntax.rect_position \
+				= get_global_mouse_position() + Vector2(10,0)
 
 
 # Fired whenever the text of the LineEdit changes. It compiles the filters
@@ -75,5 +97,17 @@ func compile_filters(line_text: String) -> Array:
 		filters.append(filter_entry)
 	return(filters)
 
+
+# Regenerates and returns the current filters based on the existing text
 func get_active_filters() -> Array:
 	return(compile_filters(text))
+
+
+# Displays the syntax help
+func _on_FilterLine_mouse_entered() -> void:
+	$Syntax.visible = true
+
+
+# Hides the syntax help
+func _on_FilterLine_mouse_exited() -> void:
+	$Syntax.visible = false
