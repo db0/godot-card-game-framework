@@ -168,4 +168,5 @@ margin_bottom = 50.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
 [connection signal="resized" from="Control/Back" to="." method="_on_Back_resized"]

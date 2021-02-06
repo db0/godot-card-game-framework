@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework [1.6](CHANGELOG.md)
+# Godot Card Game Framework [1.7](CHANGELOG.md)
 
 ![Codot Card Game Framework preview image](preview.png "Codot Card Game Framework preview image")
 
@@ -33,6 +33,7 @@ Pull requests are more than welcome ;)
 * Can select layout of your CardContainers from a simple drop-down menu.
 * Automatic and manual Grid-based, or Free-form placement on the board, or a combination of both, on a per-card-type basis.
 * Functions from saving/loading settings from disk.
+* A functional and customizable Deck Builder.
 
 ### Scripting Engine Features
 

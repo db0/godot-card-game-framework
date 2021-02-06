@@ -26,7 +26,7 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	# Every process tick, it will ensure the collsion shape for the
 	# drawer is adjusted to its current size
-	if owner_card.get_parent() == cfc.NMAP.board:
+	if cfc.NMAP.has('board') and owner_card.get_parent() == cfc.NMAP.board:
 		$Drawer/Area2D.position = $Drawer.rect_size/2
 		var shape: RectangleShape2D = $Drawer/Area2D/CollisionShape2D.shape
 		# We're extending the area of the drawer a bit, to try and avoid it

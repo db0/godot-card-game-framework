@@ -93,6 +93,8 @@ const HAND_USE_OVAL_SHAPE := true
 const CARD_SCALE_WHILE_DRAGGING := Vector2(0.4, 0.4)
 # The location and name of the file into which to store game settings
 const SETTINGS_FILENAME := "user://CGFSettings.json"
+# The location where this game will store deck files
+const DECKS_PATH := "user://Decks/"
 # The path where the Card Game Framework core files exist.
 # (i.e. mandatory scenes and scripts)
 const PATH_CORE := "res://src/core/"
@@ -117,6 +119,8 @@ const SCRIPT_SET_NAME_PREPEND := "SetScripts_"
 # This specifies the location of your token images.
 # Tokens are always going to be seeked at this location
 const PATH_TOKENS := PATH_ASSETS + "tokens/"
+# The location of the deckbuilder scene used by this game.
+const PATH_DECKBUILDER := PATH_CORE + "DeckBuilder/DeckBuilder.tscn"
 # This specifies the path to the Scripting Engine. If you wish to extend
 # The scripting engine functionality with your own tasks,
 # Point this to your own script file.

@@ -1,14 +1,17 @@
 # Changelog
 
-## 1.7 (Ongoing)
+## 1.7 
 
 CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
 
 * New constant added: PATH_MOUSE_POINTER. This allows the game to add extra functionality to the mouse pointer script. This constant needs to exist but can be redirected to a custom scene.
-* New constant added: SETTINGS_FILENAME. This determines the position in which to store game settings on the disk.
+* New constant added: SETTINGS_FILENAME. This determines the path in which to store game settings on the disk.
+* New constant added: DECKS_PATH. This determines the path in which to store the player-made deck on the disk.
+* New constant added: PATH_DECKBUILDER. This points to the DECKBUILDER scene to use in the game. This allows each game to customize the deckbuilder further using instanced scenes.
 
 ## New Features
 
+* Added a Deck builder, which allows the players to create, save and load decks for each game. The Deck builder supports filters and is very customizable.
 * If the top card of a Pile is Faceup or Facedown and viewed, it will now be seen in the viewport focus when mouse hovers over the pile.
 * Added framework which enables to store game settings to disk
 * Game can now be paused which prevents all interaction from the player

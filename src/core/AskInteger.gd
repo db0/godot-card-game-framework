@@ -3,26 +3,24 @@
 # to provide a value
 extends AcceptDialog
 
-var minimum: int
-var maximum: int
 var number: int
-var leading_zeroes_regex := RegEx.new()
-
 
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
-	leading_zeroes_regex.compile("^0+([1-9]+)")
 	get_ok().text = "Submit"
+	$IntegerLineEdit.connect("int_changed_ok", self, "_switch_green")
+	$IntegerLineEdit.connect("int_changed_nok", self, "_switch_red")
+	$IntegerLineEdit.connect("int_entered", self, "_on_number_entered")
 
 
 # Prepares the window to request the integer from the player
 # in the correct range and bring the popup to the front.
 func prep(title_reference: String, min_req: int, max_req : int) -> void:
 		window_title = "Please enter number for the effect of " + title_reference
-		$LineEdit.placeholder_text = \
+		$IntegerLineEdit.placeholder_text = \
 				"Enter number between " + str(min_req) + " and " + str(max_req)
-		minimum = min_req
-		maximum = max_req
+		$IntegerLineEdit.minimum = min_req
+		$IntegerLineEdit.maximum = max_req
 		#$LineEdit.text = str(minimum)
 		cfc.NMAP.board.add_child(self)
 		popup_centered()
@@ -40,11 +38,8 @@ func prep(title_reference: String, min_req: int, max_req : int) -> void:
 		# We spawn the dialogue at the middle of the screen.
 
 
-func _on_LineEdit_text_entered(new_text: String) -> void:
-	if new_text.is_valid_integer() and \
-			int(new_text) >= minimum \
-			and int(new_text) <= maximum:
-		number = int(new_text)
+func _on_number_entered(new_text: int) -> void:
+		number = new_text
 		hide()
 
 
@@ -52,21 +47,11 @@ func _switch_red() -> void:
 	$HorizontalHighlights.modulate = Color(1.4,0,0)
 	$VecticalHighlights.modulate = Color(1.2,0,0)
 
+
 func _switch_green() -> void:
 	$HorizontalHighlights.modulate = Color(0,1.6,0)
 	$VecticalHighlights.modulate = Color(0,1.4,0)
 
-func _on_LineEdit_text_changed(new_text: String) -> void:
-	var leading_zeroes = leading_zeroes_regex.search(new_text)
-	if leading_zeroes:
-		$LineEdit.text = leading_zeroes.get_string(1)
-	if not new_text.is_valid_integer() or \
-			int(new_text) < minimum \
-			or int(new_text) > maximum:
-		_switch_red()
-	else:
-		_switch_green()
-
 
 func _on_AskInteger_confirmed() -> void:
-	_on_LineEdit_text_entered($LineEdit.text)
+	$IntegerLineEdit._on_IntegerLineEdit_text_entered($IntegerLineEdit.text)

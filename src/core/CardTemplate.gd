@@ -23,11 +23,12 @@ enum CardState {
 	DROPPING_TO_BOARD		#6
 	ON_PLAY_BOARD			#7
 	FOCUSED_ON_BOARD		#8
-	IN_PILE					#10
-	VIEWED_IN_PILE			#11
-	IN_POPUP				#12
-	FOCUSED_IN_POPUP		#13
-	VIEWPORT_FOCUS			#14
+	IN_PILE					#9
+	VIEWED_IN_PILE			#10
+	IN_POPUP				#11
+	FOCUSED_IN_POPUP		#12
+	VIEWPORT_FOCUS			#13
+	PREVIEW					#14
 }
 # Specifies where a card is allowed to drop on the board
 #
@@ -158,7 +159,7 @@ export var hand_drag_starts_targeting := false
 # Ensures all nodes fit inside this rect.
 var card_size := CFConst.CARD_SIZE setget set_card_size
 # Starting state for each card
-var state : int = CardState.IN_PILE
+var state : int = CardState.PREVIEW
 # If this card is hosting other cards,
 # this list retains links to their objects in order.
 var attachments := []
@@ -799,7 +800,8 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 		# does not change the card_rotation property
 		# so we ensure that the displayed rotation of a card
 		# which is not in hand, matches our expectations
-		if get_parent() != cfc.NMAP.hand \
+		if state != CardState.PREVIEW\
+				and get_parent() != cfc.NMAP.hand \
 				and cfc.game_settings.hand_use_oval_shape \
 				and $Control.rect_rotation != 0.0 \
 				and not $Tween.is_active():
@@ -1365,7 +1367,8 @@ func set_focus(requestedFocus: bool, colour := CFConst.FOCUS_HOVER_COLOUR) -> vo
 	if highlight.visible != requestedFocus and \
 			highlight.modulate in CFConst.CostsState.values():
 		highlight.set_highlight(requestedFocus,colour)
-	if cfc.game_settings.focus_style: # value 0 means only scaling focus
+	if state != CardState.PREVIEW\
+			and cfc.game_settings.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
 			cfc.NMAP.main.focus_card(self)
 		else:
@@ -2164,6 +2167,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 
 		CardState.VIEWPORT_FOCUS:
+			$Control.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			set_focus(false)
 			set_control_mouse_filters(false)
 			buttons.set_active(false)
@@ -2179,6 +2183,18 @@ func _process_card_state() -> void:
 			if not is_faceup:
 				if is_viewed:
 					_flip_card($Control/Back,$Control/Front, true)
+
+		CardState.PREVIEW:
+			$Control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			set_focus(false)
+			set_control_mouse_filters(false)
+			buttons.set_active(false)
+			# warning-ignore:return_value_discarded
+			set_card_rotation(0)
+			$Control.rect_rotation = 0
+			# We scale the card to allow the player a better viewing experience
+			scale = Vector2(1.5,1.5)
+
 
 
 # Get the angle on the ellipse
