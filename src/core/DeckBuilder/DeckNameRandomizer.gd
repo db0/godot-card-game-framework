@@ -27,7 +27,9 @@ var adjectives = [
 	"Gentle", "Guiding", "Ascending", "Calm", "Stumbling", "Crying", "Infinite",
 	"Petty", "Pretty", "Pointy", "Lovable", "Professional", "Juggling",
 	"Cruel", "Gold", "Silver", "Sterile", "Stimulating", "Filthy", "Boneless",
-	"Moldy", "Absorbing", "Grainy", "Fuzzy"
+	"Moldy", "Absorbing", "Grainy", "Fuzzy", "Lurking", "Old", "Oldest", "Ancient",
+	"Righteous", "Trampling", "Flanking", "Forgotten", "Harsh", "Folded"
+
 ]
 var nouns = [
 	"Deck", "Deck", "Deck", "Bible", "Weapon", "Jank", "Pattern",
@@ -59,7 +61,8 @@ var nouns = [
 	"Island", "Swamp", "Worm", "Maggots", "Printer", "Spawn", "Box", "Cartography",
 	"Queen", "Sandal", "Choreography", "Survival", "School", "Kindergarten",
 	"Frog Leg", "Hairball", "Swinger", "Trumpet", "Bunny", "Joystick",
-	"Opossum", "Spray", "Battle", "Algae", "Lint", "Dust"
+	"Opossum", "Spray", "Battle", "Algae", "Lint", "Dust", "Dandruff", "Lice",
+	"Feedback", "Noise", "Stampede", "Weeb", "Neckbeard", "Katana",
 ]
 var appends = [
 	"of Death", "of Madness", "of Steel", "of Ichor", "of Cards",
@@ -76,6 +79,7 @@ var appends = [
 	"that sucks", "that slaps", "that rocks", "with massive faults",
 	"with bugs", "which never sleeps", "from the depths", "which should not be",
 	"- alpha version", "on special offer", "from the future", "from the past",
-	"from an alternate dimension", "with special needs", "and stuff", 
-	"which shall not be named", 
+	"from an alternate dimension", "with special needs", "and stuff",
+	"which shall not be named", "of Justice", "with sprinkles",
+	"with a cherry on top", "and a Bottle o' Rum"
 ]
