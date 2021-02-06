@@ -35,6 +35,8 @@ Pull requests are more than welcome ;)
 * Functions from saving/loading settings from disk.
 * A functional and customizable Deck Builder.
 
+![Codot Card Game Framework deck builder preview image](deckbuilder-preview.png "Codot Card Game Framework deck builder preview image")
+
 ### Scripting Engine Features
 
 * Can define card scripts in plain text, using simple json.
