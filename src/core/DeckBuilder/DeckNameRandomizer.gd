@@ -9,9 +9,9 @@ var adjectives = [
 	"Cautious", "Control", "Scientific", "Explosive", "Poisonous", "Humorous",
 	"Green", "Crimson", "Yellow", "Black", "White", "Terracota", "Blue", "Grey",
 	"Holy", "Unholy", "Mighty", "Weak", "Boring", "Swimming", "Drowning",
-	"Ridiculous", "Embarasing", "Discombobulating", "Routing", "Boring", 
-	"Working", "Failing", "Ugly", "Bad", "Good", "Horrible", "Terrible", 
-	"Catalytic", "Mind-blowing", "Cute", "Slow", "Elaborate", "Cracked", 
+	"Ridiculous", "Embarasing", "Discombobulating", "Routing", "Boring",
+	"Working", "Failing", "Ugly", "Bad", "Good", "Horrible", "Terrible",
+	"Catalytic", "Mind-blowing", "Cute", "Slow", "Elaborate", "Cracked",
 	"Cheesy", "Rich", "Poor", "Alchemical", "Squishy", "Lagging", "Stumbling",
 	"Horny", "Wooden", "Polished", "Sharp", "Asynchronous", "Phasing",
 	"Beholding", "Reasonable", "Absurd", "Irrational", "Logical", "Spineless",
@@ -20,12 +20,18 @@ var adjectives = [
 	"Ethereal", "Astral", "Cold", "Hot", "Zodiac", "Proletarian",
 	"Conjuring", "Rapid", "Rotating", "Searing", "Evil", "Thieving",
 	"Fractal", "Grimdark", "Dank", "Desperate", "Aerodynamic", "Neutral",
-	"Heretic", "Rugose", 
+	"Heretic", "Rugose", "Witching", "Bleeding", "Bald", "Wet", "Dry",
+	"Androgynous", "Whining", "Foolproof", "Foolish", "Smoking", "Parasitic",
+	"Drunk", "Fermented", "Undead", "Underwater", "Epicurian", "Mad", "Sane",
+	"Hyperactive", "Ghostly", "Grim", "Repeating", "Recycled", "Growing", "Sick",
+	"Gentle", "Guiding", "Ascending", "Calm", "Stumbling", "Crying", "Infinite",
+	"Petty", "Pretty", "Pointy", "Lovable", "Professional", "Juggling",
+	"Cruel", "Gold", "Silver", "Sterile", "Stimulating", "Filthy",
 ]
 var nouns = [
 	"Deck", "Deck", "Deck", "Bible", "Weapon", "Jank", "Pattern",
 	"Pile", "Array", "Garbage", "Book", "Disaster", "Destruction", "Victory",
-	"Loss", "Shuffle", "Fatality", "Discovery", "Exploration", "God", 
+	"Loss", "Shuffle", "Fatality", "Discovery", "Exploration", "God",
 	"Monster", "Potato", "Zuccini", "Broccoli", "Demon", "Angel", "Beast",
 	"Salad", "Knife", "Spork", "Soup", "Gazebo", "Pea", "Penis", "Rose",
 	"Match", "Flower", "Bullet", "Pepper", "Clown", "Clone", "Joke", "Duck",
@@ -36,11 +42,20 @@ var nouns = [
 	"Doplhin", "Shark", "Octopus", "Amoeba", "Proton", "Zealot", "Neutron", "Atom",
 	"Pie", "Pi", "Radius", "Circle", "Cake", "Dam", "Wave", "Sailor", "Spell",
 	"Source", "Mushroom", "Pulse", "Pus", "Andromeda", "Galaxy", "Doctor",
-	"Star", "Nebula", "Black Hole", "Sun", "Rock", "Meteor", "Zenith", "leader",
+	"Star", "Nebula", "Hole", "Sun", "Rock", "Meteor", "Zenith", "leader",
 	"Grasshopper", "Cockroach", "Mouse", "Bug", "Wasp", "Laser", "Beam", "Crystal",
 	"Sword", "Bow", "Hammer", "Axe", "Spear", "Shield", "Overlord", "Warlord",
-	"King", "Champion", "Hero", "Peasant", "Scum", "Bucket", "Descent", "Cult"
-	
+	"King", "Champion", "Hero", "Peasant", "Scum", "Bucket", "Descent", "Cult",
+	"Focus", "Punch", "Lotus", "Kiss", "Blizzard", "Meditation", "Whip", "Sauce",
+	"Surgery", "Impact", "Mace", "Assault", "Chivalry", "Melon", "Vampire",
+	"Boomer", "Dictator", "Stronghold", "Emperor", "Forfeit", "Thingamajib",
+	"Goober", "Stuff", "Engine", "Pirate", "Candle", "Lamp", "Djinn", "Ghoul",
+	"Medal", "Spirit", "Servant", "Cave", "Despair", "Tumor", "Chain", "Vomit",
+	"Energy", "Surprise", "Riff", "Rift", "Vision", "Pledge", "Miracle",
+	"Risotto", "Robot", "Punk", "Bowl", "Hash", "Glasses", "Mucus", "Sonata",
+	"Balet", "Exercise", "Pain", "Hex", "Diamond", "Gem", "Peanut", "Vortex",
+	"Butterfly", "Snowflake", "Wisdom", "Tower", "Virus", "Ambrosia", "Colony",
+	"Island", "Swamp", "Worm", "Maggots", "Printer", "Spawn", "Box"
 ]
 var appends = [
 	"of Death", "of Madness", "of Steel", "of Ichor", "of Cards",
@@ -49,11 +64,16 @@ var appends = [
 	"of Salt", "of Wat", "of Worth", "of Horror", "of Terror", "of Jokes",
 	"of Marble", "of Wat", "of Cheese", "of Doom", "of Desire", "of Passion",
 	"of the Cosmos", "of the Nether", "from the Wormhole", "out of Time",
-	"of Heaven", "of Hell", "of Limbo", "from Tartarus", "of Charm", "of Lies",
+	"of Heaven", "from Hell", "of Limbo", "from Tartarus", "of Charm", "of Lies",
 	"of Annoyance", "of Sorcery", "of Flesh", "of Clarity", "of Ice", "of Lightning",
 	"of the Serpent", "of Nothing", "of the People", "of the Master", "of the Noob",
 	"of the Elements", "of Malice", "of the Underworld", "of Wonders", "of Sanity",
-	"of the Void", "of Chaos", "of Order", "of the Elder Gods", "of Blasphemy"
-	
-	
+	"of the Void", "of Chaos", "of Order", "of the Elder Gods", "of Blasphemy",
+	"that sucks", "that slaps", "that rocks", "with massive faults",
+	"with bugs", "which never sleeps", "from the depths", "which should not be",
+	"- alpha version", "on special offer", "from the future", "from the past",
+	"from an alternate dimension", "with special needs",
+
+
+
 ]
