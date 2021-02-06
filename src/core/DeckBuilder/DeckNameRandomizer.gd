@@ -4,9 +4,9 @@ extends Reference
 
 var adjectives = [
 	"Awesome", "Brilliant", "New", "Newer", "Newest", "Stable",
-	"Solid", "Jank", "Jankiest", "Questionable", "Curious", "Weird",
-	"Broken", "Overpowered", "Fun", "Fast", "Ephemeral", "Blitz",
-	"Cautious", "Control", "Scientific", "Explosive", "Poisonous", "Humorous",
+	"Solid", "Janky", "Jankiest", "Questionable", "Curious", "Weird",
+	"Broken", "Overpowered", "Fun", "Fast", "Ephemeral", "Sensual",
+	"Cautious", "Scientific", "Explosive", "Poisonous", "Humorous",
 	"Green", "Crimson", "Yellow", "Black", "White", "Terracota", "Blue", "Grey",
 	"Holy", "Unholy", "Mighty", "Weak", "Boring", "Swimming", "Drowning",
 	"Ridiculous", "Embarasing", "Discombobulating", "Routing", "Boring",
@@ -28,8 +28,11 @@ var adjectives = [
 	"Petty", "Pretty", "Pointy", "Lovable", "Professional", "Juggling",
 	"Cruel", "Gold", "Silver", "Sterile", "Stimulating", "Filthy", "Boneless",
 	"Moldy", "Absorbing", "Grainy", "Fuzzy", "Lurking", "Old", "Oldest", "Ancient",
-	"Righteous", "Trampling", "Flanking", "Forgotten", "Harsh", "Folded"
-
+	"Righteous", "Trampling", "Flanking", "Forgotten", "Harsh", "Folded",
+	"Military", "Industrial", "High", "Low", "Sad", "Emotional", "Depressed",
+	"Psychotic", "Manic", "Bigoted", "Hated", "Theoretical", "Straight",
+	"Crooked", "Brutal", "Stretching", "Controlling", "Juicy", "Thicc",
+	"Arousing", "Pimpled", "Dotted", "Rebelious", "Dominating",
 ]
 var nouns = [
 	"Deck", "Deck", "Deck", "Bible", "Weapon", "Jank", "Pattern",
@@ -62,7 +65,12 @@ var nouns = [
 	"Queen", "Sandal", "Choreography", "Survival", "School", "Kindergarten",
 	"Frog Leg", "Hairball", "Swinger", "Trumpet", "Bunny", "Joystick",
 	"Opossum", "Spray", "Battle", "Algae", "Lint", "Dust", "Dandruff", "Lice",
-	"Feedback", "Noise", "Stampede", "Weeb", "Neckbeard", "Katana",
+	"Feedback", "Noise", "Stampede", "Weeb", "Neck", "Katana", "Beard",
+	"Godfather", "Bait", "Jail", "Paw", "Program", "Army", "Soldier", "Steam",
+	"Fart", "Fedora", "Goth", "Man", "Woman", "Child", "Werewolf", "Fairy",
+	"Nanny", "Crone", "Iron", "Maiden", "Virgin", "Current", "Voltage", "Power",
+	"Moon", "Death", "Shackles", "Control", "Mouthfeel", "Blitz", "Jank", "Secret",
+	"Police", "Authority", "Revolution", "Blood", "Anarchist"
 ]
 var appends = [
 	"of Death", "of Madness", "of Steel", "of Ichor", "of Cards",
@@ -81,5 +89,5 @@ var appends = [
 	"- alpha version", "on special offer", "from the future", "from the past",
 	"from an alternate dimension", "with special needs", "and stuff",
 	"which shall not be named", "of Justice", "with sprinkles",
-	"with a cherry on top", "and a Bottle o' Rum"
+	"with a cherry on top", "and a Bottle o' Rum", "of Hate", "of the Tides",
 ]
