@@ -1,7 +1,7 @@
 
 # Godot Card Game Framework [1.7](CHANGELOG.md)
 
-![Codot Card Game Framework preview image](preview.png "Codot Card Game Framework preview image")
+![Godot Card Game Framework preview image](preview.png "Godot Card Game Framework preview image")
 
 This framework is meant to provide well designed, statically typed, and fully commented classes and scenes which you can plug into any potential card game to handle typical behaviour expected from cards in a game in a polished manner.
 
@@ -35,7 +35,7 @@ Pull requests are more than welcome ;)
 * Functions from saving/loading settings from disk.
 * A functional and customizable Deck Builder.
 
-![Codot Card Game Framework deck builder preview image](deckbuilder-preview.png "Codot Card Game Framework deck builder preview image")
+![Godot Card Game Framework deck builder preview image](deckbuilder-preview.png "Godot Card Game Framework deck builder preview image")
 
 ### Scripting Engine Features
 
