@@ -43,6 +43,8 @@ func _on_about_to_show() -> void:
 	for deck in _load_decks_list:
 		get_popup().add_item(
 				deck.name + ' (' + str(deck.total) + ' cards)')
+	if get_popup().get_child_count() == 1:
+		get_popup().add_item("No decks found. Please create a deck and try again")
 
 
 # Triggered when a deck has been chosen from the popup menu.
@@ -50,5 +52,6 @@ func _on_about_to_show() -> void:
 func _on_deck_load(index: int) -> void:
 	# Since our temp deck list is an array, we can match the index of the
 	# menu choice, with the index in the array
-	var deck = _load_decks_list[index]
-	emit_signal("deck_loaded",deck)
+	if _load_decks_list.size():
+		var deck = _load_decks_list[index]
+		emit_signal("deck_loaded",deck)
