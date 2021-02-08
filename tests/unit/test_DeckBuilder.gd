@@ -124,8 +124,8 @@ func test_save_load_reset():
 				"Deck card total stored correctly")
 	deckbuilder._on_Reset_pressed()
 	yield(yield_for(0.1), YIELD)
-	assert_ne(deckbuilder._deck_name.text, deck_name,
-			"Reset Deck Name randomized")
+	assert_eq(deckbuilder._deck_name.text, deck_name,
+			"Reset Deck Name not randomized")
 	assert_eq(deckbuilder._deck_cards.get_child_count(), 0,
 			"Deck List empty after reset")
 	deckbuilder._load_button._on_about_to_show()
@@ -197,3 +197,9 @@ func test_filters() -> void:
 	assert_eq(count_visible_list_cards(), 2,
 			"filter buttons and filter line working together")
 
+func test_name_randomize():
+	var deck_name : String = deckbuilder._deck_name.text
+	deckbuilder._on_RandomizeName_pressed()
+	assert_ne(deckbuilder._deck_name.text, deck_name,
+			"Reset Deck Name  randomized")
+	
