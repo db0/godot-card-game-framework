@@ -285,8 +285,10 @@ func mod_tokens(script: ScriptTask) -> int:
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
 				script.owner_card,
-				script.get_property(script.get_property(SP.KEY_MODIFICATION)))
-		modification = CFMoreScriptUtils.count_per(per_msg)
+				script.get_property(script.get_property(SP.KEY_MODIFICATION)),
+				null,
+				script.subjects)
+		modification = per_msg.found_things
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
@@ -321,8 +323,10 @@ func spawn_card(script: ScriptTask) -> void:
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_OBJECT_COUNT),
 				script.owner_card,
-				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)))
-		count = CFMoreScriptUtils.count_per(per_msg)
+				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)),
+				null,
+				script.subjects)
+		count = per_msg.found_things
 	else:
 		count = script.get_property(SP.KEY_OBJECT_COUNT)
 	alteration = _check_for_alterants(script, count)
@@ -475,8 +479,10 @@ func mod_counter(script: ScriptTask) -> int:
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
 				script.owner_card,
-				script.get_property(script.get_property(SP.KEY_MODIFICATION)))
-		modification = CFMoreScriptUtils.count_per(per_msg)
+				script.get_property(script.get_property(SP.KEY_MODIFICATION)),
+				null,
+				script.subjects)
+		modification = per_msg.found_things
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)

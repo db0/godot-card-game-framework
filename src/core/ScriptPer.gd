@@ -11,7 +11,7 @@ func _init(per_msg: perMessage).(
 		per_msg.trigger_card) -> void:
 	# The name of the type of per we're seeking gets its own var
 	script_name = per_msg.per_seek
-	var ret =_find_subjects()
+	var ret =_find_subjects(per_msg.subjects)
 	if ret is GDScriptFunctionState: # Still working.
 		ret = yield(ret, "completed")
 	# We emit a signal when done so that our ScriptingEngine
@@ -51,7 +51,6 @@ func _count_tokens() -> int:
 
 # Do something per property amount
 func _count_property() -> int:
-	print_debug(subjects)
 	var ret := 0
 	# Only number properties can be used for per
 	if get_property(SP.KEY_PROPERTY_NAME) in CardConfig.PROPERTIES_NUMBERS:

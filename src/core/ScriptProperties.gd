@@ -1073,7 +1073,7 @@ static func filter_trigger(
 				KEY_PER_BOARDSEEK,
 				owner_card,
 				card_scripts.get(FILTER_PER_BOARDSEEK))
-		var found_count = CFMoreScriptUtils.count_per(per_msg)
+		var found_count = per_msg.found_things
 		var required_count = card_scripts.\
 				get(FILTER_PER_BOARDSEEK).get(FILTER_CARD_COUNT)
 		var comparison_type = card_scripts.get(FILTER_PER_BOARDSEEK).get(
@@ -1090,7 +1090,7 @@ static func filter_trigger(
 				KEY_PER_TUTOR,
 				owner_card,
 				card_scripts.get(FILTER_PER_TUTOR))
-		var found_count = CFMoreScriptUtils.count_per(per_msg)
+		var found_count = per_msg.found_things
 		var required_count = card_scripts.\
 				get(FILTER_PER_TUTOR).get(FILTER_CARD_COUNT)
 		var comparison_type = card_scripts.get(FILTER_PER_TUTOR).get(

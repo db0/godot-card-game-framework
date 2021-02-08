@@ -263,6 +263,7 @@ func test_per_previous():
 				"name": "mod_counter",
 				"counter_name": "research",
 				"modification": "per_property",
+				"subject": "previous",
 				"per_property": {
 					"subject": "previous",
 					"property_name": "Cost"}

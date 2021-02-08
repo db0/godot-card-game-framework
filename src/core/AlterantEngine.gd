@@ -82,6 +82,6 @@ func calculate_alteration(script: ScriptAlter) -> void:
 				script.owner_card,
 				script.get_property(script.get_property(SP.KEY_ALTERATION)),
 				script.trigger_card)
-		alteration = CFMoreScriptUtils.count_per(per_msg)
+		alteration = per_msg.found_things
 	else:
 		alteration += script.get_property(SP.KEY_ALTERATION)

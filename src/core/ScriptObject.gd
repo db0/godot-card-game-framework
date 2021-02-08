@@ -268,8 +268,4 @@ static func count_per(
 			script_owner,
 			per_definitions,
 			_trigger_card)
-	var per_discovery = cfc.script_per.new(per_msg)
-#	if not per_discovery.has_init_completed:
-#		yield(per_discovery,"completed_init")
-	found_things = per_discovery.return_per_count()
-	return(found_things)
+	return(per_msg.found_things)
