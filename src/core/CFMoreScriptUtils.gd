@@ -10,17 +10,9 @@ extends Reference
 # Handles looking for intensifiers of a current effect via the board state
 #
 # Returns the amount of things the script is trying to count.
-static func count_per(
-			per_seek: String,
-			script_owner, # Card type, but cannot type to avoid cycic cep
-			per_definitions: Dictionary,
-			_trigger_card = null) -> int:
+static func count_per(per_msg: perMessage) -> int:
 	var found_things := 0
-	var per_discovery = cfc.script_per.new(
-			script_owner,
-			per_definitions,
-			per_seek,
-			_trigger_card)
+	var per_discovery = cfc.script_per.new(per_msg)
 #	if not per_discovery.has_init_completed:
 #		yield(per_discovery,"completed_init")
 	found_things = per_discovery.return_per_count()

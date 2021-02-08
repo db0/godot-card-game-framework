@@ -1069,10 +1069,11 @@ static func filter_trigger(
 
 	# Card Count on board filter check
 	if is_valid and card_scripts.get(FILTER_PER_BOARDSEEK):
-		var found_count = CFMoreScriptUtils.count_per(
+		var per_msg = perMessage.new(
 				KEY_PER_BOARDSEEK,
 				owner_card,
 				card_scripts.get(FILTER_PER_BOARDSEEK))
+		var found_count = CFMoreScriptUtils.count_per(per_msg)
 		var required_count = card_scripts.\
 				get(FILTER_PER_BOARDSEEK).get(FILTER_CARD_COUNT)
 		var comparison_type = card_scripts.get(FILTER_PER_BOARDSEEK).get(
@@ -1085,10 +1086,11 @@ static func filter_trigger(
 
 	# Card Count in CardContainer filter check
 	if is_valid and card_scripts.get(FILTER_PER_TUTOR):
-		var found_count = CFMoreScriptUtils.count_per(
+		var per_msg = perMessage.new(
 				KEY_PER_TUTOR,
 				owner_card,
 				card_scripts.get(FILTER_PER_TUTOR))
+		var found_count = CFMoreScriptUtils.count_per(per_msg)
 		var required_count = card_scripts.\
 				get(FILTER_PER_TUTOR).get(FILTER_CARD_COUNT)
 		var comparison_type = card_scripts.get(FILTER_PER_TUTOR).get(

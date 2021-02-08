@@ -233,6 +233,11 @@ _global_script_classes=[ {
 "class": "ViewportCardFocus",
 "language": "GDScript",
 "path": "res://src/core/ViewportCardFocus.gd"
+}, {
+"base": "Reference",
+"class": "perMessage",
+"language": "GDScript",
+"path": "res://src/core/perMessage.gd"
 } ]
 _global_script_class_icons={
 "AlterantEngine": "",
@@ -279,7 +284,8 @@ _global_script_class_icons={
 "Token": "",
 "TokenDrawer": "",
 "UTCommon": "",
-"ViewportCardFocus": ""
+"ViewportCardFocus": "",
+"perMessage": ""
 }
 
 [application]

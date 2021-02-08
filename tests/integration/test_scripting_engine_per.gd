@@ -248,3 +248,28 @@ func test_filter_per_tutor_in_hand():
 	assert_false(card.is_faceup,
 			"Card flipped face-down since filter_per_tutor matched")
 
+func test_per_previous():
+	target.properties['Cost'] = 5
+	card.scripts = {"manual": {
+		"hand": [
+			{
+				"name": "move_card_to_container",
+				"dest_container": cfc.NMAP.discard,
+				"subject": "target",
+				"filter_state_subject": [{"filter_parent": cfc.NMAP.hand}],
+				"is_cost": true
+			},
+			{
+				"name": "mod_counter",
+				"counter_name": "research",
+				"modification": "per_property",
+				"per_property": {
+					"subject": "previous",
+					"property_name": "Cost"}
+			},
+		]}
+	}
+	yield(execute_with_target(card,target), "completed")
+	assert_eq(5,board.counters.get_counter("research"),
+			"Counter set to the specified amount")
+

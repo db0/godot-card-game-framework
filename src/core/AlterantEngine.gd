@@ -77,10 +77,11 @@ func calculate_alteration(script: ScriptAlter) -> void:
 		var custom := CustomScripts.new(false)
 		alteration += custom.custom_alterants(script)
 	elif SP.VALUE_PER in str(alteration_requested):
-		alteration = CFMoreScriptUtils.count_per(
+		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_ALTERATION),
 				script.owner_card,
 				script.get_property(script.get_property(SP.KEY_ALTERATION)),
 				script.trigger_card)
+		alteration = CFMoreScriptUtils.count_per(per_msg)
 	else:
 		alteration += script.get_property(SP.KEY_ALTERATION)
