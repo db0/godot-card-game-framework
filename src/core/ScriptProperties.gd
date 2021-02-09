@@ -37,11 +37,16 @@ const KEY_SUBJECT_V_TARGET := "target"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then the task affects the owner card only.
 const KEY_SUBJECT_V_SELF := "self"
-# This is only used during [KEY_ALTERANTS](#KEY_ALTERANTS) scripts
-# using [KEY_PER](#KEY_PER)
+# If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
+# during [KEY_ALTERANTS](#KEY_ALTERANTS) scripts using [KEY_PER](#KEY_PER)
+# then the script will check against trigger card only.
 #
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
-# Then the script will count the properties of the trigger card only.
+# during normal scripts tasks then the 
+# tasks that do not match the triggers will be skipped
+# but the script will still pass its cost check
+# This allows the same trigger, to have different tasks firing, depending
+# on the trigger card.
 const KEY_SUBJECT_V_TRIGGER := "trigger"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we search all cards on the table

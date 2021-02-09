@@ -11,6 +11,7 @@ var signal_details : Dictionary
 # If true if this task has been confirmed to run by the player
 # Only relevant for optional tasks (see [SP].KEY_IS_OPTIONAL)
 var is_accepted := true
+var is_skipped := false
 
 
 # prepares the script_definition needed by the task to function.
@@ -18,9 +19,17 @@ func _init(owner_card: Card,
 		script: Dictionary,
 		prev_subjects: Array,
 		cost_dry_run: bool,
-		sceng_stored_int).(owner_card, script) -> void:
+		sceng_stored_int,
+		_trigger_card,
+		trigger_details).(owner_card, script, _trigger_card) -> void:
 	# The function name to be called gets its own var
 	script_name = get_property("name")
+	if not SP.filter_trigger(
+			script,
+			trigger_card,
+			owner_card,
+			trigger_details):
+		is_skipped = true
 	if ((not cost_dry_run and not get_property(SP.KEY_IS_COST))
 			# This is the typical spot we're checking
 			# for non-cost optional confirmations.
@@ -45,7 +54,7 @@ func _init(owner_card: Card,
 	# If any confirmation is accepted, then we only draw a target
 	# if either the card is a cost and we're doing a cost-dry run,
 	# or the card is not a cost and we're in the normal run
-	if is_accepted and (not cost_dry_run
+	if not is_skipped and is_accepted and (not cost_dry_run
 			or (cost_dry_run and get_property(SP.KEY_IS_COST))):
 	# We discover which other card this task will affect, if any
 		var ret =_find_subjects(prev_subjects, sceng_stored_int)
@@ -56,4 +65,5 @@ func _init(owner_card: Card,
 	# knows we're ready to continue
 	emit_signal("completed_init")
 	has_init_completed = true
+#	print_debug("skipped: " + str(is_skipped) +  " valid: " + str(is_valid))
 

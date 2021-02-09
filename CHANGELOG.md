@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.8 (Ongoing)
+
+## New Features
+
+#### ScriptingEngine
+
+* Can now filter individual script tasks based on the trigger card.
+* per can now calculate based on the properties/tokens on previous subjects using `"subject": "previous"`. However for this to work, the parent task also has to have `"subject": "previous"` set.
+
 ## 1.7 
 
 ### Important

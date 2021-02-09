@@ -639,3 +639,42 @@ func test_card_properties_modified():
 			"Card turned face-down after all property filters match")
 	assert_true(cards[4].is_faceup,
 			"Card stayed face-up after after one property filters not matching")
+
+func test_same_signal_different_trigger():
+	card.scripts = {"card_moved_to_board": {
+			"board": [
+					{
+						"name": "mod_tokens",
+						"modification": 2,
+						"token_name": "void",
+						"subject": "self",
+						"trigger": "self",
+					},
+					{
+						"name": "mod_tokens",
+						"modification": -1,
+						"token_name": "void",
+						"subject": "self",
+						"trigger": "another",
+						"is_cost": true
+					},
+					{
+						"name": "mod_tokens",
+						"modification": 1,
+						"token_name": "industry",
+						"subject": "trigger",
+						"trigger": "another",
+					}]}}
+	yield(drag_drop(card, Vector2(300,300)), "completed")
+	yield(yield_for(0.2), YIELD)
+	var void_token: Token = card.tokens.get_token("void")
+	assert_not_null(void_token)
+	if void_token:
+		assert_eq(void_token.count,2,"Token set to specified amount")
+	yield(drag_drop(target, Vector2(800,300)), "completed")
+	var industry_token: Token = target.tokens.get_token("industry")
+	assert_not_null(industry_token)
+	if industry_token:
+		assert_eq(industry_token.count,1,"Token set to specified amount")
+	if void_token:
+		assert_eq(void_token.count,1,"Token set to specified amount")

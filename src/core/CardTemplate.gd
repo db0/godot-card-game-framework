@@ -1182,7 +1182,9 @@ func execute_scripts(
 		sceng = cfc.scripting_engine.new(
 				self,
 				state_scripts,
-				true)
+				true,
+				trigger_card,
+				trigger_details)
 		# In case the script involves targetting, we need to wait on further
 		# execution until targetting has completed
 		if not sceng.all_tasks_completed:
@@ -1196,7 +1198,10 @@ func execute_scripts(
 			# as it causes a cyclic reference error when parsing
 			sceng = cfc.scripting_engine.new(
 					self,
-					state_scripts)
+					state_scripts,
+					false,
+					trigger_card,
+					trigger_details)
 			if not sceng.all_tasks_completed:
 				yield(sceng,"tasks_completed")
 			# warning-ignore:void_assignment
