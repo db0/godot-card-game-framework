@@ -2,6 +2,11 @@ class_name DeckNameRandomizer
 extends Reference
 
 
+var adverbs = [
+	"Totally", "Mostly", "Regularly", "Just", "Too", "Very", "Never",
+	"Seldom", "Rather", "Still", "Almost",
+]
+
 var adjectives = [
 	"Awesome", "Brilliant", "New", "Newer", "Newest", "Stable",
 	"Solid", "Janky", "Jankiest", "Questionable", "Curious", "Weird",
@@ -35,8 +40,10 @@ var adjectives = [
 	"Arousing", "Pimpled", "Dotted", "Rebelious", "Dominating", "Giant",
 	"Ravenous", "Native", "Invasive", "Invading", "Charging", "First",
 	"Last", "Classic", "Hyper", "Honest", "Delicious", "Sonic", "Hilarious",
-	"4D", "Homeless", "Lonely", "Popular", "Prismatic", "Furious"
+	"4D", "Homeless", "Lonely", "Popular", "Prismatic", "Furious", "Infamous",
+	"Dodgy", "Curvaceous", "Spicy", "Retro", "Voracious",
 ]
+
 var nouns = [
 	"Deck", "Deck", "Deck", "Bible", "Weapon", "Jank", "Pattern",
 	"Pile", "Array", "Garbage", "Book", "Disaster", "Destruction", "Victory",
@@ -78,9 +85,10 @@ var nouns = [
 	"Chicken", "Piggy", "Chocolate", "Stick", "Membrane", "Mix", "Cell", "DNA",
 	"Protein", "Medicine", "Venom", "Stalker", "Fanatic", "Dice", "Chips",
 	"Chess", "Street", "Armadillo", "Armor", "Color", "Hook", "Rum", "Beaver",
-	"River", "Bingo", "Jackpot", "House", "Dungeon", "Revenge",
-
+	"River", "Bingo", "Jackpot", "House", "Dungeon", "Revenge", "Doge",
+	"Cryptocurrency", "8bit", "Chiptune", "Synthwave",
 ]
+
 var appends = [
 	"of Death", "of Madness", "of Steel", "of Ichor", "of Cards",
 	"of Silence", "of Fire", "of Water", "of Air", "of Earth", "of Fruit",

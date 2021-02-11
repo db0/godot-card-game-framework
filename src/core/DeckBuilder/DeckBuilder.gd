@@ -5,8 +5,13 @@ extends PanelContainer
 
 # Contains a link to the random deck name generator reference
 export(Script) var deck_name_randomizer
+# Controls how often an random adverb will
+# not appear in front of the adjective. The higher the number, the less likely
+# to get an adverb
+# Adverbs will not appear if adjectives did not.
+export var random_adverb_miss := 10
 # Controls how often an random adjective will
-# not appear in front of the deck name. The higher the number, the less likely
+# not appear in front of the noun. The higher the number, the less likely
 # to get an adjective
 export var random_adjective_miss := 1.1
 # Controls how often an random append will
@@ -185,25 +190,30 @@ func _on_Delete_pressed() -> void:
 func generate_random_deck_name() -> String:
 	cfc.game_rng.randomize()
 	var name_randomizer = deck_name_randomizer.new()
-	var deck_name : PoolStringArray = ['','','']
+	var deck_name : Dictionary
 	var rng: int = CFUtils.randi_range(0,
 			name_randomizer.adjectives.size() * random_adjective_miss)
 	if rng < name_randomizer.adjectives.size():
-		# warning-ignore:return_value_discarded
-		deck_name.insert(0,name_randomizer.adjectives[rng])
+		deck_name["adjective"] = name_randomizer.adjectives[rng]
+		rng = CFUtils.randi_range(0,
+			name_randomizer.adverbs.size() * random_adverb_miss)
+		if rng < name_randomizer.adverbs.size():
+			deck_name["adverb"] = name_randomizer.adverbs[rng]
 	rng = CFUtils.randi_range(0,name_randomizer.nouns.size() - 1)
-	var noun = name_randomizer.nouns[rng]
+	deck_name["noun"] = name_randomizer.nouns[rng]
 	rng = CFUtils.randi_range(0,name_randomizer.nouns.size() - 1)
 	var second_noun = name_randomizer.nouns[rng]
-	if not CFUtils.randi_range(0,second_noun_miss) and noun != second_noun:
-		noun += " " + second_noun
-	# warning-ignore:return_value_discarded
-	deck_name.insert(1,noun)
+	if not CFUtils.randi_range(0,second_noun_miss)\
+			and deck_name["noun"] != second_noun:
+		deck_name["second_noun"] = second_noun
 	rng = CFUtils.randi_range(0,name_randomizer.appends.size() * random_append_miss)
 	if rng < name_randomizer.appends.size():
-		# warning-ignore:return_value_discarded
-		deck_name.insert(2,name_randomizer.appends[rng])
-	return(deck_name.join(' ').strip_edges())
+		deck_name["append"] = name_randomizer.appends[rng]
+	var compiled_deck_name: PoolStringArray
+	for part in ["adverb", "adjective", "noun", "second_noun", "append"]:
+		if deck_name.get(part):
+			compiled_deck_name.append(deck_name.get(part))
+	return(compiled_deck_name.join(' ').strip_edges())
 
 
 func _on_Reset_pressed() -> void:

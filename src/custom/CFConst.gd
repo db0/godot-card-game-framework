@@ -202,10 +202,6 @@ const TARGET_HOVER_COLOUR := Color(0, 0.4, 1) * 1.3
 #
 # You can change the colour to something else if  you want however
 const TARGETTING_ARROW_COLOUR := TARGET_HOVER_COLOUR
-# This is used when filling in card property labels in [Card].setup()
-# when the property is an array, the label will still display it as a string
-# but will have to join its elements somehow.
-#
 # The below const defines what string to put between these elements.
 # Returns a color code to be used to mark the state of cost to pay for a card
 # * IMPOSSIBLE: The cost of the card cannot be paid.
@@ -218,6 +214,9 @@ const CostsState := {
 	"DECREASED": Color(0.5, 1, 0) * 1.3,
 	"OK": FOCUS_HOVER_COLOUR,
 }
+# This is used when filling in card property labels in [Card].setup()
+# when the property is an array, the label will still display it as a string
+# but will have to join its elements somehow.
 const ARRAY_PROPERTY_JOIN := ' - '
 # If this is set to false, tokens on cards
 # will not be removed when they exit the board
