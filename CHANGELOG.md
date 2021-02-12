@@ -5,6 +5,7 @@
 ## New Features
 
 * 1/10 deck names with adjectives will now also contain an adverb.
+* Can now set a string integer with an operator ("-1", "+5" etc) as a numerical property, to specify a modification to the existing number
 
 #### ScriptingEngine
 

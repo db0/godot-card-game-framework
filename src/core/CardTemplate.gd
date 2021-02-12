@@ -484,6 +484,10 @@ func setup() -> void:
 # Changes the property stored in the properties dictionary of this card
 # and modified the card front labels so that they display the correct
 # text
+#
+# If the property is a number, and the value is a string integer with the
+# operator in front (e.g. "+4", "-1" etc), then instead of setting the property
+# it will be instead modified by that amount.
 func modify_property(property: String, value, is_init = false, check := false) -> int:
 	var retcode: int
 	if not property in properties.keys() and not is_init:

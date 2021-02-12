@@ -43,7 +43,7 @@ func _on_about_to_show() -> void:
 	for deck in _load_decks_list:
 		get_popup().add_item(
 				deck.name + ' (' + str(deck.total) + ' cards)')
-	if get_popup().get_child_count() == 1:
+	if get_popup().get_item_count() == 0:
 		get_popup().add_item("No decks found. Please create a deck and try again")
 
 
