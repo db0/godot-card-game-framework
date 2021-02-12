@@ -195,6 +195,19 @@ func test_modify_properties_cost():
 	assert_false(card.is_faceup,
 			"card should turn face-down because "
 			+ "property change cost could be paid")
+	target.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"is_cost": true,
+			"set_properties": {"Cost": "-100"}},
+			{"name": "flip_card",
+			"subject": "self",
+			"set_faceup": false}]}}
+	target.execute_scripts()
+	yield(yield_to(target._flip_tween, "tween_all_completed", 0.4), YIELD)
+	assert_true(target.is_faceup,
+			"card stayed face-up because "
+			+ "property reduction could not be paid")
 
 func test_move_card_cont_to_cont_cost():
 	card.scripts = {"manual": {"hand": [

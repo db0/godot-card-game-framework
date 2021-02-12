@@ -488,8 +488,20 @@ func modify_property(property: String, value, is_init = false, check := false) -
 	var retcode: int
 	if not property in properties.keys() and not is_init:
 		retcode = CFConst.ReturnCode.FAILED
-	elif properties.get(property) == value:
+	elif typeof(properties.get(property)) == typeof(value)\
+			and properties.get(property) == value:
 		retcode = CFConst.ReturnCode.OK
+	elif typeof(properties.get(property)) != typeof(value)\
+			and str(properties.get(property)) == str(value):
+		retcode = CFConst.ReturnCode.OK
+	# This checks if the player is trying to reduce a card property below 0
+	# And if so, returns FAILED
+	elif check\
+			and property in CardConfig.PROPERTIES_NUMBERS\
+			and typeof(value) == TYPE_STRING\
+			and '-' in value\
+			and properties.get(property,0) + int(value) < 0:
+		retcode = CFConst.ReturnCode.FAILED
 	else:
 		# We store the values to send with the signal
 		var previous_value
@@ -499,7 +511,13 @@ func modify_property(property: String, value, is_init = false, check := false) -
 		if not check and property == "Name":
 			set_card_name(value)
 		elif not check:
-			properties[property] = value
+			# We do this check because we allow strings specifying
+			# numerical property modifications to be sent
+			# In that case, the set of the property is based on addition op
+			# We do that later on.
+			if properties.get(property) == null\
+					or typeof(properties.get(property)) == typeof(value):
+				properties[property] = value
 			if not card_front.card_labels.has(property):
 				if not property.begins_with("_"):
 					print_debug("Warning: ", property,
@@ -518,7 +536,19 @@ func modify_property(property: String, value, is_init = false, check := false) -
 				#
 				# In this demo, the format is defined as: "labelname: value"
 				if property in CardConfig.PROPERTIES_NUMBERS:
-					if value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
+					# If the property is numerical but the value is a string
+					# and that value has a +/- operator
+					# The designer is attempting to modify the property
+					# from its current value
+					if typeof(value) == TYPE_STRING:
+						if '+' in value or '-' in value:
+							properties[property] += int(value)
+							card_front.set_label_text(label_node,property
+									+ ": " + str(previous_value + int(value)))
+						else:
+							print_debug("WARNING: Tried to assign " + value
+									+ " to numerical property:" + property)
+					elif value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
 						card_front.set_label_text(label_node,"")
 					else:
 						card_front.set_label_text(label_node,property

@@ -409,9 +409,13 @@ func modify_properties(script: ScriptTask) -> int:
 					properties[property],
 					false,
 					costs_dry_run)
-			if ret_once == CFConst.ReturnCode.CHANGED:
+			if ret_once == CFConst.ReturnCode.FAILED:
+				retcode = ret_once
+			elif ret_once == CFConst.ReturnCode.CHANGED\
+					and retcode != CFConst.ReturnCode.FAILED:
 				# We only need one of the properties requested to be
 				# modified before we consider that we changed something.
+				# But only if any of the other modifications hasn't failed
 				retcode = ret_once
 	return(retcode)
 

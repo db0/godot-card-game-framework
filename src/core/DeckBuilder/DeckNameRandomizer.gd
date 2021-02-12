@@ -41,7 +41,7 @@ var adjectives = [
 	"Ravenous", "Native", "Invasive", "Invading", "Charging", "First",
 	"Last", "Classic", "Hyper", "Honest", "Delicious", "Sonic", "Hilarious",
 	"4D", "Homeless", "Lonely", "Popular", "Prismatic", "Furious", "Infamous",
-	"Dodgy", "Curvaceous", "Spicy", "Retro", "Voracious",
+	"Dodgy", "Curvaceous", "Spicy", "Retro", "Voracious", "Gilded",
 ]
 
 var nouns = [
@@ -86,7 +86,7 @@ var nouns = [
 	"Protein", "Medicine", "Venom", "Stalker", "Fanatic", "Dice", "Chips",
 	"Chess", "Street", "Armadillo", "Armor", "Color", "Hook", "Rum", "Beaver",
 	"River", "Bingo", "Jackpot", "House", "Dungeon", "Revenge", "Doge",
-	"Cryptocurrency", "8bit", "Chiptune", "Synthwave",
+	"Cryptocurrency", "8bit", "Chiptune", "Synthwave", "Meatball", "Fog",
 ]
 
 var appends = [
@@ -108,5 +108,5 @@ var appends = [
 	"which shall not be named", "of Justice", "with sprinkles",
 	"with a cherry on top", "and a Bottle o' Rum", "of Hate", "of the Tides",
 	"of the Wolf", "of Truth", "of the Four Winds", "of Darkness", "of Light",
-	"of Glory"
+	"of Glory", "that whistles ruefully"
 ]
