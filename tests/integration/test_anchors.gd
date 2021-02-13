@@ -66,7 +66,7 @@ func test_anchor_positioning_and_groups():
 func test_overlap_shift_up():
 	board.add_child(deck2)
 	deck2.placement = CardContainer.Anchors.BOTTOM_LEFT
-	deck2.overlap_shift_direction = CFConst.OverlapShiftDirection.UP
+	deck2.overlap_shift_direction = CFInt.OverlapShiftDirection.UP
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()
 	assert_almost_eq(deck2.position, Vector2(0,219), Vector2(5,5),
@@ -87,7 +87,7 @@ func test_overlap_shift_up():
 func test_overlap_shift_left():
 	board.add_child(deck2)
 	deck2.placement = CardContainer.Anchors.BOTTOM_RIGHT
-	deck2.overlap_shift_direction = CFConst.OverlapShiftDirection.LEFT
+	deck2.overlap_shift_direction = CFInt.OverlapShiftDirection.LEFT
 	deck2.re_place()
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()
@@ -109,7 +109,7 @@ func test_overlap_shift_left():
 func test_overlap_shift_right():
 	board.add_child(deck2)
 	deck2.placement = CardContainer.Anchors.BOTTOM_LEFT
-	deck2.overlap_shift_direction = CFConst.OverlapShiftDirection.RIGHT
+	deck2.overlap_shift_direction = CFInt.OverlapShiftDirection.RIGHT
 	deck2.re_place()
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()

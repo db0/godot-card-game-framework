@@ -37,6 +37,7 @@ func test_per_token_and_modify_token_per():
 		]}
 	}
 	card.execute_scripts()
+	card._debugger_hook = true
 	var bio_token = card.tokens.get_token("bio")
 	assert_not_null(bio_token,
 		"Put 1 Bio token per void token on this card")

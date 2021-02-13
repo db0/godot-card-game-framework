@@ -402,7 +402,7 @@ func _on_Card_gui_input(event) -> void:
 					if cfc.card_drag_ongoing == self:
 						if state == CardState.FOCUSED_IN_HAND\
 								and  _has_targeting_cost_hand_script():
-							var sceng = execute_scripts()
+							var _sceng = execute_scripts()
 							cfc.card_drag_ongoing = null
 						elif state == CardState.FOCUSED_IN_HAND\
 								and (disable_dragging_from_hand
@@ -1204,7 +1204,6 @@ func execute_scripts(
 		else: state_scripts = []
 		# Garbage cleanup
 		choices_menu.queue_free()
-
 	# To avoid unnecessary operations
 	# we evoke the ScriptingEngine only if we have something to execute
 	var sceng = null
@@ -1214,13 +1213,13 @@ func execute_scripts(
 		# to ascertain whether they can all be paid,
 		# before executing the card script.
 		sceng = cfc.scripting_engine.new(
-				self,
 				state_scripts,
-				true,
+				self,
 				trigger_card,
 				trigger_details)
 		# In case the script involves targetting, we need to wait on further
 		# execution until targetting has completed
+		sceng.execute(CFInt.RunType.COST_CHECK)
 		if not sceng.all_tasks_completed:
 			yield(sceng,"tasks_completed")
 		# If the dry-run of the ScriptingEngine returns that all
@@ -1230,12 +1229,7 @@ func execute_scripts(
 			# The ScriptingEngine is where we execute the scripts
 			# We cannot use its class reference,
 			# as it causes a cyclic reference error when parsing
-			sceng = cfc.scripting_engine.new(
-					self,
-					state_scripts,
-					false,
-					trigger_card,
-					trigger_details)
+			sceng.execute()
 			if not sceng.all_tasks_completed:
 				yield(sceng,"tasks_completed")
 			# warning-ignore:void_assignment
@@ -1244,6 +1238,11 @@ func execute_scripts(
 			# custom post execution scripts have also finished
 			if func_return is GDScriptFunctionState: # Still working.
 				func_return = yield(func_return, "completed")
+		# This will only trigger when costs could not be paid, and will
+		# execute the "is_else" tasks
+		elif not sceng.can_all_costs_be_paid and not only_cost_check:
+			#print("DEBUG:" + str(state_scripts))
+			sceng.execute(CFInt.RunType.ELSE)
 		else:
 			targeting_arrow.target_dry_run_card = null
 	return(sceng)
@@ -1923,7 +1922,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0,false,false)
 			if not $Tween.is_active() and \
 					not _focus_completed and \
-					cfc.game_settings.focus_style != CFConst.FocusStyle.VIEWPORT:
+					cfc.game_settings.focus_style != CFInt.FocusStyle.VIEWPORT:
 				var expected_position: Vector2 = recalculate_position()
 				var expected_rotation: float = _recalculate_rotation()
 				# We figure out our neighbours by their index

@@ -15,9 +15,9 @@ const _ASK_INTEGER_SCENE = preload(_ASK_INTEGER_SCENE_FILE)
 # Emitted when all tasks have been run succesfully
 signal tasks_completed
 
-# This flag will be true if we're attempting to find if the card
-# has costs that need to be paid, before the effects take place.
-var costs_dry_run := false
+
+var run_type : int = CFInt.RunType.NORMAL
+
 # This is set to true whenever we're doing a cost dry-run
 # and any task marked "is_cost" will not be able to manipulate the
 # game state as required, either because the board is already at the
@@ -29,123 +29,117 @@ var can_all_costs_be_paid := true
 var all_tasks_completed := false
 # Stores the inputed integer from the ask_integer task
 var stored_integer: int
-var trigger_details : Dictionary
-var trigger_card: Card
-
-# Called when the node enters the scene tree for the first time.
-func _ready() -> void:
-	pass # Replace with function body.
+var scripts_queue: Array
 
 
 # Simply initiates the [run_next_script()](#run_next_script) loop
-func _init(card_owner: Card,
-		scripts_queue: Array,
-		check_costs := false,
-		_trigger_card: Card = null,
-		_trigger_details = {}) -> void:
-	trigger_details = _trigger_details
-	trigger_card = _trigger_card
-	costs_dry_run = check_costs
-	run_next_script(card_owner,
-			scripts_queue.duplicate())
+func _init(state_scripts: Array,
+		card_owner: Card,
+		trigger_card: Card,
+		trigger_details: Dictionary) -> void:
+	for task in state_scripts:
+		var script_task := ScriptTask.new(
+				card_owner,
+				task,
+				trigger_card,
+				trigger_details)
+		scripts_queue.append(script_task)
+
+# This flag will be true if we're attempting to find if the card
+# has costs that need to be paid, before the effects take place.
+func costs_dry_run() -> bool:
+	if run_type == CFInt.RunType.COST_CHECK:
+		return(true)
+	else:
+		return(false)
 
 
 # The main engine starts here.
 # It receives array with all the tasks to execute,
 # then turns each array element into a [ScriptTask] object and
 # send it to the appropriate tasks.
-func run_next_script(card_owner: Card,
-		scripts_queue: Array,
-		prev_subjects := []) -> void:
-	var ta: TargetingArrow = card_owner.targeting_arrow
-	if scripts_queue.empty():
-#		print_debug(str(card_owner) + 'Scripting: All done!') # Debug
-		# If we're doing a try run, we don't clean the targeting
-		# as we will re-use it in the targeting phase.
-		# We do clear it though if all the costs cannot be paid.
-		if not costs_dry_run or (costs_dry_run and not can_all_costs_be_paid):
-			ta.target_card = null
-		if not costs_dry_run:
-			ta.target_dry_run_card = null
-		all_tasks_completed = true
-		emit_signal("tasks_completed")
-	# checking costs on multiple targeted cards in the same script,
-	# is not supported at the moment due to the exponential complexities
-	elif costs_dry_run and ta.target_dry_run_card and \
-				scripts_queue[0].get(SP.KEY_SUBJECT) == "target":
-			scripts_queue.pop_front()
-			run_next_script(card_owner,
-					scripts_queue,prev_subjects)
-	else:
-		var script := ScriptTask.new(
-				card_owner,
-				scripts_queue.pop_front(),
-				prev_subjects,
-				costs_dry_run,
-				stored_integer,
-				trigger_card,
-				trigger_details)
+func execute(_run_type := CFInt.RunType.NORMAL) -> void:
+	all_tasks_completed = false
+	run_type = _run_type
+	var prev_subjects := []
+	for task in scripts_queue:
+		# We put it into another variable to allow Static Typing benefits
+		var script: ScriptTask = task
+		if ((run_type == CFInt.RunType.COST_CHECK and not script.is_cost)
+				or (run_type == CFInt.RunType.ELSE and not script.is_else)
+				or (run_type != CFInt.RunType.ELSE and script.is_else)):
+			continue
+		if script.owner_card._debugger_hook: # Debug
+			pass
 		# In case the task involves targetting, we need to wait on further
 		# execution until targetting has completed
 		cfc.NMAP.board.counters.temp_count_modifiers[self] = {
 				"requesting_card": script.owner_card,
 				"modifier": script.get_property(SP.KEY_TEMP_MOD_COUNTERS).duplicate()
 			}
-		if not script.has_init_completed:
-			yield(script,"completed_init")
-		#print("Scripting Subjects: " + str(script.subjects)) # Debug
-		if costs_dry_run and ta.target_card:
-			ta.target_dry_run_card = ta.target_card
-			ta.target_card = null
-		if script.script_name == "custom_script":
-			# This class contains the customly defined scripts for each
-			# card.
-			var custom := CustomScripts.new(costs_dry_run)
-			custom.custom_script(script)
-		elif not script.is_skipped and script.is_valid \
-				and (not costs_dry_run
-					or (costs_dry_run and script.get_property(SP.KEY_IS_COST))):
-			#print(script.is_valid,':',costs_dry_run)
-			for card in script.subjects:
-				card.temp_properties_modifiers[self] = {
-					"requesting_card": script.owner_card,
-					"modifier": script.get_property(SP.KEY_TEMP_MOD_PROPERTIES)\
-							.duplicate()
-				}
-			var retcode = call(script.script_name, script)
-			if retcode is GDScriptFunctionState:
-				retcode = yield(retcode, "completed")
-			if costs_dry_run:
-				if retcode != CFConst.ReturnCode.CHANGED:
-					can_all_costs_be_paid = false
-				else:
-					# We check for confirmation of optional cost tasks
-					# only after checking that they are feasible
-					# because there's no point in asking the player
-					# about a task they cannot perform anyway.
-					var confirm_return = CFUtils.confirm(
-						script.script_definition,
-						card_owner.card_name,
-						script.script_name)
-					if confirm_return is GDScriptFunctionState: # Still working.
-						confirm_return = yield(confirm_return, "completed")
-						# If the player chooses not to play an optional cost
-						# We consider the whole cost dry run unsuccesful
-						if not confirm_return:
+		if not script.is_primed:
+			script.prime(prev_subjects,run_type,stored_integer)
+			if not script.is_primed:
+				yield(script,"primed")
+		if script.owner_card._debugger_hook: # Debug
+			pass
+		if script.is_primed:
+			prev_subjects = script.subjects
+			#print("Scripting Subjects: " + str(script.subjects)) # Debug
+			if script.script_name == "custom_script":
+				# This class contains the customly defined scripts for each
+				# card.
+				var custom := CustomScripts.new(costs_dry_run())
+				custom.custom_script(script)
+			elif not script.is_skipped and script.is_valid \
+					and (not costs_dry_run()
+						or (costs_dry_run() and script.is_cost)):
+				#print(script.is_valid,':',costs_dry_run())
+				for card in script.subjects:
+					card.temp_properties_modifiers[self] = {
+						"requesting_card": script.owner_card,
+						"modifier": script.get_property(SP.KEY_TEMP_MOD_PROPERTIES)\
+								.duplicate()
+					}
+				var retcode = call(script.script_name, script)
+				if retcode is GDScriptFunctionState:
+					retcode = yield(retcode, "completed")
+				if costs_dry_run():
+					if retcode != CFConst.ReturnCode.CHANGED:
+						can_all_costs_be_paid = false
+					else:
+						# We check for confirmation of optional cost tasks
+						# only after checking that they are feasible
+						# because there's no point in asking the player
+						# about a task they cannot perform anyway.
+						var confirm_return = script.check_confirm()
+						if confirm_return is GDScriptFunctionState: # Still working.
+							yield(confirm_return, "completed")
+						if not script.is_accepted:
 							can_all_costs_be_paid = false
-		# If a cost script is not valid
-		# (such as because the subjects cannot be matched)
-		# Then we consider the costs cannot be paid.
-		# However is the task was merely skipped (because filters didn't match)
-		# we don't consider the whole script failed
-		elif not script.is_valid and script.get_property(SP.KEY_IS_COST):
-			can_all_costs_be_paid = false
-		# At the end of the task run, we loop back to the start, but of course
-		# with one less item in our scripts_queue.
-		cfc.NMAP.board.counters.temp_count_modifiers.erase(self)
-		for card in script.subjects:
-			card.temp_properties_modifiers.erase(self)
-		run_next_script(card_owner,scripts_queue,script.subjects)
+			# If a cost script is not valid
+			# (such as because the subjects cannot be matched)
+			# Then we consider the costs cannot be paid.
+			# However is the task was merely skipped (because filters didn't match)
+			# we don't consider the whole script failed
+			elif not script.is_valid and script.is_cost:
+				can_all_costs_be_paid = false
+			# At the end of the task run, we loop back to the start, but of course
+			# with one less item in our scripts_queue.
+			cfc.NMAP.board.counters.temp_count_modifiers.erase(self)
+			for card in script.subjects:
+				card.temp_properties_modifiers.erase(self)
+#	print_debug(str(card_owner) + 'Scripting: All done!') # Debug
+	all_tasks_completed = true
+	emit_signal("tasks_completed")
+	# checking costs on multiple targeted cards in the same script,
+	# is not supported at the moment due to the exponential complexities
+#	elif costs_dry_run() and ta.target_dry_run_card and \
+#				scripts_queue[0].get(SP.KEY_SUBJECT) == "target":
+#			scripts_queue.pop_front()
+#			run_next_script(card_owner,
+#					scripts_queue,prev_subjects)
+
 
 
 # Task for rotating cards
@@ -160,7 +154,7 @@ func rotate_card(script: ScriptTask) -> int:
 		# Unfortunately Godot does not support passing named vars
 		# (See https://github.com/godotengine/godot-proposals/issues/902)
 		retcode = card.set_card_rotation(script.get_property(SP.KEY_DEGREES),
-				false, true, costs_dry_run)
+				false, true, costs_dry_run())
 	return(retcode)
 
 
@@ -173,7 +167,7 @@ func flip_card(script: ScriptTask) -> int:
 	var retcode: int
 	for card in script.subjects:
 		retcode = card.set_is_faceup(script.get_property(SP.KEY_SET_FACEUP),
-				false,costs_dry_run)
+				false,costs_dry_run())
 	return(retcode)
 
 
@@ -198,7 +192,7 @@ func view_card(script: ScriptTask) -> int:
 #	* [KEY_SRC_CONTAINER](SP#KEY_SRC_CONTAINER)
 func move_card_to_container(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
-	if not costs_dry_run:
+	if not costs_dry_run():
 		var dest_container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
 		var dest_index = script.get_property(SP.KEY_DEST_INDEX)
 		if str(dest_index) == SP.KEY_SUBJECT_INDEX_V_TOP:
@@ -243,7 +237,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 				# If the found grid was full and not allowed to auto-extend,
 				# we return FAILED for cost_checking purposes.
 				retcode = CFConst.ReturnCode.FAILED
-			elif not costs_dry_run:
+			elif not costs_dry_run():
 				for card in script.subjects:
 					slot = grid.find_available_slot()
 					# We need a small delay, to allow a potential new slot to instance
@@ -268,7 +262,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 					count * CFConst.CARD_SIZE.x * CFConst.PLAY_AREA_SCALE.x
 			count += 1
 			# We assume cards moving to board want to be face-up
-			if not costs_dry_run:
+			if not costs_dry_run():
 				card.move_to(cfc.NMAP.board, -1, board_position)
 				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 	return(retcode)
@@ -298,6 +292,7 @@ func mod_tokens(script: ScriptTask) -> int:
 				null,
 				script.subjects)
 		modification = per_msg.found_things
+		print_debug(per_msg.found_things, modification)
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
@@ -307,7 +302,7 @@ func mod_tokens(script: ScriptTask) -> int:
 			alteration = yield(alteration, "completed")
 	for card in script.subjects:
 		retcode = card.tokens.mod_token(token_name,
-				modification + alteration,set_to_mod,costs_dry_run)
+				modification + alteration,set_to_mod,costs_dry_run())
 	return(retcode)
 
 
@@ -408,7 +403,7 @@ func modify_properties(script: ScriptTask) -> int:
 					property,
 					properties[property],
 					false,
-					costs_dry_run)
+					costs_dry_run())
 			if ret_once == CFConst.ReturnCode.FAILED:
 				retcode = ret_once
 			elif ret_once == CFConst.ReturnCode.CHANGED\
@@ -508,7 +503,7 @@ func mod_counter(script: ScriptTask) -> int:
 			counter_name,
 			modification + alteration,
 			set_to_mod,
-			costs_dry_run,
+			costs_dry_run(),
 			script.owner_card)
 	return(retcode)
 
@@ -535,7 +530,7 @@ func execute_scripts(script: ScriptTask) -> int:
 			var sceng = card.execute_scripts(
 					script.owner_card,
 					script.get_property(SP.KEY_EXEC_TRIGGER),
-					{}, costs_dry_run)
+					{}, costs_dry_run())
 			# We make sure we wait until the execution is finished
 			# before cleaning out the temp properties/counters
 			if sceng is GDScriptFunctionState:

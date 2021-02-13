@@ -41,5 +41,5 @@ func _init(
 			ret = yield(ret, "completed")
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
-	emit_signal("completed_init")
-	has_init_completed = true
+	emit_signal("primed")
+	is_primed = true

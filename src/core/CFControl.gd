@@ -107,11 +107,11 @@ func _on_all_nodes_mapped() -> void:
 	if get_tree().get_root().has_node('Main'):
 		# When Unit Testing, we want to always have both scaling options possible
 		if ut:
-			game_settings['focus_style'] = CFConst.FocusStyle.BOTH
+			game_settings['focus_style'] = CFInt.FocusStyle.BOTH
 	else:
 		# If we're not using the main viewport scene, we need to fallback
 		# to the basic focus
-		game_settings['focus_style'] = CFConst.FocusStyle.SCALED
+		game_settings['focus_style'] = CFInt.FocusStyle.SCALED
 		# To prevent accidental switching this option when there's no other
 		# viewports active
 		if NMAP.board and NMAP.board.has_node("ScalingFocusOptions"): # Needed for UT
@@ -127,7 +127,12 @@ func _on_all_nodes_mapped() -> void:
 # for NMAP to be completed.
 func map_node(node) -> void:
 	# The nmap always stores lowercase keys. Each key is a node name
-	NMAP[node.name.to_lower()] = node
+	var node_name: String = node.name.to_lower()
+	# I don't know why but suring UT sometimes I get duplicate board nodes.
+	# I guess the queue_free is not as fast before the next test
+	if 'board' in node_name: 
+		node_name = 'board'
+	NMAP[node_name] = node
 	var add_main = 0
 	# Since we allow the game to run directly from the board scene,
 	# we need to check if a viewport called Main is being used.

@@ -109,6 +109,12 @@ const KEY_SUBJECT_COUNT_V_ALL := "all"
 # * [move_card_to_container](ScriptingEngine#move_card_to_container)
 # * [move_card_to_board](ScriptingEngine#move_card_to_board)
 const KEY_IS_COST := "is_cost"
+# Value Type: bool (Default = false).
+#
+# This key is used to mark a task to be executed only if the card costs
+# cannot be paid. As such, they will never fire,unless the card also has
+# an "is_cost" task.
+const KEY_IS_ELSE := "is_else"
 # Value Type: String (Default = false).
 # * "self": Triggering card has to be the owner of the script
 # * "another": Triggering card has to not be the owner of the script
@@ -891,7 +897,7 @@ static func get_default(property: String):
 	var default
 	# for property details, see const definitionts
 	match property:
-		KEY_IS_COST:
+		KEY_IS_COST, KEY_IS_ELSE:
 			default = false
 		KEY_TRIGGER:
 			default = "any"

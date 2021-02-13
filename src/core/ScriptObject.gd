@@ -7,7 +7,7 @@ extends Reference
 
 # Sent when the _init() method has completed
 # warning-ignore:unused_signal
-signal completed_init
+signal primed
 
 
 # The card which owns this Task
@@ -21,8 +21,8 @@ var script_name: String
 # Storage for all details of the task definition
 var script_definition : Dictionary
 # Used by the ScriptingEngine to know if the task
-# has finished processing targetting
-var has_init_completed := false
+# has finished processing targetting and optional confirmations
+var is_primed := false
 # If true if this task is valid to run.
 # A task is invalid to run if some filter does not match.
 var is_valid := true
@@ -33,6 +33,7 @@ var is_valid := true
 var requested_subjects: int
 # The card which triggered this script.
 var trigger_card: Card
+
 
 # prepares the properties needed by the script to function.
 func _init(card: Card, script: Dictionary, _trigger_card = null) -> void:
@@ -91,25 +92,17 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				else:
 					is_valid = false
 		SP.KEY_SUBJECT_V_TARGET:
-			if owner_card.targeting_arrow.target_dry_run_card:
-				is_valid = SP.check_validity(
-						owner_card.targeting_arrow.target_dry_run_card,
-						script_definition,
-						"subject")
-				subjects_array.append(owner_card.targeting_arrow.target_dry_run_card)
-				owner_card.targeting_arrow.target_dry_run_card = null
+			var c = _initiate_card_targeting()
+			if c is GDScriptFunctionState: # Still working.
+				c = yield(c, "completed")
+			# If the target is null, it means the player pointed at nothing
+			if c:
+				is_valid = SP.check_validity(c, script_definition, "subject")
+				subjects_array.append(c)
 			else:
-				var c = _initiate_card_targeting()
-				if c is GDScriptFunctionState: # Still working.
-					c = yield(c, "completed")
-				# If the target is null, it means the player pointed at nothing
-				if c:
-					is_valid = SP.check_validity(c, script_definition, "subject")
-					subjects_array.append(c)
-				else:
-					# If the script required a target and it didn't find any
-					# we consider it invalid
-					is_valid = false
+				# If the script required a target and it didn't find any
+				# we consider it invalid
+				is_valid = false
 		SP.KEY_SUBJECT_V_BOARDSEEK:
 			var subject_count = get_property(SP.KEY_SUBJECT_COUNT)
 			if SP.VALUE_PER in str(subject_count):
@@ -250,6 +243,7 @@ func _initiate_card_targeting() -> Card:
 	# We wait until the targetting has been completed to continue
 	yield(owner_card.targeting_arrow,"target_selected")
 	var target = owner_card.targeting_arrow.target_card
+	owner_card.targeting_arrow.target_card = null
 	#owner_card.target_card = null
 	return(target)
 

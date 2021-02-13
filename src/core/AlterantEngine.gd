@@ -56,8 +56,8 @@ func calculate_next_alteration(
 				trigger_card,
 				alterant_card,
 				task_details)
-		if not script.has_init_completed:
-			yield(script,"completed_init")
+		if not script.is_primed:
+			yield(script,"primed")
 		if script.is_valid:
 			calculate_alteration(script)
 		# At the end of the run, we loop back to the start, but of course

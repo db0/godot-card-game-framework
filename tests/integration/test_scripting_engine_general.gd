@@ -293,7 +293,7 @@ func test_target_script_on_drag_from_hand():
 	assert_true(card.get_node("TargetLine/ArrowHead").visible,
 			"Targeting has started on long-click")
 	yield(target_card(card,target), "completed")
-	assert_eq(8,board.counters.get_counter("credits"),
+	assert_eq(board.counters.get_counter("credits"),8,
 			"Counter reduced by 2")
 	assert_false(target.is_faceup,
 			"Target is face-down")
@@ -310,7 +310,7 @@ func test_target_script_on_drag_from_hand():
 	assert_false(card.get_node("TargetLine/ArrowHead").visible,
 			"Targeting not started because costs cannot be paid")
 	yield(target_card(card,target), "completed")
-	assert_eq(8,board.counters.get_counter("credits"),
+	assert_eq(board.counters.get_counter("credits"),8,
 			"Counter not reduced")
 	assert_true(target.is_faceup,
 			"Target stayed face-up since cost could not be paid")
@@ -327,7 +327,7 @@ func test_target_script_on_drag_from_hand():
 	assert_true(card.get_node("TargetLine/ArrowHead").visible,
 			"Targeting started because targeting is_cost")
 	yield(target_card(card,target), "completed")
-	assert_eq(8,board.counters.get_counter("credits"),
+	assert_eq(board.counters.get_counter("credits"),8,
 			"Counter not reduced")
 	assert_true(target.is_faceup,
 			"Target stayed face-up since cost could not be paid")
@@ -341,7 +341,7 @@ func test_target_script_on_drag_from_hand():
 				"counter_name": "credits"}]}}
 	yield(drag_card(card, Vector2(300,300)), 'completed')
 	unclick_card_anywhere(card)
-	assert_eq(8,board.counters.get_counter("credits"),
+	assert_eq(board.counters.get_counter("credits"),8,
 			"Counter not reduced since nothing was targeted")
 	card.scripts = {"manual": {"hand": [
 				{"name": "flip_card",
@@ -353,7 +353,7 @@ func test_target_script_on_drag_from_hand():
 				"counter_name": "credits"}]}}
 	yield(drag_card(card, Vector2(300,300)), 'completed')
 	unclick_card_anywhere(card)
-	assert_eq(5,board.counters.get_counter("credits"),
+	assert_eq(board.counters.get_counter("credits"),5,
 			"Counter reduced since targeting was not a cost")
 
 
@@ -394,9 +394,10 @@ func test_subject_previous_with_filters():
 				],
 			},
 		}
+	card._debugger_hook = true
 	yield(execute_with_target(card,cards[2]), "completed")
-	assert_eq(2,board.counters.get_counter("research"),
+	assert_eq(board.counters.get_counter("research"),2,
 			"Counter increased by specified amount")
 	yield(execute_with_target(card,cards[4]), "completed")
-	assert_eq(3,board.counters.get_counter("research"),
+	assert_eq(board.counters.get_counter("research"),3,
 			"Counter increased by specified amount")

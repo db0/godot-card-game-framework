@@ -12,16 +12,10 @@ signal target_selected(card)
 var _potential_cards := []
 # If true, the targeting arrow will be drawn towards the mouse cursor
 var is_targeting := false
-# Used when completing targeting to know whether to put the target
-# into target_dry_run_card or target_card
-var _cost_dry_run := false
 # Used to store a card succesfully targeted.
 # It should be cleared from whichever effect requires a target.
 # once it is used
 var target_card : Card = null
-# Used to store a card targeted via the cost-dry-run mechanism.
-# it is reset to null every time the properties check is not valid
-var target_dry_run_card : Card = null
 # Stores a reference to the Card that is hosting this node
 onready var owner_card = get_parent()
 
@@ -41,8 +35,7 @@ func _process(_delta: float) -> void:
 # Will generate a targeting arrow on the card which will follow the mouse cursor.
 # The top card hovered over by the mouse cursor will be highlighted
 # and will become the target when complete_targeting() is called
-func initiate_targeting(dry_run := false) -> void:
-	_cost_dry_run = dry_run
+func initiate_targeting() -> void:
 	is_targeting = true
 	$ArrowHead.visible = true
 	$ArrowHead/Area2D.monitoring = true
@@ -59,19 +52,11 @@ func complete_targeting() -> void:
 		# We don't want to emit a signal, if the card is a dummy viewport card
 		# or we already selected a target during dry-run
 		if owner_card.get_parent() != null \
-				and owner_card.get_parent().name != "Viewport" \
-				and not target_dry_run_card:
+				and owner_card.get_parent().name != "Viewport":
 			# We make the targeted card also emit a targeting signal for automation
 			tc.emit_signal("card_targeted", tc, "card_targeted",
 					{"targeting_source": owner_card})
-		# We use the _cost_dry_run variable when the targeting is happening
-		# as part of the checking for costs. We store the target card
-		# in a different variable, which is reused during the normal execution
-		# of the script, instead of looking for a target again
-		if _cost_dry_run:
-			target_dry_run_card = tc
-		else:
-			target_card = tc
+		target_card = tc
 #		print("Targeting Demo: ",
 #				self.name," targeted ",
 #				target_card.name, " in ",

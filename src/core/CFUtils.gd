@@ -135,11 +135,11 @@ static func sort_by_shift_priority(c1, c2) -> bool:
 	var ret: bool
 	# The first two checks ensure that CardContainers
 	# set to overlap_shift == None will never be pushed.
-	if c1.overlap_shift_direction == CFConst.OverlapShiftDirection.NONE:
+	if c1.overlap_shift_direction == CFInt.OverlapShiftDirection.NONE:
 		ret = true
-	elif c2.overlap_shift_direction == CFConst.OverlapShiftDirection.NONE:
+	elif c2.overlap_shift_direction == CFInt.OverlapShiftDirection.NONE:
 		ret = false
-	elif c1.index_shift_priority == CFConst.IndexShiftPriority.LOWER:
+	elif c1.index_shift_priority == CFInt.IndexShiftPriority.LOWER:
 		if c1.get_index() < c2.get_index():
 			ret = false
 		else:

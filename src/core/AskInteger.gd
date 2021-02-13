@@ -9,7 +9,9 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	get_ok().text = "Submit"
 	$IntegerLineEdit.connect("int_changed_ok", self, "_switch_green")
+	# warning-ignore:return_value_discarded
 	$IntegerLineEdit.connect("int_changed_nok", self, "_switch_red")
+	# warning-ignore:return_value_discarded
 	$IntegerLineEdit.connect("int_entered", self, "_on_number_entered")
 
 

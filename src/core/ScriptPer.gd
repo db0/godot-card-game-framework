@@ -11,13 +11,13 @@ func _init(per_msg: perMessage).(
 		per_msg.trigger_card) -> void:
 	# The name of the type of per we're seeking gets its own var
 	script_name = per_msg.per_seek
-	var ret =_find_subjects(per_msg.subjects)
+	var ret = _find_subjects(per_msg.subjects)
 	if ret is GDScriptFunctionState: # Still working.
 		ret = yield(ret, "completed")
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
-	emit_signal("completed_init")
-	has_init_completed = true
+	emit_signal("primed")
+	is_primed = true
 
 
 # Goes through the subjects specied for this per calculation

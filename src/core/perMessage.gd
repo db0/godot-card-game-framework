@@ -24,10 +24,10 @@ func _init(
 
 # Returns the amount of things the calling script is trying to count.
 func count_found_things() -> int:
-	var found_things := 0
+	var found_count := 0
 	var per_discovery = cfc.script_per.new(self)
 #	if not per_discovery.has_init_completed:
-#		yield(per_discovery,"completed_init")
-	found_things = per_discovery.return_per_count()
-	return(found_things)
+#		yield(per_discovery,"primed")
+	found_count = per_discovery.return_per_count()
+	return(found_count)
 

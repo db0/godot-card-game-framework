@@ -30,10 +30,10 @@ export(Anchors) var placement
 # In case of multiple CardContainers using the same anchor placement,
 # specifies whether this container should displace itself to make space
 # for the others, and how.
-export(CFConst.OverlapShiftDirection) var overlap_shift_direction
+export(CFInt.OverlapShiftDirection) var overlap_shift_direction
 # In case of multiple CardContainers using the same anchor placement
 # specifies which container should be displaced more.
-export(CFConst.IndexShiftPriority) var index_shift_priority
+export(CFInt.IndexShiftPriority) var index_shift_priority
 
 # Used for debugging
 var _debugger_hook := false
@@ -356,13 +356,13 @@ func re_place():
 					# This container will move, by the combined size of
 					# other containers in the array before it.
 					match overlap_shift_direction:
-						CFConst.OverlapShiftDirection.UP:
+						CFInt.OverlapShiftDirection.UP:
 							accumulated_shift.y -= cc.control.rect_size.y
-						CFConst.OverlapShiftDirection.DOWN:
+						CFInt.OverlapShiftDirection.DOWN:
 							accumulated_shift.y += cc.control.rect_size.y
-						CFConst.OverlapShiftDirection.LEFT:
+						CFInt.OverlapShiftDirection.LEFT:
 							accumulated_shift.x -= cc.control.rect_size.x
-						CFConst.OverlapShiftDirection.RIGHT:
+						CFInt.OverlapShiftDirection.RIGHT:
 							accumulated_shift.x += cc.control.rect_size.x
 		# Finally, we move to the right location.
 		position = place
