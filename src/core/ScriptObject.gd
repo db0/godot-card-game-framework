@@ -213,7 +213,10 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 					subjects_array.append(src_container.get_card(index - iter))
 			if requested_subjects > 0\
 					and subjects_array.size() < requested_subjects:
-				is_valid = false
+				if get_property(SP.KEY_IS_COST):
+					is_valid = false
+				else:
+					requested_subjects = subjects_array.size()
 		SP.KEY_SUBJECT_V_TRIGGER:
 			# We check, just to make sure we didn't mess up
 			if trigger_card:

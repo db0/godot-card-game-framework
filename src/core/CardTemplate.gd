@@ -1572,6 +1572,7 @@ func common_pre_move_scripts(new_host: Node, old_host: Node, scripted_move: bool
 # places on the table.
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
+# warning-ignore:unused_argument
 func common_post_move_scripts(new_host: Node, old_host: Node, scripted_move: bool) -> void:
 	pass
 

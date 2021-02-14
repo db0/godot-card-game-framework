@@ -380,3 +380,29 @@ func test_mod_counter():
 	card.execute_scripts()
 	assert_eq(2,board.counters.get_counter("credits"),
 			"Counter set to the specified amount")
+
+func test_draw_more_cards_than_pile_max():
+	target = deck.get_last_card()
+	card.scripts = {"manual": {"hand": [
+			{"name": "move_card_to_container",
+			"subject": "index",
+			"subject_index": "top",
+			"subject_count": 50,
+			"is_cost": true,
+			"src_container":  cfc.NMAP.deck,
+			"dest_container":  cfc.NMAP.discard}]}}
+	card.execute_scripts()
+	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
+	assert_eq(target.get_parent(),deck,
+			"Card is not moved because more than max requested as cost")
+	card.scripts = {"manual": {"hand": [
+			{"name": "move_card_to_container",
+			"subject": "index",
+			"subject_index": "top",
+			"subject_count": 50,
+			"src_container":  cfc.NMAP.deck,
+			"dest_container":  cfc.NMAP.discard}]}}
+	card.execute_scripts()
+	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
+	assert_eq(target.get_parent(),discard,
+			"Card is moved even though more than requested because it not cost")
