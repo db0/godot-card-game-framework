@@ -41,6 +41,7 @@ func _ready() -> void:
 	for quantity_button in _qbuttons:
 		_qbuttons[quantity_button].connect("quantity_set", self, "_on_quantity_set")
 	_quantity_edit.minimum = 0
+	# warning-ignore:return_value_discarded
 	_quantity_edit.connect("int_entered", self, "set_quantity")
 
 
@@ -72,6 +73,7 @@ func set_quantity(value) -> void:
 					card_name,
 					card_properties[CardConfig.SCENE_PROPERTY],
 					value)
+			# warning-ignore:return_value_discarded
 			deck_card_object.connect("quantity_changed",self,"_on_quantity_set")
 		else:
 			deck_card_object.set_quantity(value)

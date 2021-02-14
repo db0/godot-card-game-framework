@@ -1,6 +1,7 @@
 class_name DBFilterButton
 extends Button
 
+# warning-ignore:unused_signal
 signal filter_toggled()
 
 var property : String

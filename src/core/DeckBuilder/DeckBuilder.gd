@@ -69,10 +69,12 @@ onready var _filter_buttons := $VBC/HBC/MC2/AvailableCards/CC/ButtonFilters
 onready var _notice := $VBC/HBC/MC/CurrentDeck/HBoxContainer/NoticeLabel
 
 func _ready() -> void:
+	# warning-ignore:return_value_discarded
 	_load_button.connect("deck_loaded", self,"_on_deck_loaded")
 	# This signal returns the load buttons' popup menu choice.
 	populate_available_cards()
 	_deck_name.text = generate_random_deck_name()
+	# warning-ignore:return_value_discarded
 	_filter_line.connect("filters_changed", self, "_apply_filters")
 	var total_unique_values := 0
 	for button_property in filter_button_properties:
@@ -190,7 +192,7 @@ func _on_Delete_pressed() -> void:
 func generate_random_deck_name() -> String:
 	cfc.game_rng.randomize()
 	var name_randomizer = deck_name_randomizer.new()
-	var deck_name : Dictionary
+	var deck_name := {}
 	var rng: int = CFUtils.randi_range(0,
 			name_randomizer.adjectives.size() * random_adjective_miss)
 	if rng < name_randomizer.adjectives.size():
@@ -209,7 +211,7 @@ func generate_random_deck_name() -> String:
 	rng = CFUtils.randi_range(0,name_randomizer.appends.size() * random_append_miss)
 	if rng < name_randomizer.appends.size():
 		deck_name["append"] = name_randomizer.appends[rng]
-	var compiled_deck_name: PoolStringArray
+	var compiled_deck_name: PoolStringArray = []
 	for part in ["adverb", "adjective", "noun", "second_noun", "append"]:
 		if deck_name.get(part):
 			compiled_deck_name.append(deck_name.get(part))

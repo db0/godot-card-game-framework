@@ -6,7 +6,6 @@
 class_name ScriptTask
 extends ScriptObject
 
-signal confirm_completed
 # Stores the details arg passed the signal to use for filtering
 var signal_details : Dictionary
 # If true if this task has been confirmed to run by the player
