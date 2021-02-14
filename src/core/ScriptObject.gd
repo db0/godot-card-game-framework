@@ -259,7 +259,6 @@ static func count_per(
 			script_owner: Card,
 			per_definitions: Dictionary,
 			_trigger_card = null) -> int:
-	var found_things := 0
 	var per_msg := perMessage.new(
 			per_seek,
 			script_owner,

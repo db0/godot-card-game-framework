@@ -4,8 +4,11 @@
 
 ### Important
 
+A new custom class has been added called SP, extending ScriptProperties.**You must create it in your own custom folder**. You can copy `res://src/custom/SP.gd` from this repository to your own custom folder.
+
 CFConst  has been adjusted. The following enums have been moved to CFInt, as the developers should not have a reason to modify them: `FocusStyle`, `IndexShiftPriority`, `OverlapShiftDirection`.
 You can delete these enums from your own CFConst at your leisure. However if you delete them, you need to adjust CFConst.FOCUS_STYLE
+
 
 
 ## New Features
@@ -19,6 +22,7 @@ You can delete these enums from your own CFConst at your leisure. However if you
 * per can now calculate based on the properties/tokens on previous subjects using `"subject": "previous"`. However for this to work, the parent task also has to have `"subject": "previous"` set.
 * Can now set "is_else" : true tasks, which will only be executed if the "is_cost" tasks cannot be paid
 * Refactored the way the script task loop is handled. If you've extended the ScriptingEngine, you will need to adjust your _init()
+* class SP now moved to custom and is a dummy class extending ScriptProperties (which contains the old SP). This way developers can extend the SP class while still allowing drag&drop upgrades
 
 
 ## 1.7 

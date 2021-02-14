@@ -1,10 +1,8 @@
-# SP stands for "ScriptProperties".
-#
 # This class provides a library for constants which are used a key values
 # in the Card Script Definition
 #
 # It also provides a few static functions for comparing filters
-class_name SP
+class_name ScriptProperties
 extends Reference
 
 

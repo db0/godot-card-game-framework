@@ -26,7 +26,7 @@ In order to be able to upgrade this framework in the future without losing your 
 1. Create a new directory to store your own game's definition. Let's put it in `res://src/new_card_game`
 1. find and Right click on `res://src/custom/CGFBoard.tscn` and select "Duplicate...". As a name, write "Board.tcsn". 
 1. find and Right click on `res://src/custom/CGFBoard.gd` and select "Duplicate...". As a name, write "Board.gd". 
-1. From the filesystem tab, drag and drop Board.tcsn and Board.gd inside `res://src/new_card_game`
+1. From the filesystem tab, drag and drop Board.tcsn and Board.gd and SP.gd inside `res://src/new_card_game`
 1. Double click `res://src/new_card_game/Board.tcsn` to open it. Right click on the root node and "Attach Script". then in the path either nagivate, or type `res://src/new_card_game/Board.gd`
 1. find and Right click on `res://src/core/Main.tscn` and select "New Inherited Scene". A new unsaved scene will open.
 1. In the inspector, under "Script Variables", click on "[empty]" next to Board Scene, then "load" then navigate to your `res://src/new_card_game/Board.tcsn`

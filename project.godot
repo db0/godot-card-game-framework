@@ -179,10 +179,10 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/DeckBuilder/QuantityNumberButton.gd"
 }, {
-"base": "Reference",
+"base": "ScriptProperties",
 "class": "SP",
 "language": "GDScript",
-"path": "res://src/core/ScriptProperties.gd"
+"path": "res://src/custom/SP.gd"
 }, {
 "base": "ScriptObject",
 "class": "ScriptAlter",
@@ -198,6 +198,11 @@ _global_script_classes=[ {
 "class": "ScriptPer",
 "language": "GDScript",
 "path": "res://src/core/ScriptPer.gd"
+}, {
+"base": "Reference",
+"class": "ScriptProperties",
+"language": "GDScript",
+"path": "res://src/core/ScriptProperties.gd"
 }, {
 "base": "ScriptObject",
 "class": "ScriptTask",
@@ -278,6 +283,7 @@ _global_script_class_icons={
 "ScriptAlter": "",
 "ScriptObject": "",
 "ScriptPer": "",
+"ScriptProperties": "",
 "ScriptTask": "",
 "ScriptingEngine": "",
 "TargetingArrow": "",
