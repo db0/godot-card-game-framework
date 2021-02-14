@@ -12,8 +12,11 @@ var leading_zeroes_regex := RegEx.new()
 export var prevent_invalid_text: bool
 
 func _ready() -> void:
+	# warning-ignore:return_value_discarded
 	leading_zeroes_regex.compile("^0+([1-9]+)")
+	# warning-ignore:return_value_discarded
 	connect("text_changed", self, "_on_IntegerLineEdit_text_changed")
+	# warning-ignore:return_value_discarded
 	connect("text_entered", self, "_on_IntegerLineEdit_text_entered")
 
 func _on_IntegerLineEdit_text_entered(new_text: String) -> void:

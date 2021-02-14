@@ -1291,10 +1291,16 @@ func get_state_exec() -> String:
 				CardState.FOCUSED_IN_HAND,\
 				CardState.REORGANIZING,\
 				CardState.PUSHED_ASIDE:
+			state_exec = "hand"
+		CardState.IN_POPUP,\
+				CardState.FOCUSED_IN_POPUP,\
+				CardState.IN_PILE,\
+				CardState.VIEWED_IN_PILE:
+			state_exec = "pile"
+		CardState.MOVING_TO_CONTAINER:
+			if get_parent() == cfc.NMAP.hand:
 				state_exec = "hand"
-		CardState.IN_POPUP, CardState.FOCUSED_IN_POPUP,\
-				 CardState.IN_PILE,\
-				 CardState.VIEWED_IN_PILE:
+			else:
 				state_exec = "pile"
 	return(state_exec)
 
@@ -2100,7 +2106,6 @@ func _process_card_state() -> void:
 			# because if the player drags the cursor outside the window and unclicks
 			# The control will not receive the mouse input
 			# and this will stay dragging forever
-
 			$Control.set_default_cursor_shape(Input.CURSOR_CROSS)
 			# We set the card to be centered on the mouse cursor to allow
 			# the player to properly understand where it will go once dropped.
