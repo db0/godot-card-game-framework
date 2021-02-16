@@ -63,6 +63,7 @@ func test_per_token_and_modify_token_per():
 			"Draw 1 card per void token on this card")
 
 func test_per_property():
+# warning-ignore:return_value_discarded
 	card.modify_property("Cost", 3)
 	card.scripts = {"manual": {
 		"hand": [
@@ -126,6 +127,7 @@ func test_per_boardseek():
 
 
 func test_per_counter():
+# warning-ignore:return_value_discarded
 	board.counters.mod_counter("research", 3)
 	card.scripts = {"manual": {
 		"hand": [
@@ -275,3 +277,23 @@ func test_per_previous():
 	assert_eq(5,board.counters.get_counter("research"),
 			"Counter set to the specified amount")
 
+func test_per_inverted():
+	# warning-ignore:return_value_discarded
+	board.counters.mod_counter("research", 3)
+	# warning-ignore:return_value_discarded
+	board.counters.mod_counter("credits", 10, true)
+	card.scripts = {"manual": {
+		"hand": [
+			{"name": "mod_counter",
+			"counter_name": "credits",
+			"modification": "per_counter",
+			"per_counter": {
+				"is_inverted": true,
+				"counter_name": "research"}
+			},
+		]}
+	}
+	card.execute_scripts()
+	yield(yield_for(0.1), YIELD)
+	assert_eq(board.counters.get_counter("credits"),7,
+			"Counter set to the specified amount")

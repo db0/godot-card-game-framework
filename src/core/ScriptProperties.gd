@@ -40,7 +40,7 @@ const KEY_SUBJECT_V_SELF := "self"
 # then the script will check against trigger card only.
 #
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
-# during normal scripts tasks then the 
+# during normal scripts tasks then the
 # tasks that do not match the triggers will be skipped
 # but the script will still pass its cost check
 # This allows the same trigger, to have different tasks firing, depending
@@ -431,6 +431,12 @@ const KEY_TEMP_MOD_COUNTERS := "temp_mod_counters"
 # As defined in [PROPERTIES_NUMBERS](CardConfig#PROPERTIES_NUMBERS)
 # and the value is the modification to use on that number
 const KEY_TEMP_MOD_PROPERTIES := "temp_mod_properties"
+# Value Type: Bool (Default = false)
+#
+# Used in the per dictionary to specify that the amount of things counted
+# should be returned negative.
+# This allows to have costs based on the boardstate
+const KEY_INVERT_PER := "is_inverted"
 # Value Type: Dictionary
 #
 # A [VALUE_PER](#VALUE_PER) key for perfoming an effect equal to a number of tokens on the subject(s)
@@ -895,7 +901,11 @@ static func get_default(property: String):
 	var default
 	# for property details, see const definitionts
 	match property:
-		KEY_IS_COST, KEY_IS_ELSE:
+		KEY_IS_COST,\
+				KEY_IS_ELSE,\
+				KEY_INVERT_PER,\
+				KEY_SET_TO_MOD,\
+				KEY_IS_OPTIONAL:
 			default = false
 		KEY_TRIGGER:
 			default = "any"
@@ -905,17 +915,13 @@ static func get_default(property: String):
 			default = -1
 		KEY_BOARD_POSITION:
 			default = Vector2(-1,-1)
-		KEY_SET_TO_MOD:
-			default = false
-		KEY_MODIFICATION:
-			default = 1
-		KEY_IS_OPTIONAL:
-			default = false
 		KEY_MODIFY_PROPERTIES,\
 				KEY_TEMP_MOD_PROPERTIES,\
 				KEY_TEMP_MOD_COUNTERS:
 			default = {}
-		KEY_SUBJECT_COUNT, KEY_OBJECT_COUNT:
+		KEY_SUBJECT_COUNT,\
+				KEY_OBJECT_COUNT,\
+				KEY_MODIFICATION:
 			default = 1
 		KEY_GRID_NAME:
 			default = ""
