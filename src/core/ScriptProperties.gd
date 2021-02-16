@@ -397,8 +397,11 @@ const VALUE_PER := "per_"
 # Value Type: String
 #
 # This key is typically needed in combination with [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
-# to specify which property to base the per upon. The property **has** to be
-# a number.
+# to specify which property to base the per upon.
+# When used this way, the property **has** to be a number.
+#
+# Also used by Alterant filters, to specify which property to compare against
+# When adjusting a property on-the-fly
 const KEY_PROPERTY_NAME := "property_name"
 # Value Type: String (Default = "manual").
 #
@@ -644,15 +647,6 @@ const FILTER_COUNT := "filter_count"
 # * [TRIGGER_V_COUNT_INCREASED](#TRIGGER_V_COUNT_INCREASED)
 # * [TRIGGER_V_COUNT_DECREASED](#TRIGGER_V_COUNT_DECREASED)
 const FILTER_COUNT_DIFFERENCE := "filter_count_difference"
-# Value Type: String.
-#
-# Filter used for checking against [TRIGGER_TOKEN_NAME](#TRIGGER_TOKEN_NAME)
-# and in [check_state](#check_state)
-const FILTER_TOKEN_NAME := "filter_token_name"
-# Value Type: String.
-#
-# Filter used for checking against [TRIGGER_COUNTER_NAME](#TRIGGER_COUNTER_NAME)
-const FILTER_COUNTER_NAME := "filter_counter_name"
 # Value Type: Dictionary
 #
 # Filter used for checking in [check_state](#check_state)
@@ -858,14 +852,21 @@ const TRIGGER_PREV_COUNT := "previous_count"
 # Value Type: String.
 #
 # Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
-# as well as via the mod_tokens alterant script
+# as well as via the mod_tokens and get_token alterant scripts
 #
 # This is the value of the token name modified
 const TRIGGER_TOKEN_NAME = "token_name"
 # Value Type: String.
 #
+# Filter value sent by the Card trigger `card_token_modified` [signal](Card#signals).
+# as well as via the mod_property and get_property alterant scripts
+#
+# This is the value of the token name modified
+const TRIGGER_PROPERTY_NAME = "property_name"
+# Value Type: String.
+#
 # Filter value sent by the Counters trigger `counter_modified` [signal](Counters#signals).
-# as well as via the mod_counters alterant script
+# as well as via the mod_counters and get_counter alterant scripts
 #
 # This is the value of the token name modified
 const TRIGGER_COUNTER_NAME = "counter_name"
@@ -1030,22 +1031,32 @@ static func filter_trigger(
 				TRIGGER_V_COUNT_DECREASED and prev_count < new_count:
 			is_valid = false
 
-	if is_valid and card_scripts.get(FILTER_TOKEN_NAME) \
-			and card_scripts.get(FILTER_TOKEN_NAME) != \
+	# Token Name filter checks
+	if is_valid and card_scripts.get("filter_" + TRIGGER_TOKEN_NAME) \
+			and card_scripts.get("filter_" + TRIGGER_TOKEN_NAME) != \
 			trigger_details.get(TRIGGER_TOKEN_NAME):
 		is_valid = false
 
-	# Counter filter checks
-	if is_valid and card_scripts.get(FILTER_COUNTER_NAME) \
-			and card_scripts.get(FILTER_COUNTER_NAME) != \
+	# Counter Name filter checks
+	if is_valid and card_scripts.get("filter_" + TRIGGER_COUNTER_NAME) \
+			and card_scripts.get("filter_" + TRIGGER_COUNTER_NAME) != \
 			trigger_details.get(TRIGGER_COUNTER_NAME):
 		is_valid = false
 
-	# Counter filter checks
+	# Property Name filter checks
+	# Typically used by alterants
+	if is_valid and card_scripts.get("filter_" + TRIGGER_PROPERTY_NAME) \
+			and card_scripts.get("filter_" + TRIGGER_PROPERTY_NAME) != \
+			trigger_details.get(TRIGGER_PROPERTY_NAME):
+		is_valid = false
+
+	# Card spawn filter checks
 	if is_valid and card_scripts.get(FILTER_SCENE_PATH) \
 			and card_scripts.get(FILTER_SCENE_PATH) != \
 			trigger_details.get(KEY_SCENE_PATH):
 		is_valid = false
+
+
 	# Modified Property filter checks
 	# See FILTER_MODIFIED_PROPERTIES documentation
 	# If the trigger requires a filter on modified properties...
@@ -1164,9 +1175,9 @@ static func check_token_filter(card, token_states: Array) -> bool:
 	for token_state in token_states:
 		var comparison_type : String = token_state.get(
 				KEY_COMPARISON, get_default(KEY_COMPARISON))
-		if token_state.get(FILTER_TOKEN_NAME):
+		if token_state.get("filter_" + TRIGGER_TOKEN_NAME):
 			var token = card.tokens.get_token(
-					token_state.get(FILTER_TOKEN_NAME))
+					token_state.get("filter_" + TRIGGER_TOKEN_NAME))
 			if not token:
 				if token_state.get(FILTER_COUNT):
 					match comparison_type:

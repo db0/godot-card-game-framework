@@ -368,13 +368,16 @@ func test_get_token_alterants():
 
 func test_get_property_alterants():
 	target.modify_property("Cost", 2)
+	target.modify_property("Power", 2)
 	card.modify_property("Cost", 2)
 	card.scripts = {"alterants": {"hand": [
 			{"filter_task": "get_property",
 			"trigger": "another",
-			"filter_property_name": "cost",
+			"filter_property_name": "Cost",
 			"alteration": 3},]}}
 	assert_eq(target.get_property("Cost"),5,
 			"Alterant modifies retrieved property value")
+	assert_eq(target.get_property("Power"),2,
+			"Alterant not modified different property")
 	assert_eq(card.get_property("Cost"),2,
 			"Alterant not modified retrieved counter value when trigger is self")
