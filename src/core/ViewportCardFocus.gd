@@ -67,6 +67,7 @@ func focus_card(card: Card) -> void:
 		dupe_focus.remove_from_group("cards")
 		_current_focus_source = card
 		_dupes_dict[dupe_focus] = card
+		dupe_focus.properties = card.properties.duplicate()
 		# We display a "pure" version of the card
 		# This means we hide buttons, tokens etc
 		dupe_focus.state = Card.CardState.VIEWPORT_FOCUS

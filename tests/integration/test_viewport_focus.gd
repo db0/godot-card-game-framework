@@ -28,7 +28,7 @@ func test_single_card_focus():
 	assert_eq(focus_dupe.get_node("Control/Back").get_child_count(), 1,
 			"Duplicate card does not have duplicate card backs")
 	assert_eq(focus_dupe.card_back.modulate.a, 1,
-			"Duplicate card does not have visible highlight")			
+			"Duplicate card does not have visible highlight")
 
 	yield(move_mouse(Vector2(0,0)), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
@@ -66,3 +66,12 @@ func test_viewed_card_in_pile():
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),
 			"Duplicate card has been added for viewport focus")
+
+func test_retain_properties():
+	var card : Card = cards[0]
+	card.modify_property("Cost", 100, true)
+	yield(move_mouse(card.global_position), 'completed')
+	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	var focus_dupe = main._previously_focused_cards[0]
+	assert_eq(focus_dupe.get_property("Cost"), 100,
+			"Focus retains modified property values from original")

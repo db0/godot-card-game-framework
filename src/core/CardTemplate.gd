@@ -475,7 +475,11 @@ func setup() -> void:
 	# card_name needs to be setup before we call this function
 	set_card_name(card_name)
 	# The properties of the card should be already stored in cfc
-	var read_properties = cfc.card_definitions.get(card_name, {})
+	var read_properties: Dictionary
+	if state != CardState.VIEWPORT_FOCUS:
+		read_properties = cfc.card_definitions.get(card_name, {})
+	else:
+		read_properties = properties.duplicate()
 	for property in read_properties.keys():
 		# warning-ignore:return_value_discarded
 		modify_property(property,read_properties[property], true)
