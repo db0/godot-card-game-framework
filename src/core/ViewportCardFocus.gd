@@ -67,7 +67,7 @@ func focus_card(card: Card) -> void:
 		dupe_focus.remove_from_group("cards")
 		_current_focus_source = card
 		_dupes_dict[dupe_focus] = card
-		dupe_focus.properties = card.properties.duplicate()
+		_extra_dupe_preparation(dupe_focus, card)
 		# We display a "pure" version of the card
 		# This means we hide buttons, tokens etc
 		dupe_focus.state = Card.CardState.VIEWPORT_FOCUS
@@ -100,3 +100,8 @@ func unfocus(card: Card) -> void:
 				$Focus.modulate, Color(1,1,1,0), 0.25,
 				Tween.TRANS_SINE, Tween.EASE_IN)
 		$Focus/Tween.start()
+
+# Overridable function for games to extend preprocessing of dupe card
+# before adding it to the scene
+func _extra_dupe_preparation(dupe_focus: Card, card: Card) -> void:
+	dupe_focus.properties = card.properties.duplicate()
