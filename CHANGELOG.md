@@ -9,10 +9,17 @@ A new custom class has been added called SP, extending ScriptProperties.**You mu
 CFConst  has been adjusted. The following enums have been moved to CFInt, as the developers should not have a reason to modify them: `FocusStyle`, `IndexShiftPriority`, `OverlapShiftDirection`.
 You can delete these enums from your own CFConst at your leisure. However if you delete them, you need to adjust CFConst.FOCUS_STYLE
 
+New CardConfig property added: `NUMBER_WITH_LABEL`. Any labels specified here, will have their Name as part of their label text. I.e. if you number if 4, and you property is "Cost", the label text will be "Cost: 4".
+This was the dedfault behavour until now, but now it allows you to have numbers without a label.
+**You will need to specify this property, even if it's an empty list**
 
+Also it's not possible to not use a compensation label. If you specify an empty string as the `compensation_label`, then the game will not try to adjust the size of anything. This assumes you have a card
+Layout that doesn't need to be dynamically adjusted for missing text.
 
 ## New Features
 
+* Made label size compensation optional.
+* Number properties can now be displayed without a label (i.e. just the number)
 * 1/10 deck names with adjectives will now also contain an adverb.
 * Can now set a string integer with an operator ("-1", "+5" etc) as a numerical property, to specify a modification to the existing number
 

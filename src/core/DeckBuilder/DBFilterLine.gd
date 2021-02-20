@@ -52,8 +52,11 @@ func _ready() -> void:
 			+ "! - not equals\n"\
 			+ "< - less than\n"\
 			+ "> - greater than\n"
+	# warning-ignore:return_value_discarded
 	connect("text_changed", self, "on_text_changed")
+	# warning-ignore:return_value_discarded
 	connect("mouse_entered", self, "_on_FilterLine_mouse_entered")
+	# warning-ignore:return_value_discarded
 	connect("mouse_exited", self, "_on_FilterLine_mouse_exited")
 
 func _process(_delta: float) -> void:

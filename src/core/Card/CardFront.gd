@@ -102,7 +102,9 @@ func set_label_text(node: Label, value):
 	node.text = value
 	# After any adjustmen of labels, we make sure the compensation_label font size
 	# is adjusted again, if needed, to avoid exceeding the card borders.
-	if not node.name in compensation_label and _rect_adjustment != 0.0:
+	if compensation_label != ''\
+			and not node.name in compensation_label\
+			and _rect_adjustment != 0.0:
 		set_label_text(card_labels[compensation_label], card_labels[compensation_label].text)
 
 # Stores the original font size this label had.

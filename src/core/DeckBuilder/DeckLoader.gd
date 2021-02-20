@@ -10,7 +10,9 @@ signal deck_loaded(deck)
 var _load_decks_list := []
 
 func _ready() -> void:
+	# warning-ignore:return_value_discarded
 	get_popup().connect("index_pressed", self, "_on_deck_load")
+	# warning-ignore:return_value_discarded
 	connect("about_to_show", self, "_on_about_to_show")
 
 

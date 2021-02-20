@@ -43,6 +43,7 @@ func set_expression(value) -> void:
 		expression = int(value)
 	else:
 		var string_regex := RegEx.new()
+# warning-ignore:return_value_discarded
 		string_regex.compile(value)
 		expression  = string_regex
 

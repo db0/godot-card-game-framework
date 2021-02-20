@@ -551,16 +551,21 @@ func modify_property(property: String, value, is_init = false, check := false) -
 					if typeof(value) == TYPE_STRING:
 						if '+' in value or '-' in value:
 							properties[property] += int(value)
-							card_front.set_label_text(label_node,property
-									+ ": " + str(previous_value + int(value)))
+							if property in CardConfig.NUMBER_WITH_LABEL:
+								card_front.set_label_text(label_node,property
+										+ ": " + str(previous_value + int(value)))
+							else:
+								card_front.set_label_text(label_node,str(value))
 						else:
 							print_debug("WARNING: Tried to assign " + value
 									+ " to numerical property:" + property)
 					elif value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
 						card_front.set_label_text(label_node,"")
-					else:
+					elif property in CardConfig.NUMBER_WITH_LABEL:
 						card_front.set_label_text(label_node,property
 								+ ": " + str(value))
+					else:
+						card_front.set_label_text(label_node,str(value))
 				# These are arrays of properties which are put in a label
 				# with a simple join character
 				elif property in CardConfig.PROPERTIES_ARRAYS:
@@ -2242,7 +2247,7 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
-			scale = Vector2(1.5,1.5)
+			scale = Vector2(2,2)
 
 
 

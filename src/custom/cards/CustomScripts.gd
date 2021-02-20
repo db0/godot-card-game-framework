@@ -37,6 +37,7 @@ func custom_script(script: ScriptObject) -> void:
 					subjects[0].queue_free()
 					print("Destroying: " + subjects[0].card_name)
 
+# warning-ignore:unused_argument
 func custom_alterants(script: ScriptObject) -> int:
 	var alteration := 0
 	return(alteration)
