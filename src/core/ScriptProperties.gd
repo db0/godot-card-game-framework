@@ -514,6 +514,8 @@ const KEY_COMPARISON := "comparison"
 # * [KEY_MODIFICATION](#KEY_MODIFICATION)
 # * [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT) (only for specific tasks, see documentation)
 # * [KEY_OBJECT_COUNT](#KEY_OBJECT_COUNT) (only for specific tasks, see documentation)
+# * [KEY_TEMP_MOD_PROPERTIES](#KEY_TEMP_MOD_PROPERTIES) (In the value fields)
+# * [KEY_TEMP_MOD_COUNTERS](#KEY_TEMP_MOD_COUNTERS) (In the value fields)
 const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
 # Value Type: bool (Default = false)
 #
