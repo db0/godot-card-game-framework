@@ -120,6 +120,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			# stored from the previous ask_integer task.
 			elif str(subject_count) == SP.VALUE_RETRIEVE_INTEGER:
 				subject_count = stored_integer
+				if get_property(SP.KEY_IS_INVERTED):
+					subject_count *= -1
 			requested_subjects = subject_count
 			for c in cfc.NMAP.board.get_all_cards():
 				if SP.check_validity(c, script_definition, "seek"):
@@ -143,6 +145,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				subject_count = -1
 			elif str(subject_count) == SP.VALUE_RETRIEVE_INTEGER:
 				subject_count = stored_integer
+				if get_property(SP.KEY_IS_INVERTED):
+					subject_count *= -1
 			requested_subjects = subject_count
 			for c in get_property(SP.KEY_SRC_CONTAINER).get_all_cards():
 				if SP.check_validity(c, script_definition, "tutor"):
@@ -168,6 +172,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				index = src_container.get_card_index(src_container.get_random_card())
 			elif str(index) == SP.VALUE_RETRIEVE_INTEGER:
 				index = stored_integer
+				if get_property(SP.KEY_IS_INVERTED):
+					index *= -1
 			# Just to prevent typos since we don't enforce integers on index
 			elif not str(index).is_valid_integer():
 				index = 0
@@ -193,6 +199,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				subject_count = src_container.get_card_count() - adjust_count
 			elif str(subject_count) == SP.VALUE_RETRIEVE_INTEGER:
 				subject_count = stored_integer
+				if get_property(SP.KEY_IS_INVERTED):
+					subject_count *= -1
 			requested_subjects = subject_count
 			# If KEY_SUBJECT_COUNT is more than 1, we seek a number
 			# of cards from this index equal to the amount

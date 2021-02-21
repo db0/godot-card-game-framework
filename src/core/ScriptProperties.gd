@@ -258,6 +258,17 @@ const KEY_TOKEN_NAME := "token_name"
 # It specifies the amount we're setting/modifying
 # or setting it to the exact one
 const KEY_MODIFICATION := "modification"
+# Value Type: bool (Default = false).
+#
+# Used when a script is using one of the following tasks:
+# * [mod_tokens](ScriptingEngine#mod_tokens)
+# * [mod_counters](ScriptingEngine#mod_tokens)
+#
+# and using a negative int for modification, or "remove_all".
+#
+# Stores the amount of things succesfully removed into an integer to
+# be used in later tasks. 
+const KEY_STORE_INTEGER := "store_integer"
 # Value Type: Dynamic (Default = 1).
 # * int.
 # * [VALUE_RETRIEVE_INTEGER](#VALUE_RETRIEVE_INTEGER)
@@ -439,7 +450,7 @@ const KEY_TEMP_MOD_PROPERTIES := "temp_mod_properties"
 # Used in the per dictionary to specify that the amount of things counted
 # should be returned negative.
 # This allows to have costs based on the boardstate
-const KEY_INVERT_PER := "is_inverted"
+const KEY_IS_INVERTED := "is_inverted"
 # Value Type: Dictionary
 #
 # A [VALUE_PER](#VALUE_PER) key for perfoming an effect equal to a number of tokens on the subject(s)
@@ -904,9 +915,10 @@ static func get_default(property: String):
 	match property:
 		KEY_IS_COST,\
 				KEY_IS_ELSE,\
-				KEY_INVERT_PER,\
+				KEY_IS_INVERTED,\
 				KEY_SET_TO_MOD,\
-				KEY_IS_OPTIONAL:
+				KEY_IS_OPTIONAL,\
+				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:
 			default = "any"

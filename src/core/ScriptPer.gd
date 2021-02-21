@@ -37,7 +37,7 @@ func return_per_count() -> int:
 			ret = _count_counter()
 		_:
 			ret = _count_custom()
-	if get_property(SP.KEY_INVERT_PER):
+	if get_property(SP.KEY_IS_INVERTED):
 		ret *= -1
 	return(ret)
 

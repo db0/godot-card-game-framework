@@ -284,6 +284,8 @@ func mod_tokens(script: ScriptTask) -> int:
 	var token_name: String = script.get_property(SP.KEY_TOKEN_NAME)
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
 		modification = stored_integer
+		if script.get_property(SP.KEY_IS_INVERTED):
+			modification *= -1
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
@@ -300,9 +302,29 @@ func mod_tokens(script: ScriptTask) -> int:
 		alteration = _check_for_alterants(script, modification)
 		if alteration is GDScriptFunctionState:
 			alteration = yield(alteration, "completed")
+	var token_diff : int
 	for card in script.subjects:
+		var current_tokens: int
+		# If we're storing the integer, we want to store the difference
+		# cumulative difference between the current and modified tokens
+		# among all the cards
+		# If if se set tokens to 1, and one card had 3 tokens,
+		# while another had 0
+		# The total stored integer would be -1
+		# This allows us to do an effect like
+		# Remove all Poison tokens from all cards, draw a card for each token removed.
+		if script.get_property(SP.KEY_STORE_INTEGER):
+			current_tokens = card.tokens.get_token(token_name).get_count()
+			if set_to_mod:
+				token_diff += modification + alteration - current_tokens
+			elif current_tokens + modification + alteration < 0:
+				token_diff += -current_tokens
+			else:
+				token_diff = modification + alteration
 		retcode = card.tokens.mod_token(token_name,
 				modification + alteration,set_to_mod,costs_dry_run())
+	if script.get_property(SP.KEY_STORE_INTEGER):
+		stored_integer = token_diff
 	return(retcode)
 
 
@@ -323,6 +345,8 @@ func spawn_card(script: ScriptTask) -> void:
 	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
 		count = stored_integer
+		if script.get_property(SP.KEY_IS_INVERTED):
+			count *= -1
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_OBJECT_COUNT)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_OBJECT_COUNT),
@@ -449,6 +473,8 @@ func add_grid(script: ScriptTask) -> void:
 	var grid_scene: String = script.get_property(SP.KEY_SCENE_PATH)
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
 		count = stored_integer
+		if script.get_property(SP.KEY_IS_INVERTED):
+			count *= -1
 	else:
 		count = script.get_property(SP.KEY_OBJECT_COUNT)
 	for iter in range(count):
@@ -482,7 +508,11 @@ func mod_counter(script: ScriptTask) -> int:
 	var modification: int
 	var alteration = 0
 	if str(script.get_property(SP.KEY_MODIFICATION)) == SP.VALUE_RETRIEVE_INTEGER:
+		# If the modification is requested, is only applies to stored integers
+		# so we flip the stored_integer's value.
 		modification = stored_integer
+		if script.get_property(SP.KEY_IS_INVERTED):
+			modification *= -1
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
@@ -494,11 +524,19 @@ func mod_counter(script: ScriptTask) -> int:
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
-	# We do not not modify
 	if not set_to_mod:
 		alteration = _check_for_alterants(script, modification)
 		if alteration is GDScriptFunctionState:
 			alteration = yield(alteration, "completed")
+	if script.get_property(SP.KEY_STORE_INTEGER):
+		var current_count = cfc.NMAP.board.counters.get_counter(
+				counter_name, script.owner_card)
+		if set_to_mod:
+			stored_integer = modification + alteration - current_count
+		elif current_count + modification + alteration < 0:
+			stored_integer = -current_count
+		else:
+			stored_integer = modification + alteration
 	var retcode: int = cfc.NMAP.board.counters.mod_counter(
 			counter_name,
 			modification + alteration,

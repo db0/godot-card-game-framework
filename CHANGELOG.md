@@ -30,6 +30,7 @@ Layout that doesn't need to be dynamically adjusted for missing text.
 * Can now set "is_else" : true tasks, which will only be executed if the "is_cost" tasks cannot be paid
 * Refactored the way the script task loop is handled. If you've extended the ScriptingEngine, you will need to adjust your _init()
 * class SP now moved to custom and is a dummy class extending ScriptProperties (which contains the old SP). This way developers can extend the SP class while still allowing drag&drop upgrades
+* Can now store an integer with the difference of mod_tokens or mod_counter operations. This allows to do effects such as "Discard all blue credits. Draw a card per credit discarded".
 
 
 ## 1.7 
