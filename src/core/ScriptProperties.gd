@@ -264,10 +264,8 @@ const KEY_MODIFICATION := "modification"
 # * [mod_tokens](ScriptingEngine#mod_tokens)
 # * [mod_counters](ScriptingEngine#mod_tokens)
 #
-# and using a negative int for modification, or "remove_all".
-#
-# Stores the amount of things succesfully removed into an integer to
-# be used in later tasks. 
+# Stores the modification difference into an integer to
+# be used in later tasks.
 const KEY_STORE_INTEGER := "store_integer"
 # Value Type: Dynamic (Default = 1).
 # * int.
@@ -507,7 +505,9 @@ const KEY_PER_COUNTER := "per_counter"
 const KEY_COMPARISON := "comparison"
 # This is a versatile value that can be inserted into any various keys
 # when a task needs to use a previously inputed integer provided
-# with a [ask_integer](ScriptingEngine#ask_integer) task.
+# with a [ask_integer](ScriptingEngine#ask_integer) task
+# or a [KEY_STORE_INTEGER](#KEY_STORE_INTEGER).
+#
 # When detected ,the task will retrieve the stored number and use it as specified
 #
 # The following keys support this value
