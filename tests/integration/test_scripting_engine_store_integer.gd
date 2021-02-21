@@ -99,3 +99,42 @@ func test_store_integer_with_tokens():
 	yield(yield_for(0.5), YIELD)
 	assert_eq(discard.get_card_count(),2, "2 cards should have been discarded")
 
+func test_retrieve_integer_temp_mod_properties():
+	board.counters.mod_counter("research", 2)
+	target.modify_property("Cost", 1)
+	card.scripts = {"manual": {"hand": [
+			{
+				"name": "mod_counter",
+				"modification": 0,
+				"set_to_mod": true,
+				"counter_name":  "research",
+				"store_integer": true
+				# Should store a diffference of -2
+			},
+			{
+				"name": "execute_scripts",
+				"subject": "target",
+				"exec_trigger":  "manual",
+				"temp_mod_properties": {"Cost": "retrieve_integer"},
+				"is_inverted": true,
+				"require_exec_state": "hand"
+			}]}}
+	target.scripts = {"manual": {
+		"hand": [
+			{"name": "move_card_to_container",
+			"subject": "index",
+			"subject_count": "per_property",
+			"src_container": deck,
+			"dest_container": hand,
+			"subject_index": "top",
+			"per_property": {
+				"subject": "self",
+				"property_name": "Cost"}
+			},
+		]}
+	}
+	card.execute_scripts()
+	yield(target_card(card,target, "slow"), "completed")
+	yield(yield_for(0.5), YIELD)
+	assert_eq(hand.get_card_count(), 8,
+		"Draw the temp modified amount of cards")

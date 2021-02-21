@@ -98,8 +98,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				for card in script.subjects:
 					card.temp_properties_modifiers[self] = {
 						"requesting_card": script.owner_card,
-						"modifier": script.get_property(SP.KEY_TEMP_MOD_PROPERTIES)\
-								.duplicate()
+						"modifier": _retrieve_temp_propert_modifiers(script)
 					}
 				var retcode = call(script.script_name, script)
 				if retcode is GDScriptFunctionState:
@@ -139,7 +138,6 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 #			scripts_queue.pop_front()
 #			run_next_script(card_owner,
 #					scripts_queue,prev_subjects)
-
 
 
 # Task for rotating cards
@@ -302,7 +300,7 @@ func mod_tokens(script: ScriptTask) -> int:
 		alteration = _check_for_alterants(script, modification)
 		if alteration is GDScriptFunctionState:
 			alteration = yield(alteration, "completed")
-	var token_diff : int
+	var token_diff := 0
 	for card in script.subjects:
 		var current_tokens: int
 		# If we're storing the integer, we want to store the difference
@@ -598,3 +596,13 @@ func _check_for_alterants(script: ScriptTask, value: int) -> int:
 		alteration = yield(alteration, "completed")
 	return(alteration.value_alteration)
 
+
+func _retrieve_temp_propert_modifiers(script: ScriptTask) -> Dictionary:
+	var temp_modifiers = script.get_property(
+			SP.KEY_TEMP_MOD_PROPERTIES).duplicate()
+	for value in temp_modifiers:
+		if str(temp_modifiers[value]) == SP.VALUE_RETRIEVE_INTEGER:
+			temp_modifiers[value] = stored_integer
+			if script.get_property(SP.KEY_IS_INVERTED):
+				temp_modifiers[value] *= -1
+	return(temp_modifiers)
