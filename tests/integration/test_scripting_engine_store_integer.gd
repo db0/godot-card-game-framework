@@ -65,7 +65,7 @@ func test_store_integer_with_counters():
 				}]}}
 	card.execute_scripts()
 	yield(yield_for(0.5), YIELD)
-	assert_eq(board.counters.get_counter("credits"),7, 
+	assert_eq(board.counters.get_counter("credits"),7,
 		"3 Credits removed")
 
 func test_store_integer_with_tokens():
@@ -130,6 +130,41 @@ func test_retrieve_integer_temp_mod_properties():
 			"per_property": {
 				"subject": "self",
 				"property_name": "Cost"}
+			},
+		]}
+	}
+	card.execute_scripts()
+	yield(target_card(card,target, "slow"), "completed")
+	yield(yield_for(0.5), YIELD)
+	assert_eq(hand.get_card_count(), 8,
+		"Draw the temp modified amount of cards")
+
+func test_retrieve_integer_temp_mod_counter():
+	board.counters.mod_counter("research", 5)
+	board.counters.mod_counter("credits", 2, true)
+	card.scripts = {"manual": {"hand": [
+			{
+				"name": "mod_counter",
+				"modification": -4,
+				"counter_name":  "credits",
+				"store_integer": true
+				# Should store a diffference of -2
+			},
+			{"name": "execute_scripts",
+			"subject": "target",
+			"exec_trigger":  "manual",
+			"temp_mod_counters": {"research": "retrieve_integer"},
+			"require_exec_state": "hand"}]}}
+	target.scripts = {"manual": {
+		"hand": [
+			{"name": "move_card_to_container",
+			"subject": "index",
+			"subject_count": "per_counter",
+			"src_container": deck,
+			"dest_container": hand,
+			"subject_index": "top",
+			"per_counter": {
+				"counter_name": "research"}
 			},
 		]}
 	}

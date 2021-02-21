@@ -75,7 +75,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 		# execution until targetting has completed
 		cfc.NMAP.board.counters.temp_count_modifiers[self] = {
 				"requesting_card": script.owner_card,
-				"modifier": script.get_property(SP.KEY_TEMP_MOD_COUNTERS).duplicate()
+				"modifier": _retrieve_temp_modifiers(script,"counters")
 			}
 		if not script.is_primed:
 			script.prime(prev_subjects,run_type,stored_integer)
@@ -98,7 +98,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				for card in script.subjects:
 					card.temp_properties_modifiers[self] = {
 						"requesting_card": script.owner_card,
-						"modifier": _retrieve_temp_propert_modifiers(script)
+						"modifier": _retrieve_temp_modifiers(script, "properties")
 					}
 				var retcode = call(script.script_name, script)
 				if retcode is GDScriptFunctionState:
@@ -597,9 +597,14 @@ func _check_for_alterants(script: ScriptTask, value: int) -> int:
 	return(alteration.value_alteration)
 
 
-func _retrieve_temp_propert_modifiers(script: ScriptTask) -> Dictionary:
-	var temp_modifiers = script.get_property(
-			SP.KEY_TEMP_MOD_PROPERTIES).duplicate()
+func _retrieve_temp_modifiers(script: ScriptTask, type: String) -> Dictionary:
+	var temp_modifiers: Dictionary
+	if type == "properties":
+		temp_modifiers = script.get_property(
+				SP.KEY_TEMP_MOD_PROPERTIES).duplicate()
+	else:
+		temp_modifiers = script.get_property(
+				SP.KEY_TEMP_MOD_COUNTERS).duplicate()
 	for value in temp_modifiers:
 		if str(temp_modifiers[value]) == SP.VALUE_RETRIEVE_INTEGER:
 			temp_modifiers[value] = stored_integer
