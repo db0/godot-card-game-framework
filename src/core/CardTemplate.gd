@@ -380,7 +380,9 @@ func _on_Card_gui_input(event) -> void:
 			# If it's a double-click, then it's not a card drag
 			# But rather it's script execution
 			if event.doubleclick\
-					and check_play_costs() != CFConst.CostsState.IMPOSSIBLE:
+					and ((check_play_costs() != CFConst.CostsState.IMPOSSIBLE
+					and get_state_exec() == "hand")
+					or get_state_exec() == "board"):
 				cfc.card_drag_ongoing = null
 				execute_scripts()
 			# If it's a long click it might be because
@@ -436,11 +438,6 @@ func _on_Card_gui_input(event) -> void:
 						potential_container.highlight.set_highlight(false)
 					move_to(destination)
 					_focus_completed = false
-					#emit_signal("card_dropped",self)
-		elif event.is_pressed() and event.get_button_index() == 2:
-			targeting_arrow.initiate_targeting()
-		elif not event.is_pressed() and event.get_button_index() == 2:
-			targeting_arrow.complete_targeting()
 
 
 # Triggers the focus-out effect on the card
@@ -497,7 +494,8 @@ func modify_property(property: String, value, is_init = false, check := false) -
 	if not property in properties.keys() and not is_init:
 		retcode = CFConst.ReturnCode.FAILED
 	elif typeof(properties.get(property)) == typeof(value)\
-			and properties.get(property) == value:
+			and properties.get(property) == value\
+			and not is_init:
 		retcode = CFConst.ReturnCode.OK
 	elif typeof(properties.get(property)) != typeof(value)\
 			and str(properties.get(property)) == str(value):
