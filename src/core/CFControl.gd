@@ -74,6 +74,13 @@ var alterant_engine = load(CFConst.PATH_ALTERANT_ENGINE)
 # dictionary, and use them for the next time. This scripts which read properties
 # or counters to be placed even in _process() while there's alterants in play.
 var alterant_cache: Dictionary
+# This is a copy of card.temp_property_modifiers
+# We store it globally for games which want to have access to it,
+# before subject cards are selected
+#
+# This dictionary is not used by default anywhere in the framework.
+# A game need to explicitly make use of it.
+var card_temp_property_modifiers = {}
 
 func _ready() -> void:
 	init_settings_from_file()
@@ -130,7 +137,7 @@ func map_node(node) -> void:
 	var node_name: String = node.name.to_lower()
 	# I don't know why but suring UT sometimes I get duplicate board nodes.
 	# I guess the queue_free is not as fast before the next test
-	if 'board' in node_name: 
+	if 'board' in node_name:
 		node_name = 'board'
 	NMAP[node_name] = node
 	var add_main = 0
