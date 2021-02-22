@@ -21,6 +21,7 @@ func before_each():
 
 
 func test_store_integer_inverted():
+# warning-ignore:return_value_discarded
 	board.counters.mod_counter("research", 3)
 	card.scripts = {"manual": {
 			"hand": [
@@ -46,7 +47,9 @@ func test_store_integer_inverted():
 	assert_eq(discard.get_card_count(),3, "3 cards should have been discarded")
 
 func test_store_integer_with_counters():
+# warning-ignore:return_value_discarded
 	board.counters.mod_counter("research", 3)
+# warning-ignore:return_value_discarded
 	board.counters.mod_counter("credits", 5, true)
 	card.scripts = {"manual": {
 			"hand": [
@@ -100,7 +103,9 @@ func test_store_integer_with_tokens():
 	assert_eq(discard.get_card_count(),2, "2 cards should have been discarded")
 
 func test_retrieve_integer_temp_mod_properties():
+# warning-ignore:return_value_discarded
 	board.counters.mod_counter("research", 2)
+# warning-ignore:return_value_discarded
 	target.modify_property("Cost", 1)
 	card.scripts = {"manual": {"hand": [
 			{
@@ -140,7 +145,9 @@ func test_retrieve_integer_temp_mod_properties():
 		"Draw the temp modified amount of cards")
 
 func test_retrieve_integer_temp_mod_counter():
+# warning-ignore:return_value_discarded
 	board.counters.mod_counter("research", 5)
+# warning-ignore:return_value_discarded
 	board.counters.mod_counter("credits", 2, true)
 	card.scripts = {"manual": {"hand": [
 			{
