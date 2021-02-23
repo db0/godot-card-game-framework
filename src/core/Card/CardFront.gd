@@ -50,6 +50,15 @@ onready var card_owner = get_parent().get_parent()
 # Set a label node's text.
 # As the string becomes longer, the font size becomes smaller
 func set_label_text(node: Label, value):
+	var working_value: String
+	# If the label node has been set to uppercase the text
+	# Then we need to work off-of uppercased text value
+	# otherwise our calculation will be off and we'll
+	# end up extending the rect_size.y anyway
+	if node.uppercase:
+		working_value = value.to_upper()
+	else:
+		working_value = value
 	_capture_original_font_size(node)
 	# We do not want some fields, like the name, to be too small.
 	# see CardConfig.TEXT_EXPANSION_MULTIPLIER documentation
@@ -71,7 +80,7 @@ func set_label_text(node: Label, value):
 	# This calculates the amount of vertical pixels the text would take
 	# once it was word-wrapped.
 	var label_rect_y = label_font.get_wordwrap_string_size(
-			value, label_size.x).y \
+			working_value, label_size.x).y \
 			/ line_height \
 			* (line_height + line_spacing) \
 			- line_spacing
@@ -84,7 +93,7 @@ func set_label_text(node: Label, value):
 			label_font.size = 2
 			break
 		label_rect_y = label_font.get_wordwrap_string_size(
-				value,label_size.x).y \
+				working_value,label_size.x).y \
 				/ line_height \
 				* (line_height + line_spacing) \
 				- line_spacing
@@ -94,12 +103,12 @@ func set_label_text(node: Label, value):
 	# initial amount,m for this purpose.
 	if label_rect_y > label_size.y:
 		_rect_adjustment += label_rect_y - label_size.y
-	if value == "":
+	if working_value == "":
 		_rect_adjustment -= node.rect_size.y
 		node.visible = false
 	node.set("custom_fonts/font", label_font)
 	node.rect_min_size = label_size
-	node.text = value
+	node.text = working_value
 	# After any adjustmen of labels, we make sure the compensation_label font size
 	# is adjusted again, if needed, to avoid exceeding the card borders.
 	if compensation_label != ''\

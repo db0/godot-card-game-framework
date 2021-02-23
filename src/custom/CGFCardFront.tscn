@@ -160,9 +160,8 @@ margin_bottom = 240.0
 mouse_filter = 2
 
 [node name="Cost" type="Label" parent="Margin/CardText/HB"]
-margin_top = -1.0
 margin_right = 40.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 rect_min_size = Vector2( 40, 13 )
 custom_fonts/font = SubResource( 8 )
 custom_colors/font_color = Color( 0.658824, 0.541176, 0, 1 )
@@ -171,9 +170,8 @@ valign = 1
 
 [node name="Power" type="Label" parent="Margin/CardText/HB"]
 margin_left = 44.0
-margin_top = -1.0
 margin_right = 146.0
-margin_bottom = 12.0
+margin_bottom = 13.0
 rect_min_size = Vector2( 40, 13 )
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 8 )

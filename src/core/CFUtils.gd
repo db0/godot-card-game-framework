@@ -46,10 +46,11 @@ static func randf_range(from: float, to: float) -> float:
 # Returns a string of all elements in the array, separared by the
 # provided separator
 static func array_join(arr: Array, separator = "") -> String:
-	var output = "";
+	var output : String = ""
 	for s in arr:
 		output += str(s) + separator
-	output = output.left( output.length() - separator.length() )
+	# Remove the leftover separator
+	output = output.rstrip(separator)
 	return output
 
 
