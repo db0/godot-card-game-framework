@@ -16,6 +16,10 @@ This was the dedfault behavour until now, but now it allows you to have numbers 
 Also it's not possible to not use a compensation label. If you specify an empty string as the `compensation_label`, then the game will not try to adjust the size of anything. This assumes you have a card
 Layout that doesn't need to be dynamically adjusted for missing text.
 
+### Bugfixes
+
+* Fixed uppercased-set Card Front labels messing with their text autoadjustment y-size
+
 ## New Features
 
 * Made label size compensation optional.
