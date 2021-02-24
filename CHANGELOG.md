@@ -35,6 +35,7 @@ Layout that doesn't need to be dynamically adjusted for missing text.
 * Refactored the way the script task loop is handled. If you've extended the ScriptingEngine, you will need to adjust your _init()
 * class SP now moved to custom and is a dummy class extending ScriptProperties (which contains the old SP). This way developers can extend the SP class while still allowing drag&drop upgrades
 * Can now store an integer with the difference of mod_tokens or mod_counter operations. This allows to do effects such as "Discard all blue credits. Draw a card per credit discarded".
+* Can now compare card properties against counter values
 * temp_mod_counters and temp_mod_properties can now use retrieve_integer on their values
 
 

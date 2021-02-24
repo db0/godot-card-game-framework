@@ -622,6 +622,11 @@ const FILTER_STATE := "filter_state_"
 #
 # Each value is a dictionary where the  key is a card property, and the value
 # is the desired property value to match on the filtered card.
+#
+# If the card property is numerical, 
+# then the value can be a string. 
+# In that case it is assumed that the string is a counter name 
+# against which to compare the property value
 const FILTER_PROPERTIES := "filter_properties"
 #Value Type: Node.
 #
@@ -1164,9 +1169,17 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 					and comparison_type == "ne":
 				card_matches = false
 		elif property in CardConfig.PROPERTIES_NUMBERS:
+			var comparison_value: int
+			if typeof(property_filters[property]) == TYPE_INT:
+				comparison_value = property_filters[property]
+			# We support comparing against counters. We assume any string
+			# value is a counter name
+			else:
+				comparison_value = cfc.NMAP.board.counters.get_counter(
+						property_filters[property])
 			if not CFUtils.compare_numbers(
 					card.get_property(property),
-					property_filters[property],
+					comparison_value,
 					comparison_type):
 				card_matches = false
 		else:

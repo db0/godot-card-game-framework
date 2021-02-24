@@ -368,3 +368,38 @@ func test_state_filter_parent():
 			"Card stayed face-up since filter_parent didn't match")
 	assert_false(cards[1].is_faceup,
 			"Card turned face-down since filter_parent matches")
+
+func test_counter_comparison():
+	board.counters.mod_counter("research", 3)
+	cards[4].modify_property("Cost", 2)
+	cards[0].modify_property("Cost", 3)
+	yield(table_move(cards[0], Vector2(500,200)), "completed")
+	yield(table_move(cards[4], Vector2(800,200)), "completed")
+	cards[1].scripts = {"manual": {"hand": [
+			{"name": "rotate_card",
+			"subject": "boardseek",
+			"subject_count": "all",
+			"filter_state_seek": [{
+				"filter_properties2": {"Cost": "research"}
+			}],
+			"degrees": 180}]}}
+	cards[1].execute_scripts()
+	yield(yield_to(target._tween, "tween_all_completed", 0.2), YIELD)
+	assert_eq(cards[0].card_rotation, 180,
+			"Matching counter comparison rotated")
+	assert_eq(cards[4].card_rotation, 0,
+			"Card not matching  counter comparison not rotated")
+	cards[1].scripts = {"manual": {"hand": [
+			{"name": "rotate_card",
+			"subject": "boardseek",
+			"subject_count": "all",
+			"filter_state_seek": [{
+				"filter_properties2": {"Cost": "research", "comparison": "lt"}
+			}],
+			"degrees": 90}]}}
+	cards[1].execute_scripts()
+	yield(yield_to(target._tween, "tween_all_completed", 0.2), YIELD)
+	assert_eq(cards[0].card_rotation, 180,
+			"Failing comparison not rotated ")
+	assert_eq(cards[4].card_rotation, 90,
+			"Matching comparison  rotated")
