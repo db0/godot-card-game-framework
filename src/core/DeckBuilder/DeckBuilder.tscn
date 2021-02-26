@@ -32,13 +32,13 @@ outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=10]
+[sub_resource type="DynamicFont" id=6]
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=11]
+[sub_resource type="DynamicFont" id=7]
 use_filter = true
 font_data = ExtResource( 3 )
 
@@ -128,7 +128,7 @@ text = "Name"
 margin_left = 53.0
 margin_right = 77.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 10 )
+custom_fonts/font = SubResource( 6 )
 text = "R"
 
 [node name="NoticeLabel" type="Label" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer"]
@@ -138,7 +138,7 @@ margin_top = 3.0
 margin_right = 633.0
 margin_bottom = 22.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 11 )
+custom_fonts/font = SubResource( 7 )
 custom_colors/font_color = Color( 1, 0.992157, 0, 1 )
 text = "Deck deleted but current list not cleared"
 align = 2
@@ -161,14 +161,14 @@ margin_bottom = 674.0
 [node name="Save" type="Button" parent="VBC/HBC/MC/CurrentDeck/Buttons"]
 margin_right = 54.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 10 )
+custom_fonts/font = SubResource( 6 )
 text = "Save"
 
 [node name="Load" type="MenuButton" parent="VBC/HBC/MC/CurrentDeck/Buttons"]
 margin_left = 58.0
 margin_right = 110.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 10 )
+custom_fonts/font = SubResource( 6 )
 text = "Load"
 flat = false
 script = ExtResource( 6 )
@@ -177,14 +177,14 @@ script = ExtResource( 6 )
 margin_left = 114.0
 margin_right = 175.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 10 )
+custom_fonts/font = SubResource( 6 )
 text = "Reset"
 
 [node name="Delete" type="Button" parent="VBC/HBC/MC/CurrentDeck/Buttons"]
 margin_left = 179.0
 margin_right = 244.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 10 )
+custom_fonts/font = SubResource( 6 )
 text = "Delete"
 
 [node name="MC2" type="MarginContainer" parent="VBC/HBC"]
@@ -207,7 +207,7 @@ margin_bottom = 27.0
 [node name="ClearFilters" type="Button" parent="VBC/HBC/MC2/AvailableCards/HBC"]
 margin_right = 24.0
 margin_bottom = 27.0
-custom_fonts/font = SubResource( 10 )
+custom_fonts/font = SubResource( 6 )
 text = "X"
 
 [node name="FilterLine" type="LineEdit" parent="VBC/HBC/MC2/AvailableCards/HBC"]
@@ -245,26 +245,27 @@ margin_right = 314.0
 margin_top = 35.0
 margin_right = 628.0
 margin_bottom = 54.0
-custom_constants/separation = 60
 
 [node name="Quantity" type="Label" parent="VBC/HBC/MC2/AvailableCards/CardListHeaders"]
-margin_right = 74.0
+margin_right = 150.0
 margin_bottom = 19.0
+rect_min_size = Vector2( 150, 0 )
 custom_fonts/font = SubResource( 5 )
 text = "Quantity"
 
 [node name="Name" type="Label" parent="VBC/HBC/MC2/AvailableCards/CardListHeaders"]
-margin_left = 134.0
-margin_right = 527.0
+margin_left = 154.0
+margin_right = 524.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 5 )
 text = "Name"
 
 [node name="Type" type="Label" parent="VBC/HBC/MC2/AvailableCards/CardListHeaders"]
-margin_left = 587.0
+margin_left = 528.0
 margin_right = 628.0
 margin_bottom = 19.0
+rect_min_size = Vector2( 100, 0 )
 custom_fonts/font = SubResource( 5 )
 text = "Type"
 

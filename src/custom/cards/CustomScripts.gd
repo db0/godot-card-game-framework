@@ -6,8 +6,8 @@ extends Reference
 
 var costs_dry_run := false
 
-func _init(dry_run_req) -> void:
-	costs_dry_run = dry_run_req
+func _init(_dry_run) -> void:
+	costs_dry_run = _dry_run
 # This fuction executes custom scripts
 #
 # It relies on the definition of each script being based the object's name

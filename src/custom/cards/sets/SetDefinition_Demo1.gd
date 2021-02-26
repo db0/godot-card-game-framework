@@ -12,6 +12,7 @@ const CARDS := {
 				+ "\n\nWhile in hand, this will spawn a test card on the board.",
 		"Cost": 0,
 		"Power": 0,
+		"_max_allowed": 1,
 	},
 	"Test Card 2": {
 		"Type": "Red",
@@ -23,5 +24,6 @@ const CARDS := {
 				+ "from the game",
 		"Cost": 2,
 		"Power": 5,
+		"_max_allowed": 10,
 	},
 }
