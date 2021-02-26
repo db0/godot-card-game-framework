@@ -401,3 +401,36 @@ func test_subject_previous_with_filters():
 	yield(execute_with_target(card,cards[4]), "completed")
 	assert_eq(board.counters.get_counter("research"),3,
 			"Counter increased by specified amount")
+
+# Tests that a card subject can grab from the next
+# As long as the targeting is_cost
+func test_subject_next():
+	card.scripts = {
+			"manual": {
+				"hand":[
+					# This has to go before the move, or the check for
+					# the parent will happen after the card is already
+					# in the discard pile
+					{
+						"name": "mod_counter",
+						"counter_name": "research",
+						"modification": 3,
+						"subject": "previous",
+						"filter_state_subject": [
+							{"filter_parent": cfc.NMAP.hand},
+						],
+					},
+					{
+						"name": "move_card_to_container",
+						"dest_container": cfc.NMAP.discard,
+						"subject": "target",
+						"is_cost": true,
+					},
+				],
+			},
+		}
+	yield(execute_with_target(card,target), "completed")
+	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+	assert_eq(board.counters.get_counter("research"),3,
+			"Counter set to the specified amount")
+

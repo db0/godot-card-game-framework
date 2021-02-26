@@ -69,28 +69,6 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			for c in subjects_array:
 				if not SP.check_validity(c, script_definition, "subject"):
 					is_valid = false
-			# If we have requested to use the previous target,
-			# but the subject_array is empty, we check if there's a dry
-			# run target available and try to use that instead.
-			# This allows a "previous" subject task, to be placed before
-			# the task which requires a target, as long as the targetting task
-			# is_cost.
-			# This is useful for example, when the targeting task would move
-			# The subject to another pile but we want to check (#SUBJECT_PARENT)
-			# against the parent it had before it moved.
-			if subjects_array.empty():
-				if owner_card.targeting_arrow.target_dry_run_card\
-						and SP.check_validity(
-						owner_card.targeting_arrow.target_dry_run_card,
-						script_definition,
-						"subject"):
-					# Unlike the KEY_SUBJECT_V_TARGET, using the
-					# dry_run_card with the KEY_SUBJECT_V_PREVIOUS value
-					# does not clear the target_dry_run_card value
-					subjects_array.append(
-							owner_card.targeting_arrow.target_dry_run_card)
-				else:
-					is_valid = false
 		SP.KEY_SUBJECT_V_TARGET:
 			var c = _initiate_card_targeting()
 			if c is GDScriptFunctionState: # Still working.

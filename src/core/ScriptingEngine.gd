@@ -84,6 +84,21 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			"modifier": _retrieve_temp_modifiers(script, "properties")
 		}
 		if not script.is_primed:
+			# If we have requested to use the previous target,
+			# but the subject_array is empty, we check if
+			# subject available in the next task and try to use that instead.
+			# This allows a "previous" subject task, to be placed before
+			# the task which requires a target, as long as the targetting task
+			# "is_cost".
+			# This is useful for example, when the targeting task would move
+			# The subject to another pile but we want to check (#SUBJECT_PARENT)
+			# against the parent it had before it was moved.
+			if script.get_property(SP.KEY_SUBJECT) == SP.KEY_SUBJECT_V_PREVIOUS\
+					and prev_subjects.size() == 0:
+				var current_index := scripts_queue.find(task)
+				var next_task: ScriptTask =  scripts_queue[current_index + 1]
+				if next_task.subjects.size() > 0:
+					prev_subjects = next_task.subjects
 			script.prime(prev_subjects,run_type,stored_integer)
 			# In case the task involves targetting, we need to wait on further
 			# execution until targetting has completed
