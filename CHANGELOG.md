@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.8 (Ongoing)
+## 1.8
 
 ### Important
 
@@ -16,6 +16,8 @@ This was the dedfault behavour until now, but now it allows you to have numbers 
 Also it's not possible to not use a compensation label. If you specify an empty string as the `compensation_label`, then the game will not try to adjust the size of anything. This assumes you have a card
 Layout that doesn't need to be dynamically adjusted for missing text.
 
+`common_pre_move_scripts()` and `common_post_move_scripts()` have changed the variables they expect. if you've extended them, you need to replace the arg `scripted_move: bool` with `tags: Array` and use it accordingly.
+tags will contain the tags send to the `move_to()` method
 
 * Fixed uppercased-set Card Front labels messing with their text autoadjustment y-size
 
