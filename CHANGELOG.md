@@ -40,6 +40,7 @@ Layout that doesn't need to be dynamically adjusted for missing text.
 * Can now store an integer with the difference of mod_tokens or mod_counter operations. This allows to do effects such as "Discard all blue credits. Draw a card per credit discarded".
 * Can now compare card properties against counter values
 * temp_mod_counters and temp_mod_properties can now use retrieve_integer on their values
+* All card manipulation Signals now send a list of tags marking the type of effect that triggered them. By Default it's "Manual" for 
 
 
 ## 1.7 

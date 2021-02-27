@@ -297,14 +297,26 @@ const KEY_ASK_INTEGER_MIN := "ask_int_min"
 # Specifies the maximum value the number needs to have
 const KEY_ASK_INTEGER_MAX := "ask_int_max"
 # Value Type: Array of Strings
+# All card manipulation Signals will send a list of tags
+# marking the type of effect that triggered them. 
 #
-# A number of keywords you can assign to your script, which details
-# what function it is serving.
-# These can be hooked one by the [AlterantEngine]
-# to figure out if this script effects should be altered.
+# By Default it's the tags sent is just ["Manual"] 
+# for manipulation via the core API methods.
+# However when the manipulation is done via ScriptingEngine, the tags
+# can be modified by the script defintion. The ScrptingEngine will always
+# mark them as "Scripted" instead of "Manual" at the least.
 #
-# A script has to have all the tags a [KEY_ALTERANTS](#KEY_ALTERANTS) task
-# is looking for, before it will be considered to be altered.
+# With this key, you can specify a number of keywords 
+# you can assign to your script, which details what function it is serving.
+# These can be hooked on by the [AlterantEngine] and the [ScriptingEngine]
+# to figure out if this script effects should be altered or triggered. 
+#
+# Tags specified with ScriptTasks will be injected along with list sent
+# by the ScriptingEngine. So for example `"tags": ["PlayCost"]` 
+# will be sent as ["Scripted", "PlayCost"] by the ScriptingEngine.
+#
+# A signal or script has to have all the tags a 
+# [FILTER_TAGS](#FILTER_TAGS) task is looking for, in order to be considered.
 const KEY_TAGS := "tags"
 # Value Type: Dictionary
 #
@@ -759,7 +771,7 @@ const FILTER_MODIFIED_PROPERTY_PREV_VALUE := "previous_value"
 # Value Type: String or Array of Strings
 #
 # A number of keywords to try and match against [KEY_TAGS](#KEY_TAGS)
-# passed by the script definition.
+# passed by the script or signal definition.
 const FILTER_TAGS := "filter_tags"
 # Value Type: String
 #

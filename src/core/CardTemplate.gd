@@ -479,7 +479,11 @@ func setup() -> void:
 		read_properties = properties.duplicate()
 	for property in read_properties.keys():
 		# warning-ignore:return_value_discarded
-		modify_property(property,read_properties[property], true)
+		modify_property(
+				property,
+				read_properties[property],
+				false,
+				["Init"])
 
 
 # Changes the property stored in the properties dictionary of this card
@@ -492,9 +496,12 @@ func setup() -> void:
 func modify_property(
 			property: String,
 			value,
-			is_init = false,
-			check := false) -> int:
+			check := false,
+			tags := ["Manual"]) -> int:
 	var retcode: int
+	var is_init := false
+	if "Init" in tags:
+		is_init = true
 	if not property in properties.keys() and not is_init:
 		retcode = CFConst.ReturnCode.FAILED
 	elif typeof(properties.get(property)) == typeof(value)\
@@ -536,11 +543,17 @@ func modify_property(
 			else:
 				var label_node = card_front.card_labels[property]
 				if not is_init:
-					emit_signal("card_properties_modified",
-							self, "card_properties_modified",
-							{"property_name": property,
-							"new_property_value": value,
-							"previous_property_value": previous_value})
+					emit_signal(
+							"card_properties_modified",
+							self,
+							"card_properties_modified",
+							{
+								"property_name": property,
+								"new_property_value": value,
+								"previous_property_value": previous_value,
+								"tags": tags
+							}
+					)
 				# These are int or float properties which need to be converted
 				# to a string with some formatting.
 				#
@@ -690,7 +703,11 @@ func get_is_attachment() -> bool:
 #
 # * Returns CFConst.ReturnCode.CHANGED if the card actually changed rotation
 # * Returns CFConst.ReturnCode.OK if the card was already in the correct rotation
-func set_is_faceup(value: bool, instant := false, check := false) -> int:
+func set_is_faceup(
+			value: bool,
+			instant := false,
+			check := false,
+			tags := ["Manual"]) -> int:
 	var retcode: int
 	if value == is_faceup:
 		retcode = CFConst.ReturnCode.OK
@@ -742,7 +759,14 @@ func set_is_faceup(value: bool, instant := false, check := false) -> int:
 					var dupe_back = dupe_card.get_node("Control/Back")
 					_flip_card(dupe_front, dupe_back, true)
 		retcode = CFConst.ReturnCode.CHANGED
-		emit_signal("card_flipped", self, "card_flipped", {"is_faceup": value})
+		emit_signal(
+				"card_flipped",
+				self,
+				"card_flipped",
+				{
+					"is_faceup": value,
+					"tags": tags,
+				})
 	# If we're doing a check, then we just report CHANGED.
 	else:
 		retcode = CFConst.ReturnCode.CHANGED
@@ -842,7 +866,12 @@ func set_name(value : String) -> void:
 # * Returns CFConst.ReturnCode.CHANGED if the card actually changed rotation.
 # * Returns CFConst.ReturnCode.OK if the card was already in the correct rotation.
 # * Returns CFConst.ReturnCode.FAILED if an invalid rotation was specified.
-func set_card_rotation(value: int, toggle := false, start_tween := true, check := false) -> int:
+func set_card_rotation(
+			value: int,
+			toggle := false,
+			start_tween := true,
+			check := false,
+			tags := ["Manual"]) -> int:
 	var retcode
 	# For cards we only allow orthogonal degrees of rotation
 	# If it's not, we consider the request failed
@@ -896,7 +925,14 @@ func set_card_rotation(value: int, toggle := false, start_tween := true, check :
 			#$Control/Tokens.rotation_degrees = -value # need to figure this out
 			# When the card actually changes orientation
 			# We report that it changed.
-			emit_signal("card_rotated", self, "card_rotated",  {"degrees": value})
+			emit_signal(
+					"card_rotated", self,
+					"card_rotated",
+					{
+						"degrees": value,
+						"tags": tags,
+					}
+			)
 
 		retcode = CFConst.ReturnCode.CHANGED
 	return retcode
@@ -927,7 +963,7 @@ func get_potential_placement_slot() -> BoardPlacementSlot:
 func move_to(targetHost: Node,
 		index := -1,
 		board_position = null,
-		scripted_move = false) -> void:
+		tags := ["Manual"]) -> void:
 #	if cfc.game_settings.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -942,7 +978,7 @@ func move_to(targetHost: Node,
 	# if the placement to the board requested is invalid
 	# depending on the board_placement variable
 	targetHost = targetHost.get_final_placement_node(self)
-	targetHost = common_pre_move_scripts(targetHost, parentHost, scripted_move)
+	targetHost = common_pre_move_scripts(targetHost, parentHost, tags)
 	if targetHost == cfc.NMAP.board and not board_position:
 		match board_placement:
 			BoardPlacement.NONE:
@@ -1017,7 +1053,12 @@ func move_to(targetHost: Node,
 			emit_signal("card_moved_to_hand",
 					self,
 					"card_moved_to_hand",
-					 {"destination": targetHost, "source": parentHost})
+					 {
+						"destination": targetHost,
+						"source": parentHost,
+						"tags": tags
+					}
+			)
 			# We reorganize the left over cards in hand.
 			for c in targetHost.get_all_cards():
 				if c != self:
@@ -1052,7 +1093,12 @@ func move_to(targetHost: Node,
 				emit_signal("card_moved_to_pile",
 						self,
 						"card_moved_to_pile",
-						{"destination": targetHost, "source": parentHost})
+						{
+							"destination": targetHost,
+							"source": parentHost,
+							"tags": tags
+						}
+				)
 				# We start the flipping animation here, even though it also
 				# set in the card state, because we want to see it while the
 				# card is moving to the CardContainer
@@ -1091,7 +1137,12 @@ func move_to(targetHost: Node,
 			emit_signal("card_moved_to_board",
 					self,
 					"card_moved_to_board",
-					{"destination": targetHost, "source": parentHost})
+					 {
+						"destination": targetHost,
+						"source": parentHost,
+						"tags": tags
+					}
+			)
 		if parentHost and parentHost.is_in_group("hands"):
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
@@ -1165,7 +1216,7 @@ func move_to(targetHost: Node,
 				raise()
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP
-	common_post_move_scripts(targetHost, parentHost, scripted_move)
+	common_post_move_scripts(targetHost, parentHost, tags)
 
 
 # Executes the tasks defined in the card's scripts in order.
@@ -1328,7 +1379,10 @@ func get_state_exec() -> String:
 
 
 # Handles the card becoming an attachment for a specified host Card object
-func attach_to_host(host: Card, is_following_previous_host = false) -> void:
+func attach_to_host(
+			host: Card,
+			is_following_previous_host = false,
+			tags := ["Manual"]) -> void:
 	# First we check if the selected host is not the current host anyway.
 	# If it is, we do nothing else
 	if host != current_host_card:
@@ -1346,7 +1400,7 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 			emit_signal("card_unattached",
 					self,
 					"card_unattached",
-					{"host": current_host_card})
+					{"host": current_host_card, "tags": tags})
 		# If card was on a grid slot, we clear that occupation
 		if _placement_slot:
 			_placement_slot.occupying_card = null
@@ -1377,7 +1431,7 @@ func attach_to_host(host: Card, is_following_previous_host = false) -> void:
 		emit_signal("card_attached",
 				self,
 				"card_attached",
-				{"host": host})
+				{"host": host, "tags": tags})
 
 
 # Overrides the built-in get_class to
@@ -1582,7 +1636,7 @@ func check_play_costs() -> Color:
 # to instead be redirected to a pile.
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
-func common_pre_move_scripts(new_host: Node, old_host: Node, scripted_move: bool) -> Node:
+func common_pre_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -> Node:
 	return(new_host)
 
 # This function can be overriden by any class extending Card, in order to provide
@@ -1595,7 +1649,7 @@ func common_pre_move_scripts(new_host: Node, old_host: Node, scripted_move: bool
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
-func common_post_move_scripts(new_host: Node, old_host: Node, scripted_move: bool) -> void:
+func common_post_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -> void:
 	pass
 
 
@@ -1770,12 +1824,12 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 
 # Clears all attachment/hosting status.
 # It is typically called when a card is removed from the table
-func _clear_attachment_status() -> void:
+func _clear_attachment_status(tags := ["Manual"]) -> void:
 	if current_host_card:
 		emit_signal("card_unattached",
 				self,
 				"card_unattached",
-				{"host": current_host_card})
+				{"host": current_host_card, "tags": tags})
 		current_host_card.attachments.erase(self)
 		current_host_card = null
 	for card in attachments:

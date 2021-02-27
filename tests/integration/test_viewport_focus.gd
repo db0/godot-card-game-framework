@@ -69,7 +69,8 @@ func test_viewed_card_in_pile():
 
 func test_retain_properties():
 	var card : Card = cards[0]
-	card.modify_property("Cost", 100, true)
+	# warning-ignore:return_value_discarded
+	card.modify_property("Cost", 100, false, ["Init"])
 	yield(move_mouse(card.global_position), 'completed')
 	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
 	var focus_dupe = main._previously_focused_cards[0]

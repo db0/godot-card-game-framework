@@ -93,7 +93,8 @@ func mod_counter(counter_name: String,
 		value: int,
 		set_to_mod := false,
 		check := false,
-		requesting_card: Card = null) -> int:
+		requesting_card: Card = null,
+		tags := ["Manual"]) -> int:
 	var retcode = CFConst.ReturnCode.CHANGED
 	if counters.get(counter_name, null) == null:
 		retcode = CFConst.ReturnCode.FAILED
@@ -114,10 +115,17 @@ func mod_counter(counter_name: String,
 				else:
 					counters[counter_name] += value
 				_labels[counter_name].text = str(counters[counter_name])
-				emit_signal("counter_modified", requesting_card, "counter_modified",
-						{SP.TRIGGER_COUNTER_NAME: counter_name,
-						SP.TRIGGER_PREV_COUNT: prev_value,
-						SP.TRIGGER_NEW_COUNT: counters[counter_name]})
+				emit_signal(
+						"counter_modified", 
+						requesting_card, 
+						"counter_modified",
+						{
+							SP.TRIGGER_COUNTER_NAME: counter_name,
+							SP.TRIGGER_PREV_COUNT: prev_value,
+							SP.TRIGGER_NEW_COUNT: counters[counter_name],
+							"tags": tags,
+						}
+				)
 	return(retcode)
 
 

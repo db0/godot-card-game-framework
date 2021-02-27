@@ -38,9 +38,11 @@ func test_signals():
 	card.card_rotation = 90
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
-				card,"card_flipped",[card,"card_flipped",{"is_faceup": false}])
+				card,"card_flipped",[card,"card_flipped",{"is_faceup": false,
+				"tags": ["Scripted"]}])
 	assert_signal_emitted_with_parameters(
-				card,"card_rotated",[card,"card_rotated",{"degrees": 90}])
+				card,"card_rotated",[card,"card_rotated",{"degrees": 90,
+				"tags": ["Manual"]}])
 	# Test "any" trigger works
 	target.scripts = {"card_rotated": { "board": [
 			{"name": "flip_card",
@@ -50,9 +52,12 @@ func test_signals():
 	target.card_rotation = 90
 	yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
-				target,"card_flipped",[target,"card_flipped",{"is_faceup": false}])
+				target,"card_flipped",[target,"card_flipped",
+				{"is_faceup": false,
+				"tags": ["Scripted"]}])
 	assert_signal_emitted_with_parameters(
-				target,"card_rotated",[target,"card_rotated",{"degrees": 90}])
+				target,"card_rotated",[target,"card_rotated",{"degrees": 90,
+				"tags": ["Manual"]}])
 
 
 func test_card_properties_filter():
@@ -185,7 +190,8 @@ func test_card_rotated():
 	assert_signal_emitted_with_parameters(
 				target,"card_rotated",
 				[target,"card_rotated",
-				{"degrees": 90}])
+				{"degrees": 90,
+				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
@@ -224,7 +230,8 @@ func test_card_flipped():
 	assert_signal_emitted_with_parameters(
 				target,"card_flipped",
 				[target,"card_flipped",
-				{"is_faceup": false}])
+				{"is_faceup": false,
+				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
@@ -267,7 +274,8 @@ func test_card_moved_to_hand():
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_hand",
 				[target,"card_moved_to_hand",
-				{"destination": hand, "source": deck}])
+				{"destination": hand, "source": deck,
+				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 
@@ -285,7 +293,8 @@ func test_card_moved_to_board():
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_board",
 				[target,"card_moved_to_board",
-				{"destination": board, "source": hand}])
+				{"destination": board, "source": hand,
+				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 
@@ -344,7 +353,8 @@ func test_card_moved_to_pile():
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_pile",
 				[target,"card_moved_to_pile",
-				{"destination": discard, "source": hand}])
+				{"destination": discard, "source": hand,
+				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
@@ -431,7 +441,8 @@ func test_card_token_modified():
 				[target,"card_token_modified",
 				{"token_name": "void",
 				"previous_count": 5,
-				"new_count": 1}])
+				"new_count": 1,
+				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
@@ -519,7 +530,8 @@ func test_counter_modified():
 				[null,"counter_modified",
 				{"counter_name": "research",
 				"previous_count": 5,
-				"new_count": 1}])
+				"new_count": 1,
+				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
@@ -577,7 +589,8 @@ func test_card_un_attached():
 	assert_signal_emitted_with_parameters(
 				target,"card_attached",
 				[target,"card_attached",
-				{"host": host}])
+				{"host": host,
+				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	target.move_to(discard)
@@ -585,7 +598,8 @@ func test_card_un_attached():
 	assert_signal_emitted_with_parameters(
 				target,"card_unattached",
 				[target,"card_unattached",
-				{"host": host}])
+				{"host": host,
+				"tags": ["Manual"]}])
 	assert_false(cards[3].is_faceup,
 			"Card turned face-down after signal trigger")
 
@@ -630,7 +644,8 @@ func test_card_properties_modified():
 				[target,"card_properties_modified",
 				{"property_name": "Type",
 				"new_property_value": "Orange",
-				"previous_property_value": "Green"}])
+				"previous_property_value": "Green",
+				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger match")
 	assert_true(cards[2].is_faceup,

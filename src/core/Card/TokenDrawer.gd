@@ -101,7 +101,12 @@ func token_drawer(requested_state := true) -> void:
 #
 # If the amount of existing tokens of that type drops to 0 or lower,
 # the token node is also removed.
-func mod_token(token_name : String, mod := 1, set_to_mod := false, check := false) -> int:
+func mod_token(
+			token_name : String,
+			mod := 1,
+			set_to_mod := false,
+			check := false,
+			tags := ["Manual"]) -> int:
 	var retcode : int
 	# If the player requested a token name that has not been defined by the game
 	# we return a failure
@@ -156,10 +161,14 @@ func mod_token(token_name : String, mod := 1, set_to_mod := false, check := fals
 			elif is_drawer_open:
 				token.expand()
 			retcode = CFConst.ReturnCode.CHANGED
-			owner_card.emit_signal("card_token_modified", owner_card, "card_token_modified",
+			owner_card.emit_signal(
+					"card_token_modified",
+					owner_card,
+					"card_token_modified",
 					{SP.TRIGGER_TOKEN_NAME: token.get_token_name(),
 					SP.TRIGGER_PREV_COUNT: prev_value,
-					SP.TRIGGER_NEW_COUNT: new_value})
+					SP.TRIGGER_NEW_COUNT: new_value,
+					"tags": tags})
 	return(retcode)
 
 
