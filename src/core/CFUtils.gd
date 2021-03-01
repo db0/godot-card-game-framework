@@ -42,6 +42,10 @@ static func randi_range(from: int, to: int) -> int:
 static func randf_range(from: float, to: float) -> float:
 	return cfc.game_rng.randf_range(from, to)
 
+# Returns a random boolean
+static func rand_bool() -> bool:
+	var rnd_bool = {0:true, 1: false}
+	return(rnd_bool[randi_range(0,1)])
 
 # Returns a string of all elements in the array, separared by the
 # provided separator

@@ -2361,11 +2361,15 @@ func _get_oval_angle_by_index(
 	var card_angle
 	if angle == 90:
 		card_angle = 90
+	# Convert oval angle to normal angle
 	else:
-		# Convert oval angle to normal angle
-		card_angle= rad2deg(atan(- ver_rad / hor_rad / tan(deg2rad(angle))))
-		card_angle = card_angle + 90
-	return card_angle
+		# To avoid div/0
+		if hor_rad == 0:
+			card_angle = 90
+		else:
+			card_angle = rad2deg(atan(- ver_rad / hor_rad / tan(deg2rad(angle))))
+			card_angle = card_angle + 90
+	return(card_angle)
 
 
 # Calculate the position after the rotation has been calculated that use oval shape
