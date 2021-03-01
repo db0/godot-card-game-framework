@@ -115,6 +115,10 @@ func _process(_delta: float) -> void:
 # Populates the list of available cards, with all defined cards in the game
 func populate_available_cards() -> void:
 	for card_def in cfc.card_definitions:
+		# This special meta property prevents cards from being used
+		# in deckbuilding. Useful for token cards.
+		if cfc.card_definitions[card_def].get("_hide_in_deckbuilder"):
+			continue
 		var list_card_object = _LIST_CARD_OBJECT_SCENE.instance()
 		_available_cards.add_child(list_card_object)
 		list_card_object.max_allowed = max_quantity

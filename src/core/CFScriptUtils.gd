@@ -88,7 +88,7 @@ static func _generate_trigger_details(task_name, task_properties) -> Dictionary:
 	var details_needed_per_task := {
 		"mod_tokens": [SP.KEY_TOKEN_NAME,],
 		"mod_counter": [SP.KEY_COUNTER_NAME,],
-		"spawn_card": [SP.KEY_SCENE_PATH,],
+		"spawn_card": [SP.KEY_CARD_NAME,],
 		"get_token": [SP.KEY_TOKEN_NAME,],
 		"get_property": [SP.KEY_PROPERTY_NAME,],
 		"get_counter": [SP.KEY_COUNTER_NAME,],}

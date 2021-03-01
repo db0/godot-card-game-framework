@@ -215,14 +215,14 @@ func test_mod_tokens():
 func test_spawn_card():
 	target.scripts = {"manual": {"hand": [
 			{"name": "spawn_card",
-			"scene_path": "res://src/custom/CGFCardTemplate.tscn",
+			"card_name": "Spawn Card",
 			"object_count": 3,
 			"board_position":  Vector2(500,200)}]}}
 	target.execute_scripts()
 	assert_eq(3,board.get_card_count(),
 		"Card spawned on board")
 	card = board.get_card(0)
-	assert_eq("res://src/custom/CGFCardTemplate.tscn",card.filename,
+	assert_eq("res://src/custom/cards/Token.tscn",card.filename,
 		"Card of the correct scene spawned")
 	assert_eq(Card.CardState.ON_PLAY_BOARD,card.state,
 		"Spawned card left in correct state")
@@ -234,7 +234,7 @@ func test_spawn_card():
 			"Third Card spawned in correct location")
 	target.scripts = {"manual": {"hand": [
 			{"name": "spawn_card",
-			"scene_path": "res://src/custom/CGFCardTemplate.tscn",
+			"card_name": "Spawn Card",
 			"object_count": 10,
 			"grid_name":  "BoardPlacementGrid"}]}}
 	target.execute_scripts()

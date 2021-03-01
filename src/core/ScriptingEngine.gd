@@ -373,7 +373,7 @@ func spawn_card(script: ScriptTask) -> void:
 	var card: Card
 	var count: int
 	var alteration = 0
-	var card_scene: String = script.get_property(SP.KEY_SCENE_PATH)
+	var card_name: String = script.get_property(SP.KEY_CARD_NAME)
 	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
 		count = stored_integer
@@ -402,7 +402,7 @@ func spawn_card(script: ScriptTask) -> void:
 				# We need a small delay, to allow a potential new slot to instance
 				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
 				if slot:
-					card = load(card_scene).instance()
+					card = cfc.instance_card(card_name)
 					cfc.NMAP.board.add_child(card)
 					card.position = slot.rect_global_position
 					card._placement_slot = slot
@@ -410,7 +410,7 @@ func spawn_card(script: ScriptTask) -> void:
 					card.state = Card.CardState.ON_PLAY_BOARD
 	else:
 		for iter in range(count + alteration):
-			card = load(card_scene).instance()
+			card = cfc.instance_card(card_name)
 			var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)
 			cfc.NMAP.board.add_child(card)
 			card.position = board_position

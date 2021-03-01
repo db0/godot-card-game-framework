@@ -80,7 +80,8 @@ func _on_Debug_toggled(button_pressed: bool) -> void:
 func load_test_cards(extras := 11) -> void:
 	var test_cards := []
 	for ckey in cfc.card_definitions.keys():
-		test_cards.append(ckey)
+		if ckey != "Spawn Card":
+			test_cards.append(ckey)
 	var test_card_array := []
 	for _i in range(extras):
 		if not test_cards.empty():

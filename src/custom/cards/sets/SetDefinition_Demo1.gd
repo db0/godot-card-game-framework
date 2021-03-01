@@ -26,4 +26,13 @@ const CARDS := {
 		"Power": 5,
 		"_max_allowed": 10,
 	},
+	"Spawn Card": {
+		"Type": "Token",
+		"Tags": [],
+		"Requirements": "",
+		"Abilities": " ",
+		"Cost": 0,
+		"Power": 1,
+		"_hide_in_deckbuilder": true,
+	},
 }

@@ -88,7 +88,7 @@ func test_per_property():
 func test_per_tutor_and_spawn_card_per():
 	target.scripts = {"manual": {"hand": [
 			{"name": "spawn_card",
-			"scene_path": "res://src/custom/CGFCardTemplate.tscn",
+			"card_name": "Spawn Card",
 			"object_count": "per_tutor",
 			"board_position":  Vector2(100,200),
 			"per_tutor": {

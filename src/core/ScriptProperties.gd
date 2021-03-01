@@ -281,11 +281,17 @@ const KEY_OBJECT_COUNT := "object_count"
 # Value Type: String
 #
 # Used in conjunction with the following tasks
-# * [spawn_card](ScriptingEngine#spawn_card)
 # * [add_grid](ScriptingEngine#add_grid)
 #
 # This is the path to the scene we will add to the game.
 const KEY_SCENE_PATH := "scene_path"
+# Value Type: String
+#
+# Used in conjunction with the following tasks
+# * [spawn_card](ScriptingEngine#spawn_card)
+#
+# This is name of the card that will be added to the game.
+const KEY_CARD_NAME := "card_name"
 # Value Type: int
 #
 # Used by the [ask_integer](ScriptingEngine#ask_integer) task.
@@ -779,8 +785,8 @@ const FILTER_TAGS := "filter_tags"
 const FILTER_TASK = "filter_task"
 # Value Type: String
 #
-# Filter used for checking against [KEY_SCENE_PATH](#KEY_SCENE_PATH)
-const FILTER_SCENE_PATH = "filter_scene_path"
+# Filter used for checking against [KEY_CARD_NAME](#KEY_CARD_NAME)
+const FILTER_CARD_NAME = "filter_card_name"
 # Value Type: Dictionary
 #
 # Requires similar input as [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK)
@@ -1082,9 +1088,9 @@ static func filter_trigger(
 		is_valid = false
 
 	# Card spawn filter checks
-	if is_valid and card_scripts.get(FILTER_SCENE_PATH) \
-			and card_scripts.get(FILTER_SCENE_PATH) != \
-			trigger_details.get(KEY_SCENE_PATH):
+	if is_valid and card_scripts.get(FILTER_CARD_NAME) \
+			and card_scripts.get(FILTER_CARD_NAME) != \
+			trigger_details.get(KEY_CARD_NAME):
 		is_valid = false
 
 

@@ -310,11 +310,11 @@ func test_spawn_card_alterants():
 	target.scripts = {"alterants": {"hand": [
 			{"filter_task": "spawn_card",
 			"trigger": "another",
-			"filter_scene_path": "res://src/custom/CGFCardTemplate.tscn",
+			"filter_card_name": "Spawn Card",
 			"alteration": 3},]}}
 	card.scripts = {"manual": {"hand": [
 			{"name": "spawn_card",
-			"scene_path": "res://src/custom/CGFCardTemplate.tscn",
+			"card_name": "Spawn Card",
 			"object_count": 1,
 			"board_position":  Vector2(200,200)}]}}
 	card.execute_scripts()

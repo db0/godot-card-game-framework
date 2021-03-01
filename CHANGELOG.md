@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.9 (Ongoing)
+
+### Bugs
+
+* Fixed crash when window x-axis resized to minimum
+
+### New Features
+
+* Can now mark card definitions with a new meta_property: `"_hide_in_deckbuilder": true`. If you do, they will not be shown in the deckbuilder.
+
+#### ScriptingEngine
+
+* spawn_card task now expects a card name, instead of a scene path. Spawned cards have to be defined along with the other cards for this purpose. The card name will be used to setup the spawned card.
+
 ## 1.8
 
 ### Important
