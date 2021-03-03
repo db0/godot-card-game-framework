@@ -75,6 +75,7 @@ onready var _load_button := $VBC/HBC/MC/CurrentDeck/Buttons/Load
 onready var _filter_line := $VBC/HBC/MC2/AvailableCards/HBC/FilterLine
 onready var _filter_buttons := $VBC/HBC/MC2/AvailableCards/CC/ButtonFilters
 onready var _notice := $VBC/HBC/MC/CurrentDeck/HBoxContainer/NoticeLabel
+onready var _card_count := $VBC/HBC/MC2/AvailableCards/HBC/CardCount
 
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
@@ -114,6 +115,7 @@ func _process(_delta: float) -> void:
 
 # Populates the list of available cards, with all defined cards in the game
 func populate_available_cards() -> void:
+	var counter := 0
 	for card_def in cfc.card_definitions:
 		# This special meta property prevents cards from being used
 		# in deckbuilding. Useful for token cards.
@@ -124,6 +126,8 @@ func populate_available_cards() -> void:
 		list_card_object.max_allowed = max_quantity
 		list_card_object.deckbuilder = self
 		list_card_object.setup(card_def)
+		counter += 1
+	_card_count.text = "Total: " + str(counter)
 
 
 # Adds a card to the deck.
@@ -251,6 +255,8 @@ func _on_RandomizeName_pressed() -> void:
 # evaluates all cards in available_cards against each filter returned by the
 # FilterLine. Cards that don't match, are set invisible.
 func _apply_filters(active_filters: Array) -> void:
+	var counter := 0
+	var total_count := 0
 	for card_object in _available_cards.get_children():
 		var set_visible = true
 		for filter in active_filters:
@@ -267,7 +273,13 @@ func _apply_filters(active_filters: Array) -> void:
 					in active_button_values:
 				set_visible = false
 		card_object.visible = set_visible
-
+		total_count += 1
+		if set_visible:
+			counter += 1
+	if counter == total_count:
+		_card_count.text = "Total: " + str(counter)
+	else:
+		_card_count.text = "Filtered: " + str(counter)
 
 # Simply calls _apply_filters()
 func _on_filter_button_pressed() -> void:

@@ -165,10 +165,10 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 
 
 # Task for rotating cards
-# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Supports [KEY_IS_COST](ScriptProperties#KEY_IS_COST).
 # * Requires the following keys:
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
-#	* [KEY_DEGREES](SP#KEY_DEGREES)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
+#	* [KEY_DEGREES](ScriptProperties#KEY_DEGREES)
 func rotate_card(script: ScriptTask) -> int:
 	var retcode: int
 	# We inject the tags from the script into the tags sent by the signal
@@ -183,10 +183,10 @@ func rotate_card(script: ScriptTask) -> int:
 
 
 # Task for flipping cards
-# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Supports [KEY_IS_COST](ScriptProperties#KEY_IS_COST).
 # * Requires the following keys:
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
-#	* [KEY_SET_FACEUP](SP#KEY_SET_FACEUP)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
+#	* [KEY_SET_FACEUP](ScriptProperties#KEY_SET_FACEUP)
 func flip_card(script: ScriptTask) -> int:
 	var retcode: int
 	# We inject the tags from the script into the tags sent by the signal
@@ -199,7 +199,7 @@ func flip_card(script: ScriptTask) -> int:
 
 # Task for viewing face-down cards
 # * Requires the following keys:
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
 func view_card(script: ScriptTask) -> int:
 	var retcode: int
 	for card in script.subjects:
@@ -208,14 +208,14 @@ func view_card(script: ScriptTask) -> int:
 
 
 # Task for moving card to a [CardContainer]
-# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Supports [KEY_IS_COST](ScriptProperties#KEY_IS_COST).
 # * Requires the following keys:
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
-#	* [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
+#	* [KEY_DEST_CONTAINER](ScriptProperties#KEY_DEST_CONTAINER)
 # * Optionally uses the following keys:
-#	* [KEY_DEST_INDEX](SP#KEY_DEST_INDEX)
-#	* [KEY_SUBJECT_INDEX](SP#KEY_SUBJECT_INDEX)
-#	* [KEY_SRC_CONTAINER](SP#KEY_SRC_CONTAINER)
+#	* [KEY_DEST_INDEX](ScriptProperties#KEY_DEST_INDEX)
+#	* [KEY_SUBJECT_INDEX](ScriptProperties#KEY_SUBJECT_INDEX)
+#	* [KEY_SRC_CONTAINER](ScriptProperties#KEY_SRC_CONTAINER)
 func move_card_to_container(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
 	if not costs_dry_run():
@@ -241,15 +241,15 @@ func move_card_to_container(script: ScriptTask) -> int:
 
 
 # Task for playing a card to the board directly.
-# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
+# * Supports [KEY_IS_COST](ScriptProperties#KEY_IS_COST).
 # * Requires the following keys
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
 #	* One of the following:
-#		* [KEY_GRID_NAME](SP#KEY_GRID_NAME)
-#		* [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION)
+#		* [KEY_GRID_NAME](ScriptProperties#KEY_GRID_NAME)
+#		* [KEY_BOARD_POSITION](ScriptProperties#KEY_BOARD_POSITION)
 # * Optionally uses the following keys:
-#	* [KEY_SUBJECT_INDEX](SP#KEY_SUBJECT_INDEX)
-#	* [KEY_SRC_CONTAINER](SP#KEY_SRC_CONTAINER)
+#	* [KEY_SUBJECT_INDEX](ScriptProperties#KEY_SUBJECT_INDEX)
+#	* [KEY_SRC_CONTAINER](ScriptProperties#KEY_SRC_CONTAINER)
 func move_card_to_board(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.CHANGED
 	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
@@ -299,14 +299,14 @@ func move_card_to_board(script: ScriptTask) -> int:
 
 
 # Task from modifying tokens on a card
-# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
-# * Can be affected by [Alterants](SP#KEY_ALTERANTS).
+# * Supports [KEY_IS_COST](ScriptProperties#KEY_IS_COST).
+# * Can be affected by [Alterants](ScriptProperties#KEY_ALTERANTS).
 # * Requires the following keys:
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
-#	* [KEY_TOKEN_NAME](SP#KEY_TOKEN_NAME)
-#	* [KEY_MODIFICATION](SP#KEY_MODIFICATION)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
+#	* [KEY_TOKEN_NAME](ScriptProperties#KEY_TOKEN_NAME)
+#	* [KEY_MODIFICATION](ScriptProperties#KEY_MODIFICATION)
 # * Optionally uses the following keys:
-#	* [KEY_SET_TO_MOD](SP#KEY_SET_TO_MOD)
+#	* [KEY_SET_TO_MOD](ScriptProperties#KEY_SET_TO_MOD)
 func mod_tokens(script: ScriptTask) -> int:
 	var retcode: int
 	var modification: int
@@ -361,14 +361,14 @@ func mod_tokens(script: ScriptTask) -> int:
 
 
 # Task from creating a new card instance on the board
-# * Can be affected by [Alterants](SP#KEY_ALTERANTS)
+# * Can be affected by [Alterants](ScriptProperties#KEY_ALTERANTS)
 # * Requires the following keys:
-#	* [KEY_SCENE_PATH](SP#KEY_SCENE_PATH): path to a Card .tscn file
+#	* [KEY_CARD_NAME](ScriptProperties#KEY_CARD_NAME): name of the Card as per card definitions
 #	* One of the following:
-#		* [KEY_GRID_NAME](SP#KEY_GRID_NAME)
-#		* [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION)
+#		* [KEY_GRID_NAME](ScriptProperties#KEY_GRID_NAME)
+#		* [KEY_BOARD_POSITION](ScriptProperties#KEY_BOARD_POSITION)
 # * Optionally uses the following keys:
-#	* [KEY_OBJECT_COUNT](SP#KEY_OBJECT_COUNT)
+#	* [KEY_OBJECT_COUNT](ScriptProperties#KEY_OBJECT_COUNT)
 func spawn_card(script: ScriptTask) -> void:
 	var card: Card
 	var count: int
@@ -423,7 +423,7 @@ func spawn_card(script: ScriptTask) -> void:
 
 # Task from shuffling a CardContainer
 # * Requires the following keys:
-#	* [KEY_DEST_CONTAINER](SP#KEY_DEST_CONTAINER)
+#	* [KEY_DEST_CONTAINER](ScriptProperties#KEY_DEST_CONTAINER)
 func shuffle_container(script: ScriptTask) -> void:
 	var container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
 	container.shuffle_cards()
@@ -431,7 +431,7 @@ func shuffle_container(script: ScriptTask) -> void:
 
 # Task from making the owner card an attachment to the subject card.
 # * Requires the following keys:
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
 func attach_to_card(script: ScriptTask) -> void:
 	# We inject the tags from the script into the tags sent by the signal
 	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
@@ -441,7 +441,7 @@ func attach_to_card(script: ScriptTask) -> void:
 
 # Task from making the subject card an attachment to the owner card.
 # * Requires the following keys:
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
 func host_card(script: ScriptTask) -> void:
 	# host_card can only ever use one subject
 	var card: Card = script.subjects[0]
@@ -452,8 +452,8 @@ func host_card(script: ScriptTask) -> void:
 
 # Task for modifying a card's properties
 # * Requires the following keys:
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
-#	* [KEY_MODIFY_PROPERTIES](SP#KEY_MODIFY_PROPERTIES)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
+#	* [KEY_MODIFY_PROPERTIES](ScriptProperties#KEY_MODIFY_PROPERTIES)
 func modify_properties(script: ScriptTask) -> int:
 	var retcode: int = CFConst.ReturnCode.OK
 	# We inject the tags from the script into the tags sent by the signal
@@ -480,8 +480,8 @@ func modify_properties(script: ScriptTask) -> int:
 # Requests the player input an integer, then stores it in a script-global
 # variable to be used by any subsequent task
 # * Requires the following keys:
-#	* [KEY_ASK_INTEGER_MIN](SP#KEY_ASK_INTEGER_MIN)
-#	* [KEY_ASK_INTEGER_MAX](SP#KEY_ASK_INTEGER_MAX)
+#	* [KEY_ASK_INTEGER_MIN](ScriptProperties#KEY_ASK_INTEGER_MIN)
+#	* [KEY_ASK_INTEGER_MAX](ScriptProperties#KEY_ASK_INTEGER_MAX)
 func ask_integer(script: ScriptTask) -> void:
 	var integer_dialog = _ASK_INTEGER_SCENE.instance()
 	# AskInteger tasks have to always provide a min and max value
@@ -497,13 +497,13 @@ func ask_integer(script: ScriptTask) -> void:
 
 # Adds a specified BoardPlacementGrid scene to the board at the specified position
 # * Requires the following keys:
-#	* [KEY_SCENE_PATH](SP#KEY_SCENE_PATH): path to BoardPlacementGrid .tscn file
+#	* [KEY_SCENE_PATH](ScriptProperties#KEY_SCENE_PATH): path to BoardPlacementGrid .tscn file
 #	* One of the following:
-#		* [KEY_BOARD_POSITION](SP#KEY_BOARD_POSITION)
-#		* [KEY_GRID_NAME](SP#KEY_GRID_NAME)
+#		* [KEY_BOARD_POSITION](ScriptProperties#KEY_BOARD_POSITION)
+#		* [KEY_GRID_NAME](ScriptProperties#KEY_GRID_NAME)
 # * Optionally uses the following keys:
-#	* [KEY_OBJECT_COUNT](SP#KEY_OBJECT_COUNT)
-#	* [KEY_GRID_NAME](SP#KEY_GRID_NAME)
+#	* [KEY_OBJECT_COUNT](ScriptProperties#KEY_OBJECT_COUNT)
+#	* [KEY_GRID_NAME](ScriptProperties#KEY_GRID_NAME)
 func add_grid(script: ScriptTask) -> void:
 	var count: int
 	var grid_name : String = script.get_property(SP.KEY_GRID_NAME)
@@ -534,13 +534,13 @@ func add_grid(script: ScriptTask) -> void:
 # Task for modifying a a counter.
 # If this task is specified, the variable [counters](Board#counters) **has** to be set
 # inside the board script
-# * Supports [KEY_IS_COST](SP#KEY_IS_COST).
-# * Can be affected by [Alterants](SP#KEY_ALTERANTS)
+# * Supports [KEY_IS_COST](ScriptProperties#KEY_IS_COST).
+# * Can be affected by [Alterants](ScriptProperties#KEY_ALTERANTS)
 # * Requires the following keys:
-#	* [KEY_COUNTER_NAME](SP#KEY_COUNTER_NAME)
-#	* [KEY_MODIFICATION](SP#KEY_MODIFICATION)
+#	* [KEY_COUNTER_NAME](ScriptProperties#KEY_COUNTER_NAME)
+#	* [KEY_MODIFICATION](ScriptProperties#KEY_MODIFICATION)
 # * Optionally uses the following keys:
-#	* [KEY_SET_TO_MOD](SP#KEY_SET_TO_MOD)
+#	* [KEY_SET_TO_MOD](ScriptProperties#KEY_SET_TO_MOD)
 func mod_counter(script: ScriptTask) -> int:
 	var counter_name: String = script.get_property(SP.KEY_COUNTER_NAME)
 	var modification: int
@@ -588,15 +588,15 @@ func mod_counter(script: ScriptTask) -> int:
 
 
 # Task for executing scripts on subject cards.
-# * Supports [KEY_IS_COST](SP#KEY_IS_COST). If it is set, the cost check
+# * Supports [KEY_IS_COST](ScriptProperties#KEY_IS_COST). If it is set, the cost check
 #	will fail, if any of the target card's cost checks also fail.
 # * Requires the following keys:
-#	* [KEY_SUBJECT](SP#KEY_SUBJECT)
+#	* [KEY_SUBJECT](ScriptProperties#KEY_SUBJECT)
 # * Optionally uses the following keys:
-#	* [KEY_REQUIRE_EXEC_STATE](SP#KEY_REQUIRE_EXEC_STATE)
-#	* [KEY_EXEC_TEMP_MOD_PROPERTIES](SP#KEY_EXEC_TEMP_MOD_PROPERTIES)
-#	* [KEY_EXEC_TEMP_MOD_COUNTERS](SP#KEY_EXEC_TEMP_MOD_COUNTERS)
-#	* [KEY_EXEC_TRIGGER](SP#KEY_EXEC_TRIGGER)
+#	* [KEY_REQUIRE_EXEC_STATE](ScriptProperties#KEY_REQUIRE_EXEC_STATE)
+#	* [KEY_EXEC_TEMP_MOD_PROPERTIES](ScriptProperties#KEY_EXEC_TEMP_MOD_PROPERTIES)
+#	* [KEY_EXEC_TEMP_MOD_COUNTERS](ScriptProperties#KEY_EXEC_TEMP_MOD_COUNTERS)
+#	* [KEY_EXEC_TRIGGER](ScriptProperties#KEY_EXEC_TRIGGER)
 func execute_scripts(script: ScriptTask) -> int:
 	var retcode : int = CFConst.ReturnCode.CHANGED
 	# If your subject is "self" make sure you know what you're doing

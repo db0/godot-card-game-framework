@@ -212,7 +212,7 @@ text = "X"
 
 [node name="FilterLine" type="LineEdit" parent="VBC/HBC/MC2/AvailableCards/HBC"]
 margin_left = 28.0
-margin_right = 628.0
+margin_right = 524.0
 margin_bottom = 27.0
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 8 )
@@ -230,6 +230,15 @@ margin_right = 63.0
 margin_bottom = 24.0
 custom_fonts/font = SubResource( 9 )
 text = "Syntax"
+
+[node name="CardCount" type="Label" parent="VBC/HBC/MC2/AvailableCards/HBC"]
+margin_left = 528.0
+margin_top = 4.0
+margin_right = 628.0
+margin_bottom = 23.0
+rect_min_size = Vector2( 100, 0 )
+custom_fonts/font = SubResource( 5 )
+text = "Total:"
 
 [node name="CC" type="CenterContainer" parent="VBC/HBC/MC2/AvailableCards"]
 margin_top = 31.0
