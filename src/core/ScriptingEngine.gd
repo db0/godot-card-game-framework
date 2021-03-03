@@ -460,10 +460,45 @@ func modify_properties(script: ScriptTask) -> int:
 	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	for card in script.subjects:
 		var properties = script.get_property(SP.KEY_MODIFY_PROPERTIES)
+		var alteration = null
 		for property in properties:
+			# We can only alter numerical properties
+			if property in CardConfig.PROPERTIES_NUMBERS:
+				var new_value : int
+				# We need to calculate what the future value would be, to pass
+				# it to the alterant as the modification properties
+				# As we might have alterants that modify values increasing
+				# or decreasing specifically.
+				if typeof(properties[property]) == TYPE_STRING:
+					new_value = card.get_property(property) + int(properties[property])
+				else:
+					new_value = properties[property]
+				alteration = _check_for_property_alterants(
+						script,
+						card.get_property(property),
+						new_value,
+						int(properties[property]),
+						property)
+				if alteration is GDScriptFunctionState:
+					alteration = yield(alteration, "completed")
+			var value = properties[property]
+			# Alteration should work on both property sets and mods
+			# Since mods are specified with a string (e.g. "+3")
+			# We need to convert the value + alteration into a string as well
+			if alteration:
+				if typeof(value) == TYPE_STRING:
+					value = int(properties[property]) + alteration
+					# If the value is positive, we need to put the '+' in front
+					if value >= 0:
+						value = '+' + str(value)
+					# If the value is negative, the '-' in front will be there
+					else:
+						value = str(value)
+				elif typeof(value) == TYPE_INT:
+					value = int(properties[property]) + alteration
 			var ret_once = card.modify_property(
 					property,
-					properties[property],
+					value,
 					costs_dry_run(),
 					tags)
 			if ret_once == CFConst.ReturnCode.FAILED:
@@ -627,6 +662,7 @@ func execute_scripts(script: ScriptTask) -> int:
 				retcode = CFConst.ReturnCode.FAILED
 	return(retcode)
 
+
 # Initiates a seek through the table to see if there's any cards
 # which have scripts which modify the intensity of the current task.
 func _check_for_alterants(script: ScriptTask, value: int) -> int:
@@ -634,6 +670,34 @@ func _check_for_alterants(script: ScriptTask, value: int) -> int:
 		script.owner_card,
 		script.script_name,
 		script.script_definition,
+		value)
+	if alteration is GDScriptFunctionState:
+		alteration = yield(alteration, "completed")
+	return(alteration.value_alteration)
+
+
+# Initiates a seek through the table to see if there's any cards
+# which have scripts which modify the intensity of modify_properties tasks
+# This is very much like _check_for_alterants, but it requires a customized
+# dictionary to be sent, so we need more complex inputs as well
+func _check_for_property_alterants(
+		script: ScriptTask,
+		old_value: int,
+		new_value: int,
+		value: int,
+		property: String) -> int:
+	var script_def = script.script_definition.duplicate()
+	# When altering properties, we want to search for alterants
+	# only for the specific property we're changing
+	script_def[SP.TRIGGER_PROPERTY_NAME] = property
+	script_def[SP.KEY_MODIFICATION] =\
+			script_def[SP.KEY_MODIFY_PROPERTIES][property]
+	script_def[SP.TRIGGER_PREV_COUNT] = old_value
+	script_def[SP.TRIGGER_NEW_COUNT] = new_value
+	var alteration = CFScriptUtils.get_altered_value(
+		script.owner_card,
+		script.script_name,
+		script_def,
 		value)
 	if alteration is GDScriptFunctionState:
 		alteration = yield(alteration, "completed")

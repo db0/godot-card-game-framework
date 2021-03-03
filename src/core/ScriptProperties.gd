@@ -423,7 +423,8 @@ const KEY_ALTERATION := "alteration"
 const VALUE_PER := "per_"
 # Value Type: String
 #
-# This key is typically needed in combination with [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
+# This key is typically needed in combination with 
+# [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
 # to specify which property to base the per upon.
 # When used this way, the property **has** to be a number.
 #
@@ -682,6 +683,8 @@ const FILTER_COUNT := "filter_count"
 # Value Type: String
 # * [TRIGGER_V_COUNT_INCREASED](#TRIGGER_V_COUNT_INCREASED)
 # * [TRIGGER_V_COUNT_DECREASED](#TRIGGER_V_COUNT_DECREASED)
+#
+# Filter used to check if the modification is positive or negative
 const FILTER_COUNT_DIFFERENCE := "filter_count_difference"
 # Value Type: Dictionary
 #
@@ -926,10 +929,10 @@ const TRIGGER_TASK_NAME = "task_name"
 #---------------------------------------------------------------------
 
 # Value is sent by trigger when new token count is higher than old token count.
-# Compared against [FILTER_TOKEN_DIFFERENCE](#FILTER_TOKEN_DIFFERENCE)
+# Compared against [FILTER_COUNT_DIFFERENCE](#FILTER_COUNT_DIFFERENCE)
 const TRIGGER_V_COUNT_INCREASED := "increased"
 # Value is sent by trigger when new token count is lower than old token count.
-# Compared against [FILTER_TOKEN_DIFFERENCE](#FILTER_TOKEN_DIFFERENCE)
+# Compared against [FILTER_COUNT_DIFFERENCE](#FILTER_COUNT_DIFFERENCE)
 const TRIGGER_V_COUNT_DECREASED := "decreased"
 
 

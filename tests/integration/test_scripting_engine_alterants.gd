@@ -381,3 +381,89 @@ func test_get_property_alterants():
 			"Alterant not modified different property")
 	assert_eq(card.get_property("Cost"),2,
 			"Alterant not modified retrieved counter value when trigger is self")
+
+func test_properties_alterants():
+	card.modify_property("Power", 0)
+	card.modify_property("Cost",0)
+	target.scripts = {"alterants": {"hand": [
+			{"filter_task": "modify_properties",
+			"trigger": "another",
+			"filter_property_name": "Cost",
+			"alteration": 1},
+			{"filter_task": "mod_tokens",
+			"trigger": "another",
+			"filter_property_name": "Power",
+			"alteration": 2},]}}
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": "+1"}}]}}
+	card.execute_scripts()
+	assert_eq(card.get_property("Cost"),2,
+			"Cost altered correctly")
+	assert_eq(card.get_property("Power"),0,
+			"Cost altered correctly")
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": 7}}]}}
+	card.execute_scripts()
+	assert_eq(card.get_property("Cost"),8,
+			"Cost altered correctly")
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": "-1"}}]}}
+	card.execute_scripts()
+	assert_eq(card.get_property("Cost"),8,
+			"Cost altered correctly")
+
+func test_properties_alterants_with_polarity():
+	card.modify_property("Cost",0)
+	target.scripts = {"alterants": {"hand": [
+			{"filter_task": "modify_properties",
+			"trigger": "another",
+			"filter_property_name": "Cost",
+			"filter_count_difference": "increased",
+			"alteration": 1},]}}
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": "+1"}}]}}
+	card.execute_scripts()
+	assert_eq(card.get_property("Cost"),2,
+			"Cost altered correctly")
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": 7}}]}}
+	card.execute_scripts()
+	assert_eq(card.get_property("Cost"),8,
+			"Cost altered correctly")
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": "-1"}}]}}
+	card.execute_scripts()
+	assert_eq(card.get_property("Cost"),7,
+			"Cost altered correctly")
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": 4}}]}}
+	card.execute_scripts()
+	assert_eq(card.get_property("Cost"),4,
+			"Cost altered correctly")
+	target.scripts = {"alterants": {"hand": [
+			{"filter_task": "modify_properties",
+			"trigger": "another",
+			"filter_property_name": "Cost",
+			"filter_count_difference": "decreased",
+			"alteration": -1},]}}
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": "-1"}}]}}
+	card.execute_scripts()
+	assert_eq(card.get_property("Cost"),2,
+			"Cost altered correctly")
