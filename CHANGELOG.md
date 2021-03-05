@@ -10,6 +10,7 @@
 
 * Can now mark card definitions with a new meta_property: `"_hide_in_deckbuilder": true`. If you do, they will not be shown in the deckbuilder.
 * Deckbuilder will now display the total or filtered count of cards shown
+* Added new class: GameStats, which can be used to submit stats to your own instance of [CGF-Stats](https://github.com/db0/CGF-Stats)
 
 #### ScriptingEngine
 

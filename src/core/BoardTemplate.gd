@@ -34,6 +34,7 @@ func _ready() -> void:
 	add_child(mouse_pointer)
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()
+	var stats = GameStats.new()
 
 
 func _process(_delta: float) -> void:
