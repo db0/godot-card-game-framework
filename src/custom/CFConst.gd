@@ -206,5 +206,5 @@ const TOKENS_MAP := {
 	'gold coin': 'yellow.svg',
 	'void': 'black.svg',
 }
-const STATS_URI := "http://193.164.132.214"
+const STATS_URI := "http://127.0.0.1"
 const STATS_PORT := 8000
