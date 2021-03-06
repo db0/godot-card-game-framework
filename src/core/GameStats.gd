@@ -16,7 +16,13 @@ func _init(deck = {}):
 	thread = Thread.new()
 	# Since the threaded function can only accept one argument
 	# We put everything in a dict
-	var userdata = {"type": "new_game", "game_data": deck}
+	var userdata = {
+		"type": "new_game",
+		"game_data": {
+			"deck": deck,
+			"client": OS.get_name(),
+		}
+	}
 	# HTML5 does not support threaded http calls
 	if OS.get_name() == "HTML5":
 		call_api(userdata)
@@ -28,17 +34,18 @@ func _init(deck = {}):
 func complete_game(game_data):
 	# In case the player just clicked the button very fast
 	# make sure the previous thread finished running
-	thread.wait_to_finish()
-	thread = Thread.new()
-	var userdata = {"type": "complete_game", "game_data": game_data}
-	# HTML5 does not support threaded http calls
-	if OS.get_name() == "HTML5":
-		call_api(userdata)
-	else:
-		# warning-ignore:return_value_discarded
-		thread.start(self, "call_api", userdata)
-	# Put a thread.wait_to_finish() somewhere before you reset the whole game
-	# To avoid leaving garbage
+	if game_uuid != '':
+		thread.wait_to_finish()
+		thread = Thread.new()
+		var userdata = {"type": "complete_game", "game_data": game_data}
+		# HTML5 does not support threaded http calls
+		if OS.get_name() == "HTML5":
+			call_api(userdata)
+		else:
+			# warning-ignore:return_value_discarded
+			thread.start(self, "call_api", userdata)
+		# Put a thread.wait_to_finish() somewhere before you reset the whole game
+		# To avoid leaving garbage
 
 
 # Handles calling CGF-Stats for all request types.
@@ -71,7 +78,8 @@ func call_api(userdata):
 				"game_name": ProjectSettings.get_setting(
 							"application/config/name"),
 				# We're expecting the game_data to be deck dict
-				"deck": game_data
+				"deck": game_data.deck,
+				"client": game_data.client,
 			}
 			var query = JSON.print(data)
 			err = http.request(
