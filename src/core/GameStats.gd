@@ -17,12 +17,12 @@ func _init(deck = {}):
 	# Since the threaded function can only accept one argument
 	# We put everything in a dict
 	var userdata = {"type": "new_game", "game_data": deck}
-	# warning-ignore:return_value_discarded
-	thread.start(self, "call_api", userdata)
-#	call_api("new_game", deck)
-
-func test(deck):
-	print_debug(deck)
+	# HTML5 does not support threaded http calls
+	if OS.get_name() == "HTML5":
+		call_api(userdata)
+	else:
+		# warning-ignore:return_value_discarded
+		thread.start(self, "call_api", userdata)
 
 # Submits results of the game (victory/defeat etc) to the CFG-Stats
 func complete_game(game_data):
@@ -31,8 +31,12 @@ func complete_game(game_data):
 	thread.wait_to_finish()
 	thread = Thread.new()
 	var userdata = {"type": "complete_game", "game_data": game_data}
-	# warning-ignore:return_value_discarded
-	thread.start(self, "call_api", userdata)
+	# HTML5 does not support threaded http calls
+	if OS.get_name() == "HTML5":
+		call_api(userdata)
+	else:
+		# warning-ignore:return_value_discarded
+		thread.start(self, "call_api", userdata)
 	# Put a thread.wait_to_finish() somewhere before you reset the whole game
 	# To avoid leaving garbage
 
@@ -107,6 +111,7 @@ func call_api(userdata):
 	if http.has_response():
 		# If there is a response...
 		headers = http.get_response_headers_as_dictionary() # Get response headers.
+#		print_debug("**headers:\\n", headers) # Show headers.
 		if http.get_response_code() == 201:
 			# Array that will hold the data.
 			var rb = PoolByteArray()
