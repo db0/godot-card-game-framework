@@ -1,4 +1,4 @@
-# This class handles submitting game stats 
+# This class handles submitting game stats
 # to a [CGF-Stats](https://github.com/db0/CGF-Stats) instance
 # It requires CFConst.STATS_URI and CFConst.STATS_PORT to be set
 # And the game name in the Project > Settings should match the
@@ -8,20 +8,39 @@ extends Reference
 
 # Stores the unique id for this match. It is used to submit final results
 var game_uuid : String
-
+var thread: Thread
 
 # Initiates the game stats for this game as soon as this object is instanced
 func _init(deck = {}):
-	call_api("new_game", deck)
+	# We use a thread to avoid hanging while while polling http
+	thread = Thread.new()
+	# Since the threaded function can only accept one argument
+	# We put everything in a dict
+	var userdata = {"type": "new_game", "game_data": deck}
+	# warning-ignore:return_value_discarded
+	thread.start(self, "call_api", userdata)
+#	call_api("new_game", deck)
 
+func test(deck):
+	print_debug(deck)
 
 # Submits results of the game (victory/defeat etc) to the CFG-Stats
 func complete_game(game_data):
-	call_api("complete_game", game_data)
+	# In case the player just clicked the button very fast
+	# make sure the previous thread finished running
+	thread.wait_to_finish()
+	thread = Thread.new()
+	var userdata = {"type": "complete_game", "game_data": game_data}
+	# warning-ignore:return_value_discarded
+	thread.start(self, "call_api", userdata)
+	# Put a thread.wait_to_finish() somewhere before you reset the whole game
+	# To avoid leaving garbage
 
 
 # Handles calling CGF-Stats for all request types.
-func call_api(type = "new_game", game_data = null):
+func call_api(userdata):
+	var type = userdata["type"]
+	var game_data = userdata["game_data"]
 	# Convert data to json string:
 	# Add 'Content-Type' header:
 	var err = 0
@@ -62,6 +81,7 @@ func call_api(type = "new_game", game_data = null):
 				# with the final game state as "Victory" or "Loss"
 				# But your game could pass whatever
 				"state": game_data.get('state'),
+				"details": game_data.get('details'),
 			}
 			var query = JSON.print(data)
 			err = http.request(
@@ -69,6 +89,7 @@ func call_api(type = "new_game", game_data = null):
 				"/game/" + game_uuid,
 				headers,
 				query)
+	assert(err == OK)
 	# Make sure all is OK.
 	while http.get_status() == HTTPClient.STATUS_REQUESTING:
 		# Keep polling for as long as the request is being processed.
@@ -101,7 +122,8 @@ func call_api(type = "new_game", game_data = null):
 				else:
 					# Append to read buffer.
 					rb = rb + chunk
-			game_uuid = rb.get_string_from_ascii()
+			# Apparently this is wrapped in "double quotes" so we need to strip them
+			game_uuid = rb.get_string_from_ascii().strip_edges().lstrip('"').rstrip('"')
 		elif http.get_response_code() == 403:
 			print_debug("WARNING: Game Stats server reported that this is "\
 					+ "the wrong game name! Please check your URL.")
@@ -109,8 +131,8 @@ func call_api(type = "new_game", game_data = null):
 			print_debug("WARNING: Stats for this game have not been initiated.")
 		elif http.get_response_code() == 409:
 			print_debug("WARNING: Game has already been resolved.")
-		else:
+		elif http.get_response_code() != 200:
 			print_debug("WARNING: Could submit game stats."\
-					+ "Server response code:" + http.get_response_code())
+					+ "Server response code:" + str(http.get_response_code()))
 	# We don't want to keep the connection open indefinitelly
 	http.close()
