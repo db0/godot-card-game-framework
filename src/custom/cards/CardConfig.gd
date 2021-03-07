@@ -15,6 +15,7 @@ extends Reference
 const PROPERTIES_STRINGS := ["Type", "Requirements", "Abilities"]
 # Properties which are converted into string using a format defined in setup()
 const PROPERTIES_NUMBERS := ["Cost","Power"]
+# The name of these properties will be prepended before their value to their label.
 const NUMBER_WITH_LABEL := ["Cost","Power"]
 # Properties provided in a list which are converted into a string for the
 # label text, using the array_join() method
@@ -25,3 +26,9 @@ const SCENE_PROPERTY = "Type"
 # These are number carrying properties, which we want to hide their label
 # when they're 0, to allow more space for other labels.
 const NUMBERS_HIDDEN_ON_0 := []
+# The cards where their [SCENE_PROPERTY](#SCENE_PROPERTY) value is in this list
+# will not be shown in the deckbuilder.
+#
+# This is useful to prevent a whole class of cards from being shown in the
+# deckbuilder, without adding `_hide_in_deckbuilder` to each of them
+const TYPES_TO_HIDE_IN_DECKBUILDER := ["Token"]

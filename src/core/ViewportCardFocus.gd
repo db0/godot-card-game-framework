@@ -13,6 +13,9 @@ var _current_focus_source : Card = null
 # We use this during cleanup
 var _dupes_dict := {}
 
+onready var card_focus := $VBC/Focus
+onready var focus_info := $VBC/FocusInfoPanel
+onready var illustration := $VBC/FocusInfoPanel/VBC/Illustration
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -33,9 +36,9 @@ func _process(_delta) -> void:
 	# The below makes sure to display the closeup of the card, only on the side
 	# the player's mouse is not in.
 	if get_global_mouse_position().x < get_viewport().size.x/2:
-		$Focus.rect_position.x = get_viewport().size.x - $Focus.rect_size.x
+		$VBC.rect_position.x = get_viewport().size.x - $VBC.rect_size.x
 	else:
-		$Focus.rect_position.x = 0
+		$VBC.rect_position.x = 0
 	# The below performs some garbage collection on previously focused cards.
 	for c in _previously_focused_cards:
 		# We only delete old dupes if there's no tweening currently ongoing.
@@ -43,7 +46,7 @@ func _process(_delta) -> void:
 		# unfocus a card.
 		# It does create a small glitch when quickly changing card focus.
 		# Haven't found a good way to avoid it yet
-		if _current_focus_source != _dupes_dict[c] and not $Focus/Tween.is_active():
+		if _current_focus_source != _dupes_dict[c] and not $VBC/Focus/Tween.is_active():
 			_previously_focused_cards.erase(c)
 			c.queue_free()
 
@@ -74,40 +77,60 @@ func focus_card(card: Card) -> void:
 		# We store all our previously focused cards in an array, and clean them
 		# up when they're not focused anymore
 		_previously_focused_cards.append(dupe_focus)
-		$Focus/Viewport.add_child(dupe_focus)
+		$VBC/Focus/Viewport.add_child(dupe_focus)
 		_extra_dupe_ready(dupe_focus, card)
 		# We have to copy these internal vars because they are reset
 		# see https://github.com/godotengine/godot/issues/3393
 		dupe_focus.is_faceup = card.is_faceup
 		dupe_focus.is_viewed = card.is_viewed
 		# We make the viewport camera focus on it
-		$Focus/Viewport/Camera2D.position = dupe_focus.global_position
+		$VBC/Focus/Viewport/Camera2D.position = dupe_focus.global_position
 		# We always make sure to clean tweening conflicts
-		$Focus/Tween.remove_all()
+		$VBC/Focus/Tween.remove_all()
 		# We do a nice alpha-modulate tween
-		$Focus/Tween.interpolate_property($Focus,'modulate',
-				$Focus.modulate, Color(1,1,1,1), 0.25,
+		$VBC/Focus/Tween.interpolate_property($VBC/Focus,'modulate',
+				$VBC/Focus.modulate, Color(1,1,1,1), 0.25,
 				Tween.TRANS_SINE, Tween.EASE_IN)
-		$Focus/Tween.start()
-#		print_debug("aa")
+		var visible_info_labels := 0
+		for node in focus_info.get_node("VBC").get_children():
+			if node.visible:
+				visible_info_labels += 1
+		if visible_info_labels:
+			$VBC/Focus/Tween.interpolate_property(focus_info,'modulate',
+					focus_info.modulate, Color(1,1,1,1), 0.25,
+					Tween.TRANS_SINE, Tween.EASE_IN)
+		else:
+			$VBC/Focus/Tween.interpolate_property(focus_info,'modulate',
+					focus_info.modulate, Color(1,1,1,0), 0.25,
+					Tween.TRANS_SINE, Tween.EASE_IN)
+		$VBC/Focus/Tween.start()
 
 
 # Hides the focus viewport when we're done looking at it
 func unfocus(card: Card) -> void:
 	if _current_focus_source == card:
 		_current_focus_source = null
-		$Focus/Tween.remove_all()
-		$Focus/Tween.interpolate_property($Focus,'modulate',
-				$Focus.modulate, Color(1,1,1,0), 0.25,
+		$VBC/Focus/Tween.remove_all()
+		$VBC/Focus/Tween.interpolate_property($VBC/Focus,'modulate',
+				$VBC/Focus.modulate, Color(1,1,1,0), 0.25,
 				Tween.TRANS_SINE, Tween.EASE_IN)
-		$Focus/Tween.start()
+		if focus_info.modulate != Color(1,1,1,0):
+			$VBC/Focus/Tween.interpolate_property(focus_info,'modulate',
+					focus_info.modulate, Color(1,1,1,0), 0.25,
+					Tween.TRANS_SINE, Tween.EASE_IN)
+		$VBC/Focus/Tween.start()
 
 
 # Overridable function for games to extend preprocessing of dupe card
 # before adding it to the scene
 func _extra_dupe_preparation(dupe_focus: Card, card: Card) -> void:
 	dupe_focus.properties = card.properties.duplicate()
-
+	var card_illustration = card.get_property("_illustration")
+	if card_illustration:
+		illustration.text = "Illustration by: " + card_illustration
+		illustration.visible = true
+	else:
+		illustration.visible = false
 
 # Overridable function for games to extend processing of dupe card
 # after adding it to the scene

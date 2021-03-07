@@ -92,6 +92,9 @@ func _ready() -> void:
 		# We want to avoid exceeding 8 buttons
 		if total_unique_values <= 8:
 			for value in CFUtils.get_unique_values(button_property):
+				# Excluded types, don't have a filter button
+				if value in CardConfig.TYPES_TO_HIDE_IN_DECKBUILDER:
+					continue
 				var filter_button = _FILTER_BUTTON_SCENE.instance()
 				filter_button.setup(button_property, value)
 				filter_button.connect("pressed", self, "_on_filter_button_pressed")
@@ -119,7 +122,9 @@ func populate_available_cards() -> void:
 	for card_def in cfc.card_definitions:
 		# This special meta property prevents cards from being used
 		# in deckbuilding. Useful for token cards.
-		if cfc.card_definitions[card_def].get("_hide_in_deckbuilder"):
+		if cfc.card_definitions[card_def].get("_hide_in_deckbuilder")\
+				or cfc.card_definitions[card_def].get(CardConfig.SCENE_PROPERTY)\
+				in CardConfig.TYPES_TO_HIDE_IN_DECKBUILDER:
 			continue
 		var list_card_object = _LIST_CARD_OBJECT_SCENE.instance()
 		_available_cards.add_child(list_card_object)

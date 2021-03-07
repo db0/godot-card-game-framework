@@ -12,9 +12,9 @@ func before_each():
 func test_single_card_focus():
 	var card : Card = cards[0]
 	yield(move_mouse(card.global_position), 'completed')
-	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	var focus_dupe = main._previously_focused_cards[0]
-	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),
+	assert_eq(2,main.card_focus.get_node('Viewport').get_child_count(),
 			"Duplicate card has been added for viewport focus")
 	assert_eq(Vector2(1.5,1.5),focus_dupe.scale,
 			"Duplicate card is scaled correctly")
@@ -31,40 +31,40 @@ func test_single_card_focus():
 			"Duplicate card does not have visible highlight")
 
 	yield(move_mouse(Vector2(0,0)), 'completed')
-	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
-	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	assert_eq(1,main.card_focus.get_node('Viewport').get_child_count(),
 			"Duplicate card has been removed from focus")
 
 func test_for_leftover_focus_objects():
 	var card : Card = cards[2]
 	yield(drag_drop(card,cfc.NMAP.discard.position), 'completed')
-	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	yield(yield_for(0.5), YIELD)
-	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),
+	assert_eq(2,main.card_focus.get_node('Viewport').get_child_count(),
 			"The top face-up card of the deck is now in focus")
 	yield(move_mouse(Vector2(0,0), 'slow'), 'completed')
-	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
+	assert_eq(1,main.card_focus.get_node('Viewport').get_child_count(),
 			"Duplicate card has been removed from focus")
 
 func test_card_back_focus():
 	var card : Card = cards[0]
 	card.is_faceup = false
 	yield(move_mouse(card.global_position), 'completed')
-	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	var focus_dupe = main._previously_focused_cards[0]
 	assert_eq(focus_dupe.card_back.modulate.a, 1,
 			"Duplicate card back does not modulate out")
 	yield(move_mouse(Vector2(0,0)), 'completed')
-	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
-	assert_eq(1,main.get_node('Focus/Viewport').get_child_count(),
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	assert_eq(1,main.card_focus.get_node('Viewport').get_child_count(),
 			"Duplicate card has been removed from focus")
 
 func test_viewed_card_in_pile():
 	var card : Card = deck.get_top_card()
 	card.is_viewed = true
 	yield(move_mouse(deck.global_position), 'completed')
-	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
-	assert_eq(2,main.get_node('Focus/Viewport').get_child_count(),
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	assert_eq(2,main.card_focus.get_node('Viewport').get_child_count(),
 			"Duplicate card has been added for viewport focus")
 
 func test_retain_properties():
@@ -72,7 +72,27 @@ func test_retain_properties():
 	# warning-ignore:return_value_discarded
 	card.modify_property("Cost", 100, false, ["Init"])
 	yield(move_mouse(card.global_position), 'completed')
-	yield(yield_to(main.get_node('Focus/Tween'), "tween_all_completed", 1), YIELD)
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	var focus_dupe = main._previously_focused_cards[0]
 	assert_eq(focus_dupe.get_property("Cost"), 100,
 			"Focus retains modified property values from original")
+
+func test_FocusInfoPanel():
+	var card : Card = cards[0]
+	var card2 : Card = cards[2]
+	card.properties["_illustration"] = "GUT"
+	card2.properties["_illustration"] = null
+	yield(move_mouse(card.global_position), 'completed')
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	var focus_dupe = main._previously_focused_cards[0]
+	assert_eq(main.focus_info.modulate.a, 1.0,
+			"FocusInfoPanel visible when illustration exists")
+	assert_true(main.illustration.visible,
+			"Illustration label visible")
+	yield(move_mouse(card2.global_position), 'completed')
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	focus_dupe = main._previously_focused_cards[0]
+	assert_eq(main.focus_info.modulate.a, 0.0,
+			"FocusInfoPanel visible when illustration does not exist")
+	assert_false(main.illustration.visible,
+			"Illustration label invisible")

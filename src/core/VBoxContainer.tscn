@@ -16,14 +16,14 @@ __meta__ = {
 }
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-margin_right = 150.0
+margin_right = 1280.0
 margin_bottom = 50.0
 mouse_filter = 2
 custom_constants/margin_top = 50
 
 [node name="CenterContainer" type="CenterContainer" parent="."]
 margin_top = 54.0
-margin_right = 150.0
+margin_right = 1280.0
 margin_bottom = 94.0
 rect_min_size = Vector2( 0, 40 )
 mouse_filter = 2
@@ -31,8 +31,8 @@ mouse_filter = 2
 [node name="Viewed" type="TextureRect" parent="CenterContainer"]
 visible = false
 modulate = Color( 1.5, 0.2, 0, 1 )
-margin_left = 55.0
-margin_right = 95.0
+margin_left = 620.0
+margin_right = 660.0
 margin_bottom = 40.0
 mouse_filter = 2
 texture = ExtResource( 1 )
@@ -42,14 +42,14 @@ __meta__ = {
 
 [node name="MarginContainer2" type="MarginContainer" parent="."]
 margin_top = 98.0
-margin_right = 150.0
+margin_right = 1280.0
 margin_bottom = 101.0
 mouse_filter = 2
 custom_constants/margin_top = 3
 
 [node name="Label" type="Label" parent="."]
 margin_top = 105.0
-margin_right = 150.0
+margin_right = 1280.0
 margin_bottom = 121.0
 custom_fonts/font = SubResource( 1 )
 custom_colors/font_color = Color( 1, 0.2, 0, 1 )

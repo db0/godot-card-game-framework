@@ -3,9 +3,9 @@ extends "res://tests/UTcommon.gd"
 
 var deckbuilder: DeckBuilder
 
-	
+
 func count_visible_list_cards() -> int:
-	var visible_cards := 0	
+	var visible_cards := 0
 	for list_card_obj in deckbuilder._available_cards.get_children():
 		if list_card_obj.visible:
 			visible_cards += 1
@@ -21,7 +21,7 @@ func test_setup():
 	assert_eq(deckbuilder._deck_cards.get_child_count(), 0,
 			"Deck List should be empty")
 	assert_eq(deckbuilder._available_cards.get_child_count(),
-			cfc.card_definitions.size(),
+			cfc.card_definitions.size() - 1, # because of the token
 			"Available cards should match the unique cards defined")
 	assert_eq(deckbuilder._filter_buttons.get_child_count(), 3,
 			"Filter buttons match the amounts of types")
@@ -202,4 +202,4 @@ func test_name_randomize():
 	deckbuilder._on_RandomizeName_pressed()
 	assert_ne(deckbuilder._deck_name.text, deck_name,
 			"Reset Deck Name  randomized")
-	
+

@@ -2,6 +2,12 @@
 
 ## 1.9 (Ongoing)
 
+### Important
+
+New CardConfig property added: `TYPES_TO_HIDE_IN_DECKBUILDER`. Any card type specified here will not be shown in the deckbuilder.
+
+**You will need to specify this property, even if it's an empty list**
+
 ### Bugs
 
 * Fixed crash when window x-axis resized to minimum
@@ -9,8 +15,10 @@
 ### New Features
 
 * Can now mark card definitions with a new meta_property: `"_hide_in_deckbuilder": true`. If you do, they will not be shown in the deckbuilder.
+* Can now mark card types as not visible in deckbuilder.
 * Deckbuilder will now display the total or filtered count of cards shown
 * Added new class: GameStats, which can be used to submit stats to your own instance of [CGF-Stats](https://github.com/db0/CGF-Stats)
+* Can now show extra info below card focus viewport, such as keyword explanations or illustrator info
 
 #### ScriptingEngine
 

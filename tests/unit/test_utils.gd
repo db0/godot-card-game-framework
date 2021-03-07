@@ -31,6 +31,12 @@ func test_list_files_in_directory():
 
 func test_load_card_definitions():
 	var defs := cfc.load_card_definitions()
-	assert_eq(["Test Card 1", "Test Card 2", "Test Card 3", "Multiple Choices Test Card"], defs.keys(),
+	assert_eq([
+			"Test Card 1",
+			"Test Card 2",
+			"Spawn Card",
+			"Test Card 3",
+			"Multiple Choices Test Card"],
+			defs.keys(),
 			"Card Definitions should be loaded from all sets")
 
