@@ -43,6 +43,16 @@ const CARD_SIZE := Vector2(150,240)
 const FANCY_MOVEMENT := true
 # The focus style selected for this game. See enum `FocusStyle`
 const FOCUS_STYLE = CFInt.FocusStyle.BOTH
+# Controls how the card will be magnified in the focus viewport.
+# Set to either "resize" or "scale"
+#
+# If set to scale, will magnify the card during viewport focus
+# using godot scaling.
+#
+#If set to resize, will resize the card's viewport dupe's dimentions.
+# This prevent blurry text, but needs more setup in the
+# card's front and card back scripts.
+const VIEWPORT_FOCUS_ZOOM_TYPE = "resize"
 # If set to true, the hand will be presented in the form of an oval shape
 # If set to false, the hand will be presented with all cards
 # horizontally aligned

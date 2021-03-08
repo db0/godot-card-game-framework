@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/DeckBuilder/CardLabel.gd" type="Script" id=2]
+[ext_resource path="res://src/core/FocusInfoPanel.tscn" type="PackedScene" id=3]
 
 [sub_resource type="DynamicFont" id=1]
 size = 15
@@ -24,6 +25,11 @@ __meta__ = {
 [node name="PreviewPopup" type="Popup" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
+
+[node name="FocusInfoPanel" parent="PreviewPopup" instance=ExtResource( 3 )]
+margin_right = 260.0
+margin_bottom = 29.0
+rect_min_size = Vector2( 260, 15 )
 
 [connection signal="mouse_entered" from="." to="." method="_on_CardLabel_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_CardLabel_mouse_exited"]

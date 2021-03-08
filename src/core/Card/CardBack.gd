@@ -39,3 +39,11 @@ func start_card_back_animation() -> void:
 # stops being visible to the player.
 func stop_card_back_animation() -> void:
 	pass
+
+
+# This is used to scale the card back when the card back is shown in the
+# focus viewport.
+#
+# Override it according to the requirements of your card back
+func scale_to(scale_multiplier: float) -> void:
+	pass

@@ -8,6 +8,8 @@ New CardConfig property added: `TYPES_TO_HIDE_IN_DECKBUILDER`. Any card type spe
 
 **You will need to specify this property, even if it's an empty list**
 
+New CFConst poperty added: `VIEWPORT_FOCUS_ZOOM_TYPE`. Set to either "resize" or "scale" (default = "resize"). If set to scale, will magnify the card during viewport focus using godot scaling. If set to resize, will resize the card's viewport dupe's dimentions. This prevent blurry text, but needs more setup in the card's front script.
+
 ### Bugs
 
 * Fixed crash when window x-axis resized to minimum
