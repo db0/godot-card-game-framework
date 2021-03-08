@@ -1,7 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/core/ViewportCardFocus.gd" type="Script" id=1]
-[ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://src/core/FocusInfoPanel.tscn" type="PackedScene" id=2]
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -16,11 +16,6 @@ glow_blend_mode = 0
 glow_hdr_threshold = 1.3
 glow_hdr_luminance_cap = 2.0
 glow_bicubic_upscale = true
-
-[sub_resource type="DynamicFont" id=2]
-size = 11
-use_filter = true
-font_data = ExtResource( 2 )
 
 [node name="Main" type="Node2D"]
 script = ExtResource( 1 )
@@ -79,25 +74,10 @@ zoom = Vector2( 0.75, 0.8 )
 
 [node name="Tween" type="Tween" parent="VBC/Focus"]
 
-[node name="FocusInfoPanel" type="PanelContainer" parent="VBC"]
+[node name="FocusInfoPanel" parent="VBC" instance=ExtResource( 2 )]
 modulate = Color( 1, 1, 1, 0 )
 margin_top = 454.0
 margin_right = 300.0
 margin_bottom = 481.0
-mouse_filter = 2
-
-[node name="VBC" type="VBoxContainer" parent="VBC/FocusInfoPanel"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 293.0
-margin_bottom = 20.0
-mouse_filter = 2
-
-[node name="Illustration" type="Label" parent="VBC/FocusInfoPanel/VBC"]
-margin_right = 286.0
-margin_bottom = 13.0
-custom_fonts/font = SubResource( 2 )
-text = "Illustration by: "
-autowrap = true
 
 [connection signal="size_changed" from="ViewportContainer/Viewport" to="." method="_on_Viewport_size_changed"]
