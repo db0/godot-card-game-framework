@@ -1,0 +1,27 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/core/IllustrationFont.tres" type="DynamicFont" id=1]
+
+[node name="FocusInfoPanel" type="PanelContainer"]
+margin_right = 264.0
+margin_bottom = 27.0
+mouse_filter = 2
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBC" type="VBoxContainer" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 257.0
+margin_bottom = 20.0
+mouse_filter = 2
+
+[node name="Illustration" type="Label" parent="VBC"]
+margin_top = -1.0
+margin_right = 250.0
+margin_bottom = 12.0
+rect_min_size = Vector2( 250, 13 )
+custom_fonts/font = ExtResource( 1 )
+text = "Illustration by: "
+autowrap = true

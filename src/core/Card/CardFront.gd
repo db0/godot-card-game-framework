@@ -42,10 +42,26 @@ var text_expansion_multiplier : Dictionary
 # This string is set inside the script extending this class
 # according to the needs of their labels defined within.
 var compensation_label: String
+# It stores the font sizes as required by the developer. We keep it stored
+# In order to be able to compare against it during scale_to()
+#
+# This should be set by the develop in the script extending this for the card front
 var original_font_sizes : Dictionary
+# The font sizes as modified by the scale_to() method
+var font_sizes : Dictionary
+# The minimum label sizes. This is used by set_label_text() to calculate
+# how much to shrink a label to fit within its current rect.
+#
+# This should be set by the develop in the script extending this for the card front
+var card_label_min_sizes : Dictionary
+# Stores the amount each font has been scaled to. We use this as a sort of
+# boolean in order to avoid scaling the font again and again during process.
+var scaled_fonts : Dictionary
+
 
 # Stores a reference to the Card that is hosting this node
 onready var card_owner = get_parent().get_parent()
+
 
 # Set a label node's text.
 # As the string becomes longer, the font size becomes smaller
@@ -71,7 +87,7 @@ func set_label_text(node: Label, value):
 	var label_size = node.rect_min_size
 	var label_font : Font = node.get("custom_fonts/font").duplicate()
 	# We always start shrinking the size, starting from the original size.
-	label_font.size = original_font_sizes[node]
+	label_font.size = font_sizes[node.name]
 	var line_height = label_font.get_height()
 	# line_spacing should be calculated into rect_size
 	var line_spacing = node.get("custom_constants/line_spacing")
@@ -116,9 +132,31 @@ func set_label_text(node: Label, value):
 			and _rect_adjustment != 0.0:
 		set_label_text(card_labels[compensation_label], card_labels[compensation_label].text)
 
+
+# We use this as an alternative to scaling the card using the "scale" property.
+# This is typically used in the viewport focus only, to keep the text legible
+# because scaling the card starts distoring the font.
+#
+# For gameplay purposes (i.e. scaling while on the table etc), 
+# we keep using the .scale property, as that handles the Area2D size as well.
+#
+# Typically each game would override this function to fit its layout.
+func scale_to(scale_multiplier: float) -> void:
+	for l in card_labels:
+		var label : Label = card_labels[l]
+		if label.rect_min_size != card_label_min_sizes[l] * scale_multiplier:
+			label.rect_min_size = card_label_min_sizes[l] * scale_multiplier
+			font_sizes[l] = original_font_sizes.get(l) * scale_multiplier
+	for l in card_labels:
+		if scaled_fonts.get(l) != scale_multiplier:
+			var label : Label = card_labels[l]
+			set_label_text(label, label.text)
+			scaled_fonts[l] = scale_multiplier
+
+
 # Stores the original font size this label had.
 # We use this to start shrinking the label from this size, which allows us to
 # also increase it's size when its text changes to be smaller.
 func _capture_original_font_size(label: Label) -> void:
-	if not original_font_sizes.get(label):
-		original_font_sizes[label] = label.get("custom_fonts/font").size
+	if not font_sizes.get(label.name):
+		font_sizes[label.name] = original_font_sizes[label.name]

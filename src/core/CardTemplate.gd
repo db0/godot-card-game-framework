@@ -2298,7 +2298,15 @@ func _process_card_state() -> void:
 			targeting_arrow.complete_targeting()
 			$Control/Tokens.visible = false
 			# We scale the card dupe to allow the player a better viewing experience
-			scale = Vector2(1.5,1.5)
+			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
+				scale = Vector2(1.5,1.5)
+			else:
+				# We need to reset its scale, 
+				# in case it was already scaled due to being on the table etc.
+				scale = Vector2(1,1)
+				set_card_size(CFConst.CARD_SIZE*1.5)
+				card_front.scale_to(1.5)
+				card_back.scale_to(1.5)
 			# If the card has already been been viewed while down,
 			# we allow the player hovering over it to see it
 			if not is_faceup:
@@ -2314,7 +2322,11 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
-			scale = Vector2(2,2)
+			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
+				scale = Vector2(2,2)
+			else:
+				set_card_size(CFConst.CARD_SIZE*2)
+				card_front.scale_to(2)
 
 
 
@@ -2459,7 +2471,6 @@ func _recalculate_rotation(index_diff = null)-> float:
 	return(calculated_rotation)
 
 
-
 # Ensures that all filters requested by the script are respected
 #
 # Will set is_valid to false if any filter does not match reality
@@ -2484,5 +2495,5 @@ func _on_Back_resized() -> void:
 	# At the loop at line 91, is active
 	if $Control/Back.rect_size != CFConst.CARD_SIZE:
 		pass
-		print_debug($Control/Back.rect_size) # Replace with function body.
+#		print_debug($Control/Back.rect_size) # Replace with function body.
 
