@@ -26,8 +26,13 @@ func setup(card_name) -> void:
 
 func _on_CardLabel_mouse_entered() -> void:
 	preview_card = cfc.instance_card(text)
-	preview_popup.rect_position = get_preview_placement()
 	preview_popup.add_child(preview_card)
+	# It's necessary we do this here because if we only we it during
+	# the process, the card will appear to teleport
+	if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "resize":
+		preview_card.set_card_size(CFConst.CARD_SIZE*2)
+		preview_card.card_front.scale_to(2)
+	preview_popup.rect_position = get_preview_placement()
 	var card_illustration = preview_card.get_property("_illustration")
 	if card_illustration:
 		illustration.text = "Illustration by: " + card_illustration
