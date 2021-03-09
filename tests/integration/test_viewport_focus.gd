@@ -14,11 +14,11 @@ func test_single_card_focus():
 	yield(move_mouse(card.global_position), 'completed')
 	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	var focus_dupe = main._previously_focused_cards[0]
-	assert_eq(2,main.card_focus.get_node('Viewport').get_child_count(),
+	assert_eq(main.card_focus.get_node('Viewport').get_child_count(),2,
 			"Duplicate card has been added for viewport focus")
-	assert_eq(Vector2(1.5,1.5),focus_dupe.scale,
+	assert_eq(focus_dupe.scale,Vector2(1,1),
 			"Duplicate card is scaled correctly")
-	assert_eq(0.0,focus_dupe.get_node("Control").rect_rotation,
+	assert_eq(focus_dupe.get_node("Control").rect_rotation,0.0,
 			"Duplicate card is rotated correctly")
 	assert_false(focus_dupe.is_in_group("cards"),
 			"Duplicate card does not belong to the 'cards' group")
@@ -29,6 +29,10 @@ func test_single_card_focus():
 			"Duplicate card does not have duplicate card backs")
 	assert_eq(focus_dupe.card_back.modulate.a, 1,
 			"Duplicate card does not have visible highlight")
+	assert_eq(focus_dupe.card_size, CFConst.CARD_SIZE * 1.5,
+			"Duplicate resized correctly")
+	assert_eq(focus_dupe._control.rect_size, CFConst.CARD_SIZE * 1.5,
+			"Duplicate's control resized correctly")
 
 	yield(move_mouse(Vector2(0,0)), 'completed')
 	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
@@ -84,6 +88,7 @@ func test_FocusInfoPanel():
 	card2.properties["_illustration"] = null
 	yield(move_mouse(card.global_position), 'completed')
 	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	# warning-ignore:unused_variable
 	var focus_dupe = main._previously_focused_cards[0]
 	assert_eq(main.focus_info.modulate.a, 1.0,
 			"FocusInfoPanel visible when illustration exists")

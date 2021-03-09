@@ -46,10 +46,18 @@ func _process(_delta) -> void:
 		# unfocus a card.
 		# It does create a small glitch when quickly changing card focus.
 		# Haven't found a good way to avoid it yet
-		if _current_focus_source != _dupes_dict[c] and not $VBC/Focus/Tween.is_active():
+		if _current_focus_source != _dupes_dict[c]\
+				and not $VBC/Focus/Tween.is_active():
 			_previously_focused_cards.erase(c)
 			c.queue_free()
-
+	# This ensures that quickly unfocusing and refocusing the same card
+	# Doesn't leave leftover objects.
+	if _previously_focused_cards.size() > 1:
+		for c in _previously_focused_cards:
+			_previously_focused_cards.erase(c)
+			c.queue_free()
+			if _previously_focused_cards.size() == 1:
+				break
 
 # Takes care to resize the child viewport, when the main viewport is resized
 func _on_Viewport_size_changed() -> void:
@@ -74,6 +82,8 @@ func focus_card(card: Card) -> void:
 		# We display a "pure" version of the card
 		# This means we hide buttons, tokens etc
 		dupe_focus.state = Card.CardState.VIEWPORT_FOCUS
+		for c in _previously_focused_cards:
+			c.visible = false
 		# We store all our previously focused cards in an array, and clean them
 		# up when they're not focused anymore
 		_previously_focused_cards.append(dupe_focus)
