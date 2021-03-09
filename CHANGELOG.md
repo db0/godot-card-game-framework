@@ -13,6 +13,7 @@ New CFConst poperty added: `VIEWPORT_FOCUS_ZOOM_TYPE`. Set to either "resize" or
 ### Bugs
 
 * Fixed crash when window x-axis resized to minimum
+* Improved readability of card text in viewport focus
 
 ### New Features
 

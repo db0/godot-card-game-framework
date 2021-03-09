@@ -47,9 +47,10 @@ const FOCUS_STYLE = CFInt.FocusStyle.BOTH
 # Set to either "resize" or "scale"
 #
 # If set to scale, will magnify the card during viewport focus
-# using godot scaling.
+# using godot scaling. It doesn't require any extra configuration when your
+# Card font layout is changed, but it doesn't look quite as nice.
 #
-#If set to resize, will resize the card's viewport dupe's dimentions.
+# If set to resize, will resize the card's viewport dupe's dimentions.
 # This prevent blurry text, but needs more setup in the
 # card's front and card back scripts.
 const VIEWPORT_FOCUS_ZOOM_TYPE = "resize"
