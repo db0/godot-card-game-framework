@@ -13,7 +13,8 @@ const CARDS := {
 		"Cost": 0,
 		"Power": 0,
 		"_max_allowed": 1,
-		"_illustration": "Nobody"
+		"_illustration": "Nobody",
+		"_keywords": ["Keyword 1"]
 	},
 	"Test Card 2": {
 		"Type": "Red",
@@ -26,7 +27,7 @@ const CARDS := {
 		"Cost": 2,
 		"Power": 5,
 		"_max_allowed": 10,
-		"_illustration": "Nobody"
+		"_illustration": "Nobody",
 	},
 	"Spawn Card": {
 		"Type": "Token",

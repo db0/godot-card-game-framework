@@ -14,8 +14,8 @@ var _current_focus_source : Card = null
 var _dupes_dict := {}
 
 onready var card_focus := $VBC/Focus
-onready var focus_info := $VBC/FocusInfoPanel
-onready var illustration := $VBC/FocusInfoPanel/VBC/Illustration
+onready var focus_info := $VBC/FocusInfo
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -101,11 +101,7 @@ func focus_card(card: Card) -> void:
 		$VBC/Focus/Tween.interpolate_property($VBC/Focus,'modulate',
 				$VBC/Focus.modulate, Color(1,1,1,1), 0.25,
 				Tween.TRANS_SINE, Tween.EASE_IN)
-		var visible_info_labels := 0
-		for node in focus_info.get_node("VBC").get_children():
-			if node.visible:
-				visible_info_labels += 1
-		if visible_info_labels:
+		if focus_info.visible_details > 0:
 			$VBC/Focus/Tween.interpolate_property(focus_info,'modulate',
 					focus_info.modulate, Color(1,1,1,1), 0.25,
 					Tween.TRANS_SINE, Tween.EASE_IN)
@@ -135,13 +131,20 @@ func unfocus(card: Card) -> void:
 # before adding it to the scene
 func _extra_dupe_preparation(dupe_focus: Card, card: Card) -> void:
 	dupe_focus.properties = card.properties.duplicate()
+	focus_info.hide_all_info()
 	var card_illustration = card.get_property("_illustration")
 	if card_illustration:
-		illustration.text = "Illustration by: " + card_illustration
-		illustration.visible = true
+		focus_info.show_illustration("Illustration by: " + card_illustration)
 	else:
-		illustration.visible = false
-
+		focus_info.hide_illustration()
+	for tag in card.get_property("Tags"):
+		if CardConfig.EXPLANATIONS.has(tag):
+			focus_info.add_info(tag, CardConfig.EXPLANATIONS[tag])
+	var card_keywords = card.get_property("_keywords")
+	if card_keywords:
+		for keyword in card_keywords:
+			if CardConfig.EXPLANATIONS.has(keyword):
+				focus_info.add_info(keyword, CardConfig.EXPLANATIONS[keyword])
 # Overridable function for games to extend processing of dupe card
 # after adding it to the scene
 # warning-ignore:unused_argument

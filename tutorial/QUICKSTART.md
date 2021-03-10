@@ -1,6 +1,6 @@
 # Godot Card Game Framework Quick Start Guide
 
-**Written for v1.3**
+**Written for v1.9**
 
 This guide is meant to take you through using the Card Game Framework (CGF from now on) for the first time in a simple step-by-step approach, starting from brand a new project.
 
@@ -26,10 +26,12 @@ In order to be able to upgrade this framework in the future without losing your 
 1. Create a new directory to store your own game's definition. Let's put it in `res://src/new_card_game`
 1. find and Right click on `res://src/custom/CGFBoard.tscn` and select "Duplicate...". As a name, write "Board.tcsn". 
 1. find and Right click on `res://src/custom/CGFBoard.gd` and select "Duplicate...". As a name, write "Board.gd". 
-1. From the filesystem tab, drag and drop Board.tcsn and Board.gd and SP.gd inside `res://src/new_card_game`
+1. find and Right click on `res://src/custom/CGFInfoPanel.tcsn` and select "Duplicate...". As a name, write "InfoPanel.tcsn". 
+1. From the filesystem tab, drag and drop Board.tcsn and Board.gd, InfoPanel.tcsn and SP.gd inside `res://src/new_card_game`
 1. Double click `res://src/new_card_game/Board.tcsn` to open it. Right click on the root node and "Attach Script". then in the path either nagivate, or type `res://src/new_card_game/Board.gd`
 1. find and Right click on `res://src/core/Main.tscn` and select "New Inherited Scene". A new unsaved scene will open.
 1. In the inspector, under "Script Variables", click on "[empty]" next to Board Scene, then "load" then navigate to your `res://src/new_card_game/Board.tcsn`
+1. In the scene tab, click on the "FocusInfo" node, then in the inspector, under "Script Variables", click on "[empty]" next to "Info Panel Scene", then "load" then navigate to your `res://src/new_card_game/InfoPanel.tcsn`
 1. Save the unsaved scene as `res://src/new_card_game/Main.tcsn`
 1. Press play scene (F6). If you did everything above right, an identicaly demo should run off of your `res://src/new_card_game/` scenes.
 

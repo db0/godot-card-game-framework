@@ -84,20 +84,41 @@ func test_retain_properties():
 func test_FocusInfoPanel():
 	var card : Card = cards[0]
 	var card2 : Card = cards[2]
-	card.properties["_illustration"] = "GUT"
-	card2.properties["_illustration"] = null
-	yield(move_mouse(card.global_position), 'completed')
+	var card3 : Card = cards[4]
+	card2.properties["_illustration"] = "GUT"
+	card.properties["_illustration"] = null
+	card3.properties["_illustration"] = null
+	card3.properties["Tags"] = []
+	card3.properties["_keywords"] = ["Clarification A"]
+	yield(move_mouse(card2.global_position), 'completed')
 	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	# warning-ignore:unused_variable
 	var focus_dupe = main._previously_focused_cards[0]
 	assert_eq(main.focus_info.modulate.a, 1.0,
 			"FocusInfoPanel visible when illustration exists")
-	assert_true(main.illustration.visible,
+	assert_true(main.focus_info.existing_details['illustration'].visible,
 			"Illustration label visible")
-	yield(move_mouse(card2.global_position), 'completed')
+	yield(move_mouse(Vector2(0,0), "slow"), 'completed')
+	yield(move_mouse(card.global_position), 'completed')
 	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
 	focus_dupe = main._previously_focused_cards[0]
 	assert_eq(main.focus_info.modulate.a, 0.0,
 			"FocusInfoPanel visible when illustration does not exist")
-	assert_false(main.illustration.visible,
+	assert_false(main.focus_info.existing_details['illustration'].visible,
 			"Illustration label invisible")
+	yield(move_mouse(Vector2(0,0), "slow"), 'completed')
+	yield(move_mouse(card3.global_position), 'completed')
+	yield(yield_to(main.card_focus.get_node('Tween'), "tween_all_completed", 1), YIELD)
+	focus_dupe = main._previously_focused_cards[0]
+	assert_eq(main.focus_info.modulate.a, 1.0,
+			"FocusInfoPanel visible")
+	assert_false(main.focus_info.existing_details['illustration'].visible,
+			"Illustration label invisible")
+	assert_not_null(main.focus_info.existing_details['Tag 1'])
+	if main.focus_info.existing_details.get('Tag 1'):
+		assert_false(main.focus_info.existing_details['Tag 1'].visible,
+				"Tag 1 label invisible")
+	assert_not_null(main.focus_info.existing_details["Clarification A"])
+	if main.focus_info.existing_details.get("Clarification A"):
+		assert_true(main.focus_info.existing_details["Clarification A"].visible,
+				"Clarification visible")
