@@ -13,7 +13,6 @@ var thread: Thread
 # Initiates the game stats for this game as soon as this object is instanced
 func _init(deck = {}):
 	# We use a thread to avoid hanging while while polling http
-	thread = Thread.new()
 	# Since the threaded function can only accept one argument
 	# We put everything in a dict
 	var userdata = {
@@ -27,6 +26,7 @@ func _init(deck = {}):
 	if OS.get_name() == "HTML5":
 		call_api(userdata)
 	else:
+		thread = Thread.new()
 		# warning-ignore:return_value_discarded
 		thread.start(self, "call_api", userdata)
 
