@@ -6,7 +6,7 @@
 
 [node name="Main" instance=ExtResource( 1 )]
 board_scene = ExtResource( 2 )
+info_panel_scene = ExtResource( 3 )
 
 [node name="FocusInfo" parent="VBC" index="1"]
 custom_constants/separation = -1
-info_panel_scene = ExtResource( 3 )

@@ -5,6 +5,7 @@ class_name ViewportCardFocus
 extends Node2D
 
 export(PackedScene) var board_scene : PackedScene
+export(PackedScene) var info_panel_scene : PackedScene
 # This array holds all the previously focused cards.
 var _previously_focused_cards := []
 # This var hold the currently focused card duplicate.
@@ -30,6 +31,8 @@ func _ready():
 	$ViewportContainer.rect_size = get_viewport().size
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()
+	focus_info.info_panel_scene = info_panel_scene
+	focus_info.setup()
 
 
 func _process(_delta) -> void:

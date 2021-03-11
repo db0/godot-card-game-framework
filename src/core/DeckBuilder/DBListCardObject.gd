@@ -38,6 +38,9 @@ onready var _qbuttons = {
 }
 
 func _ready() -> void:
+	print_debug(deckbuilder.info_panel_scene)
+	_card_label.focus_info.info_panel_scene = deckbuilder.info_panel_scene
+	_card_label.focus_info.setup()
 	for quantity_button in _qbuttons:
 		_qbuttons[quantity_button].connect("quantity_set", self, "_on_quantity_set")
 	_quantity_edit.minimum = 0
@@ -74,6 +77,7 @@ func set_quantity(value) -> void:
 					card_properties[CardConfig.SCENE_PROPERTY],
 					value)
 			# warning-ignore:return_value_discarded
+			deck_card_object._card_label.info_panel_scene = deckbuilder.info_panel_scene
 			deck_card_object.connect("quantity_changed",self,"_on_quantity_set")
 		else:
 			deck_card_object.set_quantity(value)

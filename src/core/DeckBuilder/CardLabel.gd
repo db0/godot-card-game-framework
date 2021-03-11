@@ -2,7 +2,7 @@ class_name CardLabel
 extends Label
 
 var preview_card: Card
-onready var preview_popup:= $PreviewPopup
+onready var preview_popup := $PreviewPopup
 onready var focus_info := $PreviewPopup/FocusInfo
 
 func _ready() -> void:

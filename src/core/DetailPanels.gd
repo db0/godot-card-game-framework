@@ -15,8 +15,12 @@ var existing_details := {}
 # Returns how many details are currently visible for this card
 var visible_details setget ,get_visible_details
 
-# Sets up the illustration detail, as it should always exist first
+
 func _ready() -> void:
+	pass
+
+# Sets up the illustration detail, as it should always exist first
+func setup() -> void:
 	# Because we want the illustration to always be the first detail
 	add_info("illustration", '')
 	hide_illustration()
@@ -27,7 +31,7 @@ func hide_illustration() -> void:
 	existing_details["illustration"].visible = false
 
 
-# Shows the illustration detail. This is different from the usual 
+# Shows the illustration detail. This is different from the usual
 # details, as we allow the illustration text to change every time.
 func show_illustration(text: String) -> void:
 	existing_details["illustration"].visible = true
@@ -41,7 +45,7 @@ func hide_all_info() -> void:
 		existing_details[known_info].visible = false
 
 
-# Adds a new info node. It requires an id for that node 
+# Adds a new info node. It requires an id for that node
 # (Typically the relevant tag or keyword)
 #
 # If this ID has already been setup, it will just be made visible

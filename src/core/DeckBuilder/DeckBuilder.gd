@@ -46,6 +46,7 @@ export var filter_button_properties := ["Type"]
 # Make sure that the values specified will never match normal values for that
 # property.
 export var generation_keys := []
+export(PackedScene) var info_panel_scene
 
 
 # The path to the ListCardObject scene. This has to be defined explicitly
@@ -127,9 +128,9 @@ func populate_available_cards() -> void:
 				in CardConfig.TYPES_TO_HIDE_IN_DECKBUILDER:
 			continue
 		var list_card_object = _LIST_CARD_OBJECT_SCENE.instance()
+		list_card_object.deckbuilder = self
 		_available_cards.add_child(list_card_object)
 		list_card_object.max_allowed = max_quantity
-		list_card_object.deckbuilder = self
 		list_card_object.setup(card_def)
 		counter += 1
 	_card_count.text = "Total: " + str(counter)

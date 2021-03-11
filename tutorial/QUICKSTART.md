@@ -31,7 +31,7 @@ In order to be able to upgrade this framework in the future without losing your 
 1. Double click `res://src/new_card_game/Board.tcsn` to open it. Right click on the root node and "Attach Script". then in the path either nagivate, or type `res://src/new_card_game/Board.gd`
 1. find and Right click on `res://src/core/Main.tscn` and select "New Inherited Scene". A new unsaved scene will open.
 1. In the inspector, under "Script Variables", click on "[empty]" next to Board Scene, then "load" then navigate to your `res://src/new_card_game/Board.tcsn`
-1. In the scene tab, click on the "FocusInfo" node, then in the inspector, under "Script Variables", click on "[empty]" next to "Info Panel Scene", then "load" then navigate to your `res://src/new_card_game/InfoPanel.tcsn`
+1. In the inspector, under "Script Variables", click on "[empty]" next to "Info Panel Scene", then "load" then navigate to your `res://src/new_card_game/InfoPanel.tcsn`
 1. Save the unsaved scene as `res://src/new_card_game/Main.tcsn`
 1. Press play scene (F6). If you did everything above right, an identicaly demo should run off of your `res://src/new_card_game/` scenes.
 
