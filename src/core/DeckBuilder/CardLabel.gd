@@ -32,19 +32,7 @@ func _on_CardLabel_mouse_entered() -> void:
 		preview_card.set_card_size(CFConst.CARD_SIZE*2)
 		preview_card.card_front.scale_to(2)
 	preview_popup.rect_position = get_preview_placement()
-	var card_illustration = preview_card.get_property("_illustration")
-	if card_illustration:
-		focus_info.show_illustration("Illustration by: " + card_illustration)
-	else:
-		focus_info.hide_illustration()
-	for tag in preview_card.get_property("Tags"):
-		if CardConfig.EXPLANATIONS.has(tag):
-			focus_info.add_info(tag, CardConfig.EXPLANATIONS[tag])
-	var card_keywords = preview_card.get_property("_keywords")
-	if card_keywords:
-		for keyword in card_keywords:
-			if CardConfig.EXPLANATIONS.has(keyword):
-				focus_info.add_info(keyword, CardConfig.EXPLANATIONS[keyword])
+	cfc.ov_utils.populate_info_panels(preview_card,focus_info)
 	preview_popup.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	preview_popup.visible = true
 

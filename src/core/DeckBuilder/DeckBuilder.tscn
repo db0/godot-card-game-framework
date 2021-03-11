@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://src/core/DeckBuilder/DBFilterLine.gd" type="Script" id=1]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
@@ -6,7 +6,6 @@
 [ext_resource path="res://src/core/DeckBuilder/DeckBuilder.gd" type="Script" id=4]
 [ext_resource path="res://src/core/DeckBuilder/DeckNameRandomizer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/DeckBuilder/DeckLoader.gd" type="Script" id=6]
-[ext_resource path="res://src/custom/CGFInfoPanel.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
@@ -60,7 +59,6 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 deck_name_randomizer = ExtResource( 5 )
-info_panel_scene = ExtResource( 7 )
 
 [node name="VBC" type="VBoxContainer" parent="."]
 margin_right = 1280.0

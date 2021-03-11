@@ -81,6 +81,7 @@ var alterant_cache: Dictionary
 # This dictionary is not used by default anywhere in the framework.
 # A game need to explicitly make use of it.
 var card_temp_property_modifiers = {}
+var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
 
 func _ready() -> void:
 	init_settings_from_file()

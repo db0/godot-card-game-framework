@@ -135,19 +135,9 @@ func unfocus(card: Card) -> void:
 func _extra_dupe_preparation(dupe_focus: Card, card: Card) -> void:
 	dupe_focus.properties = card.properties.duplicate()
 	focus_info.hide_all_info()
-	var card_illustration = card.get_property("_illustration")
-	if card_illustration:
-		focus_info.show_illustration("Illustration by: " + card_illustration)
-	else:
-		focus_info.hide_illustration()
-	for tag in card.get_property("Tags"):
-		if CardConfig.EXPLANATIONS.has(tag):
-			focus_info.add_info(tag, CardConfig.EXPLANATIONS[tag])
-	var card_keywords = card.get_property("_keywords")
-	if card_keywords:
-		for keyword in card_keywords:
-			if CardConfig.EXPLANATIONS.has(keyword):
-				focus_info.add_info(keyword, CardConfig.EXPLANATIONS[keyword])
+	cfc.ov_utils.populate_info_panels(card,focus_info)
+
+
 # Overridable function for games to extend processing of dupe card
 # after adding it to the scene
 # warning-ignore:unused_argument

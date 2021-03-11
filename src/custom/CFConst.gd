@@ -93,8 +93,9 @@ const SCRIPT_SET_NAME_PREPEND := "SetScripts_"
 # This specifies the location of your token images.
 # Tokens are always going to be seeked at this location
 const PATH_TOKENS := PATH_ASSETS + "tokens/"
-# The location of the deckbuilder scene used by this game.
-const PATH_DECKBUILDER := PATH_CORE + "DeckBuilder/DeckBuilder.tscn"
+# If you wish to extend the OVUtils, extend the class with your own
+# script, then point to it with this const.
+const PATH_OVERRIDABLE_UTILS := PATH_CORE + "OverridableUtils.gd"
 # This specifies the path to the Scripting Engine. If you wish to extend
 # The scripting engine functionality with your own tasks,
 # Point this to your own script file.

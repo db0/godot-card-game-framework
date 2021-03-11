@@ -50,11 +50,15 @@ func hide_all_info() -> void:
 #
 # If this ID has already been setup, it will just be made visible
 # If not, It will instance the scene and set up its text.
-func add_info(id: String, text: String) -> void:
+func add_info(id: String, text: String, info_scene : PackedScene = null) -> void:
 	if existing_details.has(id):
 		existing_details[id].visible = true
 	else:
-		var new_info_panel : Node = info_panel_scene.instance()
+		var new_info_panel : Node
+		if info_scene:
+			new_info_panel = info_scene.instance()
+		else:
+			new_info_panel = info_panel_scene.instance()
 		new_info_panel.get_node("Details").text = text
 		add_child(new_info_panel)
 		existing_details[id] = new_info_panel

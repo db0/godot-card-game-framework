@@ -38,7 +38,6 @@ onready var _qbuttons = {
 }
 
 func _ready() -> void:
-	print_debug(deckbuilder.info_panel_scene)
 	_card_label.focus_info.info_panel_scene = deckbuilder.info_panel_scene
 	_card_label.focus_info.setup()
 	for quantity_button in _qbuttons:
