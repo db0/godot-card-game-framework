@@ -2,11 +2,17 @@
 
 ## 1.9 (Ongoing)
 
-### Important
+### Important for Upgrades
 
-New CardConfig property added: `TYPES_TO_HIDE_IN_DECKBUILDER`. Any card type specified here will not be shown in the deckbuilder.
+Main.tcsn has been modified with a new node called `FocusInfo` which shows card details under the viewport focus. For this scene, the "Info Panel Scene" to use needs to be specified. It is an exported variable so you can set it in the inspector.
+A sample such scene has been provided in `res://src/custom/CGFInfoPanel.tcsn`. If this is not set, the game **will** crash when mousing over the cards.
 
-**You will need to specify this property, even if it's an empty list**
+If the deckbuilder is also inherited in a custom scene, it will likewise has the same `FocusInfo` node for which the "Info Panel Scene" has to be specified.
+
+New **mandatory** CardConfig property added: `TYPES_TO_HIDE_IN_DECKBUILDER` (Array). Any card type specified here will not be shown in the deckbuilder.
+New **mandatory** CardConfig property added: `EXPLANATIONS` (Dictionary). It stores details about tags and keywords that you want to display under your card popups in game or deckbuilder. 
+
+**You will need to specify these new CardConfig properties, even if they're empty**
 
 New CFConst poperty added: `VIEWPORT_FOCUS_ZOOM_TYPE`. Set to either "resize" or "scale" (default = "resize"). If set to scale, will magnify the card during viewport focus using godot scaling. If set to resize, will resize the card's viewport dupe's dimentions. This prevent blurry text, but needs more setup in the card's front script.
 
@@ -29,7 +35,7 @@ New CFConst poperty added: `VIEWPORT_FOCUS_ZOOM_TYPE`. Set to either "resize" or
 
 ## 1.8
 
-### Important
+### Important for Upgrades
 
 A new custom class has been added called SP, extending ScriptProperties.**You must create it in your own custom folder**. You can copy `res://src/custom/SP.gd` from this repository to your own custom folder.
 
@@ -74,7 +80,7 @@ tags will contain the tags send to the `move_to()` method
 
 ## 1.7 
 
-### Important
+### Important for Upgrades
 
 CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
 
@@ -96,7 +102,7 @@ CFConst  has been adjusted. If you are working on your own copy of CFConst, you 
 
 ## 1.6
 
-### Important
+### Important for Upgrades
 CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
 
 * SCRRIPT_SET_NAME_PREPEND renamed to **SCRIPT_SET_NAME_PREPEND**
@@ -151,7 +157,7 @@ Some ScriptProperty consts have been adjusted to allow `counter_modified` signal
 
 ## 1.5
 
-### Important
+### Important for Upgrades
 
 CFConst  has been adjusted. If you are working on your own copy of CFConst, you will need to adjust  the following constants
 

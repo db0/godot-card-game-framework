@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/core/ViewportCardFocus.gd" type="Script" id=1]
-[ext_resource path="res://src/core/FocusInfoPanel.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/core/DetailPanels.gd" type="Script" id=2]
 
 [sub_resource type="Environment" id=1]
 background_mode = 4
@@ -74,10 +74,13 @@ zoom = Vector2( 0.75, 0.8 )
 
 [node name="Tween" type="Tween" parent="VBC/Focus"]
 
-[node name="FocusInfoPanel" parent="VBC" instance=ExtResource( 2 )]
-modulate = Color( 1, 1, 1, 0 )
+[node name="FocusInfo" type="VBoxContainer" parent="VBC"]
 margin_top = 454.0
 margin_right = 300.0
-margin_bottom = 481.0
+margin_bottom = 454.0
+script = ExtResource( 2 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [connection signal="size_changed" from="ViewportContainer/Viewport" to="." method="_on_Viewport_size_changed"]

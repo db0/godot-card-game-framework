@@ -672,7 +672,7 @@ func get_property_and_alterants(property: String,
 
 
 # Sets the card size and adjusts all nodes depending on it.
-func set_card_size(value: Vector2) -> void:
+func set_card_size(value: Vector2, ignore_area = false) -> void:
 	card_size = value
 	_control.rect_min_size = value
 	# We set the card to always pivot from its center.
@@ -684,8 +684,12 @@ func set_card_size(value: Vector2) -> void:
 	# correctly when hovering over the card.
 	highlight.rect_min_size = value + Vector2(6, 6)
 	highlight.rect_position = Vector2(-3, -3)
-	$CollisionShape2D.shape.extents = value / 2
-	$CollisionShape2D.position = value / 2
+	# This switch is set to true when resizing dupes
+	# To avoid resizing all the area2D of all cards
+	# since they share the resource.
+	if not ignore_area:
+		$CollisionShape2D.shape.extents = value / 2
+		$CollisionShape2D.position = value / 2
 
 
 # Setter for _is_attachment
@@ -2304,7 +2308,7 @@ func _process_card_state() -> void:
 				# We need to reset its scale, 
 				# in case it was already scaled due to being on the table etc.
 				scale = Vector2(1,1)
-				set_card_size(CFConst.CARD_SIZE*1.5)
+				set_card_size(CFConst.CARD_SIZE*1.5, true)
 				card_front.scale_to(1.5)
 				card_back.scale_to(1.5)
 			# If the card has already been been viewed while down,

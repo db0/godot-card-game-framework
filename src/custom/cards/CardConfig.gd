@@ -32,3 +32,8 @@ const NUMBERS_HIDDEN_ON_0 := []
 # This is useful to prevent a whole class of cards from being shown in the
 # deckbuilder, without adding `_hide_in_deckbuilder` to each of them
 const TYPES_TO_HIDE_IN_DECKBUILDER := ["Token"]
+const EXPLANATIONS = {
+	"Tag 1": "Tag 1: You can add extra explanations for tags",
+	"Keyword 1": "Keyword 1: You can specify explanations for keywords that might appear in the text",
+	"Clarification A": "You can even provide longer clarification on card abilities"
+}

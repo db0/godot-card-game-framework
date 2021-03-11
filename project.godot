@@ -144,6 +144,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/DeckBuilder/DeckNameRandomizer.gd"
 }, {
+"base": "VBoxContainer",
+"class": "DetailPanels",
+"language": "GDScript",
+"path": "res://src/core/DetailPanels.gd"
+}, {
 "base": "Reference",
 "class": "GameStats",
 "language": "GDScript",
@@ -277,6 +282,7 @@ _global_script_class_icons={
 "DeckBuilder": "",
 "DeckLoader": "",
 "DeckNameRandomizer": "",
+"DetailPanels": "",
 "GameStats": "",
 "Hand": "",
 "Highlight": "",

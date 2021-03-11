@@ -15,10 +15,11 @@ const CARDS := {
 				+ "\n\nAfter another card is rotated, gain a blood token.",
 		"Cost": 0,
 		"Power": 9001,
+		"_keywords": ["Keyword 1","Clarification A"]
 	},
 	"Multiple Choices Test Card": {
 		"Type": "Blue",
-		"Tags": ["Tag 1","Tag 2"],
+		"Tags": ["Tag 2","Tag 3"],
 		"Requirements": "",
 		"Abilities": "While on board, either rotate 90, or flip face-down." \
 				+ "\n\nWhile on hand, discard up to 5 cards " \

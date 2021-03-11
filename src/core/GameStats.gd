@@ -66,7 +66,12 @@ func call_api(userdata):
 	while http.get_status() == HTTPClient.STATUS_CONNECTING\
 			or http.get_status() == HTTPClient.STATUS_RESOLVING:
 		http.poll()
-		OS.delay_msec(500)
+		if not OS.has_feature("web"):
+			OS.delay_msec(500)
+		else:
+			# Synchronous HTTP requests are not supported on the web,
+			# so wait for the next main loop iteration.
+			yield(Engine.get_main_loop(), "idle_frame")
 
 	# Could not connect
 	assert(http.get_status() == HTTPClient.STATUS_CONNECTED)
@@ -104,7 +109,7 @@ func call_api(userdata):
 	assert(err == OK)
 	# Make sure all is OK.
 	while http.get_status() == HTTPClient.STATUS_REQUESTING:
-		# Keep polling for as long as the request is being processed.
+		# Keep polling for as long as the request is being processed.		
 		http.poll()
 		if not OS.has_feature("web"):
 			OS.delay_msec(500)
@@ -123,15 +128,19 @@ func call_api(userdata):
 		if http.get_response_code() == 201:
 			# Array that will hold the data.
 			var rb = PoolByteArray()
-
 			while http.get_status() == HTTPClient.STATUS_BODY:
 				# While there is body left to be read
 				http.poll()
 				# Get a chunk.
 				var chunk = http.read_response_body_chunk()
 				if chunk.size() == 0:
-					# Got nothing, wait for buffers to fill a bit.
-					OS.delay_usec(1000)
+					if not OS.has_feature("web"):
+						# Got nothing, wait for buffers to fill a bit.
+						OS.delay_usec(1000)
+					else:
+						# Synchronous HTTP requests are not supported on the web,
+						# so wait for the next main loop iteration.
+						yield(Engine.get_main_loop(), "idle_frame")
 				else:
 					# Append to read buffer.
 					rb = rb + chunk
