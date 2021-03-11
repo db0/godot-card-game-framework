@@ -76,7 +76,8 @@ func set_quantity(value) -> void:
 					card_properties[CardConfig.SCENE_PROPERTY],
 					value)
 			# warning-ignore:return_value_discarded
-			deck_card_object._card_label.info_panel_scene = deckbuilder.info_panel_scene
+			deck_card_object._card_label.focus_info.info_panel_scene = deckbuilder.info_panel_scene
+			deck_card_object._card_label.focus_info.setup()
 			deck_card_object.connect("quantity_changed",self,"_on_quantity_set")
 		else:
 			deck_card_object.set_quantity(value)
