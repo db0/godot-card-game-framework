@@ -3,6 +3,24 @@
 class_name DeckBuilder
 extends PanelContainer
 
+# The path to the ListCardObject scene. This has to be defined explicitly
+# here, in order to use it in its preload, otherwise the parser gives an error
+const _LIST_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
+		+ "DeckBuilder/DBListCardObject.tscn"
+const _LIST_CARD_OBJECT_SCENE = preload(_LIST_CARD_OBJECT_SCENE_FILE)
+# The path to the DeckCardObject scene.
+const _DECK_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
+		+ "DeckBuilder/DBDeckCardObject.tscn"
+const _DECK_CARD_OBJECT_SCENE = preload(_DECK_CARD_OBJECT_SCENE_FILE)
+# The path to the CategoryScene scene.
+const _DECK_CATEGORY_SCENE_FILE = CFConst.PATH_CORE\
+		+ "DeckBuilder/CategoryContainer.tscn"
+const _DECK_CATEGORY_SCENE = preload(_DECK_CATEGORY_SCENE_FILE)
+# The path to the DBFilterButton scene.
+const _FILTER_BUTTON_SCENE_FILE = CFConst.PATH_CORE\
+		+ "DeckBuilder/DBFilterButton.tscn"
+const _FILTER_BUTTON_SCENE = preload(_FILTER_BUTTON_SCENE_FILE)
+
 # Contains a link to the random deck name generator reference
 export(Script) var deck_name_randomizer
 # Controls how often an random adverb will
@@ -47,25 +65,10 @@ export var filter_button_properties := ["Type"]
 # property.
 export var generation_keys := []
 export(PackedScene) var info_panel_scene
-
-
-# The path to the ListCardObject scene. This has to be defined explicitly
-# here, in order to use it in its preload, otherwise the parser gives an error
-const _LIST_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
-		+ "DeckBuilder/DBListCardObject.tscn"
-const _LIST_CARD_OBJECT_SCENE = preload(_LIST_CARD_OBJECT_SCENE_FILE)
-# The path to the DeckCardObject scene.
-const _DECK_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
-		+ "DeckBuilder/DBDeckCardObject.tscn"
-const _DECK_CARD_OBJECT_SCENE = preload(_DECK_CARD_OBJECT_SCENE_FILE)
-# The path to the CategoryScene scene.
-const _DECK_CATEGORY_SCENE_FILE = CFConst.PATH_CORE\
-		+ "DeckBuilder/CategoryContainer.tscn"
-const _DECK_CATEGORY_SCENE = preload(_DECK_CATEGORY_SCENE_FILE)
-# The path to the DBFilterButton scene.
-const _FILTER_BUTTON_SCENE_FILE = CFConst.PATH_CORE\
-		+ "DeckBuilder/DBFilterButton.tscn"
-const _FILTER_BUTTON_SCENE = preload(_FILTER_BUTTON_SCENE_FILE)
+# We use this variable, so that the scene can be overriden with a custom one
+export var deck_card_object_scene = _DECK_CARD_OBJECT_SCENE
+# We use this variable, so that the scene can be overriden with a custom one
+export var list_card_object_scene = _LIST_CARD_OBJECT_SCENE
 
 
 onready var _available_cards := $VBC/HBC/MC2/AvailableCards/ScrollContainer/CardList
@@ -86,6 +89,11 @@ func _ready() -> void:
 	_deck_name.text = generate_random_deck_name()
 	# warning-ignore:return_value_discarded
 	_filter_line.connect("filters_changed", self, "_apply_filters")
+	prepate_filter_buttons()
+
+
+## Prepares the filter buttons based on the unique values in cards.
+func prepate_filter_buttons() -> void:
 	var total_unique_values := 0
 	for button_property in filter_button_properties:
 		var unique_values := CFUtils.get_unique_values(button_property)
@@ -127,7 +135,7 @@ func populate_available_cards() -> void:
 				or cfc.card_definitions[card_def].get(CardConfig.SCENE_PROPERTY)\
 				in CardConfig.TYPES_TO_HIDE_IN_DECKBUILDER:
 			continue
-		var list_card_object = _LIST_CARD_OBJECT_SCENE.instance()
+		var list_card_object = list_card_object_scene.instance()
 		list_card_object.deckbuilder = self
 		_available_cards.add_child(list_card_object)
 		list_card_object.max_allowed = max_quantity
@@ -150,7 +158,7 @@ func add_new_card(card_name, category, value) -> DBDeckCardObject:
 	else:
 		category_container = _deck_cards.get_node(category)
 	var category_cards_node = category_container.get_node("CategoryCards")
-	var deck_card_object = _DECK_CARD_OBJECT_SCENE.instance()
+	var deck_card_object = deck_card_object_scene.instance()
 	category_cards_node.add_child(deck_card_object)
 	deck_card_object.setup(card_name, value)
 	return(deck_card_object)

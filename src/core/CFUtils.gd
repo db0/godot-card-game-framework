@@ -241,11 +241,17 @@ static func compare_strings(s1: String, s2: String, comparison_type: String) -> 
 				comp_result = true
 	return(comp_result)
 
-static func get_unique_values(property) -> Array:
-	var unique_property_values := []
-	if property in CardConfig.PROPERTIES_STRINGS:
-		for card_def in cfc.card_definitions:
 
+# Calculates all unique values of one card property, 
+# among all card definitions
+#
+# Returns an array with all the unique values
+static func get_unique_values(property: String) -> Array:
+	var unique_property_values := []
+	# For now we support only string properties or meta-properties
+	if property in CardConfig.PROPERTIES_STRINGS\
+			or property.begins_with('_'):
+		for card_def in cfc.card_definitions:
 			if not cfc.card_definitions[card_def][property]\
 					in unique_property_values:
 				unique_property_values.append(

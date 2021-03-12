@@ -6,6 +6,7 @@
 [ext_resource path="res://src/core/DeckBuilder/DeckBuilder.gd" type="Script" id=4]
 [ext_resource path="res://src/core/DeckBuilder/DeckNameRandomizer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/DeckBuilder/DeckLoader.gd" type="Script" id=6]
+[ext_resource path="res://src/core/DeckBuilder/CBCardListHeadersFont.tres" type="DynamicFont" id=7]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
@@ -25,12 +26,6 @@ font_data = ExtResource( 3 )
 [sub_resource type="StyleBoxLine" id=4]
 color = Color( 1, 0.4, 0, 1 )
 thickness = 2
-
-[sub_resource type="DynamicFont" id=5]
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=6]
 outline_size = 2
@@ -121,7 +116,7 @@ margin_bottom = 613.0
 margin_top = 3.0
 margin_right = 49.0
 margin_bottom = 22.0
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = ExtResource( 7 )
 text = "Name"
 
 [node name="RandomizeName" type="Button" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer"]
@@ -237,7 +232,7 @@ margin_top = 4.0
 margin_right = 628.0
 margin_bottom = 23.0
 rect_min_size = Vector2( 100, 0 )
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = ExtResource( 7 )
 text = "Total:"
 
 [node name="CC" type="CenterContainer" parent="VBC/HBC/MC2/AvailableCards"]
@@ -259,7 +254,7 @@ margin_bottom = 54.0
 margin_right = 150.0
 margin_bottom = 19.0
 rect_min_size = Vector2( 150, 0 )
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = ExtResource( 7 )
 text = "Quantity"
 
 [node name="Name" type="Label" parent="VBC/HBC/MC2/AvailableCards/CardListHeaders"]
@@ -267,7 +262,7 @@ margin_left = 154.0
 margin_right = 524.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = ExtResource( 7 )
 text = "Name"
 
 [node name="Type" type="Label" parent="VBC/HBC/MC2/AvailableCards/CardListHeaders"]
@@ -275,7 +270,7 @@ margin_left = 528.0
 margin_right = 628.0
 margin_bottom = 19.0
 rect_min_size = Vector2( 100, 0 )
-custom_fonts/font = SubResource( 5 )
+custom_fonts/font = ExtResource( 7 )
 text = "Type"
 
 [node name="LineSeparator" type="Panel" parent="VBC/HBC/MC2/AvailableCards"]

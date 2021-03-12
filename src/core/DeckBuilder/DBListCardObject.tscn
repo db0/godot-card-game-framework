@@ -5,14 +5,10 @@
 [ext_resource path="res://src/core/DeckBuilder/DBListCardObject.gd" type="Script" id=3]
 [ext_resource path="res://src/core/DeckBuilder/QuantityNumberButton.gd" type="Script" id=4]
 [ext_resource path="res://src/core/IntegerLineEdit.gd" type="Script" id=5]
+[ext_resource path="res://src/core/DeckBuilder/DBCardObjectFont.tres" type="DynamicFont" id=6]
 
 [sub_resource type="DynamicFont" id=1]
 size = 12
-use_filter = true
-font_data = ExtResource( 1 )
-
-[sub_resource type="DynamicFont" id=2]
-size = 15
 use_filter = true
 font_data = ExtResource( 1 )
 
@@ -124,7 +120,7 @@ margin_top = 1.0
 margin_right = 628.0
 margin_bottom = 19.0
 rect_min_size = Vector2( 100, 0 )
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = ExtResource( 6 )
 text = "Blue"
 
 [connection signal="pressed" from="Quantity/Plus" to="." method="_on_Plus_pressed"]

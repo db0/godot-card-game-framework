@@ -1,6 +1,6 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
-[ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://src/core/DeckBuilder/DBCardObjectFont.tres" type="DynamicFont" id=1]
 [ext_resource path="res://src/core/DeckBuilder/CardLabel.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/core/DeckBuilder/DBDeckCardObject.gd" type="Script" id=3]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=4]
@@ -10,11 +10,6 @@ size = 14
 outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 4 )
-
-[sub_resource type="DynamicFont" id=2]
-size = 15
-use_filter = true
-font_data = ExtResource( 1 )
 
 [node name="DBDeckCardObject" type="HBoxContainer"]
 margin_right = 623.0
@@ -44,7 +39,7 @@ margin_left = 56.0
 margin_top = 3.0
 margin_right = 70.0
 margin_bottom = 21.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = ExtResource( 1 )
 text = "1x"
 
 [node name="CardLabel" parent="." instance=ExtResource( 2 )]
