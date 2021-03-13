@@ -109,6 +109,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/DeckBuilder/DBDeckCardObject.gd"
 }, {
+"base": "HBoxContainer",
+"class": "DBDeckSummaries",
+"language": "GDScript",
+"path": "res://src/core/DeckBuilder/DBDeckSummaries.gd"
+}, {
 "base": "Reference",
 "class": "DBFilter",
 "language": "GDScript",
@@ -280,6 +285,7 @@ _global_script_class_icons={
 "Counters": "",
 "CustomScripts": "",
 "DBDeckCardObject": "",
+"DBDeckSummaries": "",
 "DBFilter": "",
 "DBFilterButton": "",
 "DBFilterLine": "",

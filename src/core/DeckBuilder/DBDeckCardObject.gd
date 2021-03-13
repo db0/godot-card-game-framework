@@ -20,8 +20,8 @@ func _ready() -> void:
 
 # This is used to prepare the values of this object
 func setup(_card_name: String, count: int) -> void:
-	set_quantity(count)
 	card_name = _card_name
+	set_quantity(count)
 	_card_label.text = _card_name
 
 

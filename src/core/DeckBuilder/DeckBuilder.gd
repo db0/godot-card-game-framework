@@ -20,6 +20,9 @@ const _DECK_CATEGORY_SCENE = preload(_DECK_CATEGORY_SCENE_FILE)
 const _FILTER_BUTTON_SCENE_FILE = CFConst.PATH_CORE\
 		+ "DeckBuilder/DBFilterButton.tscn"
 const _FILTER_BUTTON_SCENE = preload(_FILTER_BUTTON_SCENE_FILE)
+const _DECK_SUMMARIES_SCENE_FILE = CFConst.PATH_CORE\
+		+ "DeckBuilder/DBDeckSummaries.tscn"
+const _DECK_SUMMARIES_SCENE = preload(_DECK_SUMMARIES_SCENE_FILE)
 
 # Contains a link to the random deck name generator reference
 export(Script) var deck_name_randomizer
@@ -70,12 +73,15 @@ export(PackedScene) var info_panel_scene
 export var deck_card_object_scene = _DECK_CARD_OBJECT_SCENE
 # We use this variable, so that the scene can be overriden with a custom one
 export var list_card_object_scene = _LIST_CARD_OBJECT_SCENE
+# We use this variable, so that the scene can be overriden with a custom one
+export var deck_summary_scene = _DECK_SUMMARIES_SCENE
 
+# This var will hold a pointer to the deck summaries scene.
+var deck_summaries
 
 onready var _available_cards := $VBC/HBC/MC2/AvailableCards/ScrollContainer/CardList
-onready var _deck_cards := $VBC/HBC/MC/CurrentDeck/CardsInDeck
+onready var _deck_cards := $VBC/HBC/MC/CurrentDeck/ScrollContainer/CardsInDeck
 onready var _deck_name := $VBC/HBC/MC/CurrentDeck/DeckNameEdit
-onready var _deck_min_label := $VBC/HBC/MC/CurrentDeck/DeckDetails/CardCount
 onready var _load_button := $VBC/HBC/MC/CurrentDeck/Buttons/Load
 onready var _filter_line := $VBC/HBC/MC2/AvailableCards/HBC/FilterLine
 onready var _filter_buttons := $VBC/HBC/MC2/AvailableCards/CC/ButtonFilters
@@ -83,6 +89,9 @@ onready var _notice := $VBC/HBC/MC/CurrentDeck/HBoxContainer/NoticeLabel
 onready var _card_count := $VBC/HBC/MC2/AvailableCards/HBC/CardCount
 
 func _ready() -> void:
+	deck_summaries = deck_summary_scene.instance()
+	$VBC/HBC/MC/CurrentDeck/DeckDetails.add_child(deck_summaries)
+	deck_summaries.setup()
 	# warning-ignore:return_value_discarded
 	_load_button.connect("deck_loaded", self,"_on_deck_loaded")
 	# This signal returns the load buttons' popup menu choice.
@@ -117,15 +126,20 @@ func _process(_delta: float) -> void:
 	for category in _deck_cards.get_children():
 		for card_object in category.get_node("CategoryCards").get_children():
 			card_count += card_object.quantity
-	_deck_min_label.text = str(card_count) + ' Cards'
+	deck_summaries.deck_min_label.text = str(card_count) + ' Cards'
 	if deck_minimum and deck_maximum:
-		_deck_min_label.text += ' (min ' + str(deck_minimum)\
+		deck_summaries.deck_min_label.text += ' (min ' + str(deck_minimum)\
 				+ ', max ' + str(deck_maximum) + ')'
 	elif deck_minimum:
-		_deck_min_label.text += ' (min ' + str(deck_minimum) + ')'
+		deck_summaries.deck_min_label.text += ' (min ' + str(deck_minimum) + ')'
 	elif deck_maximum:
-		_deck_min_label.text += ' (max ' + str(deck_maximum) + ')'
-
+		deck_summaries.deck_min_label.text += ' (max ' + str(deck_maximum) + ')'
+	# We paint the font red if the deck is invalid
+	if (deck_minimum and card_count < deck_minimum)\
+			or (deck_maximum and card_count > deck_maximum):
+		deck_summaries.deck_min_label.modulate = Color(1,0,0)
+	else:
+		deck_summaries.deck_min_label.modulate = Color(1,1,1)
 
 # Populates the list of available cards, with all defined cards in the game
 func populate_available_cards() -> void:

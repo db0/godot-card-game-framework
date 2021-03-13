@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=2]
+[gd_scene load_steps=15 format=2]
 
 [ext_resource path="res://src/core/DeckBuilder/DBFilterLine.gd" type="Script" id=1]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
@@ -18,31 +18,26 @@ outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=3]
-size = 15
-use_filter = true
-font_data = ExtResource( 3 )
-
-[sub_resource type="StyleBoxLine" id=4]
+[sub_resource type="StyleBoxLine" id=3]
 color = Color( 1, 0.4, 0, 1 )
 thickness = 2
 
-[sub_resource type="DynamicFont" id=6]
+[sub_resource type="DynamicFont" id=4]
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=5]
 use_filter = true
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=8]
+[sub_resource type="DynamicFont" id=6]
 size = 14
 use_filter = true
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=9]
+[sub_resource type="DynamicFont" id=7]
 font_data = ExtResource( 2 )
 
 [node name="DeckBuilder" type="PanelContainer"]
@@ -87,24 +82,21 @@ size_flags_horizontal = 3
 
 [node name="DeckDetails" type="VBoxContainer" parent="VBC/HBC/MC/CurrentDeck"]
 margin_right = 633.0
-margin_bottom = 18.0
-
-[node name="CardCount" type="Label" parent="VBC/HBC/MC/CurrentDeck/DeckDetails"]
-margin_right = 633.0
-margin_bottom = 18.0
-custom_fonts/font = SubResource( 3 )
-text = "0 Cards (min 52)"
 
 [node name="LineSeparator2" type="Panel" parent="VBC/HBC/MC/CurrentDeck"]
-margin_top = 22.0
+margin_top = 4.0
 margin_right = 633.0
-margin_bottom = 22.0
-custom_styles/panel = SubResource( 4 )
+margin_bottom = 4.0
+custom_styles/panel = SubResource( 3 )
 
-[node name="CardsInDeck" type="VBoxContainer" parent="VBC/HBC/MC/CurrentDeck"]
-margin_top = 26.0
+[node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC/CurrentDeck"]
+margin_top = 8.0
 margin_right = 633.0
 margin_bottom = 583.0
+size_flags_vertical = 3
+
+[node name="CardsInDeck" type="VBoxContainer" parent="VBC/HBC/MC/CurrentDeck/ScrollContainer"]
+margin_bottom = 575.0
 size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBC/HBC/MC/CurrentDeck"]
@@ -123,7 +115,7 @@ text = "Name"
 margin_left = 53.0
 margin_right = 77.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 4 )
 text = "R"
 
 [node name="NoticeLabel" type="Label" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer"]
@@ -133,7 +125,7 @@ margin_top = 3.0
 margin_right = 633.0
 margin_bottom = 22.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 5 )
 custom_colors/font_color = Color( 1, 0.992157, 0, 1 )
 text = "Deck deleted but current list not cleared"
 align = 2
@@ -144,7 +136,7 @@ align = 2
 margin_top = 617.0
 margin_right = 633.0
 margin_bottom = 644.0
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 6 )
 text = "New Deck"
 max_length = 128
 
@@ -156,14 +148,14 @@ margin_bottom = 674.0
 [node name="Save" type="Button" parent="VBC/HBC/MC/CurrentDeck/Buttons"]
 margin_right = 54.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 4 )
 text = "Save"
 
 [node name="Load" type="MenuButton" parent="VBC/HBC/MC/CurrentDeck/Buttons"]
 margin_left = 58.0
 margin_right = 110.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 4 )
 text = "Load"
 flat = false
 script = ExtResource( 6 )
@@ -172,14 +164,14 @@ script = ExtResource( 6 )
 margin_left = 114.0
 margin_right = 175.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 4 )
 text = "Reset"
 
 [node name="Delete" type="Button" parent="VBC/HBC/MC/CurrentDeck/Buttons"]
 margin_left = 179.0
 margin_right = 244.0
 margin_bottom = 26.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 4 )
 text = "Delete"
 
 [node name="MC2" type="MarginContainer" parent="VBC/HBC"]
@@ -202,7 +194,7 @@ margin_bottom = 27.0
 [node name="ClearFilters" type="Button" parent="VBC/HBC/MC2/AvailableCards/HBC"]
 margin_right = 24.0
 margin_bottom = 27.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 4 )
 text = "X"
 
 [node name="FilterLine" type="LineEdit" parent="VBC/HBC/MC2/AvailableCards/HBC"]
@@ -210,7 +202,7 @@ margin_left = 28.0
 margin_right = 524.0
 margin_bottom = 27.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 6 )
 placeholder_text = "Filter the list"
 script = ExtResource( 1 )
 
@@ -223,7 +215,7 @@ margin_left = 4.0
 margin_top = 4.0
 margin_right = 63.0
 margin_bottom = 24.0
-custom_fonts/font = SubResource( 9 )
+custom_fonts/font = SubResource( 7 )
 text = "Syntax"
 
 [node name="CardCount" type="Label" parent="VBC/HBC/MC2/AvailableCards/HBC"]
@@ -277,7 +269,7 @@ text = "Type"
 margin_top = 58.0
 margin_right = 628.0
 margin_bottom = 58.0
-custom_styles/panel = SubResource( 4 )
+custom_styles/panel = SubResource( 3 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC2/AvailableCards"]
 margin_top = 62.0
