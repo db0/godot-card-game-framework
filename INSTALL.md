@@ -24,6 +24,7 @@ While everything in there can be modified, some files need to exist in one form 
 * You **need** CustomScripts.gd, even if it custom_script() function does not match anything.
 * You **need** CFConst, but you should customize its constants to fit your needs. It is in custom so that you do not lose your changes during an upgrade.
 * You **need** at least 1 Card Back, 1 Card Front and 1 CardManipulationButton scene, to link to your card templates.
+* You **need** at least 1 Info Panel Scene. You can re-use CGFInfoPanel.tcsn
 
 All other files, especially those starting with "CGF" can be deleted, or you can keep them around for reference.
 

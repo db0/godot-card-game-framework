@@ -312,7 +312,7 @@ func test_modify_properties():
 			"subject": "self",
 			"set_properties": {"Name": "GUT Test", "Type": "Orange"}}]}}
 	card.execute_scripts()
-	assert_eq(card.card_name,"GUT Test",
+	assert_eq(card.canonical_name,"GUT Test",
 			"Card name should be changed")
 	assert_eq(card.get_property("Type"),"Orange",
 			"Card type should be changed")

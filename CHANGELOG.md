@@ -16,6 +16,12 @@ New **mandatory** CardConfig property added: `EXPLANATIONS` (Dictionary). It sto
 
 New CFConst poperty added: `VIEWPORT_FOCUS_ZOOM_TYPE`. Set to either "resize" or "scale" (default = "resize"). If set to scale, will magnify the card during viewport focus using godot scaling. If set to resize, will resize the card's viewport dupe's dimentions. This prevent blurry text, but needs more setup in the card's front script.
 
+Game has been adjusted to allow the ScriptingEngine to work non-Card classes. To enable this the following changes have been made which might affect your game if you've extended the Card or ScriptingEngine classes
+
+* Card `card_name` property has been renamed to `canonical_name`
+* Card `retrieve_card_scripts` function has been renamed to `retrieve_scripts`
+* ScriptingEngine and ScriptObject `owner_card` variable has been renamed to `owner` and is not expected that it be a Card class
+
 ### Bugs
 
 * Fixed crash when window x-axis resized to minimum
@@ -28,6 +34,7 @@ New CFConst poperty added: `VIEWPORT_FOCUS_ZOOM_TYPE`. Set to either "resize" or
 * Deckbuilder will now display the total or filtered count of cards shown
 * Added new class: GameStats, which can be used to submit stats to your own instance of [CGF-Stats](https://github.com/db0/CGF-Stats)
 * Can now show extra info below card focus viewport, such as keyword explanations or illustrator info
+* Can now extend deckbuilder DBListCardObject and 
 
 #### ScriptingEngine
 

@@ -29,7 +29,7 @@ The format for each card is as follows:
 	Each key will have inside an array of tasks (see above)
 * Each task dictionary has many possible keys depending on its type, but also a few mandatory ones.
 
-Please see the documentation of the [ScriptProperties](SP) which goes into details for each key the dictionary will accept
+Please see the documentation of the [ScriptProperties](ScriptProperties) which goes into details for each key the dictionary will accept
 
 * Constants starting with `FILTER_` are used as keys in card script definitions, but they are only relevant
 	for scripts which are triggered automatically, or when looking up targets.

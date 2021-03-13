@@ -63,17 +63,17 @@ func test_init_card_name():
 	var test3 = cfc.NMAP.deck.get_card(13)
 	var test2 = cfc.NMAP.deck.get_card(12)
 	var test1 = cfc.NMAP.deck.get_card(11)
-	assert_eq("Test Card 1",test1.card_name,
+	assert_eq("Test Card 1",test1.canonical_name,
 			'card_name variable is set correctly')
 	assert_string_contains(test1.name, "Test Card 1")
 	assert_eq("Test Card 1",test1.card_front.card_labels["Name"].text,
 			'Name Label text is set correctly')
-	assert_eq("Test Card 2",test2.card_name,
+	assert_eq("Test Card 2",test2.canonical_name,
 			'card_name variable is set correctly')
 	assert_string_contains(test2.name, "Test Card 2")
 	assert_eq("Test Card 2",test2.card_front.card_labels["Name"].text,
 			'Name Label text is set correctly')
-	assert_eq("Test Card 3",test3.card_name,
+	assert_eq("Test Card 3",test3.canonical_name,
 			'card_name variable is set correctly')
 	assert_string_contains(test3.name, "Test Card 3")
 	assert_eq("Test Card 3",test3.card_front.card_labels["Name"].text,
@@ -81,13 +81,13 @@ func test_init_card_name():
 
 func test_card_name_setget():
 	card.set_name("Testing Name Change 1")
-	assert_eq("Testing Name Change 1",card.card_name,
+	assert_eq("Testing Name Change 1",card.canonical_name,
 			'card_name variable is set correctly')
 	assert_string_contains(card.name, "Testing Name Change 1")
 	assert_eq("Testing Name Change 1",card.card_front.card_labels["Name"].text,
 			'Name Label text is set correctly')
-	card.card_name = "Testing Name Change 2"
-	assert_eq("Testing Name Change 2",card.card_name,
+	card.canonical_name = "Testing Name Change 2"
+	assert_eq("Testing Name Change 2",card.canonical_name,
 			'card_name variable is set correctly')
 	assert_string_contains(card.name, "Testing Name Change 2")
 	assert_eq("Testing Name Change 2",card.card_front.card_labels["Name"].text,

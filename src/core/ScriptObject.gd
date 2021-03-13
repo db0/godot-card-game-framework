@@ -10,8 +10,8 @@ extends Reference
 signal primed
 
 
-# The card which owns this Task
-var owner_card: Card
+# The object which owns this Task
+var owner
 # The subjects is typically a `Card` object
 # in the future might be other things
 var subjects := []
@@ -36,9 +36,9 @@ var trigger_card: Card
 
 
 # prepares the properties needed by the script to function.
-func _init(card: Card, script: Dictionary, _trigger_card = null) -> void:
+func _init(_owner, script: Dictionary, _trigger_card = null) -> void:
 	# We store the card which executes this task
-	owner_card = card
+	owner = _owner
 	# We store all the task properties in our own dictionary
 	script_definition = script
 	trigger_card = _trigger_card
@@ -86,7 +86,7 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			if SP.VALUE_PER in str(subject_count):
 				subject_count = count_per(
 						get_property(SP.KEY_SUBJECT_COUNT),
-						owner_card,
+						owner,
 						get_property(get_property(SP.KEY_SUBJECT_COUNT)))
 			elif str(subject_count) == SP.KEY_SUBJECT_COUNT_V_ALL:
 				# When the value is set to -1, the seek will retrieve as many
@@ -117,7 +117,7 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			if SP.VALUE_PER in str(subject_count):
 				subject_count = count_per(
 						get_property(SP.KEY_SUBJECT_COUNT),
-						owner_card,
+						owner,
 						get_property(get_property(SP.KEY_SUBJECT_COUNT)))
 			elif str(subject_count) == SP.KEY_SUBJECT_COUNT_V_ALL:
 				subject_count = -1
@@ -161,7 +161,7 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			if SP.VALUE_PER in str(subject_count):
 				subject_count = count_per(
 						get_property(SP.KEY_SUBJECT_COUNT),
-						owner_card,
+						owner,
 						get_property(get_property(SP.KEY_SUBJECT_COUNT)))
 			elif str(subject_count) == SP.KEY_SUBJECT_COUNT_V_ALL:
 				# This variable is used to only retrieve as many cards
@@ -211,8 +211,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			else:
 				print_debug("WARNING: Subject: trigger requested, but no trigger card passed")
 		SP.KEY_SUBJECT_V_SELF:
-			is_valid = SP.check_validity(owner_card, script_definition, "subject")
-			subjects_array.append(owner_card)
+			is_valid = SP.check_validity(owner, script_definition, "subject")
+			subjects_array.append(owner)
 		_:
 			subjects_array = []
 	subjects = subjects_array
@@ -227,12 +227,12 @@ func _initiate_card_targeting() -> Card:
 	# We wait a centisecond, to prevent the card's _input function from seeing
 	# The double-click which started the script and immediately triggerring
 	# the target completion
-	yield(owner_card.get_tree().create_timer(0.1), "timeout")
-	owner_card.targeting_arrow.initiate_targeting()
+	yield(owner.get_tree().create_timer(0.1), "timeout")
+	owner.targeting_arrow.initiate_targeting()
 	# We wait until the targetting has been completed to continue
-	yield(owner_card.targeting_arrow,"target_selected")
-	var target = owner_card.targeting_arrow.target_card
-	owner_card.targeting_arrow.target_card = null
+	yield(owner.targeting_arrow,"target_selected")
+	var target = owner.targeting_arrow.target_card
+	owner.targeting_arrow.target_card = null
 	#owner_card.target_card = null
 	return(target)
 

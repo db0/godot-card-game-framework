@@ -124,7 +124,7 @@ Please see the [Install Guide](INSTALL.md)
 
 One of the most powerful features of this framework, is the possibility to easily script each individual card's abilities from start to finish, so that a player only needs to double-click on a card and your code will handle the proper execution. This allows games to very easily create complete rules enforcement of all card abilities, from the simplest to the most tricky ones.
 
-Please see the [ScriptDefinitions](https://github.com/db0/godot-card-gaming/wiki/ScriptDefinitions) documentation for more details
+Please see the [ScriptingEngine](SCRIPTING_ENGINE] and [ScriptDefinitions](https://github.com/db0/godot-card-gaming/wiki/ScriptDefinitions) documentation for more details.
 
 The game comes with some sample scripted cards which can be found under `res://src/custom/cards/sets`.
 

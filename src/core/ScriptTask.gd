@@ -17,10 +17,10 @@ var is_else := false
 
 
 # prepares the script_definition needed by the task to function.
-func _init(owner_card: Card,
+func _init(owner,
 		script: Dictionary,
 		_trigger_card,
-		trigger_details).(owner_card, script, _trigger_card) -> void:
+		trigger_details).(owner, script, _trigger_card) -> void:
 	# The function name to be called gets its own var
 	script_name = get_property("name")
 	is_cost = get_property(SP.KEY_IS_COST)
@@ -28,7 +28,7 @@ func _init(owner_card: Card,
 	if not SP.filter_trigger(
 			script,
 			trigger_card,
-			owner_card,
+			owner,
 			trigger_details):
 		is_skipped = true
 
@@ -72,9 +72,12 @@ func prime(prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
 #	print_debug("skipped: " + str(is_skipped) +  " valid: " + str(is_valid))
 
 func check_confirm() -> bool:
+	var owner_name = ''
+	if owner:
+		owner_name = owner.canonical_name
 	var confirm_return = CFUtils.confirm(
 			script_definition,
-			owner_card.card_name,
+			owner_name,
 			script_name)
 	if confirm_return is GDScriptFunctionState: # Still working.
 		is_accepted = yield(confirm_return, "completed")

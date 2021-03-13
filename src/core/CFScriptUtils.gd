@@ -15,7 +15,7 @@ extends Reference
 # 	of each alterant, and each value is the modification done by that
 #	specific alterant.
 static func get_altered_value(
-		_owner_card,
+		_owner,
 		task_name: String,
 		task_properties: Dictionary,
 		value: int) -> Dictionary:
@@ -23,7 +23,7 @@ static func get_altered_value(
 	# values passed to this function.
 	# This is the only way to compare dicts.
 	var alterant_cache_key = {
-		"_owner_card": _owner_card,
+		"_owner_card": _owner,
 		"task_name": task_name,
 		"task_properties": task_properties,
 		"value": value
@@ -36,17 +36,20 @@ static func get_altered_value(
 	else:
 		var value_alteration := 0
 		var alterants_details := {}
-		for card in cfc.get_tree().get_nodes_in_group("cards"):
-			var card_scripts = card.retrieve_card_scripts(SP.KEY_ALTERANTS)
+		var scriptables_array : Array =\
+				cfc.get_tree().get_nodes_in_group("cards")\
+				+ cfc.get_tree().get_nodes_in_group("scriptables")
+		for obj in scriptables_array:
+			var scripts = obj.retrieve_scripts(SP.KEY_ALTERANTS)
 			# We select which scripts to run from the card, based on it state
-			var state_scripts = card_scripts.get(card.get_state_exec(), [])
+			var state_scripts = scripts.get(obj.get_state_exec(), [])
 			# To avoid unnecessary operations
 			# we evoke the AlterantEngine only if we have something to execute
 			var task_details = _generate_trigger_details(task_name, task_properties)
 			if len(state_scripts):
 				var alteng = cfc.alterant_engine.new(
-						_owner_card,
-						card,
+						_owner,
+						obj,
 						state_scripts,
 						task_details)
 				if not alteng.all_alterations_completed:
@@ -57,7 +60,7 @@ static func get_altered_value(
 					# Each key in the alterants_details dictionary is the
 					# card object of the alterant. The value is the alteration
 					# this alterant has added to the total.
-					alterants_details[card] = alteng.alteration
+					alterants_details[obj] = alteng.alteration
 		# As a general rule, we don't want a positive number to turn
 		# negative (and the other way around) due to an alteration
 		# For example: if a card says, "decrease all costs by 3",

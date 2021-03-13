@@ -55,7 +55,7 @@ func add_info(id: String, text: String, info_scene : PackedScene = null) -> void
 		existing_details[id].visible = true
 	else:
 		var new_info_panel : Node
-		if info_scene:
+		if info_scene != null:
 			new_info_panel = info_scene.instance()
 		else:
 			new_info_panel = info_panel_scene.instance()

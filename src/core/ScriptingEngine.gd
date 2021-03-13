@@ -34,12 +34,12 @@ var scripts_queue: Array
 
 # Simply initiates the [run_next_script()](#run_next_script) loop
 func _init(state_scripts: Array,
-		card_owner: Card,
+		owner,
 		trigger_card: Card,
 		trigger_details: Dictionary) -> void:
 	for task in state_scripts:
 		var script_task := ScriptTask.new(
-				card_owner,
+				owner,
 				task,
 				trigger_card,
 				trigger_details)
@@ -69,18 +69,16 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				or (run_type == CFInt.RunType.ELSE and not script.is_else)
 				or (run_type != CFInt.RunType.ELSE and script.is_else)):
 			continue
-		if script.owner_card._debugger_hook: # Debug
-			pass
 		# We store the temp modifiers to counters, so that things like
 		# info during targetting can take them into account
 		cfc.NMAP.board.counters.temp_count_modifiers[self] = {
-				"requesting_card": script.owner_card,
+				"requesting_object": script.owner,
 				"modifier": _retrieve_temp_modifiers(script,"counters")
 			}
 		# This is provisionally stored for games which need to use this
 		# information before card subjects have been selected.
 		cfc.card_temp_property_modifiers[self] = {
-			"requesting_card": script.owner_card,
+			"requesting_object": script.owner,
 			"modifier": _retrieve_temp_modifiers(script, "properties")
 		}
 		if not script.is_primed:
@@ -104,8 +102,6 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			# execution until targetting has completed
 			if not script.is_primed:
 				yield(script,"primed")
-		if script.owner_card._debugger_hook: # Debug
-			pass
 		if script.is_primed:
 			prev_subjects = script.subjects
 			#print("Scripting Subjects: " + str(script.subjects)) # Debug
@@ -120,7 +116,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				#print(script.is_valid,':',costs_dry_run())
 				for card in script.subjects:
 					card.temp_properties_modifiers[self] = {
-						"requesting_card": script.owner_card,
+						"requesting_object": script.owner,
 						"modifier": _retrieve_temp_modifiers(script, "properties")
 					}
 				var retcode = call(script.script_name, script)
@@ -236,7 +232,7 @@ func move_card_to_container(script: ScriptTask) -> int:
 			# But we don't consider it a failed cost (as most games allow you
 			# to try and draw more cards when you're full but just won't draw any)
 			card.move_to(dest_container,dest_index, null, tags)
-			yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+			yield(script.owner.get_tree().create_timer(0.05), "timeout")
 	return(retcode)
 
 
@@ -271,7 +267,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 				for card in script.subjects:
 					slot = grid.find_available_slot()
 					# We need a small delay, to allow a potential new slot to instance
-					yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+					yield(script.owner.get_tree().create_timer(0.05), "timeout")
 					if slot:
 						# Setting the highlight lets the move_to() method
 						# Know we're moving into that slot
@@ -279,7 +275,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 		else:
 			# If the named grid  was not found, we inform the developer.
 			print_debug("WARNING: Script from card '"
-					+ script.owner_card.card_name
+					+ script.owner.canonical_name
 					+ "' requested card move to grid '"
 					+ grid_name + "', but no grid of such name was found.")
 	else:
@@ -294,7 +290,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 			# We assume cards moving to board want to be face-up
 			if not costs_dry_run():
 				card.move_to(cfc.NMAP.board, -1, board_position, tags)
-				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+				yield(script.owner.get_tree().create_timer(0.05), "timeout")
 	return(retcode)
 
 
@@ -321,7 +317,7 @@ func mod_tokens(script: ScriptTask) -> int:
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
-				script.owner_card,
+				script.owner,
 				script.get_property(script.get_property(SP.KEY_MODIFICATION)),
 				null,
 				script.subjects)
@@ -373,7 +369,7 @@ func spawn_card(script: ScriptTask) -> void:
 	var card: Card
 	var count: int
 	var alteration = 0
-	var card_name: String = script.get_property(SP.KEY_CARD_NAME)
+	var canonical_name: String = script.get_property(SP.KEY_CARD_NAME)
 	var grid_name: String = script.get_property(SP.KEY_GRID_NAME)
 	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
 		count = stored_integer
@@ -382,7 +378,7 @@ func spawn_card(script: ScriptTask) -> void:
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_OBJECT_COUNT)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_OBJECT_COUNT),
-				script.owner_card,
+				script.owner,
 				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)),
 				null,
 				script.subjects)
@@ -400,9 +396,9 @@ func spawn_card(script: ScriptTask) -> void:
 			for _iter in range(count + alteration):
 				slot = grid.find_available_slot()
 				# We need a small delay, to allow a potential new slot to instance
-				yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+				yield(script.owner.get_tree().create_timer(0.05), "timeout")
 				if slot:
-					card = cfc.instance_card(card_name)
+					card = cfc.instance_card(canonical_name)
 					cfc.NMAP.board.add_child(card)
 					card.position = slot.rect_global_position
 					card._placement_slot = slot
@@ -410,7 +406,7 @@ func spawn_card(script: ScriptTask) -> void:
 					card.state = Card.CardState.ON_PLAY_BOARD
 	else:
 		for iter in range(count + alteration):
-			card = cfc.instance_card(card_name)
+			card = cfc.instance_card(canonical_name)
 			var board_position: Vector2 = script.get_property(SP.KEY_BOARD_POSITION)
 			cfc.NMAP.board.add_child(card)
 			card.position = board_position
@@ -436,7 +432,7 @@ func attach_to_card(script: ScriptTask) -> void:
 	# We inject the tags from the script into the tags sent by the signal
 	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	for card in script.subjects:
-		script.owner_card.attach_to_host(card, false, tags)
+		script.owner.attach_to_host(card, false, tags)
 
 
 # Task from making the subject card an attachment to the owner card.
@@ -447,7 +443,7 @@ func host_card(script: ScriptTask) -> void:
 	var card: Card = script.subjects[0]
 	# We inject the tags from the script into the tags sent by the signal
 	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
-	card.attach_to_host(script.owner_card, false, tags)
+	card.attach_to_host(script.owner, false, tags)
 
 
 # Task for modifying a card's properties
@@ -522,7 +518,7 @@ func ask_integer(script: ScriptTask) -> void:
 	# AskInteger tasks have to always provide a min and max value
 	var minimum = script.get_property(SP.KEY_ASK_INTEGER_MIN)
 	var maximum = script.get_property(SP.KEY_ASK_INTEGER_MAX)
-	integer_dialog.prep(script.owner_card.card_name, minimum, maximum)
+	integer_dialog.prep(script.owner.canonical_name, minimum, maximum)
 	# We have to wait until the player has finished selecting an option
 	yield(integer_dialog,"popup_hide")
 	stored_integer = integer_dialog.number
@@ -553,7 +549,7 @@ func add_grid(script: ScriptTask) -> void:
 	for iter in range(count):
 		var grid: BoardPlacementGrid = load(grid_scene).instance()
 		# A small delay to allow the instance to be added
-		yield(script.owner_card.get_tree().create_timer(0.05), "timeout")
+		yield(script.owner.get_tree().create_timer(0.05), "timeout")
 		cfc.NMAP.board.add_child(grid)
 		# If the grid name is empty, we use the predefined names in the scene.
 		if grid_name != "":
@@ -591,7 +587,7 @@ func mod_counter(script: ScriptTask) -> int:
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
-				script.owner_card,
+				script.owner,
 				script.get_property(script.get_property(SP.KEY_MODIFICATION)),
 				null,
 				script.subjects)
@@ -605,7 +601,7 @@ func mod_counter(script: ScriptTask) -> int:
 			alteration = yield(alteration, "completed")
 	if script.get_property(SP.KEY_STORE_INTEGER):
 		var current_count = cfc.NMAP.board.counters.get_counter(
-				counter_name, script.owner_card)
+				counter_name, script.owner)
 		if set_to_mod:
 			stored_integer = modification + alteration - current_count
 		elif current_count + modification + alteration < 0:
@@ -617,7 +613,7 @@ func mod_counter(script: ScriptTask) -> int:
 			modification + alteration,
 			set_to_mod,
 			costs_dry_run(),
-			script.owner_card,
+			script.owner,
 			tags)
 	return(retcode)
 
@@ -642,7 +638,7 @@ func execute_scripts(script: ScriptTask) -> int:
 		# we execute whatever scripts of the state the card is currently in.
 		if not requested_exec_state or requested_exec_state == card.get_state_exec():
 			var sceng = card.execute_scripts(
-					script.owner_card,
+					script.owner,
 					script.get_property(SP.KEY_EXEC_TRIGGER),
 					{}, costs_dry_run())
 			# We make sure we wait until the execution is finished
@@ -667,7 +663,7 @@ func execute_scripts(script: ScriptTask) -> int:
 # which have scripts which modify the intensity of the current task.
 func _check_for_alterants(script: ScriptTask, value: int) -> int:
 	var alteration = CFScriptUtils.get_altered_value(
-		script.owner_card,
+		script.owner,
 		script.script_name,
 		script.script_definition,
 		value)
@@ -695,7 +691,7 @@ func _check_for_property_alterants(
 	script_def[SP.TRIGGER_PREV_COUNT] = old_value
 	script_def[SP.TRIGGER_NEW_COUNT] = new_value
 	var alteration = CFScriptUtils.get_altered_value(
-		script.owner_card,
+		script.owner,
 		script.script_name,
 		script_def,
 		value)

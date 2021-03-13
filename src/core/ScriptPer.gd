@@ -65,7 +65,7 @@ func _count_property() -> int:
 func _count_counter() -> int:
 	var ret: int
 	var counter_name = get_property(SP.KEY_COUNTER_NAME)
-	ret = cfc.NMAP.board.counters.get_counter(counter_name, owner_card)
+	ret = cfc.NMAP.board.counters.get_counter(counter_name, owner)
 	return(ret)
 
 
@@ -73,6 +73,3 @@ func _count_counter() -> int:
 # to add their own methods
 func _count_custom() -> int:
 	return(1)
-
-
-

@@ -176,7 +176,7 @@ func instance_card(card_name: String) -> Card:
 			+ card_definitions[card_name][CardConfig.SCENE_PROPERTY] + ".tscn")
 	var card = template.instance()
 	# We set the card_name variable so that it's able to be used later
-	card.card_name = card_name
+	card.canonical_name = card_name
 	return(card)
 
 
@@ -307,6 +307,11 @@ class SignalPropagator:
 		# To an empty spot, it works fine
 		# It also fails to execute if I use any other flag than GROUP_CALL_UNIQUE
 		for card in cfc.get_tree().get_nodes_in_group("cards"):
+			card.execute_scripts(trigger_card,trigger,details)
+		# If we need other objects than cards to trigger scripts via signals
+		# add them to the 'scriptables' group ang ensure they have
+		# an "execute_scripts" function
+		for card in cfc.get_tree().get_nodes_in_group("scriptables"):
 			card.execute_scripts(trigger_card,trigger,details)
 #		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_UNIQUE  ,"cards",
 #				"execute_scripts",trigger_card,trigger,details)

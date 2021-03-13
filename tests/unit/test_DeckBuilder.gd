@@ -1,8 +1,7 @@
 extends "res://tests/UTcommon.gd"
 
-
+const PATH_DECKBUILDER = "res://src/custom/CGFDeckBuilder.tscn"
 var deckbuilder: DeckBuilder
-
 
 func count_visible_list_cards() -> int:
 	var visible_cards := 0
@@ -13,7 +12,7 @@ func count_visible_list_cards() -> int:
 
 func before_each():
 	cfc._ready()
-	deckbuilder = autoqfree(load(CFConst.PATH_DECKBUILDER).instance())
+	deckbuilder = autoqfree(load(PATH_DECKBUILDER).instance())
 	get_tree().get_root().add_child(deckbuilder)
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 

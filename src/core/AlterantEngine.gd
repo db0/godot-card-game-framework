@@ -29,12 +29,12 @@ func _ready() -> void:
 # Sets the owner of this Scripting Engine
 func _init(
 		trigger_card: Card,
-		alterant_card: Card,
+		alterant_object,
 		scripts_queue: Array,
 		task_details: Dictionary) -> void:
 	calculate_next_alteration(
 			trigger_card,
-			alterant_card,
+			alterant_object,
 			scripts_queue.duplicate(),
 			task_details)
 
@@ -44,7 +44,7 @@ func _init(
 # against the relevant filters and per_ requests.
 func calculate_next_alteration(
 		trigger_card: Card,
-		alterant_card: Card,
+		alterant_object,
 		scripts_queue: Array,
 		task_details: Dictionary) -> void:
 	if scripts_queue.empty():
@@ -54,7 +54,7 @@ func calculate_next_alteration(
 		var script := ScriptAlter.new(
 				scripts_queue.pop_front(),
 				trigger_card,
-				alterant_card,
+				alterant_object,
 				task_details)
 		if not script.is_primed:
 			yield(script,"primed")
@@ -64,7 +64,7 @@ func calculate_next_alteration(
 		# with one less item in our scripts_queue.
 		calculate_next_alteration(
 				trigger_card,
-				alterant_card,
+				alterant_object,
 				scripts_queue,
 				task_details)
 
@@ -79,7 +79,7 @@ func calculate_alteration(script: ScriptAlter) -> void:
 	elif SP.VALUE_PER in str(alteration_requested):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_ALTERATION),
-				script.owner_card,
+				script.owner,
 				script.get_property(script.get_property(SP.KEY_ALTERATION)),
 				script.trigger_card)
 		alteration = per_msg.found_things

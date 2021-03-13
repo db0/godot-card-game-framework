@@ -140,8 +140,6 @@ func re_place() -> void:
 	# else but its anchor
 	.re_place()
 	# Hook for the debugger
-	if _debugger_hook:
-		pass
 	# I could figure this out from the hand anchor, but this way
 	# is easier to understand.
 	# We simply go through all the possible hand placements (we assume the

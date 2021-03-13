@@ -93,7 +93,7 @@ func mod_counter(counter_name: String,
 		value: int,
 		set_to_mod := false,
 		check := false,
-		requesting_card: Card = null,
+		requesting_object = null,
 		tags := ["Manual"]) -> int:
 	var retcode = CFConst.ReturnCode.CHANGED
 	if counters.get(counter_name, null) == null:
@@ -116,8 +116,8 @@ func mod_counter(counter_name: String,
 					counters[counter_name] += value
 				_labels[counter_name].text = str(counters[counter_name])
 				emit_signal(
-						"counter_modified", 
-						requesting_card, 
+						"counter_modified",
+						requesting_object,
 						"counter_modified",
 						{
 							SP.TRIGGER_COUNTER_NAME: counter_name,
@@ -131,8 +131,8 @@ func mod_counter(counter_name: String,
 
 # Returns the value of the specified counter.
 # Takes into account temp_count_modifiers and alterants
-func get_counter(counter_name: String, requesting_card: Card = null) -> int:
-	var count = get_counter_and_alterants(counter_name, requesting_card).count
+func get_counter(counter_name: String, requesting_object = null) -> int:
+	var count = get_counter_and_alterants(counter_name, requesting_object).count
 	return(count)
 
 
@@ -148,7 +148,7 @@ func get_counter(counter_name: String, requesting_card: Card = null) -> int:
 #	temp_count_modifiers
 func get_counter_and_alterants(
 		counter_name: String,
-		requesting_card: Card = null) -> Dictionary:
+		requesting_object = null) -> Dictionary:
 	var count = counters[counter_name]
 	# We iterate through the values, where each value is a dictionary
 	# with key being the counter name, and value being the temp modifier
@@ -156,9 +156,9 @@ func get_counter_and_alterants(
 		"value_alteration": 0,
 		"alterants_details": {}
 	}
-	if requesting_card:
+	if requesting_object:
 		alteration = CFScriptUtils.get_altered_value(
-			requesting_card,
+			requesting_object,
 			"get_counter",
 			{SP.KEY_COUNTER_NAME: counter_name,},
 			counters[counter_name])
@@ -177,7 +177,7 @@ func get_counter_and_alterants(
 		# Each value in the modifier_details dictionary is another dictionary
 		# Where the key is the card object which has added this modifier
 		# And the value is the modifier this specific card added to the total
-		temp_modifiers.modifier_details[modifiers_dict.requesting_card] =\
+		temp_modifiers.modifier_details[modifiers_dict.requesting_object] =\
 				modifiers_dict.modifier.get(counter_name,0)
 	count += temp_modifiers.value_modification
 	if count < 0:

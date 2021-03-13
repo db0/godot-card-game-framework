@@ -230,7 +230,7 @@ func test_subject_tutor():
 	card.execute_scripts()
 	target = cfc.NMAP.board.get_card(1)
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
-	assert_eq("Multiple Choices Test Card",target.card_name,
+	assert_eq("Multiple Choices Test Card",target.canonical_name,
 			"Card of the correct name should be placed on the board")
 
 func test_subject_index():

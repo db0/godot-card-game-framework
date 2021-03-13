@@ -16,12 +16,12 @@ func _init(_dry_run) -> void:
 #
 # You can pass a predefined subject, but it's optional.
 func custom_script(script: ScriptObject) -> void:
-	var card: Card = script.owner_card
+	var card: Card = script.owner
 	var subjects: Array = script.subjects
 	# I don't like the extra indent caused by this if, 
 	# But not all object will be Card
-	# So I can't be certain the "card_name" var will exist
-	match script.owner_card.card_name:
+	# So I can't be certain the "canonical_name" var will exist
+	match script.owner.canonical_name:
 		"Test Card 2":
 			# No demo cost-based custom scripts
 			if not costs_dry_run:
@@ -35,7 +35,7 @@ func custom_script(script: ScriptObject) -> void:
 						+ " to find a convenient target")
 				for subject in subjects:
 					subjects[0].queue_free()
-					print("Destroying: " + subjects[0].card_name)
+					print("Destroying: " + subjects[0].canonical_name)
 
 # warning-ignore:unused_argument
 func custom_alterants(script: ScriptObject) -> int:

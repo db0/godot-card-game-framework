@@ -133,6 +133,7 @@ func unfocus(card: Card) -> void:
 # Overridable function for games to extend preprocessing of dupe card
 # before adding it to the scene
 func _extra_dupe_preparation(dupe_focus: Card, card: Card) -> void:
+	dupe_focus.canonical_name = card.canonical_name
 	dupe_focus.properties = card.properties.duplicate()
 	focus_info.hide_all_info()
 	cfc.ov_utils.populate_info_panels(card,focus_info)

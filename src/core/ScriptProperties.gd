@@ -1004,6 +1004,9 @@ static func filter_trigger(
 			and trigger_card == owner_card:
 		is_valid = false
 
+	var comparison : String = card_scripts.get(
+			KEY_COMPARISON, get_default(KEY_COMPARISON))
+
 	# Script tags filter checks
 	var filter_tags = card_scripts.get(FILTER_TAGS)
 	if is_valid and filter_tags:
@@ -1055,10 +1058,12 @@ static func filter_trigger(
 		is_valid = false
 
 	# Card Tokens filter checks
-	if is_valid and card_scripts.get(FILTER_COUNT) != null \
-			and card_scripts.get(FILTER_COUNT) != \
-			trigger_details.get(TRIGGER_NEW_COUNT):
-		is_valid = false
+	if is_valid and card_scripts.get(FILTER_COUNT) != null:
+		if not CFUtils.compare_numbers(
+				trigger_details.get(TRIGGER_NEW_COUNT),
+				card_scripts.get(FILTER_COUNT),
+				comparison):
+			is_valid = false
 	if is_valid and card_scripts.get(FILTER_COUNT_DIFFERENCE):
 		var prev_count = trigger_details.get(TRIGGER_PREV_COUNT)
 		var new_count = trigger_details.get(TRIGGER_NEW_COUNT)

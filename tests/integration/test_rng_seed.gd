@@ -16,7 +16,7 @@ func test_game_seed_consistency():
 	hand.shuffle_cards()
 	yield(yield_for(0.2), YIELD)
 	for card in hand.get_all_cards():
-		all_index1.append([card.card_name,card.get_my_card_index()])
+		all_index1.append([card.canonical_name,card.get_my_card_index()])
 
 	board.queue_free()
 	yield(yield_for(0.2), YIELD)
@@ -34,7 +34,7 @@ func test_game_seed_consistency():
 	hand.shuffle_cards()
 	yield(yield_for(0.2), YIELD)
 	for card in hand.get_all_cards():
-		all_index2.append([card.card_name,card.get_my_card_index()])
+		all_index2.append([card.canonical_name,card.get_my_card_index()])
 	assert_eq(all_index1,all_index2,
 		"The random result should stay the same when using the same seed"
 		+ " even when godot seed changes")
@@ -49,7 +49,7 @@ func test_game_seed_randomization():
 	hand.shuffle_cards()
 	yield(yield_for(0.2), YIELD)
 	for card in hand.get_all_cards():
-		all_index1.append([card.card_name,card.get_my_card_index()])
+		all_index1.append([card.canonical_name,card.get_my_card_index()])
 
 	board.queue_free()
 	yield(yield_for(0.2), YIELD)
@@ -63,6 +63,6 @@ func test_game_seed_randomization():
 	hand.shuffle_cards()
 	yield(yield_for(0.2), YIELD)
 	for card in hand.get_all_cards():
-		all_index2.append([card.card_name,card.get_my_card_index()])
+		all_index2.append([card.canonical_name,card.get_my_card_index()])
 	assert_ne(all_index1,all_index2,
 		"The random result should change after game_rng.randomize()")
