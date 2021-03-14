@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.9 (Ongoing)
+## 1.9
 
 ### Important for Upgrades
 

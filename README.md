@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework [1.8](CHANGELOG.md)
+# Godot Card Game Framework [1.9](CHANGELOG.md)
 
 ![Godot Card Game Framework preview image](preview.png "Godot Card Game Framework preview image")
 
@@ -49,6 +49,7 @@ Pull requests are more than welcome ;)
 * Can request simple inputs from the player during execution.
 * Tag-marking scripts which can be filtered by scripts triggering off of them.
 * Can store results from one script to use in another.
+* Can be plugged into by any object, not just cards.
 
 All of the above while being very easily extensible to your own game's special requirements through simple json dictionaries.
 
