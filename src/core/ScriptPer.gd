@@ -32,7 +32,10 @@ func return_per_count() -> int:
 		# These two keys simply count the number
 		# of subjects found
 		SP.KEY_PER_TUTOR,SP.KEY_PER_BOARDSEEK:
-			ret = subjects.size()
+			if get_property(SP.KEY_COUNT_UNIQUE):
+				ret = _count_unique()
+			else:
+				ret = subjects.size()
 		SP.KEY_PER_COUNTER:
 			ret = _count_counter()
 		_:
@@ -68,6 +71,14 @@ func _count_counter() -> int:
 	ret = cfc.NMAP.board.counters.get_counter(counter_name, owner)
 	return(ret)
 
+
+# Do something per unique card in the gathered subjects
+func _count_unique() -> int:
+	var unique_subjects: Array
+	for c in subjects:
+		if not c.canonical_name in unique_subjects:
+			unique_subjects.append(c.canonical_name)
+	return unique_subjects.size()
 
 # Overridable function for scripts extending this class
 # to add their own methods

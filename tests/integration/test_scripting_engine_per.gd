@@ -37,7 +37,6 @@ func test_per_token_and_modify_token_per():
 		]}
 	}
 	card.execute_scripts()
-	card._debugger_hook = true
 	var bio_token = card.tokens.get_token("bio")
 	assert_not_null(bio_token,
 		"Put 1 Bio token per void token on this card")
@@ -297,3 +296,29 @@ func test_per_inverted():
 	yield(yield_for(0.1), YIELD)
 	assert_eq(board.counters.get_counter("credits"),7,
 			"Counter set to the specified amount")
+#
+
+func test_filter_per_count_unique():
+	# Put one bio counter per unique card in deck
+	yield(table_move(card, Vector2(100,200)), "completed")
+	card.scripts = {"manual": {
+		"board": [
+			{
+				"name": "mod_tokens",
+				"subject": "self",
+				"token_name":  "bio",
+				"modification": "per_tutor",
+				"per_tutor": {
+					"subject": "tutor",
+					"subject_count": "all",
+					"src_container":  deck,
+					"count_unique": true}
+			},
+		]
+	}}
+	card.execute_scripts()
+	var bio_token = card.tokens.get_token("bio")
+	assert_not_null(bio_token,
+		"Put 1 Bio token per unique card in deck")
+	if bio_token:
+		assert_eq(bio_token.count, 4)

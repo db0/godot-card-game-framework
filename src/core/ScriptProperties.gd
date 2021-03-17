@@ -304,24 +304,24 @@ const KEY_ASK_INTEGER_MIN := "ask_int_min"
 const KEY_ASK_INTEGER_MAX := "ask_int_max"
 # Value Type: Array of Strings
 # All card manipulation Signals will send a list of tags
-# marking the type of effect that triggered them. 
+# marking the type of effect that triggered them.
 #
-# By Default it's the tags sent is just ["Manual"] 
+# By Default it's the tags sent is just ["Manual"]
 # for manipulation via the core API methods.
 # However when the manipulation is done via ScriptingEngine, the tags
 # can be modified by the script defintion. The ScrptingEngine will always
 # mark them as "Scripted" instead of "Manual" at the least.
 #
-# With this key, you can specify a number of keywords 
+# With this key, you can specify a number of keywords
 # you can assign to your script, which details what function it is serving.
 # These can be hooked on by the [AlterantEngine] and the [ScriptingEngine]
-# to figure out if this script effects should be altered or triggered. 
+# to figure out if this script effects should be altered or triggered.
 #
 # Tags specified with ScriptTasks will be injected along with list sent
-# by the ScriptingEngine. So for example `"tags": ["PlayCost"]` 
+# by the ScriptingEngine. So for example `"tags": ["PlayCost"]`
 # will be sent as ["Scripted", "PlayCost"] by the ScriptingEngine.
 #
-# A signal or script has to have all the tags a 
+# A signal or script has to have all the tags a
 # [FILTER_TAGS](#FILTER_TAGS) task is looking for, in order to be considered.
 const KEY_TAGS := "tags"
 # Value Type: Dictionary
@@ -423,7 +423,7 @@ const KEY_ALTERATION := "alteration"
 const VALUE_PER := "per_"
 # Value Type: String
 #
-# This key is typically needed in combination with 
+# This key is typically needed in combination with
 # [KEY_PER_PROPERTY](#KEY_PER_PROPERTY)
 # to specify which property to base the per upon.
 # When used this way, the property **has** to be a number.
@@ -502,6 +502,12 @@ const KEY_PER_TUTOR := "per_tutor"
 # [KEY_SUBJECT_COUNT_V_ALL](#KEY_SUBJECT_COUNT_V_ALL),
 # but a [FILTER_STATE](#FILTER_STATE) should also be typically specified
 const KEY_PER_BOARDSEEK := "per_boardseek"
+# Value Type: bool.
+#
+# Used in combination with
+# [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK) or [KEY_PER_TUTOR](#KEY_PER_TUTOR).
+# It limits the count of items to only once per unique card.
+const KEY_COUNT_UNIQUE := "count_unique"
 # Value Type: Dictionary
 #
 # A [VALUE_PER](#VALUE_PER) key for perfoming an effect
@@ -642,9 +648,9 @@ const FILTER_STATE := "filter_state_"
 # Each value is a dictionary where the  key is a card property, and the value
 # is the desired property value to match on the filtered card.
 #
-# If the card property is numerical, 
-# then the value can be a string. 
-# In that case it is assumed that the string is a counter name 
+# If the card property is numerical,
+# then the value can be a string.
+# In that case it is assumed that the string is a counter name
 # against which to compare the property value
 const FILTER_PROPERTIES := "filter_properties"
 #Value Type: Node.
@@ -1202,7 +1208,7 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 			# value is a counter name
 			else:
 				comparison_value = cfc.NMAP.board.counters.get_counter(
-						property_filters[property])
+						property_filters[property], card)
 			if not CFUtils.compare_numbers(
 					card.get_property(property),
 					comparison_value,
