@@ -188,6 +188,16 @@ func get_token(token_name: String) -> Token:
 	return(get_all_tokens().get(token_name,null))
 
 
+# Returns only the token count if it exists.
+# Else it returns 0
+func get_token_count(token_name: String) -> int:
+	var token: Token = get_token(token_name)
+	if not token:
+		return(0)
+	else:
+		return(token.get_count())
+
+
 # Returns true, when the mouse cursor is over the drawer.
 # This is used to retain focus on the card
 # while the player is manipulating tokens.

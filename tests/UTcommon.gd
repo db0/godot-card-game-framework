@@ -144,8 +144,8 @@ func target_card(source: Card,
 func table_move(card: Card, pos: Vector2) -> void:
 	card.move_to(board, -1, pos)
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-	if cfc.game_settings.fancy_movement:
-		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+#	if cfc.game_settings.fancy_movement:
+#		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 
 func move_mouse(target_position: Vector2, interpolation_speed := "fast") -> void:
 	var mouse_speed = MOUSE_SPEED[interpolation_speed][0]

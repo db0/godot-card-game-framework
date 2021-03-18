@@ -342,7 +342,7 @@ func mod_tokens(script: ScriptTask) -> int:
 		# This allows us to do an effect like
 		# Remove all Poison tokens from all cards, draw a card for each token removed.
 		if script.get_property(SP.KEY_STORE_INTEGER):
-			current_tokens = card.tokens.get_token(token_name).get_count()
+			current_tokens = card.tokens.get_token_count(token_name)
 			if set_to_mod:
 				token_diff += modification + alteration - current_tokens
 			elif current_tokens + modification + alteration < 0:

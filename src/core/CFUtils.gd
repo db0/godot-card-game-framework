@@ -158,6 +158,17 @@ static func sort_card_containers(c1, c2) -> bool:
 			ret = true
 	return(ret)
 
+# Used with sort_custom sort cards according to properties or tokens
+# Expects a list of dictionaries.
+# Each dictionary has two keys
+# * card: The card object
+# * value: The value being compared.
+static func sort_by_card_field(c1, c2) -> bool:
+	var ret: bool
+	if c1.value < c2.value:
+		return true
+	return(false)
+
 
 # Returns an array of CardContainers sorted reverse order of whichever
 # has to be shifted first to resolve duplicate anchor placement
@@ -225,6 +236,7 @@ static func compare_numbers(n1: int, n2: int, comparison_type: String) -> bool:
 			if n1 >= n2:
 				comp_result = true
 	return(comp_result)
+
 
 # Compares two strings based on a comparison type
 # The comparison type is one of the following

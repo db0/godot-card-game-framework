@@ -101,7 +101,8 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				if get_property(SP.KEY_IS_INVERTED):
 					subject_count *= -1
 			requested_subjects = subject_count
-			for c in cfc.NMAP.board.get_all_cards():
+			var subject_list := sort_subjects(cfc.NMAP.board.get_all_cards())
+			for c in subject_list:
 				if SP.check_validity(c, script_definition, "seek"):
 					subjects_array.append(c)
 				subject_count -= 1
@@ -126,7 +127,9 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				if get_property(SP.KEY_IS_INVERTED):
 					subject_count *= -1
 			requested_subjects = subject_count
-			for c in get_property(SP.KEY_SRC_CONTAINER).get_all_cards():
+			var subject_list := sort_subjects(
+					get_property(SP.KEY_SRC_CONTAINER).get_all_cards())
+			for c in subject_list:
 				if SP.check_validity(c, script_definition, "tutor"):
 					subjects_array.append(c)
 					subject_count -= 1
@@ -251,3 +254,52 @@ static func count_per(
 			per_definitions,
 			_trigger_card)
 	return(per_msg.found_things)
+
+
+# Sorts the subjects list
+# according to the directives in the following three keys
+# * [KEY_SORT_BY](ScriptProperties#KEY_SORT_BY)
+# * [KEY_SORT_NAME](ScriptProperties#KEY_SORT_NAME)
+# * [KEY_SORT_DESCENDING](ScriptProperties#KEY_SORT_DESCENDING)
+func sort_subjects(subject_list: Array) -> Array:
+	var sorted_subjects := []
+	var sort_by : String = get_property(SP.KEY_SORT_BY)
+	if sort_by == "node_index":
+		sorted_subjects = subject_list.duplicate()
+	elif sort_by == "random":
+		sorted_subjects = subject_list.duplicate()
+		CFUtils.shuffle_array(sorted_subjects)
+	# If the player forgot to fill in the SORT_NAME, we don't change the sort.
+	# But we put out a warning instead
+	elif not get_property(SP.KEY_SORT_NAME):
+		print_debug("Warning: sort_by " + sort_by + ' requested '\
+				+ 'but key ' + SP.KEY_SORT_NAME + ' is missing!')
+	else:
+		# I don't know if it's going to be a token name
+		# or a property name, so I name the variable accordingly.
+		var thing : String = get_property(SP.KEY_SORT_NAME)
+		var sorting_list := []
+		if sort_by == "property":
+			for c in subject_list:
+				# We create a list of dictionaries
+				# because we cannot tell the sort_custom()
+				# method what to search for
+				sorting_list.append({
+					"card": c,
+					"value": c.get_property(thing)
+				})
+		if sort_by == "token":
+			for c in subject_list:
+				sorting_list.append({
+					"card": c,
+					"value": c.tokens.get_token_count(thing)
+				})
+		sorting_list.sort_custom(CFUtils,'sort_by_card_field')
+		# Once we've sorted the items, we put just the card objects
+		# in a new list, which we return to the player.
+		for d in sorting_list:
+			sorted_subjects.append(d.card)
+	# If we want a descending list, we invert the subject list
+	if get_property(SP.KEY_SORT_DESCENDING):
+		sorted_subjects.invert()
+	return(sorted_subjects)

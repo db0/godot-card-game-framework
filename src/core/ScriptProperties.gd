@@ -508,6 +508,27 @@ const KEY_PER_BOARDSEEK := "per_boardseek"
 # [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK) or [KEY_PER_TUTOR](#KEY_PER_TUTOR).
 # It limits the count of items to only once per unique card.
 const KEY_COUNT_UNIQUE := "count_unique"
+# Value Type: String.
+#
+# Holds the field type by which to sort the subjects.
+# * node_index (default):  This is the order Godot engine
+#    picked up the children nodes, which is their node index
+# * property: Sort by the property specified in [KEY_SORT_BY](#KEY_SORT_BY)
+# * token: Sort by the token specified in [KEY_SORT_BY](#KEY_SORT_BY)
+# * random: Randomize the subjects
+const KEY_SORT_BY := "sort_by"
+# Value Type: String.
+#
+# When sort_by is not `node_index` or `random`,
+# provides the name of the property or token to sort by.
+#
+# Note that if this left empty when sort by properties or tokens is requested,
+# then no resorting will be done.
+const KEY_SORT_NAME := "sort_name"
+# Value Type: bool (default: false).
+#
+# If true, will invert the subject list sort order.
+const KEY_SORT_DESCENDING := "sort_descending"
 # Value Type: Dictionary
 #
 # A [VALUE_PER](#VALUE_PER) key for perfoming an effect
@@ -952,6 +973,7 @@ static func get_default(property: String):
 				KEY_IS_INVERTED,\
 				KEY_SET_TO_MOD,\
 				KEY_IS_OPTIONAL,\
+				KEY_SORT_DESCENDING,\
 				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:
@@ -978,6 +1000,8 @@ static func get_default(property: String):
 			default = []
 		KEY_EXEC_TRIGGER:
 			default = "manual"
+		KEY_SORT_BY:
+			default = "node_index"
 		_:
 			default = null
 	return(default)
