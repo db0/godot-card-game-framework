@@ -8,6 +8,7 @@
 
 * `tutor` and `boardseek` subjects now accept a new key `sort_by` which can resort the gathered cards based on a property, a token, or even randomly.
 * `modify_properties()` task can now accept `per_` as value
+* Scripts can now check the value of a counter before proceeding
 
 ## 1.9
 

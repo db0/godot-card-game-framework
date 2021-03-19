@@ -846,6 +846,14 @@ const FILTER_PER_TUTOR = "filter_per_tutor_count"
 # Requires similar input as [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK)
 # But also needs [FILTER_CARD_COUNT](#FILTER_CARD_COUNT) specified
 const FILTER_PER_BOARDSEEK = "filter_per_boardseek_count"
+# Value Type: Dictionary
+#
+# Executes the script, only if the specified counter has the requested value.
+#
+# Requires a [KEY_COUNTER_NAME](#KEY_COUNTER_NAME) and
+# [FILTER_COUNT](#FILTER_OUNT) specified.
+# Optionally also [KEY_COMPARISON](#KEY_COMPARISON)
+const FILTER_PER_COUNTER := "filter_per_counter"
 # Value Type: int.
 #
 # Filter used for checking against the amount of cards found with
@@ -1186,6 +1194,20 @@ static func filter_trigger(
 					and mod_prop_values.get(FILTER_MODIFIED_PROPERTY_PREV_VALUE) != \
 					trigger_details.get(TRIGGER_PREV_PROPERTY_VALUE):
 				is_valid = false
+
+	# Counter comparison check	
+	if is_valid and card_scripts.get(FILTER_PER_COUNTER):
+		var counter = card_scripts.get(FILTER_PER_COUNTER).get(KEY_COUNTER_NAME)
+		var found_count = cfc.NMAP.board.counters.get_counter(counter)
+		var required_count = card_scripts.\
+				get(FILTER_PER_COUNTER).get(FILTER_COUNT)
+		var comparison_type = card_scripts.get(FILTER_PER_COUNTER).get(
+				KEY_COMPARISON, get_default(KEY_COMPARISON))
+		if not CFUtils.compare_numbers(
+				found_count,
+				required_count,
+				comparison_type):
+			is_valid = false
 
 	# Card Count on board filter check
 	if is_valid and card_scripts.get(FILTER_PER_BOARDSEEK):

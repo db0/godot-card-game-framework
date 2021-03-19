@@ -403,3 +403,32 @@ func test_counter_comparison():
 			"Failing comparison not rotated ")
 	assert_eq(cards[4].card_rotation, 90,
 			"Matching comparison  rotated")
+
+
+func test_per_counter():
+	# warning-ignore:return_value_discarded
+	board.counters.mod_counter("research", 3)
+	card.scripts = {"manual": {"hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"filter_per_counter": {
+				"counter_name": "research",
+				"filter_count": 3,
+			},
+			"set_faceup": false}]}}
+	cards[1].scripts = {"manual": {"hand": [
+			{"name": "flip_card",
+			"subject": "self",
+			"filter_per_counter": {
+				"counter_name": "research",
+				"filter_count": 3,
+				"comparison": 'gt'
+			},
+			"set_faceup": false}]}}
+	card.execute_scripts()
+	cards[1].execute_scripts()
+	yield(yield_to(card._flip_tween, "tween_all_completed", 0.4), YIELD)
+	assert_false(card.is_faceup,
+			"Card is facedown because counter comparison succeeded")
+	assert_true(cards[1].is_faceup,
+			"Card is faceup because counter comparison failed")
