@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.10 (Ongoing)
+
+### New Features
+
+#### ScriptingEngine
+
+* `tutor` and `boardseek` subjects now accept a new key `sort_by` which can resort the gathered cards based on a property, a token, or even randomly.
+* `modify_properties()` task can now accept `per_` as value
+
 ## 1.9
 
 ### Important for Upgrades

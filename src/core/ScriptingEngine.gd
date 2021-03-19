@@ -459,6 +459,7 @@ func modify_properties(script: ScriptTask) -> int:
 		var alteration = null
 		for property in properties:
 			# We can only alter numerical properties
+			var modification : int
 			if property in CardConfig.PROPERTIES_NUMBERS:
 				var new_value : int
 				# We need to calculate what the future value would be, to pass
@@ -466,32 +467,58 @@ func modify_properties(script: ScriptTask) -> int:
 				# As we might have alterants that modify values increasing
 				# or decreasing specifically.
 				if typeof(properties[property]) == TYPE_STRING:
-					new_value = card.get_property(property) + int(properties[property])
+					# A per value can also be in the form of
+					# "+per_..." which signifies adjusting the existing value
+					# by the value of the per calculation
+					if SP.VALUE_PER in properties[property]:
+						var per_msg = perMessage.new(
+								# We remove any plus sign which marks
+								# adjustment of property
+								properties[property].lstrip('+'),
+								script.owner,
+								# This retrieves the dictionary named after the
+								# per_value
+								script.get_property(properties[property].lstrip('+')),
+								null,
+								script.subjects)
+						modification = per_msg.found_things
+						if '+' in properties[property] or '-' in properties[property]:
+							new_value = card.get_property(property)\
+									+ modification
+						else:
+							new_value = modification
+					# if the value is not a per, then it's just a +/- adjustemnt
+					else:
+						modification = int(properties[property])
+						new_value = card.get_property(property) + modification
 				else:
-					new_value = properties[property]
+					modification = properties[property]
+					new_value = modification
 				alteration = _check_for_property_alterants(
 						script,
 						card.get_property(property),
 						new_value,
-						int(properties[property]),
+						modification,
 						property)
 				if alteration is GDScriptFunctionState:
 					alteration = yield(alteration, "completed")
+			# We set the value according to whatever was in the script
+			# which covers string and array values
+			# but integers will need some processing for alterants.
 			var value = properties[property]
 			# Alteration should work on both property sets and mods
 			# Since mods are specified with a string (e.g. "+3")
 			# We need to convert the value + alteration into a string as well
-			if alteration:
-				if typeof(value) == TYPE_STRING:
-					value = int(properties[property]) + alteration
+			if alteration != null:
+				value = modification + alteration
+				if '+' in str(properties[property]) or '-' in str(properties[property]):
 					# If the value is positive, we need to put the '+' in front
 					if value >= 0:
 						value = '+' + str(value)
 					# If the value is negative, the '-' in front will be there
 					else:
+						# modify_property(), always expects a string for a value
 						value = str(value)
-				elif typeof(value) == TYPE_INT:
-					value = int(properties[property]) + alteration
 			var ret_once = card.modify_property(
 					property,
 					value,

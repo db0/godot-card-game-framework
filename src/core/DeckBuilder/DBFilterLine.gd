@@ -37,7 +37,11 @@ func _ready() -> void:
 	var criteria_syntax_help := ''
 	for criterion in criteria_map:
 		criteria_regex_group += criterion
-		criteria_syntax_help += criterion + " - " + criteria_map[criterion] + '\n'
+		criteria_syntax_help +=\
+				criterion.lstrip('_').capitalize()\
+				+ " - "\
+				+ criteria_map[criterion].lstrip('_').capitalize()\
+				+ '\n'
 	var filter_parse_regex = "^([" + criteria_regex_group + "])?([:!><])(\\w+)"
 	_filter_parse.compile(filter_parse_regex)
 	$Syntax/Label.text =\

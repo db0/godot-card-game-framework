@@ -322,3 +322,31 @@ func test_filter_per_count_unique():
 		"Put 1 Bio token per unique card in deck")
 	if bio_token:
 		assert_eq(bio_token.count, 4)
+
+func test_modify_properties_per():
+	# warning-ignore:return_value_discarded
+	board.counters.mod_counter("research", 3)
+	# warning-ignore:return_value_discarded
+	card.modify_property("Power", 0)
+	# warning-ignore:return_value_discarded
+	card.modify_property("Cost", 2)
+	card.scripts = {"manual": {
+		"hand": [
+			{"name": "modify_properties",
+			"set_properties": {
+				"Power": "per_counter",
+				"Cost": "+per_counter",
+			},
+			"subject": "self",
+			"per_counter": {
+				"counter_name": "research"}
+			},
+		]}
+	}
+	card.execute_scripts()
+	yield(yield_for(0.5), YIELD)
+	assert_eq(card.get_property("Power"), 3,
+		"Power set equal to research")
+	assert_eq(card.get_property("Cost"), 5,
+		"Cost increased by the amount of research")
+
