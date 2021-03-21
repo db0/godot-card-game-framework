@@ -594,7 +594,47 @@ const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
 #
 # This allows for comparison between the owner of the script and the potential
 # subjects
+#
+# Example
+# ```
+#{
+#	"alterants": {
+#		"board": [
+#			{
+#				"filter_task": "get_counter",
+#				"filter_counter_name": "skill",
+#				"alteration": "per_boardseek",
+#				"filter_state_trigger": [
+#					{
+#						"filter_properties": {
+#							"Type": "Shader"
+#						},
+#					}
+#				],
+#				"per_boardseek": {
+#					"subject": "boardseek",
+#					"subject_count": "all",
+#					"filter_state_seek": [
+#						{
+#							"filter_properties": {
+#								"Name": "compare_with_trigger"
+#							}
+#						}
+#					]
+#				}
+#			},
+#		],
+#	},
+#},
+# ```
+# The example above translates to
+# *"When installing a Shader, you have +1 skill for each
+# other Shader with the same name you have installed"*
 const VALUE_COMPARE_WITH_OWNER := "compare_with_owner"
+# Same as [VALUE_COMPARE_WITH_OWNER](#VALUE_COMPARE_WITH_OWNER)
+# but compares against card that caused the script to trigger, rather than
+# the owner of the script
+const VALUE_COMPARE_WITH_TRIGGER := "compare_with_trigger"
 # Value Type: bool (Default = false)
 #
 # Specifies whether this script or task can be skipped by the owner.
