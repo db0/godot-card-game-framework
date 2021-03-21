@@ -225,7 +225,7 @@ onready var _control = $Control
 onready var buttons = $Control/ManipulationButtons
 # The node which hosts all tokens belonging to this card
 # as well as the methods retrieve them and to to hide/show their drawer.
-onready var tokens = $Control/Tokens
+onready var tokens: TokenDrawer = $Control/Tokens
 # The node which controls the targeting arrow.
 onready var targeting_arrow = $TargetLine
 # The node which manipulates the highlight borders.

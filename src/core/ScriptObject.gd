@@ -42,6 +42,7 @@ func _init(_owner, script: Dictionary, _trigger_card = null) -> void:
 	# We store all the task properties in our own dictionary
 	script_definition = script
 	trigger_card = _trigger_card
+	parse_replacements()
 
 
 # Returns the specified property of the string.
@@ -303,3 +304,67 @@ func sort_subjects(subject_list: Array) -> Array:
 	if get_property(SP.KEY_SORT_DESCENDING):
 		sorted_subjects.invert()
 	return(sorted_subjects)
+
+
+# Goes through the provided scripts and replaces certain keyword values
+# with variables retireved from specified location.
+#
+# This allows us for example to filter cards sought based on the properties
+# of the card running the script.
+func parse_replacements() -> void:
+	var wip_definitions := script_definition.duplicate()
+	for key in wip_definitions:
+		# We have to go through all the state filters
+		# Because they have variable names
+		if SP.FILTER_STATE in key:
+			var state_filters_array : Array =  wip_definitions[key]
+			for state_filters in state_filters_array:
+				for filter in state_filters:
+					# This branch checks for replacements for
+					# filter_properties
+					# We have to go to each dictionary for filter_properties
+					# filters and check all values if they contain a
+					# relevant keyword
+					if SP.FILTER_PROPERTIES in filter:
+						var property_filters = state_filters[filter]
+						for property in property_filters:
+							if str(property_filters[property]) ==\
+									SP.VALUE_COMPARE_WITH_OWNER:
+								var card: Card = owner
+								# Card name is always grabbed from
+								# Card.canonical_name
+								if property == "Name":
+									property_filters[property] =\
+											card.canonical_name
+								else:
+									property_filters[property] =\
+											card.get_property(property)
+					# This branch checks for replacements for
+					# filter_tokens
+					# We have to go to each dictionary for filter_tokens
+					# filters and check all values if they contain a
+					# relevant keyword
+					if SP.FILTER_TOKENS in filter:
+						var token_filters_array = state_filters[filter]
+						for token_filters in token_filters_array:
+							if str(token_filters.get(SP.FILTER_COUNT)) ==\
+									SP.VALUE_COMPARE_WITH_OWNER:
+								var card: Card = owner
+								var owner_token_count :=\
+										card.tokens.get_token_count(
+										token_filters["filter_" + SP.KEY_TOKEN_NAME])
+								token_filters[SP.FILTER_COUNT] =\
+										owner_token_count
+					if SP.FILTER_DEGREES in filter:
+						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_OWNER:
+							var card: Card = owner
+							state_filters[filter] = card.card_rotation
+					if SP.FILTER_FACEUP in filter:
+						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_OWNER:
+							var card: Card = owner
+							state_filters[filter] = card.is_faceup
+					if SP.FILTER_PARENT in filter:
+						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_OWNER:
+							var card: Card = owner
+							state_filters[filter] = card.get_parent()
+	script_definition = wip_definitions

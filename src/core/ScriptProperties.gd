@@ -582,6 +582,19 @@ const KEY_COMPARISON := "comparison"
 # * [KEY_TEMP_MOD_PROPERTIES](#KEY_TEMP_MOD_PROPERTIES) (In the value fields)
 # * [KEY_TEMP_MOD_COUNTERS](#KEY_TEMP_MOD_COUNTERS) (In the value fields)
 const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
+# This value can be inserted as the value in one of the following
+# * [FILTER_PROPERTIES](#FILTER_PROPERTIES)
+# * [FILTER_TOKENS](#FILTER_TOKENS)
+# * [FILTER_DEGREES](#FILTER_DEGREES)
+# * [FILTER_FACEUP](#FILTER_FACEUP)
+# * [FILTER_PARENT](#FILTER_PARENT)
+#
+# When this is done, the value in this field, will br replaced with the value 
+# in the relevant field from the card owning the script
+#
+# This allows for comparison between the owner of the script and the potential
+# subjects
+const VALUE_COMPARE_WITH_OWNER := "compare_with_owner"
 # Value Type: bool (Default = false)
 #
 # Specifies whether this script or task can be skipped by the owner.
@@ -1195,7 +1208,7 @@ static func filter_trigger(
 					trigger_details.get(TRIGGER_PREV_PROPERTY_VALUE):
 				is_valid = false
 
-	# Counter comparison check	
+	# Counter comparison check
 	if is_valid and card_scripts.get(FILTER_PER_COUNTER):
 		var counter = card_scripts.get(FILTER_PER_COUNTER).get(KEY_COUNTER_NAME)
 		var found_count = cfc.NMAP.board.counters.get_counter(counter)
@@ -1279,6 +1292,12 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 					comparison_value,
 					comparison_type):
 				card_matches = false
+		elif property == "Name":
+			if not CFUtils.compare_strings(
+					property_filters[property],
+					card.canonical_name,
+					comparison_type):
+				card_matches = false
 		else:
 			if not CFUtils.compare_strings(
 					property_filters[property],
@@ -1297,27 +1316,23 @@ static func check_token_filter(card, token_states: Array) -> bool:
 	var card_matches := true
 	# Token filters always contain an array of token states
 	for token_state in token_states:
+		var comparison_default : String = get_default(KEY_COMPARISON)
+		# If the token count is not defined, we are awlays checking if there
+		# is any number of tokens of this type on this card
+		# Therefore it's effectively a "ge 1" comparison
+		if token_state.get(FILTER_COUNT) == null:
+			comparison_default = 'ge'
 		var comparison_type : String = token_state.get(
-				KEY_COMPARISON, get_default(KEY_COMPARISON))
+				KEY_COMPARISON, comparison_default)
 		if token_state.get("filter_" + TRIGGER_TOKEN_NAME):
-			var token = card.tokens.get_token(
+			var token_count : int = card.tokens.get_token_count(
 					token_state.get("filter_" + TRIGGER_TOKEN_NAME))
-			if not token:
-				if token_state.get(FILTER_COUNT):
-					match comparison_type:
-						"eq","ge":
-							if token_state.get(FILTER_COUNT) != 0:
-								card_matches = false
-						"gt":
-							card_matches = false
-				else:
-					card_matches = false
-			elif token_state.get(FILTER_COUNT):
-				if not CFUtils.compare_numbers(
-						token.count,
-						token_state.get(FILTER_COUNT),
-						comparison_type):
-					card_matches = false
+			var filter_count = token_state.get(FILTER_COUNT,1)
+			if not CFUtils.compare_numbers(
+					token_count,
+					filter_count,
+					comparison_type):
+				card_matches = false
 	return(card_matches)
 
 
