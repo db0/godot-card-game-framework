@@ -106,9 +106,9 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 			for c in subject_list:
 				if SP.check_validity(c, script_definition, "seek"):
 					subjects_array.append(c)
-				subject_count -= 1
-				if subject_count == 0:
-					break
+					subject_count -= 1
+					if subject_count == 0:
+						break
 			if requested_subjects > 0\
 					and subjects_array.size() < requested_subjects:
 				is_valid = false

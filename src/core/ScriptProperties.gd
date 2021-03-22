@@ -582,14 +582,14 @@ const KEY_COMPARISON := "comparison"
 # * [KEY_TEMP_MOD_PROPERTIES](#KEY_TEMP_MOD_PROPERTIES) (In the value fields)
 # * [KEY_TEMP_MOD_COUNTERS](#KEY_TEMP_MOD_COUNTERS) (In the value fields)
 const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
-# This value can be inserted as the value in one of the following
+# This value can be inserted as the value in one of the following:
 # * [FILTER_PROPERTIES](#FILTER_PROPERTIES)
 # * [FILTER_TOKENS](#FILTER_TOKENS)
 # * [FILTER_DEGREES](#FILTER_DEGREES)
 # * [FILTER_FACEUP](#FILTER_FACEUP)
 # * [FILTER_PARENT](#FILTER_PARENT)
 #
-# When this is done, the value in this field, will br replaced with the value 
+# When this is done, the value in this field, will br replaced with the value
 # in the relevant field from the card owning the script
 #
 # This allows for comparison between the owner of the script and the potential

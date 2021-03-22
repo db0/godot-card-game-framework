@@ -81,7 +81,7 @@ func on_text_changed(new_text: String) -> void:
 func compile_filters(line_text: String) -> Array:
 	# Our filter string is always split on spaces
 	# We don't support spaces in expressions yet.
-	var filter_entries = line_text.split(' ')
+	var filter_entries = line_text.to_lower().split(' ')
 	var filters := []
 	for filter in filter_entries:
 		var filter_entry := DBFilter.new()

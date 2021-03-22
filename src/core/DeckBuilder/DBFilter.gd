@@ -67,11 +67,11 @@ func assess_card_object(card_object: DBListCardObject) -> bool:
 	if property in CardConfig.PROPERTIES_ARRAYS:
 		card_match = false
 		for pvalue in prop_value:
-			if compare_regex(pvalue):
+			if compare_regex(pvalue.to_lower()):
 				card_match = true
 				break
 	if property in CardConfig.PROPERTIES_STRINGS or property == "Name":
-		if not compare_regex(prop_value):
+		if not compare_regex(prop_value.to_lower()):
 			card_match = false
 	return(card_match)
 
