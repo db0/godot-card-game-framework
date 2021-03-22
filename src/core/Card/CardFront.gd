@@ -85,7 +85,7 @@ func set_label_text(node: Label, value):
 	if node.name in compensation_label:
 		adjust_size = _rect_adjustment
 	var label_size = node.rect_min_size
-	var label_font : Font = node.get("custom_fonts/font").duplicate()
+	var label_font := get_card_label_font(node)
 	# We always start shrinking the size, starting from the original size.
 	label_font.size = font_sizes[node.name]
 	var line_height = label_font.get_height()
@@ -122,7 +122,7 @@ func set_label_text(node: Label, value):
 	if working_value == "":
 		_rect_adjustment -= node.rect_size.y
 		node.visible = false
-	node.set("custom_fonts/font", label_font)
+	set_card_label_font(node, label_font)
 	node.rect_min_size = label_size
 	node.text = value
 	# After any adjustmen of labels, we make sure the compensation_label font size
@@ -133,11 +133,29 @@ func set_label_text(node: Label, value):
 		set_label_text(card_labels[compensation_label], card_labels[compensation_label].text)
 
 
+# Returns the font used by the current label
+#
+# We use an external function to get the font, to allow it to be overriden
+# by classes extending this, to allow them to use their own methods
+# (e.g. based on themes)
+func get_card_label_font(label: Label) -> Font:
+	return(label.get("custom_fonts/font").duplicate())
+
+
+# Sets the font to be used by the current label
+#
+# We use an external function to get the font, to allow it to be overriden
+# by classes extending this, to allow them to use their own methods
+# (e.g. based on themes)
+func set_card_label_font(label: Label, font: Font) -> void:
+	label.set("custom_fonts/font", font)
+
+
 # We use this as an alternative to scaling the card using the "scale" property.
 # This is typically used in the viewport focus only, to keep the text legible
 # because scaling the card starts distoring the font.
 #
-# For gameplay purposes (i.e. scaling while on the table etc), 
+# For gameplay purposes (i.e. scaling while on the table etc),
 # we keep using the .scale property, as that handles the Area2D size as well.
 #
 # Typically each game would override this function to fit its layout.
