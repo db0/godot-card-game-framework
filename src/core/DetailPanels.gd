@@ -6,7 +6,7 @@
 class_name DetailPanels
 extends VBoxContainer
 
-export(PackedScene) var info_panel_scene
+var info_panel_scene
 
 # This dictionary holds all detail scenes added to the list
 # Each entry is an id for the detail (typically its tag or keyword)

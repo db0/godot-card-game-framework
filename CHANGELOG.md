@@ -2,6 +2,10 @@
 
 ## 1.10 (Ongoing)
 
+### Tweaks
+
+* Deckbuilder seach is now case insensitive
+
 ### New Features
 
 #### ScriptingEngine
