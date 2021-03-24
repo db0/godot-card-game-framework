@@ -22,7 +22,7 @@
 Main.tcsn has been modified with a new node called `FocusInfo` which shows card details under the viewport focus. For this to work, the "Info Panel Scene" to use needs to be specified for Main.tcsn. It is an exported variable so you can set it in the inspector.
 A sample such scene has been provided in `res://src/custom/CGFInfoPanel.tcsn`. If this is not set, the game **will** crash when mousing over the cards.
 
-If the deckbuilder is also inherited in a custom scene, it will likewise has the same `FocusInfo` node for which the "Info Panel Scene" has to be specified in the inspector.
+If the deckbuilder is also inherited in a custom scene, it will likewise has the same `FocusInfo` node for which the "Info Panel Scene" has to be specified in the inspector on the root of the Deckbuilder scene.
 
 New **mandatory** CardConfig property added: `TYPES_TO_HIDE_IN_DECKBUILDER` (Array). Any card type specified here will not be shown in the deckbuilder.
 New **mandatory** CardConfig property added: `EXPLANATIONS` (Dictionary). It stores details about tags and keywords that you want to display under your card popups in game or deckbuilder. 
