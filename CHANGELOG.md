@@ -8,6 +8,8 @@
 
 ### New Features
 
+* Deckbuilder now support a grid layout
+
 #### ScriptingEngine
 
 * `tutor` and `boardseek` subjects now accept a new key `sort_by` which can resort the gathered cards based on a property, a token, or even randomly.

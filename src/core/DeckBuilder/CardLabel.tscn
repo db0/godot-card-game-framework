@@ -2,7 +2,7 @@
 
 [ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/DeckBuilder/CardLabel.gd" type="Script" id=2]
-[ext_resource path="res://src/core/DetailPanels.gd" type="Script" id=4]
+[ext_resource path="res://src/core/DeckBuilder/DBPreviewPopup.tscn" type="PackedScene" id=3]
 
 [sub_resource type="DynamicFont" id=1]
 size = 15
@@ -22,15 +22,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PreviewPopup" type="Popup" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-
-[node name="FocusInfo" type="VBoxContainer" parent="PreviewPopup"]
-margin_right = 40.0
-margin_bottom = 40.0
-custom_constants/separation = -1
-script = ExtResource( 4 )
+[node name="PreviewPopup" parent="." instance=ExtResource( 3 )]
 
 [connection signal="mouse_entered" from="." to="." method="_on_CardLabel_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_CardLabel_mouse_exited"]

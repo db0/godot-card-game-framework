@@ -1,5 +1,5 @@
-# This class is not instanced with each name. 
-# Rather it is instanced directly using its path from cfc
+# This class is not instanced via its name. 
+# Rather it is instanced using its path from cfc
 # This allows a game to extend it by extending this class
 # and then replacing the path in CFConst.PATH_OVERRIDABLE_UTILS 
 # with the location of their extended script.

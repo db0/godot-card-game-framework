@@ -6,6 +6,7 @@ extends HBoxContainer
 # A potential link to the card summary in the deck itself.
 # If it is null, it will be created as soon as the card is added to the deck
 var deck_card_object: DBDeckCardObject
+var grid_card_object: DBGridCardObject
 # A pointer back to the deckbuilder scene
 var deckbuilder
 # The max quantity allowed for this particular card
@@ -38,8 +39,8 @@ onready var _qbuttons = {
 }
 
 func _ready() -> void:
-	_card_label.focus_info.info_panel_scene = deckbuilder.info_panel_scene
-	_card_label.focus_info.setup()
+	_card_label.preview_popup.focus_info.info_panel_scene = deckbuilder.info_panel_scene
+	_card_label.preview_popup.focus_info.setup()
 	for quantity_button in _qbuttons:
 		_qbuttons[quantity_button].connect("quantity_set", self, "_on_quantity_set")
 	_quantity_edit.minimum = 0
@@ -76,8 +77,9 @@ func set_quantity(value) -> void:
 					card_properties[CardConfig.SCENE_PROPERTY],
 					value)
 			# warning-ignore:return_value_discarded
-			deck_card_object._card_label.focus_info.info_panel_scene = deckbuilder.info_panel_scene
-			deck_card_object._card_label.focus_info.setup()
+			deck_card_object._card_label.preview_popup.focus_info.info_panel_scene\
+					= deckbuilder.info_panel_scene
+			deck_card_object._card_label.preview_popup.focus_info.setup()
 			deck_card_object.connect("quantity_changed",self,"_on_quantity_set")
 		else:
 			deck_card_object.set_quantity(value)
@@ -85,6 +87,10 @@ func set_quantity(value) -> void:
 		if deck_card_object:
 			deck_card_object.queue_free()
 			deck_card_object = null
+	if grid_card_object and value >= max_allowed:
+		grid_card_object.modulate = Color(0.5,0.5,0.5)
+	elif grid_card_object:
+		grid_card_object.modulate = Color(1,1,1)
 
 
 # This is used to prepare the values of this object
@@ -106,6 +112,14 @@ func setup(_card_name: String, count = 0) -> void:
 	set_quantity(count)
 
 
+func setup_grid_card_object() -> void:
+	if not grid_card_object:
+		grid_card_object = deckbuilder.grid_card_object_scene.instance()
+		deckbuilder._card_grid.add_child(grid_card_object)
+		grid_card_object.setup(card_name)
+		grid_card_object.card_list_object = self
+		grid_card_object.preview_popup.focus_info.info_panel_scene = deckbuilder.info_panel_scene
+		grid_card_object.preview_popup.focus_info.setup()
 
 # Sets the max amount of this card allowe in a deck
 # This can be adjusted from the card properties, or from the deckbuilder
@@ -154,3 +168,7 @@ func _on_Plus_pressed() -> void:
 # Decreases the quantity by 1
 func _on_Minus_pressed() -> void:
 	set_quantity(quantity - 1)
+
+func set_visibility(value) -> void:
+	visible = value
+	grid_card_object.visible = value

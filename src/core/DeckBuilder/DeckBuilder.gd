@@ -8,6 +8,10 @@ extends PanelContainer
 const _LIST_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
 		+ "DeckBuilder/DBListCardObject.tscn"
 const _LIST_CARD_OBJECT_SCENE = preload(_LIST_CARD_OBJECT_SCENE_FILE)
+# The path to the GridCardObject scene.
+const _GRID_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
+		+ "DeckBuilder/DBGridCardObject.tscn"
+const _GRID_CARD_OBJECT_SCENE = preload(_GRID_CARD_OBJECT_SCENE_FILE)
 # The path to the DeckCardObject scene.
 const _DECK_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
 		+ "DeckBuilder/DBDeckCardObject.tscn"
@@ -74,12 +78,15 @@ export var deck_card_object_scene = _DECK_CARD_OBJECT_SCENE
 # We use this variable, so that the scene can be overriden with a custom one
 export var list_card_object_scene = _LIST_CARD_OBJECT_SCENE
 # We use this variable, so that the scene can be overriden with a custom one
+export var grid_card_object_scene = _GRID_CARD_OBJECT_SCENE
+# We use this variable, so that the scene can be overriden with a custom one
 export var deck_summary_scene = _DECK_SUMMARIES_SCENE
 
 # This var will hold a pointer to the deck summaries scene.
 var deck_summaries
 
 onready var _available_cards := $VBC/HBC/MC2/AvailableCards/ScrollContainer/CardList
+onready var _card_grid := $VBC/HBC/MC2/AvailableCards/ScrollContainer/CardGrid
 onready var _deck_cards := $VBC/HBC/MC/CurrentDeck/ScrollContainer/CardsInDeck
 onready var _deck_name := $VBC/HBC/MC/CurrentDeck/DeckNameEdit
 onready var _load_button := $VBC/HBC/MC/CurrentDeck/Buttons/Load
@@ -100,7 +107,12 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	_filter_line.connect("filters_changed", self, "_apply_filters")
 	prepate_filter_buttons()
-
+	cfc.game_settings['deckbuilder_gridstyle'] =\
+			cfc.game_settings.get('deckbuilder_gridstyle', false)
+	$VBC/HBC/MC2/AvailableCards/Settings/GridViewStyle.pressed =\
+			cfc.game_settings.deckbuilder_gridstyle
+	if cfc.game_settings.deckbuilder_gridstyle:
+		prepare_card_grid()
 
 ## Prepares the filter buttons based on the unique values in cards.
 func prepate_filter_buttons() -> void:
@@ -140,6 +152,9 @@ func _process(_delta: float) -> void:
 		deck_summaries.deck_min_label.modulate = Color(1,0,0)
 	else:
 		deck_summaries.deck_min_label.modulate = Color(1,1,1)
+	_card_grid.columns = int(
+			$"VBC/HBC/MC2/AvailableCards/ScrollContainer".rect_size.x
+			/ CFConst.CARD_SIZE.x)
 
 # Populates the list of available cards, with all defined cards in the game
 func populate_available_cards() -> void:
@@ -178,6 +193,15 @@ func add_new_card(card_name, category, value) -> DBDeckCardObject:
 	category_cards_node.add_child(deck_card_object)
 	deck_card_object.setup(card_name, value)
 	return(deck_card_object)
+
+
+# Slowly loads all cards in to the grid
+# We use a delay function between each card, to avoid freezing the game
+# while instancing all the nodes
+func prepare_card_grid() -> void:
+	for card_object in _available_cards.get_children():
+		card_object.setup_grid_card_object()
+		yield(get_tree().create_timer(0.01), "timeout")
 
 
 # Triggered when a deck has been chosen from the Load menu
@@ -306,7 +330,7 @@ func _apply_filters(active_filters: Array) -> void:
 			elif not card_object.card_properties[property]\
 					in active_button_values:
 				set_visible = false
-		card_object.visible = set_visible
+		card_object.set_visibility(set_visible)
 		total_count += 1
 		if set_visible:
 			counter += 1
@@ -340,3 +364,12 @@ func _set_notice(text: String, colour := Color(0,1,0)) -> void:
 			1, 0, 2, Tween.TRANS_SINE, Tween.EASE_IN)
 	# warning-ignore:return_value_discarded
 	tween.start()
+
+
+func _on_GridViewStyle_toggled(button_pressed: bool) -> void:
+	_available_cards.visible = !button_pressed
+	$"VBC/HBC/MC2/AvailableCards/CardListHeaders".visible = !button_pressed
+	cfc.set_setting('deckbuilder_gridstyle',button_pressed)
+	_card_grid.visible = button_pressed
+	if button_pressed:
+		prepare_card_grid()

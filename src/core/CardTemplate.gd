@@ -29,6 +29,7 @@ enum CardState {
 	FOCUSED_IN_POPUP		#12
 	VIEWPORT_FOCUS			#13
 	PREVIEW					#14
+	DECKBUILDER_GRID					#14
 }
 # Specifies where a card is allowed to drop on the board
 #
@@ -892,7 +893,7 @@ func set_card_rotation(
 		# does not change the card_rotation property
 		# so we ensure that the displayed rotation of a card
 		# which is not in hand, matches our expectations
-		if state != CardState.PREVIEW\
+		if not state in [CardState.PREVIEW, CardState.DECKBUILDER_GRID]\
 				and get_parent() != cfc.NMAP.hand \
 				and cfc.game_settings.hand_use_oval_shape \
 				and $Control.rect_rotation != 0.0 \
@@ -1492,7 +1493,7 @@ func set_focus(requestedFocus: bool, colour := CFConst.FOCUS_HOVER_COLOUR) -> vo
 	if highlight.visible != requestedFocus and \
 			highlight.modulate in CFConst.CostsState.values():
 		highlight.set_highlight(requestedFocus,colour)
-	if state != CardState.PREVIEW\
+	if not state in [CardState.PREVIEW, CardState.DECKBUILDER_GRID]\
 			and cfc.game_settings.focus_style: # value 0 means only scaling focus
 		if requestedFocus:
 			cfc.NMAP.main.focus_card(self)
@@ -2331,6 +2332,21 @@ func _process_card_state() -> void:
 			else:
 				set_card_size(CFConst.CARD_SIZE*2)
 				card_front.scale_to(2)
+
+		CardState.DECKBUILDER_GRID:
+			$Control.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			set_focus(false)
+			set_control_mouse_filters(false)
+			buttons.set_active(false)
+			# warning-ignore:return_value_discarded
+			set_card_rotation(0)
+			$Control.rect_rotation = 0
+			# We scale the card to allow the player a better viewing experience
+			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
+				scale = Vector2(1,1)
+			else:
+				set_card_size(CFConst.CARD_SIZE)
+				card_front.scale_to(1)
 
 
 

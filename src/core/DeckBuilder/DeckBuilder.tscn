@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=16 format=2]
 
 [ext_resource path="res://src/core/DeckBuilder/DBFilterLine.gd" type="Script" id=1]
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
@@ -38,6 +38,12 @@ use_filter = true
 font_data = ExtResource( 3 )
 
 [sub_resource type="DynamicFont" id=7]
+font_data = ExtResource( 2 )
+
+[sub_resource type="DynamicFont" id=8]
+outline_size = 1
+outline_color = Color( 0, 0, 0, 1 )
+use_filter = true
 font_data = ExtResource( 2 )
 
 [node name="DeckBuilder" type="PanelContainer"]
@@ -274,19 +280,45 @@ custom_styles/panel = SubResource( 3 )
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC2/AvailableCards"]
 margin_top = 62.0
 margin_right = 628.0
-margin_bottom = 674.0
+margin_bottom = 630.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="CardList" type="VBoxContainer" parent="VBC/HBC/MC2/AvailableCards/ScrollContainer"]
+visible = false
 margin_right = 628.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="CardGrid" type="GridContainer" parent="VBC/HBC/MC2/AvailableCards/ScrollContainer"]
+columns = 4
+
+[node name="Settings" type="HBoxContainer" parent="VBC/HBC/MC2/AvailableCards"]
+margin_top = 634.0
+margin_right = 628.0
+margin_bottom = 674.0
+
+[node name="Control" type="Control" parent="VBC/HBC/MC2/AvailableCards/Settings"]
+margin_right = 465.0
+margin_bottom = 40.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="GridViewStyle" type="CheckButton" parent="VBC/HBC/MC2/AvailableCards/Settings"]
+margin_left = 469.0
+margin_right = 628.0
+margin_bottom = 40.0
+custom_fonts/font = SubResource( 8 )
+pressed = true
+text = "Grid View"
+
 [connection signal="pressed" from="VBC/HBC/MC/CurrentDeck/HBoxContainer/RandomizeName" to="." method="_on_RandomizeName_pressed"]
 [connection signal="pressed" from="VBC/HBC/MC/CurrentDeck/Buttons/Save" to="." method="_on_Save_pressed"]
 [connection signal="pressed" from="VBC/HBC/MC/CurrentDeck/Buttons/Reset" to="." method="_on_Reset_pressed"]
 [connection signal="pressed" from="VBC/HBC/MC/CurrentDeck/Buttons/Delete" to="." method="_on_Delete_pressed"]
 [connection signal="pressed" from="VBC/HBC/MC2/AvailableCards/HBC/ClearFilters" to="." method="_on_ClearFilters_pressed"]
+[connection signal="toggled" from="VBC/HBC/MC2/AvailableCards/Settings/GridViewStyle" to="." method="_on_GridViewStyle_toggled"]
