@@ -1,10 +1,11 @@
 # Changelog
 
-## 1.10 (Ongoing)
+## 1.10
 
 ### Tweaks
 
 * Deckbuilder seach is now case insensitive
+* Targeting Arrow is now decoupled from the Card class and can be extended to target other objects, or even assigned to non-Card classes.
 
 ### New Features
 

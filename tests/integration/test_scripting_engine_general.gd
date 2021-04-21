@@ -290,7 +290,7 @@ func test_target_script_on_drag_from_hand():
 				"set_faceup": false}]}}
 	card.hand_drag_starts_targeting = true
 	yield(drag_card(card, Vector2(300,300)), 'completed')
-	assert_true(card.get_node("TargetLine/ArrowHead").visible,
+	assert_true(card.targeting_arrow.get_node("ArrowHead").visible,
 			"Targeting has started on long-click")
 	yield(target_card(card,target), "completed")
 	assert_eq(board.counters.get_counter("credits"),8,
@@ -307,7 +307,7 @@ func test_target_script_on_drag_from_hand():
 				"set_faceup": false}]}}
 	target = cards[2]
 	yield(drag_card(card, Vector2(300,300)), 'completed')
-	assert_false(card.get_node("TargetLine/ArrowHead").visible,
+	assert_false(card.targeting_arrow.get_node("ArrowHead").visible,
 			"Targeting not started because costs cannot be paid")
 	yield(target_card(card,target), "completed")
 	assert_eq(board.counters.get_counter("credits"),8,
@@ -324,7 +324,7 @@ func test_target_script_on_drag_from_hand():
 				"is_cost": true,
 				"counter_name": "credits"}]}}
 	yield(drag_card(card, Vector2(300,300)), 'completed')
-	assert_true(card.get_node("TargetLine/ArrowHead").visible,
+	assert_true(card.targeting_arrow.get_node("ArrowHead").visible,
 			"Targeting started because targeting is_cost")
 	yield(target_card(card,target), "completed")
 	assert_eq(board.counters.get_counter("credits"),8,

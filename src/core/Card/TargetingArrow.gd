@@ -1,23 +1,24 @@
-# Handles drawing a Card's targeting arrow
+# Handles drawing an Object's (primarily a card's) targeting arrow
 # and specifying the final target
 class_name TargetingArrow
 extends Line2D
 
-# Emitted whenever the card spawns a targeting arrow.
+# Emitted whenever the object spawns a targeting arrow.
 signal initiated_targeting
-# Emitted whenever the card has selected a target.
-signal target_selected(card)
-# We use this to track multiple cards 
+# Emitted whenever the object has selected a target.
+signal target_selected(target)
+# We use this to track multiple potential target objects
 # when our owner_card is about to target them.
-var _potential_cards := []
+var _potential_targets := []
 # If true, the targeting arrow will be drawn towards the mouse cursor
 var is_targeting := false
 # Used to store a card succesfully targeted.
 # It should be cleared from whichever effect requires a target.
 # once it is used
-var target_card : Card = null
+var target_object : Area2D = null
 # Stores a reference to the Card that is hosting this node
-onready var owner_card = get_parent()
+onready var owner_object = get_parent()
+
 
 func _ready() -> void:
 	# We set the targetting arrow modulation to match our config specification
@@ -28,9 +29,11 @@ func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	$ArrowHead/Area2D.connect("area_exited", self, "_on_ArrowHead_area_exited")
 
+
 func _process(_delta: float) -> void:
 	if is_targeting:
 		_draw_targeting_arrow()
+
 
 # Will generate a targeting arrow on the card which will follow the mouse cursor.
 # The top card hovered over by the mouse cursor will be highlighted
@@ -44,24 +47,20 @@ func initiate_targeting() -> void:
 
 # Will end the targeting process.
 #
-# The top card which is hovered (if any) will become the target and inserted
-# into the target_card property for future use.
+# The top targetable object which is hovered (if any) will become the target and inserted
+# into the target_object property for future use.
 func complete_targeting() -> void:
-	if len(_potential_cards) and is_targeting:
-		var tc = _potential_cards.back()
+	if len(_potential_targets) and is_targeting:
+		var tc = _potential_targets.back()
 		# We don't want to emit a signal, if the card is a dummy viewport card
 		# or we already selected a target during dry-run
-		if owner_card.get_parent() != null \
-				and owner_card.get_parent().name != "Viewport":
+		if owner_object.get_parent() != null \
+				and owner_object.get_parent().name != "Viewport":
 			# We make the targeted card also emit a targeting signal for automation
 			tc.emit_signal("card_targeted", tc, "card_targeted",
-					{"targeting_source": owner_card})
-		target_card = tc
-#		print("Targeting Demo: ",
-#				self.name," targeted ",
-#				target_card.name, " in ",
-#				target_card.get_parent().name)
-	emit_signal("target_selected",target_card)
+					{"targeting_source": owner_object})
+		target_object = tc
+	emit_signal("target_selected",target_object)
 	is_targeting = false
 	clear_points()
 	$ArrowHead.visible = false
@@ -71,33 +70,35 @@ func complete_targeting() -> void:
 # Triggers when a targetting arrow hovers over another card while being dragged
 #
 # It takes care to highlight potential cards which can serve as targets.
-func _on_ArrowHead_area_entered(card: Card) -> void:
-	if card and not card in _potential_cards:
-		_potential_cards.append(card)
-		owner_card.highlight.highlight_potential_card(CFConst.TARGET_HOVER_COLOUR,
-				_potential_cards)
+func _on_ArrowHead_area_entered(area: Area2D) -> void:
+	if area.get_class() == 'Card' and not area in _potential_targets:
+		_potential_targets.append(area)
+		if 'highlight' in owner_object:
+			owner_object.highlight.highlight_potential_card(
+					CFConst.TARGET_HOVER_COLOUR, _potential_targets)
 
 
 # Triggers when a targetting arrow stops hovering over a card
 #
 # It clears potential highlights and adjusts potential cards as targets
-func _on_ArrowHead_area_exited(card: Card) -> void:
-	if card and card in _potential_cards:
-		# We remove the card we stopped hovering from the _potential_cards
-		_potential_cards.erase(card)
+func _on_ArrowHead_area_exited(area: Area2D) -> void:
+	if area.get_class() == 'Card' and area in _potential_targets:
+		# We remove the card we stopped hovering from the _potential_targets
+		_potential_targets.erase(area)
 		# And we explicitly hide its cards focus since we don't care about it anymore
-		card.highlight.set_highlight(false)
+		if 'highlight' in area:
+			area.highlight.set_highlight(false)
 		# Finally, we make sure we highlight any other cards we're still hovering
-		if not _potential_cards.empty():
-			owner_card.highlight.highlight_potential_card(
+		if not _potential_targets.empty() and 'highlight' in owner_object:
+			owner_object.highlight.highlight_potential_card(
 				CFConst.TARGET_HOVER_COLOUR,
-				_potential_cards)
+				_potential_targets)
 
 
 # Draws a curved arrow, from the center of a card, to the mouse pointer
 func _draw_targeting_arrow() -> void:
 	# This variable calculates the card center's position on the whole board
-	var card_half_size = owner_card.card_size/2
+	var card_half_size = owner_object.card_size/2
 	var centerpos = global_position + card_half_size * scale
 	# We want the line to be drawn anew every frame
 	clear_points()

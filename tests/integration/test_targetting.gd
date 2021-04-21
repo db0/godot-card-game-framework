@@ -21,20 +21,20 @@ func test_targetting():
 	card = cards[0]
 	card.targeting_arrow.initiate_targeting()
 	yield(move_mouse(cards[4].global_position), 'completed')
-	assert_lt(0,card.get_node("TargetLine").get_point_count( ),
+	assert_lt(0,card.targeting_arrow.get_point_count(),
 			"test that TargetLine has length higher than 1 while active")
-	assert_true(card.get_node("TargetLine/ArrowHead").visible,
+	assert_true(card.targeting_arrow.get_node("ArrowHead").visible,
 			"test that arrowhead is visible on once active")
 	assert_true(cards[4].highlight.visible,
 			"Test that a target arrow hovering over another card, highlights it")
 	assert_eq(cards[4].highlight.modulate, CFConst.TARGET_HOVER_COLOUR,
 			"Test that a hovered target has the right colour highlight")
 	card.targeting_arrow.complete_targeting()
-	assert_eq(card.targeting_arrow.target_card,cards[4],
+	assert_eq(card.targeting_arrow.target_object,cards[4],
 			"Test that card in hand can target card in hand")
-	assert_eq(0,card.get_node("TargetLine").get_point_count( ),
+	assert_eq(0,card.targeting_arrow.get_point_count(),
 			"test that TargetLine has no points once inactive")
-	assert_false(card.get_node("TargetLine/ArrowHead").visible,
+	assert_false(card.targeting_arrow.get_node("ArrowHead").visible,
 			"test that arrowhead is not visible on once inactive")
 	assert_false(cards[4].highlight.visible,
 			"Test that a highlights disappears once targetting ends")
@@ -49,7 +49,7 @@ func test_targetting():
 	assert_false(cards[3].highlight.visible,
 			"test that hovering over multiple cards does not highlight bottom ones")
 	card.targeting_arrow.complete_targeting()
-	assert_eq(card.targeting_arrow.target_card,cards[2],
+	assert_eq(card.targeting_arrow.target_object,cards[2],
 			"Test that card in hand can target card on board")
 
 	card = cards[2]
@@ -57,19 +57,19 @@ func test_targetting():
 	board._UT_interpolate_mouse_move(cards[3].global_position,card.global_position,3)
 	yield(yield_for(0.6), YIELD)
 	card.targeting_arrow.complete_targeting()
-	assert_eq(card.targeting_arrow.target_card,cards[3],
+	assert_eq(card.targeting_arrow.target_object,cards[3],
 			"Test that card on board can target card on board")
 	card.targeting_arrow.initiate_targeting()
 	board._UT_interpolate_mouse_move(cards[2].global_position,card.global_position,3)
 	yield(yield_for(0.6), YIELD)
 	card.targeting_arrow.complete_targeting()
-	assert_eq(card.targeting_arrow.target_card,cards[2],
+	assert_eq(card.targeting_arrow.target_object,cards[2],
 			"Test that card can target itself")
 	card.targeting_arrow.initiate_targeting()
 	board._UT_interpolate_mouse_move(cards[1].global_position,card.global_position,3)
 	yield(yield_for(0.6), YIELD)
 	card.targeting_arrow.complete_targeting()
-	assert_eq(card.targeting_arrow.target_card,cards[1],
+	assert_eq(card.targeting_arrow.target_object,cards[1],
 			"Test that card on board can target card in hand")
 
 func test_signals():

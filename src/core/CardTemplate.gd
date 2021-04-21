@@ -29,7 +29,7 @@ enum CardState {
 	FOCUSED_IN_POPUP		#12
 	VIEWPORT_FOCUS			#13
 	PREVIEW					#14
-	DECKBUILDER_GRID					#14
+	DECKBUILDER_GRID		#15
 }
 # Specifies where a card is allowed to drop on the board
 #
@@ -59,6 +59,8 @@ enum AttachmentOffset{
 # before passing to the preload, or the parser complains.
 const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
 const _CARD_CHOICES_SCENE = preload(_CARD_CHOICES_SCENE_FILE)
+const _TARGETING_SCENE_FILE = CFConst.PATH_CORE + "Card/TargetingArrow.tscn"
+const _TARGETING_SCENE = preload(_TARGETING_SCENE_FILE)
 
 
 # Emitted whenever the card is rotated
@@ -129,6 +131,8 @@ var canonical_name : String setget set_card_name, get_card_name
 # It needs to be scene which uses a CardBack class script.
 export(PackedScene) var card_back_design : PackedScene
 export(PackedScene) var card_front_design : PackedScene
+# We use this variable, so that the scene can be overriden with a custom one
+export var targeting_arrow_scene = _TARGETING_SCENE
 # If true, the player will not be able to drop dragged cards back into
 # CardContainers. The player will only be allowed to drop cards to the board
 # or back into the container they picked them front
@@ -216,6 +220,8 @@ var _is_property_being_altered := false
 var card_back : CardBack
 var card_front : CardFront
 var _card_text
+# This variable will point to the scene which controls the targeting arrow
+onready var targeting_arrow
 
 onready var _tween = $Tween
 onready var _flip_tween = $Control/FlipTween
@@ -227,14 +233,14 @@ onready var buttons = $Control/ManipulationButtons
 # The node which hosts all tokens belonging to this card
 # as well as the methods retrieve them and to to hide/show their drawer.
 onready var tokens: TokenDrawer = $Control/Tokens
-# The node which controls the targeting arrow.
-onready var targeting_arrow = $TargetLine
 # The node which manipulates the highlight borders.
 onready var highlight = $Control/Highlight
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	targeting_arrow = targeting_arrow_scene.instance()
+	add_child(targeting_arrow)
 	set_card_size(card_size)
 	_init_card_layout()
 	# The below call ensures out canonical_name variable is set.
@@ -320,6 +326,7 @@ func _process(delta) -> void:
 			"FOCUSED_IN_POPUP",
 			"VIEWPORT_FOCUS",
 			"PREVIEW",
+			"DECKBUILDER_GRID",
 		]
 		$Debug.visible = true
 		$Debug/id.text = "ID:  " + str(self)

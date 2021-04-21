@@ -122,7 +122,7 @@ func test_save_load_reset():
 		assert_eq(data.result.total, 3.0,
 				"Deck card total stored correctly")
 	deckbuilder._on_Reset_pressed()
-	yield(yield_for(0.1), YIELD)
+	yield(yield_for(0.5), YIELD)
 	assert_eq(deckbuilder._deck_name.text, deck_name,
 			"Reset Deck Name not randomized")
 	assert_eq(deckbuilder._deck_cards.get_child_count(), 0,

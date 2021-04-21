@@ -235,9 +235,9 @@ func _initiate_card_targeting() -> Card:
 	owner.targeting_arrow.initiate_targeting()
 	# We wait until the targetting has been completed to continue
 	yield(owner.targeting_arrow,"target_selected")
-	var target = owner.targeting_arrow.target_card
-	owner.targeting_arrow.target_card = null
-	#owner_card.target_card = null
+	var target = owner.targeting_arrow.target_object
+	owner.targeting_arrow.target_object = null
+	#owner_card.target_object = null
 	return(target)
 
 

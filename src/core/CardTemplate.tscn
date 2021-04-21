@@ -1,10 +1,10 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://src/core/Card/ManipulationButtons.gd" type="Script" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
+[ext_resource path="res://src/core/Card/TargetingArrow.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/core/Card/TokenDrawer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
-[ext_resource path="res://src/core/Card/TargetingArrow.gd" type="Script" id=9]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 75, 120 )
@@ -15,9 +15,6 @@ corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 
 [sub_resource type="RectangleShape2D" id=3]
-
-[sub_resource type="Curve" id=4]
-_data = [ Vector2( 0, 0.463636 ), 0.0, 0.0, 0, 0, Vector2( 1, 1 ), 1.4, 0.0, 0, 0 ]
 
 [node name="Card" type="Area2D" groups=[
 "cards",
@@ -105,28 +102,7 @@ __meta__ = {
 
 [node name="Tween" type="Tween" parent="."]
 
-[node name="TargetLine" type="Line2D" parent="."]
-z_index = 50
-points = PoolVector2Array( 384, 112 )
-width = 15.0
-width_curve = SubResource( 4 )
-default_color = Color( 1, 1, 1, 1 )
-antialiased = true
-script = ExtResource( 9 )
-
-[node name="ArrowHead" type="Polygon2D" parent="TargetLine"]
-visible = false
-offset = Vector2( -32, -8 )
-polygon = PoolVector2Array( 16, 24, 32, 8, 16, -8 )
-
-[node name="Area2D" type="Area2D" parent="TargetLine/ArrowHead"]
-monitoring = false
-collision_layer = 2
-collision_mask = 2
-
-[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="TargetLine/ArrowHead/Area2D"]
-position = Vector2( -32, -8 )
-polygon = PoolVector2Array( 16, 24, 32, 8, 16, -8 )
+[node name="TargetLine" parent="." instance=ExtResource( 3 )]
 
 [node name="Debug" type="VBoxContainer" parent="."]
 visible = false
