@@ -171,4 +171,5 @@ func _on_Minus_pressed() -> void:
 
 func set_visibility(value) -> void:
 	visible = value
-	grid_card_object.visible = value
+	if grid_card_object:
+		grid_card_object.visible = value
