@@ -15,7 +15,7 @@ var is_targeting := false
 # Used to store a card succesfully targeted.
 # It should be cleared from whichever effect requires a target.
 # once it is used
-var target_card : Card = null
+var target_card : Area2D = null
 # Stores a reference to the Card that is hosting this node
 onready var owner_card = get_parent()
 
@@ -71,8 +71,8 @@ func complete_targeting() -> void:
 # Triggers when a targetting arrow hovers over another card while being dragged
 #
 # It takes care to highlight potential cards which can serve as targets.
-func _on_ArrowHead_area_entered(card: Card) -> void:
-	if card and not card in _potential_cards:
+func _on_ArrowHead_area_entered(card: Area2D) -> void:
+	if card.get_class() == 'Card' and not card in _potential_cards:
 		_potential_cards.append(card)
 		owner_card.highlight.highlight_potential_card(CFConst.TARGET_HOVER_COLOUR,
 				_potential_cards)
@@ -81,8 +81,8 @@ func _on_ArrowHead_area_entered(card: Card) -> void:
 # Triggers when a targetting arrow stops hovering over a card
 #
 # It clears potential highlights and adjusts potential cards as targets
-func _on_ArrowHead_area_exited(card: Card) -> void:
-	if card and card in _potential_cards:
+func _on_ArrowHead_area_exited(card: Area2D) -> void:
+	if card.get_class() == 'Card' and card in _potential_cards:
 		# We remove the card we stopped hovering from the _potential_cards
 		_potential_cards.erase(card)
 		# And we explicitly hide its cards focus since we don't care about it anymore

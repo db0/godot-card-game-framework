@@ -21,9 +21,9 @@ func test_targetting():
 	card = cards[0]
 	card.targeting_arrow.initiate_targeting()
 	yield(move_mouse(cards[4].global_position), 'completed')
-	assert_lt(0,card.get_node("TargetLine").get_point_count( ),
+	assert_lt(0,card.targeting_arrow.get_point_count(),
 			"test that TargetLine has length higher than 1 while active")
-	assert_true(card.get_node("TargetLine/ArrowHead").visible,
+	assert_true(card.targeting_arrow.get_node("ArrowHead").visible,
 			"test that arrowhead is visible on once active")
 	assert_true(cards[4].highlight.visible,
 			"Test that a target arrow hovering over another card, highlights it")
@@ -32,9 +32,9 @@ func test_targetting():
 	card.targeting_arrow.complete_targeting()
 	assert_eq(card.targeting_arrow.target_card,cards[4],
 			"Test that card in hand can target card in hand")
-	assert_eq(0,card.get_node("TargetLine").get_point_count( ),
+	assert_eq(0,card.targeting_arrow.get_point_count(),
 			"test that TargetLine has no points once inactive")
-	assert_false(card.get_node("TargetLine/ArrowHead").visible,
+	assert_false(card.targeting_arrow.get_node("ArrowHead").visible,
 			"test that arrowhead is not visible on once inactive")
 	assert_false(cards[4].highlight.visible,
 			"Test that a highlights disappears once targetting ends")
