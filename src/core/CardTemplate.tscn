@@ -1,8 +1,7 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://src/core/Card/ManipulationButtons.gd" type="Script" id=1]
 [ext_resource path="res://src/core/CardTemplate.gd" type="Script" id=2]
-[ext_resource path="res://src/core/Card/TargetingArrow.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/core/Card/TokenDrawer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
 
@@ -101,8 +100,6 @@ __meta__ = {
 [node name="FlipTween" type="Tween" parent="Control"]
 
 [node name="Tween" type="Tween" parent="."]
-
-[node name="TargetLine" parent="." instance=ExtResource( 3 )]
 
 [node name="Debug" type="VBoxContainer" parent="."]
 visible = false
