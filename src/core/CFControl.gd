@@ -82,6 +82,7 @@ var alterant_cache: Dictionary
 # A game need to explicitly make use of it.
 var card_temp_property_modifiers = {}
 var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
+var nakama_client
 
 func _ready() -> void:
 	init_settings_from_file()
@@ -107,6 +108,8 @@ func _ready() -> void:
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
+	if Nakama:
+		nakama_client = load(CFConst.NAKAMA_CLIENT_LOCATION).new()
 
 
 # Run when all necessary nodes (Board, CardContainers etc) for the game

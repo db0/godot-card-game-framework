@@ -220,7 +220,7 @@ func _on_deck_loaded(deck) -> void:
 		for list_card_object in _available_cards.get_children():
 			if list_card_object.card_name == card_name:
 				list_card_object.quantity = deck.cards[card_name]
-	_set_notice("Deck loaded")
+	_notice.set_notice("Deck loaded")
 
 
 # Triggered when the Save button is pressed.
@@ -243,7 +243,7 @@ func _on_Save_pressed() -> void:
 	file.open(CFConst.DECKS_PATH + _deck_name.text + '.json', File.WRITE)
 	file.store_string(JSON.print(deck_dictionary, '\t'))
 	file.close()
-	_set_notice("Deck saved")
+	_notice.set_notice("Deck saved")
 
 
 # Deletes the currently named deck, but doesn't clear the list
@@ -253,11 +253,11 @@ func _on_Delete_pressed() -> void:
 	if dir.dir_exists(CFConst.DECKS_PATH):
 		var op_result = dir.remove(CFConst.DECKS_PATH + _deck_name.text + '.json')
 		if op_result == OK:
-			_set_notice("Deck deleted from disk. Current list not cleared")
+			_notice.set_notice("Deck deleted from disk. Current list not cleared")
 		elif op_result == FAILED:
-			_set_notice("Deck not found on disk", Color(1,1,0))
+			_notice.set_notice("Deck not found on disk", Color(1,1,0))
 		elif op_result == ERR_FILE_NO_PERMISSION:
-			_set_notice("Permission Denied", Color(1,0,0))
+			_notice.set_notice("Permission Denied", Color(1,0,0))
 
 
 # Generates a random deck name using on the deck_name_randomizer
@@ -302,7 +302,7 @@ func generate_value(property: String, card_properties: Dictionary):
 func _on_Reset_pressed() -> void:
 	for card_object in _available_cards.get_children():
 		card_object.quantity = 0
-	_set_notice("Deck list reset")
+	_notice.set_notice("Deck list reset")
 
 
 # Ranzomizes deck name
@@ -350,20 +350,6 @@ func _on_ClearFilters_pressed() -> void:
 	_filter_line.text = ''
 	_apply_filters(_filter_line.get_active_filters())
 
-
-# Shows a fading text to the user notifying them of recent action results.
-func _set_notice(text: String, colour := Color(0,1,0)) -> void:
-	var tween: Tween = _notice.get_node("Tween")
-	_notice.text = text
-	_notice.modulate.a = 1
-	_notice.set("custom_colors/font_color",colour)
-	# warning-ignore:return_value_discarded
-	tween.remove_all()
-	# warning-ignore:return_value_discarded
-	tween.interpolate_property(_notice,'modulate:a',
-			1, 0, 2, Tween.TRANS_SINE, Tween.EASE_IN)
-	# warning-ignore:return_value_discarded
-	tween.start()
 
 
 func _on_GridViewStyle_toggled(button_pressed: bool) -> void:

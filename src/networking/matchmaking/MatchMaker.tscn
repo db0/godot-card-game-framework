@@ -1,0 +1,166 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/networking/matchmaking/MatchMaker.gd" type="Script" id=1]
+[ext_resource path="res://src/core/NoticeLabel.tscn" type="PackedScene" id=2]
+
+[sub_resource type="StyleBoxLine" id=1]
+
+[node name="MatchMaker" type="PanelContainer"]
+margin_right = 14.0
+margin_bottom = 14.0
+rect_min_size = Vector2( 992, 592 )
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="VBC" type="VBoxContainer" parent="."]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 985.0
+margin_bottom = 585.0
+
+[node name="Title" type="Label" parent="VBC"]
+margin_right = 978.0
+margin_bottom = 14.0
+text = "Multiplayer"
+align = 1
+
+[node name="HBC" type="HBoxContainer" parent="VBC"]
+margin_top = 18.0
+margin_right = 978.0
+margin_bottom = 42.0
+
+[node name="Authenticate" type="MenuButton" parent="VBC/HBC"]
+margin_right = 94.0
+margin_bottom = 24.0
+focus_mode = 2
+text = "Authenticate"
+flat = false
+items = [ "testAcc1@dbzer0.com", null, 0, false, false, 0, 0, null, "", false, "testAcc2@dbzer0.com", null, 0, false, false, 1, 0, null, "", false, "testAcc3@dbzer0.com", null, 0, false, false, 2, 0, null, "", false ]
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ConnectionStatus" type="Label" parent="VBC/HBC"]
+margin_left = 98.0
+margin_top = 5.0
+margin_right = 325.0
+margin_bottom = 19.0
+text = "Please authenticate for Multiplayer!"
+
+[node name="MarginContainer" type="MarginContainer" parent="VBC/HBC"]
+margin_left = 329.0
+margin_right = 774.0
+margin_bottom = 24.0
+size_flags_horizontal = 3
+
+[node name="JoinMatchID" type="LineEdit" parent="VBC/HBC"]
+margin_left = 778.0
+margin_right = 978.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 200, 0 )
+placeholder_text = "Join Match ID"
+
+[node name="LineSeparator" type="Panel" parent="VBC"]
+margin_top = 46.0
+margin_right = 978.0
+margin_bottom = 46.0
+custom_styles/panel = SubResource( 1 )
+
+[node name="HBoxContainer" type="HBoxContainer" parent="VBC"]
+margin_top = 50.0
+margin_right = 978.0
+margin_bottom = 74.0
+
+[node name="CreateMatch" type="Button" parent="VBC/HBoxContainer"]
+margin_right = 96.0
+margin_bottom = 24.0
+disabled = true
+text = "Create Match"
+
+[node name="NewMatchName" type="LineEdit" parent="VBC/HBoxContainer"]
+margin_left = 100.0
+margin_right = 978.0
+margin_bottom = 24.0
+rect_min_size = Vector2( 200, 0 )
+size_flags_horizontal = 3
+placeholder_text = "New Match Name"
+
+[node name="HSplitContainer" type="HSplitContainer" parent="VBC"]
+margin_top = 78.0
+margin_right = 978.0
+margin_bottom = 555.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ScrollContainer" type="ScrollContainer" parent="VBC/HSplitContainer"]
+margin_right = 978.0
+margin_bottom = 477.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Matches" type="VBoxContainer" parent="VBC/HSplitContainer/ScrollContainer"]
+margin_right = 978.0
+size_flags_horizontal = 3
+
+[node name="CurrentMatch" type="VBoxContainer" parent="VBC/HSplitContainer"]
+visible = false
+margin_left = 495.0
+margin_right = 978.0
+margin_bottom = 477.0
+size_flags_horizontal = 3
+
+[node name="HBC" type="HBoxContainer" parent="VBC/HSplitContainer/CurrentMatch"]
+margin_right = 483.0
+margin_bottom = 20.0
+
+[node name="StartMatch" type="Button" parent="VBC/HSplitContainer/CurrentMatch/HBC"]
+margin_right = 84.0
+margin_bottom = 20.0
+text = "Start Match"
+
+[node name="MatchName" type="Label" parent="VBC/HSplitContainer/CurrentMatch/HBC"]
+margin_left = 88.0
+margin_top = 3.0
+margin_right = 401.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+text = "Match Name"
+align = 1
+
+[node name="ExitMatch" type="Button" parent="VBC/HSplitContainer/CurrentMatch/HBC"]
+margin_left = 405.0
+margin_right = 483.0
+margin_bottom = 20.0
+text = "Exit Match"
+
+[node name="LineSeparator" type="Panel" parent="VBC/HSplitContainer/CurrentMatch"]
+margin_top = 24.0
+margin_right = 483.0
+margin_bottom = 24.0
+custom_styles/panel = SubResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Players" type="VBoxContainer" parent="VBC/HSplitContainer/CurrentMatch"]
+margin_top = 28.0
+margin_right = 483.0
+margin_bottom = 28.0
+
+[node name="NoticeLabel" parent="VBC" instance=ExtResource( 2 )]
+margin_left = 0.0
+margin_top = 559.0
+margin_right = 978.0
+margin_bottom = 578.0
+text = "Match Maker Notices"
+align = 1
+
+[node name="LobbyRefresh" type="Timer" parent="."]
+wait_time = 5.0
+autostart = true
+
+[connection signal="pressed" from="VBC/HBoxContainer/CreateMatch" to="." method="_on_CreateMatch_pressed"]
+[connection signal="text_entered" from="VBC/HBoxContainer/NewMatchName" to="." method="_on_NewMatchName_text_entered"]
+[connection signal="pressed" from="VBC/HSplitContainer/CurrentMatch/HBC/ExitMatch" to="." method="_on_ExitMatch_pressed"]

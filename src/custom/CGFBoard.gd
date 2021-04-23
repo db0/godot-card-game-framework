@@ -22,7 +22,9 @@ func _ready() -> void:
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards()
 	# warning-ignore:return_value_discarded
-	$DeckBuilderPopup.connect('popup_hide', self, '_on_DeckBuilder_hide')
+	$DeckBuilderPopup.connect('popup_hide', self, '_on_popup_hide')
+	$MultiplayerPopup.connect('popup_hide', self, '_on_popup_hide')
+
 
 
 
@@ -102,5 +104,12 @@ func _on_DeckBuilder_pressed() -> void:
 	cfc.game_paused = true
 	$DeckBuilderPopup.popup_centered_minsize()
 
-func _on_DeckBuilder_hide() -> void:
+func _on_Multiplayer_pressed() -> void:
+	cfc.game_paused = true
+	$MultiplayerPopup.popup_centered_minsize()
+
+func _on_popup_hide() -> void:
 	cfc.game_paused = false
+
+
+

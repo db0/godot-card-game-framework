@@ -196,7 +196,7 @@ How would you achieve that?
 
 ## Addendum 2: How Is Babby Formed?
 
-If you're wondering how the Initial cards you see starting in the deck are added, this is all defined inside `res://src/new_card_game/Board.gd`. Inside `_ready()` you'll find a call to `load_test_cards()` which loads the deck with a random selection of cards among all those defined. This is why your "Beasts" magically appeared in the deck without you having to do anything else after defining it. Your game should of course include some logic in creating, storing and loading decks instead of relying on random chance. But this is currently outside the scope of this framework (at this point).
+If you're wondering how the Initial cards you see starting in the deck are added, this is all defined inside `res://src/new_card_game/Board.gd`. Inside `_ready()` you'll find a call to `load_test_cards()` which loads the deck with a random selection of cards among all those defined. This is why your "Beasts" magically appeared in the deck without you having to do anything else after defining it. Your game should of course include some logic in creating, storing and loading decks instead of relying on random chance. But this is currently outside the scope of this guide.
 
 ## Addendum 3: Core Concepts
 
@@ -208,4 +208,5 @@ The CGF tries to standardize some standard terms in order to keep track of what 
 * **Pile:** A CardContainer which is meant to hold cards stacked on top of each other. The deck and discard pile would be Piles.
 * **Board:** The play area where cards can be placed and where the main game happens.
 * **Manipulation Button:** A button which appears on a Card or CardContainer when you mouse over it. Code can be attached to it to do practically anything, but they tend to manipulate the object they're attached to in some way.
-* **Token:** a counter that goes on a card to track and measure various changes as dictated by the game rules
+* **Token:** A counter that goes on a card to track and measure various changes as dictated by the game rules. For example a token might track "extra power" on a card.
+* **Counter:** A counter that is tracked in some GUI element that refers to the game as a whole. For example a counter might track "player health".

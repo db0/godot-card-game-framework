@@ -1,0 +1,26 @@
+[gd_scene load_steps=2 format=2]
+
+[ext_resource path="res://src/networking/matchmaking/MatchLobbyObject.gd" type="Script" id=1]
+
+[node name="MatchObject" type="HBoxContainer"]
+margin_right = 483.0
+margin_bottom = 20.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="JoinMatch" type="Button" parent="."]
+margin_right = 35.0
+margin_bottom = 20.0
+text = "Join"
+
+[node name="MatchName" type="Label" parent="."]
+margin_left = 39.0
+margin_top = 3.0
+margin_right = 483.0
+margin_bottom = 17.0
+size_flags_horizontal = 3
+text = "Match Name"
+
+[connection signal="pressed" from="JoinMatch" to="." method="_on_JoinMatch_pressed"]

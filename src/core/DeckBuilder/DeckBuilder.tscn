@@ -7,6 +7,7 @@
 [ext_resource path="res://src/core/DeckBuilder/DeckNameRandomizer.gd" type="Script" id=5]
 [ext_resource path="res://src/core/DeckBuilder/DeckLoader.gd" type="Script" id=6]
 [ext_resource path="res://src/core/DeckBuilder/CBCardListHeadersFont.tres" type="DynamicFont" id=7]
+[ext_resource path="res://src/core/NoticeLabel.tscn" type="PackedScene" id=8]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
@@ -29,18 +30,14 @@ use_filter = true
 font_data = ExtResource( 2 )
 
 [sub_resource type="DynamicFont" id=5]
-use_filter = true
-font_data = ExtResource( 3 )
-
-[sub_resource type="DynamicFont" id=6]
 size = 14
 use_filter = true
 font_data = ExtResource( 3 )
 
-[sub_resource type="DynamicFont" id=7]
+[sub_resource type="DynamicFont" id=6]
 font_data = ExtResource( 2 )
 
-[sub_resource type="DynamicFont" id=8]
+[sub_resource type="DynamicFont" id=7]
 outline_size = 1
 outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
@@ -124,25 +121,13 @@ margin_bottom = 26.0
 custom_fonts/font = SubResource( 4 )
 text = "R"
 
-[node name="NoticeLabel" type="Label" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer"]
-modulate = Color( 1, 1, 1, 0 )
-margin_left = 81.0
-margin_top = 3.0
-margin_right = 633.0
-margin_bottom = 22.0
-size_flags_horizontal = 3
-custom_fonts/font = SubResource( 5 )
-custom_colors/font_color = Color( 1, 0.992157, 0, 1 )
-text = "Deck deleted but current list not cleared"
-align = 2
-
-[node name="Tween" type="Tween" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer/NoticeLabel"]
+[node name="NoticeLabel" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer" instance=ExtResource( 8 )]
 
 [node name="DeckNameEdit" type="LineEdit" parent="VBC/HBC/MC/CurrentDeck"]
 margin_top = 617.0
 margin_right = 633.0
 margin_bottom = 644.0
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 5 )
 text = "New Deck"
 max_length = 128
 
@@ -208,7 +193,7 @@ margin_left = 28.0
 margin_right = 524.0
 margin_bottom = 27.0
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 6 )
+custom_fonts/font = SubResource( 5 )
 placeholder_text = "Filter the list"
 script = ExtResource( 1 )
 
@@ -221,7 +206,7 @@ margin_left = 4.0
 margin_top = 4.0
 margin_right = 63.0
 margin_bottom = 24.0
-custom_fonts/font = SubResource( 7 )
+custom_fonts/font = SubResource( 6 )
 text = "Syntax"
 
 [node name="CardCount" type="Label" parent="VBC/HBC/MC2/AvailableCards/HBC"]
@@ -312,7 +297,7 @@ __meta__ = {
 margin_left = 469.0
 margin_right = 628.0
 margin_bottom = 40.0
-custom_fonts/font = SubResource( 8 )
+custom_fonts/font = SubResource( 7 )
 pressed = true
 text = "Grid View"
 
