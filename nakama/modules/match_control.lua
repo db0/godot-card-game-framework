@@ -78,7 +78,7 @@ commands[OpCodes.card_moved] = function(data, state)
 end
 
 commands[OpCodes.deck_loaded] = function(data, state)
-    local player_id = data.user_id
+    local player_id = data.sender_id
     local deck = data.deck
 	state.players[player_id] = deck
 end
@@ -112,11 +112,19 @@ end
 
 commands[OpCodes.ready_start] = function(data, state)
 	local sender_id = data.sender_id
-	for player, deck in pairs(state.players) do
-        for key, value in pairs(deck) do
-            nk.logger_info(string.format("%s DECK - key: %s, value %s", player, key, value))
-        end
-    end
+	if not has_value(state.ready_users, sender_id) then
+		table.insert(state.ready_users,sender_id)
+	else
+		if sender_id == state.lobby_owner then
+			for player, deck in pairs(state.players) do
+				for key, value in pairs(deck) do
+					nk.logger_info(string.format("%s DECK - key: %s, value %s", player, key, value))
+				end
+			end
+		else
+			table.remove(state.ready_users, tablefind(state.ready_users,sender_id))
+		end
+	end
 end
 
 

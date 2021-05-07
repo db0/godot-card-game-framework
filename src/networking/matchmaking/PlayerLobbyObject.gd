@@ -48,7 +48,6 @@ func _on_DeckLoader_deck_loaded(deck) -> void:
 	_deck_loader.text = deck.name + " (" + str(deck.total) + ")"
 	var payload := {
 		"deck": deck,
-		"user_id": user_id
 	}
 	_nakama_client.socket.send_match_state_async(
 			match_maker.joined_match_lobby.match_id,
