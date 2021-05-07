@@ -208,7 +208,6 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 								state.players.get(p.user_id),
 								state.spectators[p.user_id])
 			var start_button_text = "Ready"
-			print_debug(state.ready_users)
 			if state.lobby_owner == get_user_id():
 				if check_if_all_ready(state.presences, state.ready_users):
 					start_button_text = "Start Match"
@@ -232,7 +231,7 @@ func _on_ExitMatch_pressed() -> void:
 func _on_StartMatch_pressed() -> void:
 	nakama_client.socket.send_match_state_async(
 			joined_match_lobby.match_id,
-			NWConst.OpCodes.start_game,
+			NWConst.OpCodes.ready_start,
 			JSON.print({}))
 
 func check_if_all_ready(presences, ready_players) -> bool:
