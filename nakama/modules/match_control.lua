@@ -110,7 +110,7 @@ commands[OpCodes.kick_user] = function(data, state)
 end
 
 
-commands[OpCodes.start_game] = function(data, state)
+commands[OpCodes.ready_start] = function(data, state)
 	for player, deck in pairs(players) do
         for key, value in pairs(deck) do
             nk.logger_info(string.format("%s DECK - key: %, value %s", player, key, value))
