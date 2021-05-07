@@ -29,11 +29,11 @@ align = 1
 [node name="HBC" type="HBoxContainer" parent="VBC"]
 margin_top = 18.0
 margin_right = 978.0
-margin_bottom = 42.0
+margin_bottom = 38.0
 
 [node name="Authenticate" type="MenuButton" parent="VBC/HBC"]
 margin_right = 94.0
-margin_bottom = 24.0
+margin_bottom = 20.0
 focus_mode = 2
 text = "Authenticate"
 flat = false
@@ -44,34 +44,27 @@ __meta__ = {
 
 [node name="ConnectionStatus" type="Label" parent="VBC/HBC"]
 margin_left = 98.0
-margin_top = 5.0
+margin_top = 3.0
 margin_right = 325.0
-margin_bottom = 19.0
+margin_bottom = 17.0
 text = "Please authenticate for Multiplayer!"
 
 [node name="MarginContainer" type="MarginContainer" parent="VBC/HBC"]
 margin_left = 329.0
-margin_right = 774.0
-margin_bottom = 24.0
+margin_right = 978.0
+margin_bottom = 20.0
 size_flags_horizontal = 3
 
-[node name="JoinMatchID" type="LineEdit" parent="VBC/HBC"]
-margin_left = 778.0
-margin_right = 978.0
-margin_bottom = 24.0
-rect_min_size = Vector2( 200, 0 )
-placeholder_text = "Join Match ID"
-
 [node name="LineSeparator" type="Panel" parent="VBC"]
-margin_top = 46.0
+margin_top = 42.0
 margin_right = 978.0
-margin_bottom = 46.0
+margin_bottom = 42.0
 custom_styles/panel = SubResource( 1 )
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBC"]
-margin_top = 50.0
+margin_top = 46.0
 margin_right = 978.0
-margin_bottom = 74.0
+margin_bottom = 70.0
 
 [node name="CreateMatch" type="Button" parent="VBC/HBoxContainer"]
 margin_right = 96.0
@@ -88,7 +81,7 @@ size_flags_horizontal = 3
 placeholder_text = "New Match Name"
 
 [node name="HSplitContainer" type="HSplitContainer" parent="VBC"]
-margin_top = 78.0
+margin_top = 74.0
 margin_right = 978.0
 margin_bottom = 555.0
 size_flags_horizontal = 3
@@ -96,7 +89,7 @@ size_flags_vertical = 3
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HSplitContainer"]
 margin_right = 978.0
-margin_bottom = 477.0
+margin_bottom = 481.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
@@ -163,4 +156,5 @@ autostart = true
 
 [connection signal="pressed" from="VBC/HBoxContainer/CreateMatch" to="." method="_on_CreateMatch_pressed"]
 [connection signal="text_entered" from="VBC/HBoxContainer/NewMatchName" to="." method="_on_NewMatchName_text_entered"]
+[connection signal="pressed" from="VBC/HSplitContainer/CurrentMatch/HBC/StartMatch" to="." method="_on_StartMatch_pressed"]
 [connection signal="pressed" from="VBC/HSplitContainer/CurrentMatch/HBC/ExitMatch" to="." method="_on_ExitMatch_pressed"]

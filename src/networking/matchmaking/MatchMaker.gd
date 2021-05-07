@@ -92,9 +92,6 @@ func _finalize_authentication(session: NakamaSession) -> void:
 	elif not session.valid:
 		notice.set_notice("Multiplayer Server appears to be down!", NoticeLabel.FontColor.GLOW_RED)
 
-func _on_LineEdit_text_entered(new_text: String) -> void:
-	nakama_client.join_match(new_text)
-
 func refresh_available_matches() -> void:
 	var matches: NakamaAPI.ApiRpc = yield(
 		nakama_client.client.rpc_async(nakama_client.session, "get_all_matches", ""), "completed"
@@ -210,6 +207,14 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 								# dict yet, so we send null in that case.
 								state.players.get(p.user_id),
 								state.spectators[p.user_id])
+			var start_button_text = "Ready"
+			print_debug(state.ready_users)
+			if state.lobby_owner == get_user_id():
+				if check_if_all_ready(state.presences, state.ready_users):
+					start_button_text = "Start Match"
+				else:
+					start_button_text = "Force Match Start"
+			_start_match_button.text = start_button_text
 
 #	print(code,state)
 #	print_debug(joined_match_lobby)
@@ -222,3 +227,15 @@ func _on_ExitMatch_pressed() -> void:
 		joined_match_lobby = null
 		entered_lobby.visible = false
 		clear_players()
+
+
+func _on_StartMatch_pressed() -> void:
+	nakama_client.socket.send_match_state_async(
+			joined_match_lobby.match_id,
+			NWConst.OpCodes.start_game,
+			JSON.print({}))
+
+func check_if_all_ready(presences, ready_players) -> bool:
+	print_debug(presences)
+	print_debug(ready_players)
+	return(false)

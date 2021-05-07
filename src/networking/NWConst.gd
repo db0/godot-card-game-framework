@@ -11,4 +11,5 @@ enum OpCodes {
 	update_lobby,
 	match_terminating,
 	kick_user,
+	ready_start,
 }

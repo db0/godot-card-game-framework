@@ -43,7 +43,8 @@ local OpCodes = {
 	set_as_spectator = 6,
 	update_lobby = 7,
 	match_terminating = 8,
-	kick_user = 9
+	kick_user = 9,
+	ready_start = 10
 }
 
 -- Command pattern table for boiler plate updates that uses data and state.
@@ -109,6 +110,15 @@ commands[OpCodes.kick_user] = function(data, state)
 end
 
 
+commands[OpCodes.start_game] = function(data, state)
+	for player, deck in pairs(players) do
+        for key, value in pairs(deck) do
+            nk.logger_info(string.format("%s DECK - key: %, value %s", player, key, value))
+        end
+    end
+end
+
+
 -- When the match is initialized. Creates empty tables in the game state that will be populated by
 -- clients.
 function match_control.match_init(context, params)
@@ -117,6 +127,7 @@ function match_control.match_init(context, params)
 		cards = {},
 		players = {},
 		spectators = {},
+		ready_users = {},
 		kicked_users = {},
 		game_started = false,
 		lobby_owner = params.creator_id
@@ -138,7 +149,7 @@ end
 -- doing so if so.
 function match_control.match_join_attempt(_, _, _, state, presence, _)
     if state.presences[presence.user_id] ~= nil then
-        return state, false, "User already logged in."
+        return state, false, "User already joined."
     end
     if state.game_started then
         return state, false, "Game has already started."
@@ -203,6 +214,7 @@ function match_control.match_loop(context, dispatcher, tick, state, messages)
 			presences = state.presences,
 			players = state.players,
 			spectators = state.spectators,
+			ready_users = state.ready_users,
 			lobby_owner = state.lobby_owner,
 			kicked_users = state.kicked_users
 		}
