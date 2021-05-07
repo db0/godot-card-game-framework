@@ -117,8 +117,14 @@ commands[OpCodes.ready_start] = function(data, state)
 	else
 		if sender_id == state.lobby_owner then
 			for player, deck in pairs(state.players) do
-				for key, value in pairs(deck) do
-					nk.logger_info(string.format("%s DECK - key: %s, value %s", player, key, value))
+				for card_name, card_count in pairs(deck.cards) do
+					for i = 1,card_count,1 do
+						card_reference = {}
+						card_reference[card_name] = card_name
+						card_reference[owner] = player						
+						table.insert(state.cards,card_reference)
+					end
+					state.game_started = true
 				end
 			end
 		else

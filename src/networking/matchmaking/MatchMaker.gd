@@ -88,8 +88,12 @@ func _finalize_authentication(session: NakamaSession) -> void:
 		_create_match_button.disabled = false
 		notice.set_notice("Authenticated succesfully as " + session.username, NoticeLabel.FontColor.GLOW_GREEN)
 	elif session.valid and session.expired:
+		if is_instance_valid(joined_match_lobby):
+			yield(joined_match_lobby.exit_lobby(false),"completed")
 		notice.set_notice("Session expired. Please login again!", NoticeLabel.FontColor.GLOW_RED)
 	elif not session.valid:
+		if is_instance_valid(joined_match_lobby):
+			yield(joined_match_lobby.exit_lobby(false),"completed")		
 		notice.set_notice("Multiplayer Server appears to be down!", NoticeLabel.FontColor.GLOW_RED)
 
 func refresh_available_matches() -> void:
@@ -98,6 +102,8 @@ func refresh_available_matches() -> void:
 	)
 #	print_debug(matches, nakama_client.session.valid, nakama_client.session.expired)
 	if matches.exception or nakama_client.session.expired:
+		if is_instance_valid(joined_match_lobby):
+			yield(joined_match_lobby.exit_lobby(false),"completed")
 		if nakama_client.session.expired or matches.exception.status_code == 401:
 			notice.set_notice(
 					"Authentication expired! Please authenticate again.",
@@ -219,6 +225,8 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 			else:
 				start_button_text = "Ready"
 			_start_match_button.text = start_button_text
+		NWConst.OpCodes.update_state:
+			print_debug(state)
 
 #	print(code,state)
 #	print_debug(joined_match_lobby)
