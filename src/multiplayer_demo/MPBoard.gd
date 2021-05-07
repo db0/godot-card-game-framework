@@ -21,22 +21,26 @@ func _ready() -> void:
 		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
 	# warning-ignore:return_value_discarded
 	$DeckBuilderPopup.connect('popup_hide', self, '_on_popup_hide')
-	$MultiplayerPopup.connect('popup_hide', self, '_on_popup_hide')
+	load_multiplayer_cards()
+
 
 # Loads a sample set of cards to use for testing
 func load_multiplayer_cards() -> void:
 	var mp_card_array := []
-	for card in cfc.multiplayer_match.card_states:
-		var new_card = cfc.instance_card(card.card_name)
+	var card_index := 0
+	for card_entry in cfc.multiplayer_match.card_states:
+		var new_card = cfc.instance_card(card_entry.card_name)
 		mp_card_array.append(new_card)
-		card['card_node'] = new_card
+		cfc.multiplayer_match.register_card(card_index, new_card)
+		card_index += 1
+	print_debug(mp_card_array)
 	var payload := {}
 	for card in mp_card_array:
 		$Deck.add_child(card)
 		#card.set_is_faceup(false,true)
 		card._determine_idle_state()
-		card['container'] = 'deck'
-		var card_mp_id = cfc.multiplayer_match.get_card_node_mp_id(card)
+		var card_mp_id = cfc.multiplayer_match.card_node_map[card]
+		cfc.multiplayer_match.card_states[card_mp_id]['container'] = 'deck'
 		payload[card_mp_id] = cfc.multiplayer_match.card_states[card_mp_id]
 	cfc.multiplayer_match.nakama_client.socket.send_match_state_async(
 			cfc.multiplayer_match.match_id,

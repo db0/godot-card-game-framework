@@ -4,7 +4,7 @@ extends Reference
 enum OpCodes {
 	card_created = 1,
 	card_deleted,
-	card_updated,
+	cards_updated,
 	update_state,
 	deck_loaded,
 	set_as_spectator,

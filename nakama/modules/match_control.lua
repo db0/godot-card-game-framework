@@ -75,6 +75,7 @@ end
 commands[OpCodes.cards_updated] = function(data, state)
 	-- The payload for this function is a dictionary of cards to be updated
 	-- each key is an index in the state.cards array
+	nk.logger_info("Cards updated")
 	for index, card_state in pairs(data) do
 		state.cards[index] = card_state
 	end
