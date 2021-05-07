@@ -111,7 +111,10 @@ end
 
 
 commands[OpCodes.ready_start] = function(data, state)
+	local sender_id = data.sender_id
+	nk.logger_info(string.format("%s sender_id : s%", sender_id))
 	for player, deck in pairs(state.players) do
+		nk.logger_info(string.format("%s DECK : s%", player, deck))
         for key, value in pairs(deck) do
             nk.logger_info(string.format("%s DECK - key: %, value %s", player, key, value))
         end
