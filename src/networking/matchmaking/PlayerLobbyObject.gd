@@ -30,16 +30,25 @@ func setup(_username, _user_id, _match_maker, lobby_owner_id) -> void:
 			_kick_button.visible = false
 			_spectator_button.visible = false
 
-func set_status(deck, is_spectator) -> void:
+func set_status(deck, is_spectator, is_ready, is_self) -> void:
+#	print_debug(deck)
 	if _spectator_button.pressed != is_spectator:
 		_spectator_button.pressed = is_spectator
-		_deck_loader.visible = !is_spectator
+		if is_self:
+			_deck_loader.visible = !is_spectator
 	if is_spectator:
 		if _status_label.text != "Spectator":
 			_status_label.text = "Spectator"
 	elif deck != null:
-		if _status_label.text != deck.name + " (" + str(deck.total) + ")":
-			_status_label.text = deck.name + " (" + str(deck.total) + ")"
+		var status_field := "{state} ({deck_name})"
+		var status_vars := {"deck_name": deck.name}
+		if status_vars["deck_name"].length() > 20:
+			status_vars["deck_name"] = status_vars["deck_name"].substr(0,20) + '...'
+		if is_ready:
+			status_vars["state"] = "Ready"
+		else:
+			status_vars["state"] = "Choosing deck"
+		_status_label.text = status_field.format(status_vars)
 	else:
 		_status_label.text = "Not Ready"
 

@@ -206,13 +206,18 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 								# The user_id might not be in the players
 								# dict yet, so we send null in that case.
 								state.players.get(p.user_id),
-								state.spectators[p.user_id])
-			var start_button_text = "Ready"
-			if state.lobby_owner == get_user_id():
-				if check_if_all_ready(state.presences, state.ready_users):
-					start_button_text = "Start Match"
-				else:
-					start_button_text = "Force Match Start"
+								state.spectators[p.user_id],
+								p.user_id in state.ready_users,
+								p.user_id == get_user_id())
+			var start_button_text := "Unready"
+			if get_user_id() in state.ready_users:
+				if state.lobby_owner == get_user_id():
+					if check_if_all_ready(state.presences, state.ready_users):
+						start_button_text = "Start Match"
+					else:
+						start_button_text = "Force Match Start"
+			else:
+				start_button_text = "Ready"
 			_start_match_button.text = start_button_text
 
 #	print(code,state)
@@ -235,6 +240,8 @@ func _on_StartMatch_pressed() -> void:
 			JSON.print({}))
 
 func check_if_all_ready(presences, ready_players) -> bool:
-	print_debug(presences)
-	print_debug(ready_players)
-	return(false)
+	var all_ready := true
+	for presence in presences:
+		if not presence in ready_players:
+			all_ready = false
+	return(all_ready)
