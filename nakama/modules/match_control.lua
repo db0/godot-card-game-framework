@@ -80,6 +80,7 @@ commands[OpCodes.cards_updated] = function(data, state)
 		state.cards[index] = card_state
 	end
 	for index, card_state in pairs(state.cards) do
+		nk.logger_info(string.format("card_state %s", card_state))
 		for key, value in pairs(card_state) do
 			nk.logger_info(string.format("%s CARD: key %s. value %s", index, key, value))
 		end
