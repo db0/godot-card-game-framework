@@ -34,14 +34,14 @@ func load_multiplayer_cards() -> void:
 		cfc.multiplayer_match.register_card(card_index, new_card)
 		card_index += 1
 	print_debug(mp_card_array)
-	var payload := {}
+	var payload := {"cards": {}}
 	for card in mp_card_array:
 		$Deck.add_child(card)
 		#card.set_is_faceup(false,true)
 		card._determine_idle_state()
 		var card_mp_id = cfc.multiplayer_match.card_node_map[card]
 		cfc.multiplayer_match.card_states[card_mp_id]['container'] = 'deck'
-		payload[card_mp_id] = cfc.multiplayer_match.card_states[card_mp_id]
+		payload.cards[card_mp_id] = cfc.multiplayer_match.card_states[card_mp_id]
 	cfc.multiplayer_match.nakama_client.socket.send_match_state_async(
 			cfc.multiplayer_match.match_id,
 			NWConst.OpCodes.cards_updated,
