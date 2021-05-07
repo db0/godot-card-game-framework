@@ -120,8 +120,8 @@ commands[OpCodes.ready_start] = function(data, state)
 				for card_name, card_count in pairs(deck.cards) do
 					for i = 1,card_count,1 do
 						card_reference = {}
-						card_reference[card_name] = card_name
-						card_reference[owner] = player						
+						card_reference['card_name'] = card_name
+						card_reference['owner'] = player						
 						table.insert(state.cards,card_reference)
 					end
 					state.game_started = true
