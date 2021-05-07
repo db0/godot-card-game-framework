@@ -202,7 +202,7 @@ _global_script_classes=[ {
 "base": "Reference",
 "class": "NWConst",
 "language": "GDScript",
-"path": "res://src/networking/NWConst.gd"
+"path": "res://src/multiplayer_demo/NWConst.gd"
 }, {
 "base": "HBoxContainer",
 "class": "NWMatchLobbyObject",
@@ -213,6 +213,11 @@ _global_script_classes=[ {
 "class": "NWMatchMaker",
 "language": "GDScript",
 "path": "res://src/networking/matchmaking/MatchMaker.gd"
+}, {
+"base": "Reference",
+"class": "NWMultiplayerMatch",
+"language": "GDScript",
+"path": "res://src/networking/MultiplayerMatch.gd"
 }, {
 "base": "HBoxContainer",
 "class": "NWPlayerLobbyObject",
@@ -416,6 +421,7 @@ _global_script_class_icons={
 "NWConst": "",
 "NWMatchLobbyObject": "",
 "NWMatchMaker": "",
+"NWMultiplayerMatch": "",
 "NWPlayerLobbyObject": "",
 "NakamaAPI": "",
 "NakamaAsyncResult": "",

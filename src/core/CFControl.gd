@@ -83,6 +83,7 @@ var alterant_cache: Dictionary
 var card_temp_property_modifiers = {}
 var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
 var nakama_client
+var multiplayer_match
 
 func _ready() -> void:
 	init_settings_from_file()

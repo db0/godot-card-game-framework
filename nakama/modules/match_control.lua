@@ -37,7 +37,7 @@ end
 local OpCodes = {
     card_created = 1,
     card_deleted = 2,
-    card_moved = 3,
+    cards_updated = 3,
     update_state = 4,
 	deck_loaded = 5,
 	set_as_spectator = 6,
@@ -72,9 +72,12 @@ commands[OpCodes.card_deleted] = function(data, state)
     local card_id = data.card_id
 end
 
--- Updates whether a character jumped in the game state
-commands[OpCodes.card_moved] = function(data, state)
-    local card_id = data.card_id
+commands[OpCodes.cards_updated] = function(data, state)
+	-- The payload for this function is a dictionary of cards to be updated
+	-- each key is an index in the state.cards array
+	for index, card_state in pairs(data) do
+		state.cards[index] = card_state
+	end
 end
 
 commands[OpCodes.deck_loaded] = function(data, state)

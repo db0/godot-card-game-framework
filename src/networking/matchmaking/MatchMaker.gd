@@ -226,8 +226,9 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 				start_button_text = "Ready"
 			_start_match_button.text = start_button_text
 		NWConst.OpCodes.update_state:
-			print_debug(state)
-
+			cfc.multiplayer_match = load(NWConst.PATH_MULTIPLAYER_MATCH).new(
+					state.cards, nakama_client, joined_match_lobby.match_id)
+			get_tree().change_scene("res://src/multiplayer_demo/MPMain.tscn")
 #	print(code,state)
 #	print_debug(joined_match_lobby)
 

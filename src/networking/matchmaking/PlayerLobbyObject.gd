@@ -54,7 +54,7 @@ func set_status(deck, is_spectator, is_ready, is_self) -> void:
 
 
 func _on_DeckLoader_deck_loaded(deck) -> void:
-	print_debug(deck)
+#	print_debug(deck)
 	_deck_loader.text = deck.name + " (" + str(deck.total) + ")"
 	var payload := {
 		"deck": deck,
