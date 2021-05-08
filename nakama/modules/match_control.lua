@@ -164,6 +164,7 @@ commands[OpCodes.register_containers] = function(data, state)
 				table.insert(state.containers[sender_id], name)
 			end
 		end
+	end
 end
 
 
