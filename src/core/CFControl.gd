@@ -257,6 +257,20 @@ func reset_game() -> void:
 	NMAP.clear()
 	main._ready()
 
+# This function functions like the reset function, but instead of
+# reloading the existing main scene, it instead switches to a different
+# mains scene.
+func switch_main_scene(scene_path: String) -> void:
+	flush_cache()
+	are_all_nodes_mapped = false
+	card_drag_ongoing = null
+	cfc.NMAP.board.queue_free()
+	# We need to give Godot time to deinstance all nodes.
+	yield(get_tree().create_timer(0.1), "timeout")
+	NMAP.clear()
+	get_tree().change_scene(scene_path)
+
+
 
 # Empties the alterants cache (only thing cached for now) which will cause
 # all the alterants engine fire anew for all requests.

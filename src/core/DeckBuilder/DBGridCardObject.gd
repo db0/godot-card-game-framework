@@ -22,6 +22,9 @@ func on_gui_input(event) -> void:
 
 func setup(card_name) -> void:
 	display_card = cfc.instance_card(card_name)
+	# To avoid accidents when we allow the deckbuilder to be used
+	# during gameplay
+	display_card.remove_from_group('cards')
 	add_child(display_card)
 	display_card.state = Card.CardState.DECKBUILDER_GRID
 	

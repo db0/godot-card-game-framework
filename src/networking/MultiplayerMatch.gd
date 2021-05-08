@@ -15,8 +15,18 @@ func _init(cards: Array, _nakama_client: CFNakamaClient, _match_id: String) -> v
 func register_card(index, card) -> void:
 	card_node_map[card] = index
 
+func get_card_id(card) -> int:
+	# We have to add +1 to the index, to match the lua indexes which start from 1
+	return(card_node_map[card] + 1)
+
+func update_card_state(card, key, value) -> void:
+	card_states[card_node_map[card]][key] = value
+
+func get_card_state(card) -> Dictionary:
+	return(card_states[card_node_map[card]])
+
 func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 	var code := match_state.op_code
 	var state : Dictionary = JSON.parse(match_state.data).result	
-	print_debug(state)
+#	print_debug(state)
 
