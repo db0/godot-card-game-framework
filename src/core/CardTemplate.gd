@@ -996,6 +996,8 @@ func move_to(targetHost: Node,
 		index := -1,
 		board_position = null,
 		tags := ["Manual"]) -> void:
+	# This is set to avoid remote state changes (i.e. coming from multiplayer)
+	# from modifying the card's placement while we're in the process
 	set_current_manipulation(StateManipulation.LOCAL)
 #	if cfc.game_settings.focus_style:
 #		# We make to sure to clear the viewport focus because
@@ -1252,7 +1254,7 @@ func move_to(targetHost: Node,
 	common_post_move_scripts(targetHost, parentHost, tags)
 	if current_manipulation != StateManipulation.REMOTE:
 		emit_signal("state_manipulated", self)
-	set_current_manipulation(StateManipulation.NONE)
+	
 
 
 # Executes the tasks defined in the card's scripts in order.

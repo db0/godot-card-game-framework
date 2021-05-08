@@ -83,6 +83,7 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 		if card_container != card.get_parent():
 			card.set_current_manipulation(Card.StateManipulation.REMOTE)
 			card.move_to(card_container)
+			card.set_current_manipulation(Card.StateManipulation.NONE)
 		var card_position = Vector2(card_entry.pos_x, card_entry.pos_y)
 		if card_position != card.position and card_container == cfc.NMAP.board:
 #			print_debug(card.current_manipulation,card_position,card.position )
@@ -95,8 +96,21 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 func _on_card_state_manipulated(card: Card):
 	var previous_state = card_states[card_node_map[card]]
 	var card_id := get_card_id(card)
-	if card._tween.is_active():
-		yield(card._tween, "tween_all_completed")
+	# We add a wait to allow any tweens which are about to start, to start
+	yield(card.get_tree().create_timer(0.1), "timeout")
+#	print_debug(card._tween.is_active(), card._tween.get_runtime())
+	# We want to send the absolute final state of the card 
+	# So we need to wait for all the tweens to finish first
+#	var loops = 0
+#	while card._tween.is_active():
+#		yield(card._tween, "tween_all_completed")
+#		# We add a wait before the next loop
+#		# to allow the next tween to start, in case there's more than one
+#		# running in a row
+#		yield(card.get_tree().create_timer(0.1), "timeout")
+#		loops += 1
+#		# We keep this as a safety to avoid getting stuck somehow
+#		if loops > 5: break
 	var payload := {
 		"cards": {
 			card_id: {
@@ -114,10 +128,11 @@ func _on_card_state_manipulated(card: Card):
 	if card_parent:
 		payload['cards'][card_id]["container"] =\
 				get_container_id(discover_card_container(card))
-	nakama_client.socket.send_match_state_async(
+	yield(nakama_client.socket.send_match_state_async(
 			match_id,
 			NWConst.OpCodes.cards_updated,
-			JSON.print(payload))
+			JSON.print(payload)), "completed")
+	card.set_current_manipulation(Card.StateManipulation.NONE)
 
 func discover_card_container(card: Card) -> Node:
 	var card_parent = card.get_parent()
