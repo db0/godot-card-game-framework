@@ -80,11 +80,17 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 	if card_entry.get('container'):
 		var card_container = get_container_node(card_entry.container)
 	#	print_debug(card_container)
+		var card_position = Vector2(card_entry.pos_x, card_entry.pos_y)
 		if card_container != card.get_parent():
 			card.set_current_manipulation(Card.StateManipulation.REMOTE)
-			card.move_to(card_container)
+			card.move_to(card_container, card_entry.node_index)
 			card.set_current_manipulation(Card.StateManipulation.NONE)
-		var card_position = Vector2(card_entry.pos_x, card_entry.pos_y)
+		elif card_entry.node_index != card.get_index():
+#			print_debug(card.current_manipulation,card_position,card.position )
+			card.set_current_manipulation(Card.StateManipulation.REMOTE)
+			card.get_parent().move_child(card, card_entry.node_index)
+#			card._add_tween_position(card.position, card_position, 0.15,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+			card.set_current_manipulation(Card.StateManipulation.NONE)
 		if card_position != card.position and card_container == cfc.NMAP.board:
 #			print_debug(card.current_manipulation,card_position,card.position )
 			card.set_current_manipulation(Card.StateManipulation.REMOTE)
@@ -93,46 +99,51 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 			card.set_current_manipulation(Card.StateManipulation.NONE)
 #	print_debug(card_entry)
 
-func _on_card_state_manipulated(card: Card):
-	var previous_state = card_states[card_node_map[card]]
-	var card_id := get_card_id(card)
-	# We add a wait to allow any tweens which are about to start, to start
-	yield(card.get_tree().create_timer(0.1), "timeout")
-#	print_debug(card._tween.is_active(), card._tween.get_runtime())
-	# We want to send the absolute final state of the card 
-	# So we need to wait for all the tweens to finish first
-#	var loops = 0
-#	while card._tween.is_active():
-#		yield(card._tween, "tween_all_completed")
-#		# We add a wait before the next loop
-#		# to allow the next tween to start, in case there's more than one
-#		# running in a row
-#		yield(card.get_tree().create_timer(0.1), "timeout")
-#		loops += 1
-#		# We keep this as a safety to avoid getting stuck somehow
-#		if loops > 5: break
-	var payload := {
-		"cards": {
-			card_id: {
-				"card_name": card.canonical_name,
-				"owner": previous_state['owner'],
-				"pos_x": card.position.x,
-				"pos_y": card.position.y,
-#				"grid_container_slot": card.get_index(),
-				"node_index": card.get_index(),
-			}
+
+
+func _on_card_state_manipulated(cards):
+	if typeof(cards) != TYPE_ARRAY:
+		cards = [cards]
+	var payload := { "cards": {}}
+	for card in cards:
+		var previous_state = card_states[card_node_map[card]]
+		var card_id := get_card_id(card)
+		# We add a wait to allow any tweens which are about to start, to start
+		yield(card.get_tree().create_timer(0.1), "timeout")
+	#	print_debug(card._tween.is_active(), card._tween.get_runtime())
+		# We want to send the absolute final state of the card 
+		# So we need to wait for all the tweens to finish first
+	#	var loops = 0
+	#	while card._tween.is_active():
+	#		yield(card._tween, "tween_all_completed")
+	#		# We add a wait before the next loop
+	#		# to allow the next tween to start, in case there's more than one
+	#		# running in a row
+	#		yield(card.get_tree().create_timer(0.1), "timeout")
+	#		loops += 1
+	#		# We keep this as a safety to avoid getting stuck somehow
+	#		if loops > 5: break
+		payload["cards"][card_id] = {
+			"card_name": card.canonical_name,
+			"owner": previous_state['owner'],
+			"pos_x": card.position.x,
+			"pos_y": card.position.y,
+#			"grid_container_slot": card.get_index(),
+			"node_index": card.get_my_card_index(),
 		}
-	}
-#	print_debug(payload)
-	var card_parent = discover_card_container(card)
-	if card_parent:
-		payload['cards'][card_id]["container"] =\
-				get_container_id(discover_card_container(card))
+	#	print_debug(payload)
+		var card_parent = discover_card_container(card)
+		if card_parent:
+			payload['cards'][card_id]["container"] =\
+					get_container_id(discover_card_container(card))
+		# We want to wait until the state has been updated remotely, 
+		# before unlocking the card for remote manipulations
 	yield(nakama_client.socket.send_match_state_async(
 			match_id,
 			NWConst.OpCodes.cards_updated,
 			JSON.print(payload)), "completed")
-	card.set_current_manipulation(Card.StateManipulation.NONE)
+	for card in cards:			
+		card.set_current_manipulation(Card.StateManipulation.NONE)
 
 func discover_card_container(card: Card) -> Node:
 	var card_parent = card.get_parent()
