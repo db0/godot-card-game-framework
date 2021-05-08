@@ -7,6 +7,8 @@ local nk = require("nakama")
 
 local MIN_PLAYERS_REQUIRED = 2
 
+local uses_single_board = true
+
 local function has_value(tab, val)
     for index, value in ipairs(tab) do
         if value == val then
@@ -44,7 +46,8 @@ local OpCodes = {
 	update_lobby = 7,
 	match_terminating = 8,
 	kick_user = 9,
-	ready_start = 10
+	ready_start = 10,
+	register_containers = 11
 }
 
 -- Command pattern table for boiler plate updates that uses data and state.
@@ -143,12 +146,34 @@ commands[OpCodes.ready_start] = function(data, state)
 end
 
 
+commands[OpCodes.register_containers] = function(data, state)
+	local containers = data.containers
+	if uses_single_board then
+		for index, name in containers do
+			if not has_value(state.containers, name) then
+				table.insert(state.containers, name)
+			end
+		end
+	else
+		local sender_id = data.sender_id
+		if state.containers[sender_id] == nil then
+			state.containers[sender_id] = {}
+		end	
+		for index, name in containers do
+			if not has_value(state.containers[sender_id], name) then
+				table.insert(state.containers[sender_id], name)
+			end
+		end
+end
+
+
 -- When the match is initialized. Creates empty tables in the game state that will be populated by
 -- clients.
 function match_control.match_init(context, params)
     local gamestate = {
         presences = {},
 		cards = {},
+		containers = {},
 		players = {},
 		spectators = {},
 		ready_users = {},
@@ -230,6 +255,7 @@ function match_control.match_loop(context, dispatcher, tick, state, messages)
 	if state.game_started then
 		local data = {
 			cards = state.cards
+			containers = state.containers
 		}
 		local encoded = nk.json_encode(data)
 		dispatcher.broadcast_message(OpCodes.update_state, encoded)

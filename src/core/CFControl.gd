@@ -82,7 +82,14 @@ var alterant_cache: Dictionary
 # A game need to explicitly make use of it.
 var card_temp_property_modifiers = {}
 var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
+
+# We don't specify a class for these variables, to allow the framework to work
+# even if the networking components are removed
+
+# The object which is responsible for initiating the initial handshake
+# and authentication
 var nakama_client
+# The object holding the game's multiplayer logic
 var multiplayer_match
 
 func _ready() -> void:
@@ -129,6 +136,8 @@ func _on_all_nodes_mapped() -> void:
 		if NMAP.board and NMAP.board.has_node("ScalingFocusOptions"): # Needed for UT
 			NMAP.board.get_node("ScalingFocusOptions").disabled = true
 	set_scripts = load_script_definitions()
+	if multiplayer_match:
+		multiplayer_match.register_container()
 
 
 # The below code allows us to quickly refer to nodes meant to host cards

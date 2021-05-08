@@ -12,6 +12,7 @@ enum OpCodes {
 	match_terminating,
 	kick_user,
 	ready_start,
+	register_containers,
 }
 
 # The path where scenes and scripts customized for this specific game exist
