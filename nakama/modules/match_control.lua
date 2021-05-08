@@ -254,7 +254,7 @@ function match_control.match_loop(context, dispatcher, tick, state, messages)
     end
 	if state.game_started then
 		local data = {
-			cards = state.cards
+			cards = state.cards,
 			containers = state.containers
 		}
 		local encoded = nk.json_encode(data)
