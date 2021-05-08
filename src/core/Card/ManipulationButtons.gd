@@ -47,6 +47,8 @@ func spawn_manipulation_buttons() -> void:
 func are_hovered() -> bool:
 	var ret = false
 	for button in get_children():
+#		if button as Button: # look like a bug where Rot90 reports true erroneously.
+#			print_debug(button.name, button.is_hovered())
 		if button as Button \
 				and button.is_hovered() \
 				and button.modulate.a == 1:

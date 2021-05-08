@@ -55,6 +55,11 @@ enum AttachmentOffset{
 	BOTTOM
 	BOTTOM_RIGHT
 }
+enum StateManipulation{
+	NONE
+	LOCAL
+	REMOTE
+}
 # Used to spawn CardChoices. We have to add the consts together
 # before passing to the preload, or the parser complains.
 const _CARD_CHOICES_SCENE_FILE = CFConst.PATH_CORE + "CardChoices.tscn"
@@ -92,7 +97,7 @@ signal card_properties_modified(card,trigger,details)
 # doing the targeting.
 # warning-ignore:unused_signal
 signal card_targeted(card,trigger,details)
-
+signal state_manipulated(card)
 
 # The properties dictionary will be filled in by the setup() code
 # according to the card definintion.
@@ -220,6 +225,14 @@ var _is_property_being_altered := false
 var card_back : CardBack
 var card_front : CardFront
 var _card_text
+
+# Sets whether the card is in a middle of a manipulation
+# This prevents manipulations of other sorts from affecting it before it's
+# finished.
+var current_manipulation : int = StateManipulation.NONE setget set_current_manipulation
+
+
+
 # This variable will point to the scene which controls the targeting arrow
 onready var targeting_arrow
 
@@ -372,6 +385,7 @@ func _input(event) -> void:
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
 	if event is InputEventMouseButton:
+#		print_debug(buttons.are_hovered(), tokens.are_hovered())
 		# because of https://github.com/godotengine/godot/issues/44138
 		# we need to double check that the card which is receiving the
 		# gui input, is actually the one with the highest index.
@@ -387,6 +401,7 @@ func _on_Card_gui_input(event) -> void:
 				and not tokens.are_hovered():
 			# If it's a double-click, then it's not a card drag
 			# But rather it's script execution
+			
 			if event.doubleclick\
 					and ((check_play_costs() != CFConst.CostsState.IMPOSSIBLE
 					and get_state_exec() == "hand")
@@ -604,6 +619,8 @@ func modify_property(
 					card_front.set_label_text(label_node, str(value))
 					# If we have an empty property, we let the other labels
 					# use the space vertical space it would have taken.
+				if current_manipulation != StateManipulation.REMOTE:
+					emit_signal("state_manipulated", self)
 	return(retcode)
 
 
@@ -779,6 +796,8 @@ func set_is_faceup(
 					"is_faceup": value,
 					"tags": tags,
 				})
+		if current_manipulation != StateManipulation.REMOTE:
+			emit_signal("state_manipulated", self)
 	# If we're doing a check, then we just report CHANGED.
 	else:
 		retcode = CFConst.ReturnCode.CHANGED
@@ -945,7 +964,8 @@ func set_card_rotation(
 						"tags": tags,
 					}
 			)
-
+			if current_manipulation != StateManipulation.REMOTE:
+				emit_signal("state_manipulated", self)
 		retcode = CFConst.ReturnCode.CHANGED
 	return retcode
 
@@ -976,6 +996,7 @@ func move_to(targetHost: Node,
 		index := -1,
 		board_position = null,
 		tags := ["Manual"]) -> void:
+	set_current_manipulation(StateManipulation.LOCAL)
 #	if cfc.game_settings.focus_style:
 #		# We make to sure to clear the viewport focus because
 #		# the mouse exited signal will not fire after drag&drop in a container
@@ -1229,6 +1250,9 @@ func move_to(targetHost: Node,
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP
 	common_post_move_scripts(targetHost, parentHost, tags)
+	if current_manipulation != StateManipulation.REMOTE:
+		emit_signal("state_manipulated", self)
+	set_current_manipulation(StateManipulation.NONE)
 
 
 # Executes the tasks defined in the card's scripts in order.
@@ -1684,6 +1708,12 @@ func common_pre_execution_scripts(trigger: String) -> void:
 func common_post_execution_scripts(trigger: String) -> void:
 	pass
 
+
+func set_current_manipulation(value) -> void:
+#	print_debug(current_manipulation)
+	if current_manipulation == StateManipulation.NONE or value == StateManipulation.NONE:
+		current_manipulation = value
+		
 # Returns true is the card has hand_drag_starts_targeting set to true
 # is currently in hand, and has a targetting task.
 #
@@ -2182,6 +2212,7 @@ func _process_card_state() -> void:
 
 		CardState.DRAGGED:
 			# Used when the card is dragged around the game with the mouse
+			set_current_manipulation(StateManipulation.LOCAL)
 			set_focus(true)
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
@@ -2313,7 +2344,7 @@ func _process_card_state() -> void:
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
 				scale = Vector2(1.5,1.5)
 			else:
-				# We need to reset its scale, 
+				# We need to reset its scale,
 				# in case it was already scaled due to being on the table etc.
 				scale = Vector2(1,1)
 				set_card_size(CFConst.CARD_SIZE*1.5, true)
