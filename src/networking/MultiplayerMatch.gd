@@ -6,11 +6,10 @@ var card_node_map: Dictionary
 var container_node_map: Dictionary
 var nakama_client : CFNakamaClient
 var match_id: String
-var is_single_board: bool
 
-func _init(cards: Array, _nakama_client: CFNakamaClient, _match_id: String, _is_single_board: bool) -> void:
+
+func _init(cards: Array, _nakama_client: CFNakamaClient, _match_id: String) -> void:
 	match_id = _match_id
-	is_single_board = _is_single_board
 	card_states = cards.duplicate(true)
 	nakama_client = _nakama_client
 	nakama_client.socket.connect("received_match_state", self, "_on_received_match_state")

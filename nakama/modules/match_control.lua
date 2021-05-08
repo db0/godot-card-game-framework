@@ -149,7 +149,7 @@ end
 commands[OpCodes.register_containers] = function(data, state)
 	local containers = data.containers
 	if uses_single_board then
-		for index, name in containers do
+		for index, name in ipairs(containers) do
 			if not has_value(state.containers, name) then
 				table.insert(state.containers, name)
 			end
@@ -159,7 +159,7 @@ commands[OpCodes.register_containers] = function(data, state)
 		if state.containers[sender_id] == nil then
 			state.containers[sender_id] = {}
 		end	
-		for index, name in containers do
+		for index, name in ipairs(containers) do
 			if not has_value(state.containers[sender_id], name) then
 				table.insert(state.containers[sender_id], name)
 			end
