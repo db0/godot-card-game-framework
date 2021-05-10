@@ -50,6 +50,7 @@ func load_multiplayer_cards() -> void:
 		cfc.multiplayer_match.update_card_state(card,'pos_x', card.position.x)
 		cfc.multiplayer_match.update_card_state(card,'pos_y', card.position.y)
 		cfc.multiplayer_match.update_card_state(card,'node_index', card.get_index())
+		cfc.multiplayer_match.update_card_state(card,'needs_update', true)
 		payload.cards[card_mp_id] = cfc.multiplayer_match.get_card_state(card)
 	cfc.multiplayer_match.nakama_client.socket.send_match_state_async(
 			cfc.multiplayer_match.match_id,
