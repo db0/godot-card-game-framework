@@ -72,14 +72,13 @@ You'll notice again we're duplicating some of the demo code.  We could easily do
  
 We have now created an inherited card scene as well as custom card back card front and manipulation button scenes which we can modify to fit our game look. 
 
-However typically the games don't have only one card, so we need to let our game know where our game stores its custom cards.  At the moment, the Framework is configured to look inside `res://src/custom`, but we cant to make sure it's looking inside our own folder.
+However typically the games don't have only one card, so we need to let our game know where our game stores its custom cards.  At the moment, the Framework is configured to look inside `res://src/custom`, but we can make sure it's looking inside our own folder.
 
 1. Move `res://src/custom/CFConst.gd` to `res://src/new_card_game/`
 1. Create a new folder `res://src/new_card_game/cards`
 1. Create a new folder `res://src/new_card_game/cards/sets`
 1. In the filesystem tab, navigate to `res://src/custom/cards`.
 1. Move "CardConfig.gd" and "CustomScripts" inside `res://src/new_card_game/cards`
-1. In the filesystem tab, navigate to `res://src/custom/cards/sets`.
 1. Edit `res://src/new_card_game/CFConst.gd`
 1. Find the line `const PATH_CUSTOM := "res://src/custom/"` and modify it to `const PATH_CUSTOM := "res://src/new_card_game/"`
 
