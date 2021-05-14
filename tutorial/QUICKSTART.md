@@ -100,7 +100,7 @@ For this demonstration, let's create a "creature" type card.
 1. On the Inspector find and expand custom styles. Then click on the arrow next to StyleBox and select "Make Unique".
 1. Click on the "StyleBox" label, to expand its properties
 1. Click on the "Bg Color". The colour picker will appear. Select a background colour you want to use for your creature cards.
-1. Save the scene as `res://src/new_card_game/cards/Creature.tcsn`
+1. Save the Scene as `res://src/new_card_game/cards/CreatureFront.tcsn`
 1. The basic card template has most of the information a creature would need, but what would a creature be without some Health. Let's add this now.
 	Right click on HB > Add Child Node > search for "Label" and add it. The new label node will appear under the "Power" node.
 1. Double click it to rename it to "Health". You can add text to see how it looks. If you cannot see it against the background colour, you will need to adjust the font. Let's provide a setup which should work with any background colour now:
@@ -117,7 +117,6 @@ func _ready() -> void:
 	card_labels["Health"] = $Margin/CardText/HB/Health
 ```
 We have now mapped the new label node for our new card type, so that it can be found by our code. 
-1. Save the Scene as `res://src/new_card_game/cards/CreatureFront.tcsn`
 1. Right-click on `res://src/new_card_game/CardTemplate.tcsn` and select "New Inherited Scene". A new tab will open on the top called "[unsaved]". 
 1. In the Godot Scene tab, double-click on "Card" to rename the scene root. Let's rename it to "Creature" to remind ourselves what this is when working on our scenes. It's not otherwise important.
 1. In the root node inspector, click on the arrow next to Card Front Design > Load, then navigate and select `res://src/new_card_game/cards/CreatureFront.tcsn`
