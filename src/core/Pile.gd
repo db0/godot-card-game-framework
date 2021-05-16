@@ -3,6 +3,7 @@
 class_name Pile
 extends CardContainer
 
+var shuffle_animation_ongoing := false
 # The pile's name. If this value is changed, it will change the
 # `pile_name_label` text.
 export(String) var pile_name : String setget set_pile_name
@@ -282,10 +283,11 @@ func shuffle_cards(animate = true, only_animate = false) -> void:
 	# but if we did so, we would not be able to refer to it from the Card
 	# class, as that would cause a cyclic dependency on the parser
 	# So we've placed it in CFConst instead.
-	if not $Tween.is_active() \
+	if not shuffle_animation_ongoing \
 			and animate \
 			and shuffle_style != CFConst.ShuffleStyle.NONE \
 			and get_card_count() > 1:
+		shuffle_animation_ongoing = true
 		# The placement of this container in respect to the board.
 		var init_position = position
 		# The following calculation figures out the direction
@@ -406,10 +408,12 @@ func shuffle_cards(animate = true, only_animate = false) -> void:
 			_add_tween_rotation(rotation_degrees,0,0.2)
 			$Tween.start()
 		z_index = 0
+		shuffle_animation_ongoing = false
 	elif not only_animate:
 		# if we're already running another animation, just shuffle
 		.shuffle_cards()
-	reorganize_stack()
+	elif not shuffle_animation_ongoing:
+		reorganize_stack()
 
 
 # Overrides the re_place() function of [Pile] in order

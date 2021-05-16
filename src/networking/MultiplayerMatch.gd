@@ -76,9 +76,9 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 	for container_id in shuffled_containers:
 		var container := get_container_node(container_id)
 		if container.is_in_group("hands"):
-			container.shuffle(true)
+			container.shuffle_cards(true)
 		elif container.is_in_group("piles"):
-			container.shuffle(true, true)
+			container.shuffle_cards(true, true)
 	emit_signal("received_mp_state")
 #	print_debug(state)
 
