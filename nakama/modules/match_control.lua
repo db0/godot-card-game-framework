@@ -47,7 +47,7 @@ local OpCodes = {
 	match_terminating = 8,
 	kick_user = 9,
 	ready_start = 10,
-	register_containers = 11
+	register_containers = 11,
 	container_shuffled = 12
 }
 
