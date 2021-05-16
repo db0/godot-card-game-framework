@@ -83,6 +83,8 @@ func _on_ReshuffleAllDiscard_pressed() -> void:
 
 func reshuffle_all_in_pile(pile = cfc.NMAP.deck):
 	for c in get_tree().get_nodes_in_group("cards"):
+		c.set_current_manipulation(Card.StateManipulation.LOCAL)
+	for c in get_tree().get_nodes_in_group("cards"):
 		if c.get_parent() != pile:
 			c.move_to(pile)
 			yield(get_tree().create_timer(0.1), "timeout")

@@ -89,7 +89,7 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 		var board_grid_details = card_entry.get("board_grid_slot")
 		if board_grid_details:
 			var board_grid = cfc.NMAP.board.get_grid(board_grid_details[0])
-			board_grid_slot = board_grid.get_slot(board_grid_details[1])			
+			board_grid_slot = board_grid.get_slot(board_grid_details[1])
 		if card_container != card.get_parent():
 			card.set_current_manipulation(Card.StateManipulation.REMOTE)
 			if card_container == cfc.NMAP.board:
@@ -100,15 +100,6 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 			else:
 				card.move_to(card_container, card_entry.node_index)
 			card.set_current_manipulation(Card.StateManipulation.NONE)
-		# WARNING: Adjusting the index doesn't work too well because I would have the send
-		# index updates for a whole container woth of cards, 
-		# whenever any card is moved outof/into it 
-		# as everything else will be shifted automatically to accomodate.
-#		elif card_entry.node_index != card.get_my_card_index():
-#			print(card_container.name,card_entry.node_index,card.get_parent().name,card.get_my_card_index())
-#			card.set_current_manipulation(Card.StateManipulation.REMOTE)
-#			card.get_parent().move_child(card, card.get_parent().translate_card_index_to_node_index(card_entry.node_index))
-#			card.set_current_manipulation(Card.StateManipulation.NONE)
 		elif card_container == cfc.NMAP.board:
 			if board_grid_slot and board_grid_slot != card._placement_slot:
 				card.set_current_manipulation(Card.StateManipulation.REMOTE)
@@ -121,21 +112,24 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 				card.position = card_position
 	#			card._add_tween_position(card.position, card_position, 0.15,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 				card.set_current_manipulation(Card.StateManipulation.NONE)
+		elif card_entry.node_index != card.get_my_card_index():
+#			print_debug(card_container.name,card_entry.node_index,card.get_parent().name,card.get_my_card_index())
+			card.set_current_manipulation(Card.StateManipulation.REMOTE)
+			card.get_parent().move_child(card, card.get_parent().translate_card_index_to_node_index(card_entry.node_index))
+			card.set_current_manipulation(Card.StateManipulation.NONE)
 #	print_debug(card_entry)
 
 
 
 func _on_card_state_manipulated(cards):
-	if typeof(cards) != TYPE_ARRAY:
-		cards = [cards]
 	var payload := { "cards": {}}
-	for card in cards:
+	# We add a wait to allow any tweens which are about to start, to start
+	yield(cfc.get_tree().create_timer(0.1), "timeout")
+	for card in cfc.get_tree().get_nodes_in_group("cards"):
 		var previous_state = card_states[card_node_map[card]]
 		var card_id := get_card_id(card)
-		# We add a wait to allow any tweens which are about to start, to start
-		yield(card.get_tree().create_timer(0.1), "timeout")
 	#	print_debug(card._tween.is_active(), card._tween.get_runtime())
-		# We want to send the absolute final state of the card 
+		# We want to send the absolute final state of the card
 		# So we need to wait for all the tweens to finish first
 	#	var loops = 0
 	#	while card._tween.is_active():
@@ -168,14 +162,15 @@ func _on_card_state_manipulated(cards):
 			payload['cards'][card_id]["node_index"] =\
 					card.get_my_card_index()
 
-
-		# We want to wait until the state has been updated remotely, 
+		# We want to wait until the state has been updated remotely,
 		# before unlocking the card for remote manipulations
 	yield(nakama_client.socket.send_match_state_async(
 			match_id,
 			NWConst.OpCodes.cards_updated,
 			JSON.print(payload)), "completed")
-	for card in cards:			
+	if typeof(cards) != TYPE_ARRAY:
+		cards = [cards]
+	for card in cards:
 		card.set_current_manipulation(Card.StateManipulation.NONE)
 
 func discover_card_container(card: Card) -> Node:
