@@ -48,6 +48,7 @@ local OpCodes = {
 	kick_user = 9,
 	ready_start = 10,
 	register_containers = 11
+	container_shuffled = 12
 }
 
 -- Command pattern table for boiler plate updates that uses data and state.
@@ -87,6 +88,13 @@ commands[OpCodes.cards_updated] = function(data, state)
 			-- nk.logger_info(string.format("%s CARD: key %s. value %s", index, key, value))
 		-- end
 	-- end	
+end
+
+commands[OpCodes.container_shuffled] = function(data, state)
+	-- The payload for this function contains a dictionary of cards to be updated
+	-- each key is an index in the state.cards array
+	-- nk.logger_info("Cards updated")
+	table.insert(state.shuffled_containers, data.container_id)
 end
 
 commands[OpCodes.deck_loaded] = function(data, state)
@@ -175,6 +183,7 @@ function match_control.match_init(context, params)
         presences = {},
 		cards = {},
 		containers = {},
+		shuffled_containers = {},
 		players = {},
 		spectators = {},
 		ready_users = {},
@@ -257,9 +266,14 @@ function match_control.match_loop(context, dispatcher, tick, state, messages)
 		local data = {
 			cards = state.cards,
 			containers = state.containers
+			shuffled_containers = state.shuffled_containers
 		}
 		local encoded = nk.json_encode(data)
 		dispatcher.broadcast_message(OpCodes.update_state, encoded)
+		-- After we notify everyone that a container has been shuffled, we remove the notification from future ticks
+		for index, container_id in ipairs(state.shuffled_containers) do
+			table.remove(state.shuffled_containers, index)
+		end
 	else
 		local data = {
 			presences = state.presences,

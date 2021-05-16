@@ -74,10 +74,11 @@ func get_leftmost_card() -> Card:
 
 
 # Visibly shuffles all cards in hand
-func shuffle_cards() -> void:
+func shuffle_cards(only_animate = false) -> void:
 	# When shuffling the hand, we also want to show the player
 	# So execute the parent function, then call each card to reorg itself
-	.shuffle_cards()
+	if not only_animate:
+		.shuffle_cards()
 	for card in get_all_cards():
 		card.interruptTweening()
 		card.reorganize_self()

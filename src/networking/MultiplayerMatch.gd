@@ -26,6 +26,8 @@ func register_container() -> void:
 			match_id,
 			NWConst.OpCodes.register_containers,
 			JSON.print(payload))
+	for container in cfc.get_tree().get_nodes_in_group("card_containers"):
+		container.connect("container_shuffled", self, "_on_container_shuffled")
 
 func get_container_id(container) -> int:
 	return(container_node_map[container])
@@ -61,6 +63,7 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 	var code := match_state.op_code
 	var state : Dictionary = JSON.parse(match_state.data).result
 	card_states = state.cards.duplicate(true)
+	var shuffled_containers = state.shuffled_containers.duplicate(true)
 	var cont_index := 1
 	for container in state.containers:
 		container_node_map[cfc.NMAP[container]] = cont_index
@@ -70,6 +73,12 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 		var card: Card = get_card_node(card_id)
 		sync_card(card, card_entry)
 		card_id += 1
+	for container_id in shuffled_containers:
+		var container := get_container_node(container_id)
+		if container.is_in_group("hands"):
+			container.shuffle(true)
+		elif container.is_in_group("piles"):
+			container.shuffle(true, true)
 	emit_signal("received_mp_state")
 #	print_debug(state)
 
@@ -181,3 +190,11 @@ func discover_card_container(card: Card) -> Node:
 	else:
 		card_parent = null
 	return(card_parent)
+
+func _on_container_shuffled(container: CardContainer) -> void:
+	var payload := {"container_id": get_container_id(container)}
+	_on_card_state_manipulated(container.get_all_cards())
+	yield(nakama_client.socket.send_match_state_async(
+			match_id,
+			NWConst.OpCodes.container_shuffled,
+			JSON.print(payload)), "completed")

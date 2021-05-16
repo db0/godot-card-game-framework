@@ -277,7 +277,7 @@ func _slot_card_into_popup(card: Card) -> void:
 
 # Randomly rearranges the order of the [Card] nodes.
 # Pile shuffling includes a fancy animation
-func shuffle_cards(animate = true) -> void:
+func shuffle_cards(animate = true, only_animate = false) -> void:
 	# Optimally the CFConst.ShuffleStyle enum should be defined in this class
 	# but if we did so, we would not be able to refer to it from the Card
 	# class, as that would cause a cyclic dependency on the parser
@@ -348,7 +348,8 @@ func shuffle_cards(animate = true) -> void:
 			# This is where the shuffle actually happens
 			# The effect looks like the cards shuffle in the middle of their
 			# animations
-			.shuffle_cards()
+			if not only_animate:
+				.shuffle_cards()
 			# This wait gives the carde enough time to return to
 			# their original position.
 			yield(get_tree().create_timer(anim_speed * 2.5), "timeout")
@@ -365,7 +366,8 @@ func shuffle_cards(animate = true) -> void:
 			# The shuffle happens, which makes the z-index change
 			# unnoticeable to the player
 			yield(get_tree().create_timer(anim_speed - 0.5), "timeout")
-			.shuffle_cards()
+			if not only_animate:
+				.shuffle_cards()
 			# The extra time is to give the cards enough time to return
 			# To the starting location, and let reorganize_stack() do its magic
 			yield(get_tree().create_timer(anim_speed + 0.6), "timeout")
@@ -378,7 +380,8 @@ func shuffle_cards(animate = true) -> void:
 			var card = get_random_card()
 			card.animate_shuffle(anim_speed, CFConst.ShuffleStyle.SNAP)
 			yield(get_tree().create_timer(anim_speed * 2.5), "timeout")
-			.shuffle_cards()
+			if not only_animate:
+				.shuffle_cards()
 		elif style == CFConst.ShuffleStyle.OVERHAND:
 			anim_speed = 0.15
 			for _i in range(3):
@@ -395,14 +398,15 @@ func shuffle_cards(animate = true) -> void:
 				yield(get_tree().create_timer(anim_speed * 2.3), "timeout")
 				# The shuffle after every jump in a face-up pile
 				# really sells it :)
-				.shuffle_cards()
+				if not only_animate:
+					.shuffle_cards()
 				reorganize_stack()
 		if position != init_position:
 			_add_tween_position(position,init_position,0.2)
 			_add_tween_rotation(rotation_degrees,0,0.2)
 			$Tween.start()
 		z_index = 0
-	else:
+	elif not only_animate:
 		# if we're already running another animation, just shuffle
 		.shuffle_cards()
 	reorganize_stack()

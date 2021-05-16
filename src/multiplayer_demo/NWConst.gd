@@ -13,6 +13,7 @@ enum OpCodes {
 	kick_user,
 	ready_start,
 	register_containers,
+	container_shuffled,
 }
 
 # The path where scenes and scripts customized for this specific game exist

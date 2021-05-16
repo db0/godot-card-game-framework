@@ -24,6 +24,8 @@ enum Anchors{
 	BOTTOM_LEFT
 }
 
+signal container_shuffled(container)
+
 # Spefifies the anchor of the card on the screen layout
 # This placement will be retained as the window is resized.
 export(Anchors) var placement
@@ -232,12 +234,15 @@ func get_first_card() -> Card:
 
 # Randomly rearranges the order of the Card nodes.
 func shuffle_cards() -> void:
+	for c in get_all_cards():
+		c.set_current_manipulation(Card.StateManipulation.LOCAL)
 	var cardsArray := []
 	for card in get_all_cards():
 		cardsArray.append(card)
 	CFUtils.shuffle_array(cardsArray)
 	for card in cardsArray:
 		move_child(card, cardsArray.find(card))
+	emit_signal("container_shuffled", self)
 
 # Overridable function to allow the container to specify different
 # effects to happen when a card is attempted to be added

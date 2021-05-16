@@ -82,6 +82,9 @@ func _on_ReshuffleAllDiscard_pressed() -> void:
 	reshuffle_all_in_pile(cfc.NMAP.discard)
 
 func reshuffle_all_in_pile(pile = cfc.NMAP.deck):
+	# Preparation for massive operation in a multiplayer context
+	# Should work without this loop, but prevents it detecting wrong indexes
+	# on cards yet to be moved
 	for c in get_tree().get_nodes_in_group("cards"):
 		c.set_current_manipulation(Card.StateManipulation.LOCAL)
 	for c in get_tree().get_nodes_in_group("cards"):
