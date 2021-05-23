@@ -61,6 +61,8 @@ func _process(_delta: float) -> void:
 		$Debug/Position.text = "POSITION:  " + str(position)
 		$Debug/AreaPos.text = "AREA POS: " + str($CollisionShape2D.position)
 		$Debug/Size.text = "SIZE: " + str($Control.rect_size)
+	else:
+		$Debug.visible = false
 
 
 # Called when the node enters the scene tree for the first time.

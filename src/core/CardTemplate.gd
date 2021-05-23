@@ -346,6 +346,8 @@ func _process(delta) -> void:
 		$Debug/state.text = "STATE: " + stateslist[state]
 		$Debug/index.text = "INDEX: " + str(get_index())
 		$Debug/parent.text = "PARENT: " + str(get_parent().name)
+	else:
+		$Debug.visible = false
 
 
 # Triggers the focus-in effect on the card
@@ -920,7 +922,7 @@ func set_card_rotation(
 		# so we ensure that the displayed rotation of a card
 		# which is not in hand, matches our expectations
 		if not state in [CardState.PREVIEW, CardState.DECKBUILDER_GRID]\
-				and get_parent() != cfc.NMAP.hand \
+				and not get_parent().is_in_group("hands") \
 				and cfc.game_settings.hand_use_oval_shape \
 				and $Control.rect_rotation != 0.0 \
 				and not $Tween.is_active():
@@ -939,7 +941,7 @@ func set_card_rotation(
 			# If the value is 0 but the card is in an oval hand, we ensure the actual
 			# rotation we apply to the card will be their hand oval rotation
 			if value == 0 \
-					and get_parent() == cfc.NMAP.hand \
+					and get_parent().is_in_group("hands") \
 					and cfc.game_settings.hand_use_oval_shape:
 				value = int(_recalculate_rotation())
 			$CollisionShape2D.rotation_degrees = value
@@ -1204,7 +1206,7 @@ func move_to(targetHost: Node,
 	else:
 		# Here we check what to do if the player just moved the card back
 		# to the same container
-		if parentHost == cfc.NMAP.hand:
+		if parentHost and parentHost.is_in_group("hands"):
 			state = CardState.IN_HAND
 			reorganize_self()
 		elif parentHost == cfc.NMAP.board:
@@ -1409,7 +1411,7 @@ func get_state_exec() -> String:
 				CardState.VIEWED_IN_PILE:
 			state_exec = "pile"
 		CardState.MOVING_TO_CONTAINER:
-			if get_parent() == cfc.NMAP.hand:
+			if get_parent().is_in_group("hands"):
 				state_exec = "hand"
 			else:
 				state_exec = "pile"
@@ -2081,8 +2083,8 @@ func _process_card_state() -> void:
 						* 0.25,0)
 				# Enough with the fancy calculations. I'm just brute-forcing
 				# The card to stay at the fully within the viewport.
-				while cfc.NMAP.hand.position.y \
-					+ cfc.NMAP.hand.bottom_margin \
+				while get_parent().position.y \
+					+ get_parent().bottom_margin \
 					+ _target_position.y \
 					+ card_size.y > get_viewport().size.y:
 					_target_position.y -= 1
@@ -2526,7 +2528,7 @@ func _recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 # Calculates the rotation the card should have based on its parent.
 func _recalculate_rotation(index_diff = null)-> float:
 	var calculated_rotation := float(card_rotation)
-	if get_parent() == cfc.NMAP.hand and cfc.game_settings.hand_use_oval_shape:
+	if get_parent().is_in_group("hands") and cfc.game_settings.hand_use_oval_shape:
 		calculated_rotation = 90.0 - _get_oval_angle_by_index(null, index_diff)
 	return(calculated_rotation)
 
@@ -2556,4 +2558,3 @@ func _on_Back_resized() -> void:
 	if $Control/Back.rect_size != CFConst.CARD_SIZE:
 		pass
 #		print_debug($Control/Back.rect_size) # Replace with function body.
-
