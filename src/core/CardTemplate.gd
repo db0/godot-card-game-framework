@@ -333,6 +333,8 @@ func _process(delta) -> void:
 		$Debug/state.text = "STATE: " + stateslist[state]
 		$Debug/index.text = "INDEX: " + str(get_index())
 		$Debug/parent.text = "PARENT: " + str(get_parent().name)
+	else:
+		$Debug.visible = false
 
 
 # Triggers the focus-in effect on the card
