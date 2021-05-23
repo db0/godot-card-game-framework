@@ -1,7 +1,8 @@
-[gd_scene load_steps=11 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/custom/CGFCardFront.gd" type="Script" id=2]
+[ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=3]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
@@ -14,41 +15,6 @@ corner_radius_bottom_left = 10
 border_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 10
 corner_radius_top_right = 10
-
-[sub_resource type="DynamicFont" id=3]
-size = 15
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 1 )
-
-[sub_resource type="DynamicFont" id=4]
-size = 10
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 1 )
-
-[sub_resource type="DynamicFont" id=5]
-size = 13
-outline_size = 2
-outline_color = Color( 0.243137, 0.243137, 0.243137, 1 )
-use_filter = true
-font_data = ExtResource( 1 )
-
-[sub_resource type="DynamicFont" id=6]
-size = 11
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 1 )
-
-[sub_resource type="DynamicFont" id=7]
-size = 12
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 1 )
 
 [sub_resource type="DynamicFont" id=8]
 size = 10
@@ -63,6 +29,7 @@ anchor_bottom = 1.0
 margin_right = -1130.0
 margin_bottom = -480.0
 mouse_filter = 2
+theme = ExtResource( 3 )
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 2 )
 __meta__ = {
@@ -82,7 +49,7 @@ __meta__ = {
 [node name="CardText" type="VBoxContainer" parent="Margin"]
 margin_left = 2.0
 margin_right = 148.0
-margin_bottom = 240.0
+margin_bottom = 245.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
@@ -94,7 +61,6 @@ margin_bottom = 19.0
 rect_min_size = Vector2( 146, 19 )
 size_flags_vertical = 1
 custom_styles/normal = SubResource( 2 )
-custom_fonts/font = SubResource( 3 )
 custom_colors/font_color = Color( 1, 0.4, 0, 1 )
 text = "Card Name"
 align = 1
@@ -102,12 +68,11 @@ valign = 1
 autowrap = true
 
 [node name="Type" type="Label" parent="Margin/CardText"]
-margin_top = 23.0
+margin_top = 22.0
 margin_right = 146.0
-margin_bottom = 36.0
+margin_bottom = 40.0
 rect_min_size = Vector2( 146, 13 )
 size_flags_vertical = 1
-custom_fonts/font = SubResource( 4 )
 text = "Type"
 align = 1
 valign = 1
@@ -115,12 +80,11 @@ autowrap = true
 uppercase = true
 
 [node name="Tags" type="Label" parent="Margin/CardText"]
-margin_top = 40.0
+margin_top = 43.0
 margin_right = 146.0
-margin_bottom = 57.0
+margin_bottom = 61.0
 rect_min_size = Vector2( 146, 17 )
 size_flags_vertical = 1
-custom_fonts/font = SubResource( 5 )
 text = "Tag1 - Tag2"
 align = 1
 valign = 1
@@ -128,11 +92,10 @@ autowrap = true
 uppercase = true
 
 [node name="Requirements" type="Label" parent="Margin/CardText"]
-margin_top = 61.0
+margin_top = 64.0
 margin_right = 146.0
-margin_bottom = 75.0
+margin_bottom = 82.0
 rect_min_size = Vector2( 146, 14 )
-custom_fonts/font = SubResource( 6 )
 custom_colors/font_color = Color( 0.290196, 0.752941, 0, 1 )
 text = "Requirements"
 align = 1
@@ -140,12 +103,11 @@ valign = 1
 autowrap = true
 
 [node name="Abilities" type="Label" parent="Margin/CardText"]
-margin_top = 79.0
+margin_top = 85.0
 margin_right = 146.0
-margin_bottom = 223.0
+margin_bottom = 229.0
 rect_min_size = Vector2( 146, 144 )
 size_flags_vertical = 3
-custom_fonts/font = SubResource( 7 )
 text = "This is the card ability text.
 
 There should be space for a bit of text here."
@@ -154,13 +116,13 @@ valign = 1
 autowrap = true
 
 [node name="HB" type="HBoxContainer" parent="Margin/CardText"]
-margin_top = 227.0
+margin_top = 232.0
 margin_right = 146.0
-margin_bottom = 240.0
+margin_bottom = 245.0
 mouse_filter = 2
 
 [node name="Cost" type="Label" parent="Margin/CardText/HB"]
-margin_right = 40.0
+margin_right = 45.0
 margin_bottom = 13.0
 rect_min_size = Vector2( 40, 13 )
 custom_fonts/font = SubResource( 8 )
@@ -169,7 +131,7 @@ text = "Cost: 0"
 valign = 1
 
 [node name="Power" type="Label" parent="Margin/CardText/HB"]
-margin_left = 44.0
+margin_left = 48.0
 margin_right = 146.0
 margin_bottom = 13.0
 rect_min_size = Vector2( 40, 13 )

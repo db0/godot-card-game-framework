@@ -1,0 +1,80 @@
+[gd_scene load_steps=5 format=2]
+
+[ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=1]
+[ext_resource path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://src/custom/MainMenu.gd" type="Script" id=3]
+
+[sub_resource type="DynamicFont" id=1]
+size = 107
+font_data = ExtResource( 2 )
+
+[node name="MainMenu" type="MarginContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme = ExtResource( 1 )
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_right = 1280.0
+margin_bottom = 720.0
+color = Color( 0.0705882, 0.0705882, 0.0705882, 1 )
+
+[node name="VBox" type="VBoxContainer" parent="."]
+margin_right = 1280.0
+margin_bottom = 720.0
+
+[node name="Margin" type="MarginContainer" parent="VBox"]
+margin_right = 1280.0
+margin_bottom = 358.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_constants/margin_top = 90
+
+[node name="Label" type="Label" parent="VBox/Margin"]
+margin_top = 108.0
+margin_right = 1280.0
+margin_bottom = 340.0
+custom_fonts/font = SubResource( 1 )
+text = "Godot 
+Card Game Framework"
+align = 1
+
+[node name="Center" type="CenterContainer" parent="VBox"]
+margin_top = 361.0
+margin_right = 1280.0
+margin_bottom = 720.0
+size_flags_vertical = 3
+
+[node name="VButtons" type="VBoxContainer" parent="VBox/Center"]
+margin_left = 544.0
+margin_top = 120.0
+margin_right = 736.0
+margin_bottom = 238.0
+rect_min_size = Vector2( 192, 0 )
+custom_constants/separation = 10
+
+[node name="NewGame" type="Button" parent="VBox/Center/VButtons"]
+margin_right = 192.0
+margin_bottom = 22.0
+text = "Start"
+
+[node name="Test" type="Button" parent="VBox/Center/VButtons"]
+margin_top = 32.0
+margin_right = 192.0
+margin_bottom = 54.0
+text = "Test"
+
+[node name="Options" type="Button" parent="VBox/Center/VButtons"]
+margin_top = 64.0
+margin_right = 192.0
+margin_bottom = 86.0
+text = "Options"
+
+[node name="Exit" type="Button" parent="VBox/Center/VButtons"]
+margin_top = 96.0
+margin_right = 192.0
+margin_bottom = 118.0
+text = "Exit"
