@@ -27,6 +27,7 @@ onready var _create_match_button = $VBC/HBoxContainer/CreateMatch
 onready var _exit_match_button = $VBC/HSplitContainer/CurrentMatch/HBC/ExitMatch
 onready var _timer = $LobbyRefresh
 onready var _lobby_player_list = $VBC/HSplitContainer/CurrentMatch/Players
+onready var back_button = $VBC/HBC/Back
 
 func _ready() -> void:
 	notice.hide_delay = 4

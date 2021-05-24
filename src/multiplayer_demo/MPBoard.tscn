@@ -1,4 +1,4 @@
-[gd_scene load_steps=12 format=2]
+[gd_scene load_steps=11 format=2]
 
 [ext_resource path="res://src/custom/CGFDiscard.gd" type="Script" id=1]
 [ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
@@ -8,7 +8,7 @@
 [ext_resource path="res://src/custom/CGFCounters.tscn" type="PackedScene" id=6]
 [ext_resource path="res://src/custom/CGFPlacementGridDemo.tscn" type="PackedScene" id=7]
 [ext_resource path="res://src/custom/CGFModifiedLabelGrid.tscn" type="PackedScene" id=8]
-[ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=9]
+[ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=10]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )
@@ -17,18 +17,21 @@ corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
-[sub_resource type="DynamicFont" id=2]
-size = 14
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 9 )
-
 [node name="Board" type="Control"]
+self_modulate = Color( 0.635294, 0.0745098, 0.0745098, 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+theme = ExtResource( 10 )
 script = ExtResource( 5 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="ColorRect" type="ColorRect" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color( 0.270588, 0.231373, 0.32549, 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -48,6 +51,44 @@ faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
 custom_styles/panel = SubResource( 1 )
+
+[node name="VBoxContainer" parent="Discard/Control/CenterContainer" index="0"]
+margin_right = 68.0
+margin_bottom = 109.0
+
+[node name="Label" parent="Discard/Control/CenterContainer/VBoxContainer" index="0"]
+margin_right = 68.0
+
+[node name="PanelContainer" parent="Discard/Control/CenterContainer/VBoxContainer" index="1"]
+margin_top = 32.0
+margin_right = 68.0
+margin_bottom = 61.0
+
+[node name="CenterContainer" parent="Discard/Control/CenterContainer/VBoxContainer/PanelContainer" index="0"]
+margin_right = 68.0
+
+[node name="CardCount" parent="Discard/Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" index="0"]
+margin_right = 45.0
+
+[node name="View" parent="Discard/Control/ManipulationButtons" index="0"]
+margin_right = 18.0
+margin_bottom = 22.0
+
+[node name="Shuffle" parent="Discard/Control/ManipulationButtons" index="1"]
+margin_top = 25.0
+margin_right = 18.0
+margin_bottom = 47.0
+
+[node name="Position" parent="Discard/Debug" index="0"]
+margin_bottom = 18.0
+
+[node name="AreaPos" parent="Discard/Debug" index="1"]
+margin_top = 21.0
+margin_bottom = 39.0
+
+[node name="Size" parent="Discard/Debug" index="2"]
+margin_top = 42.0
+margin_bottom = 60.0
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )
@@ -149,7 +190,6 @@ margin_left = 10.0
 margin_top = 175.0
 margin_right = 265.0
 margin_bottom = 200.0
-custom_fonts/font = SubResource( 2 )
 text = "Game Seed is: "
 __meta__ = {
 "_edit_use_anchors_": false

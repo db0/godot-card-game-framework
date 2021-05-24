@@ -51,9 +51,15 @@ text = "Please authenticate for Multiplayer!"
 
 [node name="MarginContainer" type="MarginContainer" parent="VBC/HBC"]
 margin_left = 329.0
-margin_right = 978.0
+margin_right = 932.0
 margin_bottom = 20.0
 size_flags_horizontal = 3
+
+[node name="Back" type="Button" parent="VBC/HBC"]
+margin_left = 936.0
+margin_right = 978.0
+margin_bottom = 20.0
+text = "Back"
 
 [node name="LineSeparator" type="Panel" parent="VBC"]
 margin_top = 42.0

@@ -23,9 +23,6 @@ func _ready() -> void:
 		load_test_cards()
 	# warning-ignore:return_value_discarded
 	$DeckBuilderPopup.connect('popup_hide', self, '_on_popup_hide')
-	$MultiplayerPopup.connect('popup_hide', self, '_on_popup_hide')
-
-
 
 
 # This function is to avoid relating the logic in the card objects
@@ -103,10 +100,6 @@ func load_test_cards(extras := 11) -> void:
 func _on_DeckBuilder_pressed() -> void:
 	cfc.game_paused = true
 	$DeckBuilderPopup.popup_centered_minsize()
-
-func _on_Multiplayer_pressed() -> void:
-	cfc.game_paused = true
-	$MultiplayerPopup.popup_centered_minsize()
 
 func _on_popup_hide() -> void:
 	cfc.game_paused = false

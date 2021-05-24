@@ -273,7 +273,8 @@ func switch_main_scene(scene_path: String) -> void:
 	flush_cache()
 	are_all_nodes_mapped = false
 	card_drag_ongoing = null
-	cfc.NMAP.board.queue_free()
+	if cfc.NMAP.get('board'):
+		cfc.NMAP.board.queue_free()
 	# We need to give Godot time to deinstance all nodes.
 	yield(get_tree().create_timer(0.1), "timeout")
 	NMAP.clear()

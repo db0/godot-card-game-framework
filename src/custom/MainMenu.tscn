@@ -1,9 +1,10 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=1]
 [ext_resource path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://src/custom/MainMenu.gd" type="Script" id=3]
 [ext_resource path="res://src/custom/CGFDeckBuilder.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/networking/matchmaking/MatchMaker.tscn" type="PackedScene" id=5]
 
 [sub_resource type="DynamicFont" id=1]
 size = 107
@@ -19,6 +20,12 @@ __meta__ = {
 }
 
 [node name="DeckBuilder" parent="." instance=ExtResource( 4 )]
+
+[node name="MatchMaker" parent="." instance=ExtResource( 5 )]
+anchor_right = 1.0
+anchor_bottom = 1.0
+margin_right = 0.0
+margin_bottom = 0.0
 
 [node name="MainMenu" type="MarginContainer" parent="."]
 anchor_right = 1.0
