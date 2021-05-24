@@ -5,7 +5,7 @@ const menu_switch_time = 0.35
 
 onready var v_buttons := $MainMenu/VBox/Center/VButtons
 onready var main_menu := $MainMenu
-onready var settings_menu := $SettingsMenu
+#onready var settings_menu := $SettingsMenu
 onready var deck_builder := $DeckBuilder
 
 # Called when the node enters the scene tree for the first time.
@@ -18,6 +18,8 @@ func _ready() -> void:
 #	settings_menu.back_button.connect("pressed", self, "_on_Setings_Back_pressed")
 #	settings_menu.recover_prebuilts.connect("pressed", self, "_on_PreBuilts_pressed")
 	deck_builder.back_button.connect("pressed", self, "_on_DeckBuilder_Back_pressed")
+	get_viewport().connect("size_changed", self, '_on_Menu_resized')
+
 
 func on_button_pressed(_button_name : String) -> void:
 	match _button_name:
@@ -69,7 +71,7 @@ func _on_DeckBuilder_Back_pressed() -> void:
 func _on_Menu_resized() -> void:
 	for tab in [main_menu, deck_builder]:
 		if is_instance_valid(tab):
-			tab.rect_size = self.rect_size
+			tab.rect_size = get_viewport().size
 			if tab.rect_position.x < 0.0:
 					tab.rect_position.x = -get_viewport().size.x
 			elif tab.rect_position.x > 0.0:

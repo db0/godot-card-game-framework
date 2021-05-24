@@ -17,6 +17,8 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="DeckBuilder" parent="." instance=ExtResource( 4 )]
+
 [node name="MainMenu" type="MarginContainer" parent="."]
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -95,7 +97,5 @@ margin_top = 128.0
 margin_right = 192.0
 margin_bottom = 150.0
 text = "Exit"
-
-[node name="DeckBuilder" parent="." instance=ExtResource( 4 )]
 
 [node name="MenuTween" type="Tween" parent="."]
