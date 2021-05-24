@@ -53,11 +53,16 @@ func set_count(value := 1) -> void:
 		count_label.text = str(count)
 
 
-# Returns the amount of tokens of this type
+# Returns the amount of tokens of this type, as modified by any effects
+# on the board
 func get_count() -> int:
 	return(get_count_and_alterants().count)
 
-
+# Returns the raw amount of tokens of this type, unaltered by any effects
+# on the board
+func get_unaltered_count() -> int:
+	return(count)
+	
 # Discovers the modified value of this token
 # from alterants
 #

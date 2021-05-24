@@ -97,7 +97,6 @@ signal card_properties_modified(card,trigger,details)
 # doing the targeting.
 # warning-ignore:unused_signal
 signal card_targeted(card,trigger,details)
-signal state_manipulated(card)
 
 # The properties dictionary will be filled in by the setup() code
 # according to the card definintion.
@@ -403,7 +402,7 @@ func _on_Card_gui_input(event) -> void:
 				and not tokens.are_hovered():
 			# If it's a double-click, then it's not a card drag
 			# But rather it's script execution
-			
+
 			if event.doubleclick\
 					and ((check_play_costs() != CFConst.CostsState.IMPOSSIBLE
 					and get_state_exec() == "hand")
@@ -567,7 +566,7 @@ func modify_property(
 				retcode = CFConst.ReturnCode.FAILED
 			else:
 				var label_node = card_front.card_labels[property]
-				if not is_init:
+				if not is_init and current_manipulation != StateManipulation.REMOTE:
 					emit_signal(
 							"card_properties_modified",
 							self,
@@ -621,8 +620,6 @@ func modify_property(
 					card_front.set_label_text(label_node, str(value))
 					# If we have an empty property, we let the other labels
 					# use the space vertical space it would have taken.
-				if current_manipulation != StateManipulation.REMOTE:
-					emit_signal("state_manipulated", self)
 	return(retcode)
 
 
@@ -790,16 +787,15 @@ func set_is_faceup(
 					var dupe_back = dupe_card.get_node("Control/Back")
 					_flip_card(dupe_front, dupe_back, true)
 		retcode = CFConst.ReturnCode.CHANGED
-		emit_signal(
-				"card_flipped",
-				self,
-				"card_flipped",
-				{
-					"is_faceup": value,
-					"tags": tags,
-				})
 		if current_manipulation != StateManipulation.REMOTE:
-			emit_signal("state_manipulated", self)
+			emit_signal(
+					"card_flipped",
+					self,
+					"card_flipped",
+					{
+						"is_faceup": value,
+						"tags": tags,
+					})
 	# If we're doing a check, then we just report CHANGED.
 	else:
 		retcode = CFConst.ReturnCode.CHANGED
@@ -956,18 +952,17 @@ func set_card_rotation(
 			if start_tween:
 				$Tween.start()
 			#$Control/Tokens.rotation_degrees = -value # need to figure this out
-			# When the card actually changes orientation
-			# We report that it changed.
-			emit_signal(
-					"card_rotated", self,
-					"card_rotated",
-					{
-						"degrees": value,
-						"tags": tags,
-					}
-			)
 			if current_manipulation != StateManipulation.REMOTE:
-				emit_signal("state_manipulated", self)
+				# When the card actually changes orientation
+				# We report that it changed.
+				emit_signal(
+						"card_rotated", self,
+						"card_rotated",
+						{
+							"degrees": value,
+							"tags": tags,
+						}
+				)
 		retcode = CFConst.ReturnCode.CHANGED
 	return retcode
 
@@ -1087,15 +1082,18 @@ func move_to(targetHost: Node,
 			card_rotation = 0
 			_target_rotation = _recalculate_rotation()
 			state = CardState.MOVING_TO_CONTAINER
-			emit_signal("card_moved_to_hand",
-					self,
-					"card_moved_to_hand",
-					 {
-						"destination": targetHost,
-						"source": parentHost,
-						"tags": tags
-					}
-			)
+			# We do not want to signal the scripting engine
+			# for state sync during multiplayer
+			if current_manipulation != StateManipulation.REMOTE:
+				emit_signal("card_moved_to_hand",
+						self,
+						"card_moved_to_hand",
+						 {
+							"destination": targetHost,
+							"source": parentHost,
+							"tags": tags
+						}
+				)
 			# We reorganize the left over cards in hand.
 			for c in targetHost.get_all_cards():
 				if c != self:
@@ -1127,15 +1125,18 @@ func move_to(targetHost: Node,
 				_target_position = targetHost.get_stack_position(self)
 				_target_rotation = 0.0
 				state = CardState.MOVING_TO_CONTAINER
-				emit_signal("card_moved_to_pile",
-						self,
-						"card_moved_to_pile",
-						{
-							"destination": targetHost,
-							"source": parentHost,
-							"tags": tags
-						}
-				)
+				# We do not want to signal the scripting engine
+				# for state sync during multiplayer
+				if current_manipulation != StateManipulation.REMOTE:
+					emit_signal("card_moved_to_pile",
+							self,
+							"card_moved_to_pile",
+							{
+								"destination": targetHost,
+								"source": parentHost,
+								"tags": tags
+							}
+					)
 				# We start the flipping animation here, even though it also
 				# set in the card state, because we want to see it while the
 				# card is moving to the CardContainer
@@ -1171,15 +1172,18 @@ func move_to(targetHost: Node,
 					_determine_target_position_from_mouse()
 				raise()
 			state = CardState.DROPPING_TO_BOARD
-			emit_signal("card_moved_to_board",
-					self,
-					"card_moved_to_board",
-					 {
-						"destination": targetHost,
-						"source": parentHost,
-						"tags": tags
-					}
-			)
+			# We do not want to signal the scripting engine
+			# for state sync during multiplayer
+			if current_manipulation != StateManipulation.REMOTE:
+				emit_signal("card_moved_to_board",
+						self,
+						"card_moved_to_board",
+						 {
+							"destination": targetHost,
+							"source": parentHost,
+							"tags": tags
+						}
+				)
 		if parentHost and parentHost.is_in_group("hands"):
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
@@ -1254,9 +1258,7 @@ func move_to(targetHost: Node,
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP
 	common_post_move_scripts(targetHost, parentHost, tags)
-	if current_manipulation != StateManipulation.REMOTE:
-		emit_signal("state_manipulated", self)
-	
+
 
 
 # Executes the tasks defined in the card's scripts in order.
@@ -1717,7 +1719,7 @@ func set_current_manipulation(value) -> void:
 #	print_debug(current_manipulation)
 	if current_manipulation == StateManipulation.NONE or value == StateManipulation.NONE:
 		current_manipulation = value
-		
+
 # Returns true is the card has hand_drag_starts_targeting set to true
 # is currently in hand, and has a targetting task.
 #

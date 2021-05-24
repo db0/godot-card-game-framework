@@ -343,3 +343,7 @@ class SignalPropagator:
 			card.execute_scripts(trigger_card,trigger,details)
 #		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_UNIQUE  ,"cards",
 #				"execute_scripts",trigger_card,trigger,details)
+		# If this is a multiplayer match, we ensure we report that a card has been
+		# modified
+		if cfc.multiplayer_match:
+			cfc.multiplayer_match.on_card_state_manipulated(trigger_card)

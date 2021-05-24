@@ -18,7 +18,9 @@ func _init(cards: Array, _nakama_client: CFNakamaClient, _match_id: String) -> v
 
 func register_card(index, card) -> void:
 	card_node_map[card] = index
-	card.connect("state_manipulated", self, "_on_card_state_manipulated")
+#	for sgn in cfc.SignalPropagator.known_card_signals:
+#		card.connect(sgn, self, "_on_card_signal_received")
+#	card.connect("state_manipulated", self, "_on_card_state_manipulated")
 
 func register_container() -> void:
 	var payload := {"containers": cfc.NMAP.keys()}
@@ -69,6 +71,7 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 		container_node_map[cfc.NMAP[container]] = cont_index
 		cont_index += 1
 	var card_id := 1
+	print(card_states)
 	for card_entry in card_states:
 		var card: Card = get_card_node(card_id)
 		sync_card(card, card_entry)
@@ -90,7 +93,11 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 		return
 	if card.current_manipulation == Card.StateManipulation.LOCAL:
 		return
+	# We do positioning manipulation changes only if the card state received
+	# contains a Card Container reference ID.
+	# (otherwise it means the card is not really active in the game yet)
 	if card_entry.get('container'):
+		card.set_current_manipulation(Card.StateManipulation.REMOTE)
 		var card_container = get_container_node(card_entry.container)
 	#	print_debug(card_container)
 		var card_position = Vector2(card_entry.pos_x, card_entry.pos_y)
@@ -100,7 +107,6 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 			var board_grid = cfc.NMAP.board.get_grid(board_grid_details[0])
 			board_grid_slot = board_grid.get_slot(board_grid_details[1])
 		if card_container != card.get_parent():
-			card.set_current_manipulation(Card.StateManipulation.REMOTE)
 			if card_container == cfc.NMAP.board:
 				if board_grid_slot:
 					card.move_to(card_container, -1, board_grid_slot)
@@ -108,33 +114,45 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 					card.move_to(card_container, -1, card_position)
 			else:
 				card.move_to(card_container, card_entry.node_index)
-			card.set_current_manipulation(Card.StateManipulation.NONE)
 		elif card_container == cfc.NMAP.board:
 			if board_grid_slot and board_grid_slot != card._placement_slot:
-				card.set_current_manipulation(Card.StateManipulation.REMOTE)
 				card.move_to(card_container, -1, board_grid_slot)
-				card.set_current_manipulation(Card.StateManipulation.NONE)
 			elif not board_grid_slot and card_position != card.position:
 				print( card_position, board_grid_slot, card.position,card._placement_slot)
 #				print_debug(card.current_manipulation,card_position,card.position )
-				card.set_current_manipulation(Card.StateManipulation.REMOTE)
 				card.position = card_position
 	#			card._add_tween_position(card.position, card_position, 0.15,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
-				card.set_current_manipulation(Card.StateManipulation.NONE)
 		elif card_entry.node_index != card.get_my_card_index():
 #			print_debug(card_container.name,card_entry.node_index,card.get_parent().name,card.get_my_card_index())
-			card.set_current_manipulation(Card.StateManipulation.REMOTE)
-			card.get_parent().move_child(card, card.get_parent().translate_card_index_to_node_index(card_entry.node_index))
-			card.set_current_manipulation(Card.StateManipulation.NONE)
+			card.get_parent().move_child(
+					card,
+					card.get_parent().translate_card_index_to_node_index(
+						card_entry.node_index))
+		if card_entry.has('rotation')\
+				and card.card_rotation != card_entry['rotation']:
+				card.card_rotation = card_entry['rotation']
+		if card_entry.has('is_faceup')\
+				and card.is_faceup != card_entry['is_faceup']:
+				card.is_faceup = card_entry['is_faceup']
+		for card_property in card_entry["properties"]:
+			var remote_value = card_entry["properties"][card_property]
+			if card.properties[card_property] != remote_value:
+				card.modify_property(card_property, remote_value)
+		for token_name in card_entry["tokens"]:
+			var remote_value = card_entry["tokens"][token_name]
+			var token: Token = card.tokens.get_token(token_name)
+			if token.get_unaltered_count() != remote_value:
+				card.tokens.mod_token(token_name, remote_value, true)
+		card.set_current_manipulation(Card.StateManipulation.NONE)
 #	print_debug(card_entry)
 
 
-
-func _on_card_state_manipulated(cards):
+func on_card_state_manipulated(cards):
 	var payload := { "cards": {}}
 	# We add a wait to allow any tweens which are about to start, to start
 	yield(cfc.get_tree().create_timer(0.1), "timeout")
-	for card in cfc.get_tree().get_nodes_in_group("cards"):
+	for card_obj in cfc.get_tree().get_nodes_in_group("cards"):
+		var card: Card = card_obj
 		var previous_state = card_states[card_node_map[card]]
 		var card_id := get_card_id(card)
 	#	print_debug(card._tween.is_active(), card._tween.get_runtime())
@@ -155,6 +173,10 @@ func _on_card_state_manipulated(cards):
 			"owner": previous_state['owner'],
 			"pos_x": card.position.x,
 			"pos_y": card.position.y,
+			"properties": card.properties,
+			"tokens": _gather_tokens_payload(card),
+			"is_faceup": card.is_faceup,
+			"rotation": card.card_rotation,
 		}
 	#	print_debug(payload)
 		var card_parent = discover_card_container(card)
@@ -193,8 +215,14 @@ func discover_card_container(card: Card) -> Node:
 
 func _on_container_shuffled(container: CardContainer) -> void:
 	var payload := {"container_id": get_container_id(container)}
-	_on_card_state_manipulated(container.get_all_cards())
+	on_card_state_manipulated(container.get_all_cards())
 	yield(nakama_client.socket.send_match_state_async(
 			match_id,
 			NWConst.OpCodes.container_shuffled,
 			JSON.print(payload)), "completed")
+
+func _gather_tokens_payload(card: Card) -> Dictionary:
+	var token_payload := {}
+	for token in card.tokens.get_all_tokens():
+		token_payload[token.name] = token.get_unaltered_count()
+	return(token_payload)

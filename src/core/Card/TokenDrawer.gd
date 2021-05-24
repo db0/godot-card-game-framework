@@ -161,14 +161,16 @@ func mod_token(
 			elif is_drawer_open:
 				token.expand()
 			retcode = CFConst.ReturnCode.CHANGED
-			owner_card.emit_signal(
-					"card_token_modified",
-					owner_card,
-					"card_token_modified",
-					{SP.TRIGGER_TOKEN_NAME: token.get_token_name(),
-					SP.TRIGGER_PREV_COUNT: prev_value,
-					SP.TRIGGER_NEW_COUNT: new_value,
-					"tags": tags})
+			if owner_card.current_manipulation != owner_card.StateManipulation.REMOTE:
+				owner_card.emit_signal(
+						"card_token_modified",
+						owner_card,
+						"card_token_modified",
+						{SP.TRIGGER_TOKEN_NAME: token.get_token_name(),
+						SP.TRIGGER_PREV_COUNT: prev_value,
+						SP.TRIGGER_NEW_COUNT: new_value,
+						"tags": tags})
+				owner_card.emit_signal("state_manipulated", owner_card)
 	return(retcode)
 
 
