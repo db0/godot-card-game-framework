@@ -173,7 +173,7 @@ func remove_child(node, _legible_unique_name=false) -> void:
 
 # Rearranges the position of the contained cards slightly
 # so that they appear to be stacked on top of each other
-func reorganize_stack() -> void:
+func reorganize_stack(replace := true) -> void:
 	for c in get_all_cards():
 		if c.position != get_stack_position(c):
 			c.position = get_stack_position(c)
@@ -187,7 +187,10 @@ func reorganize_stack() -> void:
 	# The highlight has to also be shifted higher or else it will just extend
 	# below the viewport
 #	$Control/Highlight.rect_position.y = -get_card_count()
-	.re_place()
+	# We sometimes don't want to reset the placement of the pile
+	# such as during shuffle animations, so have an option to disable it
+	if replace: 
+		.re_place()
 	# since we're adding cards towards the top, we do not want the re_place()
 	# function to push the pile higher than the edge of the screen
 	# it is supposed to be
@@ -355,6 +358,7 @@ func shuffle_cards(animate = true, only_animate = false) -> void:
 			# This wait gives the carde enough time to return to
 			# their original position.
 			yield(get_tree().create_timer(anim_speed * 2.5), "timeout")
+			reorganize_stack(false)
 		elif style == CFConst.ShuffleStyle.SPLASH:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
@@ -373,6 +377,7 @@ func shuffle_cards(animate = true, only_animate = false) -> void:
 			# The extra time is to give the cards enough time to return
 			# To the starting location, and let reorganize_stack() do its magic
 			yield(get_tree().create_timer(anim_speed + 0.6), "timeout")
+			reorganize_stack(false)
 		elif style == CFConst.ShuffleStyle.SNAP:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
@@ -384,6 +389,7 @@ func shuffle_cards(animate = true, only_animate = false) -> void:
 			yield(get_tree().create_timer(anim_speed * 2.5), "timeout")
 			if not only_animate:
 				.shuffle_cards()
+			reorganize_stack(false)
 		elif style == CFConst.ShuffleStyle.OVERHAND:
 			anim_speed = 0.15
 			for _i in range(3):
@@ -402,13 +408,15 @@ func shuffle_cards(animate = true, only_animate = false) -> void:
 				# really sells it :)
 				if not only_animate:
 					.shuffle_cards()
-				reorganize_stack()
+				reorganize_stack(false)
 		if position != init_position:
 			_add_tween_position(position,init_position,0.2)
 			_add_tween_rotation(rotation_degrees,0,0.2)
 			$Tween.start()
 		z_index = 0
 		shuffle_animation_ongoing = false
+		# After cards are moved to the final position
+		# We ensure they look like a pile again
 	elif not only_animate:
 		# if we're already running another animation, just shuffle
 		.shuffle_cards()
