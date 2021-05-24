@@ -56,22 +56,25 @@ margin_bottom = 238.0
 rect_min_size = Vector2( 192, 0 )
 custom_constants/separation = 10
 
-[node name="NewGame" type="Button" parent="VBox/Center/VButtons"]
+[node name="SinglePlayerDemo" type="Button" parent="VBox/Center/VButtons"]
 margin_right = 192.0
 margin_bottom = 22.0
-text = "Start"
+text = "Single Player Demo"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
-[node name="Test" type="Button" parent="VBox/Center/VButtons"]
+[node name="Multiplayer" type="Button" parent="VBox/Center/VButtons"]
 margin_top = 32.0
 margin_right = 192.0
 margin_bottom = 54.0
-text = "Test"
+text = "Multiplayer Demo"
 
-[node name="Options" type="Button" parent="VBox/Center/VButtons"]
+[node name="GUT" type="Button" parent="VBox/Center/VButtons"]
 margin_top = 64.0
 margin_right = 192.0
 margin_bottom = 86.0
-text = "Options"
+text = "Tests"
 
 [node name="Exit" type="Button" parent="VBox/Center/VButtons"]
 margin_top = 96.0

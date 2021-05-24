@@ -1,31 +1,22 @@
 extends MarginContainer
 
-onready var v_buttons = get_node('VBox/Center/VButtons') as VBoxContainer
-# Declare member variables here. Examples:
-# var a: int = 2
-# var b: String = "text"
-
+onready var v_buttons := $VBox/Center/VButtons
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	for i in v_buttons.get_child_count():
-		if !v_buttons.get_child(i).has_signal('pressed'):
-			continue
-		v_buttons.get_child(i).connect('pressed', self, 'on_button_pressed', [i])
-#END
+	for option_button in v_buttons.get_children():
+		if option_button.has_signal('pressed'):
+			option_button.connect('pressed', self, 'on_button_pressed', [option_button.name])
 
-func on_button_pressed(_indx : int) -> void:
-	match _indx:
-		0: #NewGame
+
+func on_button_pressed(_button_name : String) -> void:
+	match _button_name:
+		"SinglePlayerDemo":
+			get_tree().change_scene(CFConst.PATH_CUSTOM + 'CGFMain.tscn')
+		"Multiplayer":
 			pass
-		1: #Test
-			var _ok = get_tree().change_scene('res://src/custom/CGFMain.tscn')
-		2: #Options
-			pass
-		3: #Exit
+		"GUT":
+			get_tree().change_scene("res://tests/tests.tscn")
+		"Exit":
 			get_tree().quit()
-#END
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta: float) -> void:
-#	pass
