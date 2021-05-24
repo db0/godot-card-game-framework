@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.0 (Ongoing)
+
+### New Features
+
+* Integrated the [Dark Theme](https://mounirtohami.itch.io/godot-dark-theme) provided by Mounir Tohami as the default theme of the CGF which gives a good guideline on how to integrate themes into the game and quickly change the look.
+
+### Bugs
+
+* Hands other than the first will now correctly rotate cards while in oval shape.
+* Debug button unclicked will re-hide the debug info.
+
 ## 1.10
 
 ### Tweaks
