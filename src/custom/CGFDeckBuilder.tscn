@@ -7,3 +7,18 @@
 [node name="DeckBuilder" instance=ExtResource( 1 )]
 script = ExtResource( 3 )
 info_panel_scene = ExtResource( 2 )
+
+[node name="MarginContainer" type="MarginContainer" parent="VBC/HBC/MC/CurrentDeck/Buttons" index="4"]
+margin_left = 202.0
+margin_right = 587.0
+margin_bottom = 20.0
+size_flags_horizontal = 3
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="Back" type="Button" parent="VBC/HBC/MC/CurrentDeck/Buttons" index="5"]
+margin_left = 591.0
+margin_right = 633.0
+margin_bottom = 20.0
+text = "Back"

@@ -459,7 +459,7 @@ _global_script_class_icons={
 [application]
 
 config/name="Card Game Framework"
-run/main_scene="res://src/custom/CGFMain.tscn"
+run/main_scene="res://src/custom/MainMenu.tscn"
 config/icon="res://icon.png"
 
 [autoload]

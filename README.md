@@ -34,6 +34,7 @@ Pull requests are more than welcome ;)
 * Automatic and manual Grid-based, or Free-form placement on the board, or a combination of both, on a per-card-type basis.
 * Functions from saving/loading settings from disk.
 * Collecting [game statistics](https://github.com/db0/CGF-Stats)
+* Easy customization via Themes. [Dark Theme](https://mounirtohami.itch.io/godot-dark-theme) used in Demo, provided by Mounir Tohami
 * A functional and customizable Deck Builder.
 
 ![Godot Card Game Framework deck builder preview image](deckbuilder-preview.png "Godot Card Game Framework deck builder preview image")

@@ -31,6 +31,7 @@ font_data = ExtResource( 9 )
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
+theme = ExtResource( 12 )
 script = ExtResource( 5 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -51,6 +52,50 @@ faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
 custom_styles/panel = SubResource( 1 )
+
+[node name="VBoxContainer" parent="Discard/Control/CenterContainer" index="0"]
+margin_right = 68.0
+margin_bottom = 109.0
+
+[node name="Label" parent="Discard/Control/CenterContainer/VBoxContainer" index="0"]
+margin_right = 68.0
+
+[node name="PanelContainer" parent="Discard/Control/CenterContainer/VBoxContainer" index="1"]
+margin_top = 32.0
+margin_right = 68.0
+margin_bottom = 61.0
+
+[node name="CenterContainer" parent="Discard/Control/CenterContainer/VBoxContainer/PanelContainer" index="0"]
+margin_right = 68.0
+
+[node name="CardCount" parent="Discard/Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" index="0"]
+margin_right = 45.0
+
+[node name="View" parent="Discard/Control/ManipulationButtons" index="0"]
+margin_right = 18.0
+margin_bottom = 22.0
+
+[node name="Shuffle" parent="Discard/Control/ManipulationButtons" index="1"]
+margin_top = 25.0
+margin_right = 18.0
+margin_bottom = 47.0
+
+[node name="CardView" parent="Discard/ViewPopup" index="0"]
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 6.0
+margin_bottom = 6.0
+
+[node name="Position" parent="Discard/Debug" index="0"]
+margin_bottom = 18.0
+
+[node name="AreaPos" parent="Discard/Debug" index="1"]
+margin_top = 21.0
+margin_bottom = 39.0
+
+[node name="Size" parent="Discard/Debug" index="2"]
+margin_top = 42.0
+margin_bottom = 60.0
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )
@@ -184,10 +229,10 @@ margin_bottom = 600.0
 rect_min_size = Vector2( 800, 0 )
 
 [node name="DeckBuilder" parent="DeckBuilderPopup" instance=ExtResource( 10 )]
-margin_left = 4.0
-margin_top = 4.0
-margin_right = -4.0
-margin_bottom = -4.0
+margin_left = 2.0
+margin_top = 2.0
+margin_right = -2.0
+margin_bottom = -2.0
 info_panel_scene = ExtResource( 11 )
 
 [node name="MultiplayerPopup" type="PopupPanel" parent="."]

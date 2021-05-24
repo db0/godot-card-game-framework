@@ -139,8 +139,13 @@ func set_label_text(node: Label, value):
 # by classes extending this, to allow them to use their own methods
 # (e.g. based on themes)
 func get_card_label_font(label: Label) -> Font:
-	return(label.get("custom_fonts/font").duplicate())
-
+	var theme : Theme = self.theme
+	var label_font : Font
+	if theme:
+		label_font = theme.get_font("font", "Label").duplicate()
+	else:
+		label_font = label.get("custom_fonts/font").duplicate()
+	return(label_font)
 
 # Sets the font to be used by the current label
 #
@@ -148,7 +153,7 @@ func get_card_label_font(label: Label) -> Font:
 # by classes extending this, to allow them to use their own methods
 # (e.g. based on themes)
 func set_card_label_font(label: Label, font: Font) -> void:
-	label.set("custom_fonts/font", font)
+	label.add_font_override("font", font)
 
 
 # We use this as an alternative to scaling the card using the "scale" property.
