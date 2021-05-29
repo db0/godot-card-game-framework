@@ -127,7 +127,7 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 		var card_position = Vector2(card_entry.pos_x, card_entry.pos_y)
 		var board_grid_slot  = null
 		var board_grid_details = card_entry.get("board_grid_slot", 'none')
-		if board_grid_details != 'none':
+		if typeof(board_grid_details) == TYPE_ARRAY:
 			var board_grid = cfc.NMAP.board.get_grid(board_grid_details[0])
 			board_grid_slot = board_grid.get_slot(board_grid_details[1])
 		if card_container != card.get_parent():
