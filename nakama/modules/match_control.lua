@@ -81,7 +81,9 @@ commands[OpCodes.cards_updated] = function(data, state)
 	-- each key is an index in the state.cards array
 	-- nk.logger_info("Cards updated")
 	for index, card_state in pairs(data.cards) do
-		state.cards[tonumber(index)] = card_state
+		for key, value in pairs(card_state) do
+			state.cards[tonumber(index)][key] = value
+		end
 	end
 	-- for index, card_state in pairs(state.cards) do
 		-- for key, value in pairs(card_state) do

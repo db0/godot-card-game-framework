@@ -346,4 +346,4 @@ class SignalPropagator:
 		# If this is a multiplayer match, we ensure we report that a card has been
 		# modified
 		if cfc.multiplayer_match:
-			cfc.multiplayer_match.on_card_state_manipulated(trigger_card)
+			cfc.multiplayer_match.add_manipulation_to_spool(trigger_card, trigger)

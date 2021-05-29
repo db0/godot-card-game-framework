@@ -552,6 +552,7 @@ func modify_property(
 		if not check and property == "Name":
 			set_card_name(value)
 		elif not check:
+			set_current_manipulation(StateManipulation.LOCAL)
 			# We do this check because we allow strings specifying
 			# numerical property modifications to be sent
 			# In that case, the set of the property is based on addition op
@@ -743,6 +744,7 @@ func set_is_faceup(
 	# If it is not, this is a viewport dupe card that has not finished
 	# it's ready() process
 	elif not check and is_instance_valid(get_parent()):
+		set_current_manipulation(StateManipulation.LOCAL)
 		tokens.is_drawer_open = false
 		# We make sure to remove other tweens of the same type to avoid a deadlock
 		is_faceup = value
@@ -823,6 +825,7 @@ func set_is_viewed(value: bool) -> int:
 		elif value == is_viewed:
 			retcode = CFConst.ReturnCode.OK
 		else:
+			set_current_manipulation(StateManipulation.LOCAL)
 			is_viewed = true
 			if get_parent() != null\
 					and get_tree().get_root().has_node('Main')\
@@ -933,6 +936,7 @@ func set_card_rotation(
 
 		# We modify the card only if this is not a cost dry-run
 		if not check:
+			set_current_manipulation(StateManipulation.LOCAL)
 			card_rotation = value
 			# If the value is 0 but the card is in an oval hand, we ensure the actual
 			# rotation we apply to the card will be their hand oval rotation
@@ -1428,6 +1432,7 @@ func attach_to_host(
 	# First we check if the selected host is not the current host anyway.
 	# If it is, we do nothing else
 	if host != current_host_card:
+		set_current_manipulation(StateManipulation.LOCAL)
 		# If the card is not yet on the board, we move it there
 		if get_parent() != cfc.NMAP.board:
 			move_to(cfc.NMAP.board, -1, host.position)

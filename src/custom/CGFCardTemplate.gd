@@ -29,3 +29,7 @@ func _on_Card_gui_input(event) -> void:
 			targeting_arrow.initiate_targeting()
 		elif not event.is_pressed() and event.get_button_index() == 2:
 			targeting_arrow.complete_targeting()
+
+func _process(delta: float) -> void:
+	pass
+#	current_manipulation == Card.StateManipulation.LOCAL

@@ -170,7 +170,6 @@ func mod_token(
 						SP.TRIGGER_PREV_COUNT: prev_value,
 						SP.TRIGGER_NEW_COUNT: new_value,
 						"tags": tags})
-				owner_card.emit_signal("state_manipulated", owner_card)
 	return(retcode)
 
 

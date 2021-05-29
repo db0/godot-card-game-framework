@@ -58,6 +58,7 @@ func load_multiplayer_cards() -> void:
 			JSON.print(payload))
 
 
+
 # This function is to avoid relating the logic in the card objects
 # to a node which might not be there in another game
 # You can remove this function and the FancyMovementToggle button

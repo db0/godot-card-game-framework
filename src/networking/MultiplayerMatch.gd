@@ -8,6 +8,17 @@ var card_node_map: Dictionary
 var container_node_map: Dictionary
 var nakama_client : CFNakamaClient
 var match_id: String
+# This holds all card state manipulations that happened in the past
+# X seconds, where X is the `manipulation_spool` variable.
+var manipulation_spool: Array
+# To avoid overwhelming the Nakama server during massive manipulations
+# we spool all requests coming in this amount of seconds and send them all
+# as one sync request.
+var spool_timer_delay := 1.15
+# This timer starts when a request to send the card state to nakama arrives
+# and when it expires, the state is sent.
+var send_state_timer := Timer.new()
+
 
 
 func _init(cards: Array, _nakama_client: CFNakamaClient, _match_id: String) -> void:
@@ -15,6 +26,9 @@ func _init(cards: Array, _nakama_client: CFNakamaClient, _match_id: String) -> v
 	card_states = cards.duplicate(true)
 	nakama_client = _nakama_client
 	nakama_client.socket.connect("received_match_state", self, "_on_received_match_state")
+	send_state_timer.connect("timeout", self, '_on_card_state_manipulated')
+	send_state_timer.one_shot = true
+	cfc.add_child(send_state_timer)
 
 func register_card(index, card) -> void:
 	card_node_map[card] = index
@@ -71,11 +85,13 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 		container_node_map[cfc.NMAP[container]] = cont_index
 		cont_index += 1
 	var card_id := 1
-	print(card_states)
 	for card_entry in card_states:
 		var card: Card = get_card_node(card_id)
 		sync_card(card, card_entry)
 		card_id += 1
+	# If we received the note that a container has been shuffled
+	# we perform the shuffle animation, without actually shuffling the cards.
+	# The individual index of cards will be received from the data as well.
 	for container_id in shuffled_containers:
 		var container := get_container_node(container_id)
 		if container.is_in_group("hands"):
@@ -91,7 +107,10 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 	# wa want to try again later, if the card state is still wrong
 	if card._tween and card._tween.is_active():
 		return
+#	print_debug(card.current_manipulation == Card.StateManipulation.LOCAL)
 	if card.current_manipulation == Card.StateManipulation.LOCAL:
+		return
+	if _is_container_still_manipulated(card):
 		return
 	# We do positioning manipulation changes only if the card state received
 	# contains a Card Container reference ID.
@@ -124,6 +143,7 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 	#			card._add_tween_position(card.position, card_position, 0.15,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 		elif card_entry.node_index != card.get_my_card_index():
 #			print_debug(card_container.name,card_entry.node_index,card.get_parent().name,card.get_my_card_index())
+			print_debug(card_entry.node_index,card.get_my_card_index())
 			card.get_parent().move_child(
 					card,
 					card.get_parent().translate_card_index_to_node_index(
@@ -138,7 +158,7 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 			var remote_value = card_entry["properties"][card_property]
 			if card.properties[card_property] != remote_value:
 				card.modify_property(card_property, remote_value)
-		for token_name in card_entry["tokens"]:
+		for token_name in card_entry.get("tokens", {}):
 			var remote_value = card_entry["tokens"][token_name]
 			var token: Token = card.tokens.get_token(token_name)
 			if token.get_unaltered_count() != remote_value:
@@ -147,82 +167,83 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 #	print_debug(card_entry)
 
 
-func on_card_state_manipulated(cards):
+func _on_card_state_manipulated():
 	var payload := { "cards": {}}
 	# We add a wait to allow any tweens which are about to start, to start
-	yield(cfc.get_tree().create_timer(0.1), "timeout")
-	for card_obj in cfc.get_tree().get_nodes_in_group("cards"):
-		var card: Card = card_obj
-		var previous_state = card_states[card_node_map[card]]
-		var card_id := get_card_id(card)
-	#	print_debug(card._tween.is_active(), card._tween.get_runtime())
-		# We want to send the absolute final state of the card
-		# So we need to wait for all the tweens to finish first
-	#	var loops = 0
-	#	while card._tween.is_active():
-	#		yield(card._tween, "tween_all_completed")
-	#		# We add a wait before the next loop
-	#		# to allow the next tween to start, in case there's more than one
-	#		# running in a row
-	#		yield(card.get_tree().create_timer(0.1), "timeout")
-	#		loops += 1
-	#		# We keep this as a safety to avoid getting stuck somehow
-	#		if loops > 5: break
-		payload["cards"][card_id] = {
-			"card_name": card.canonical_name,
-			"owner": previous_state['owner'],
-			"pos_x": card.position.x,
-			"pos_y": card.position.y,
-			"properties": card.properties,
-			"tokens": _gather_tokens_payload(card),
-			"is_faceup": card.is_faceup,
-			"rotation": card.card_rotation,
-		}
-	#	print_debug(payload)
-		var card_parent = discover_card_container(card)
-		if card_parent:
-			payload['cards'][card_id]["container"] =\
-					get_container_id(discover_card_container(card))
-			var board_grid_slot = null
-			if card._placement_slot:
-				board_grid_slot = [
-						card._placement_slot.get_grid_name(),
-						card._placement_slot.get_index()
-				]
-			payload['cards'][card_id]["board_grid_slot"] = board_grid_slot
-			payload['cards'][card_id]["node_index"] =\
-					card.get_my_card_index()
+	var card_indexes_updated := false
+	var entries_to_unspool: Array
+	while manipulation_spool.size():
+		var entry: SpooledEntry = manipulation_spool.pop_back()
+		# If any of the manipulations moves cards around the board
+		# we need to resend the positional state of all cards
+		# due to indexes shifting as cards get added/(re)moved from containers.
+		if not card_indexes_updated and entry.is_index_manipulation():
+			card_indexes_updated = true
+			for card_obj in cfc.get_tree().get_nodes_in_group("cards"):
+				var card: Card = card_obj
+				var card_id := get_card_id(card)
+				if not payload["cards"].has(card_id):
+					payload["cards"][card_id] = {}
+				var positional_payload := SpooledEntry.get_positional_payload(
+						card, container_node_map)
+				payload["cards"][card_id]["pos_x"] = positional_payload["pos_x"]
+				payload["cards"][card_id]["pos_y"] = positional_payload["pos_y"]
+				payload['cards'][card_id]["board_grid_slot"] = positional_payload["board_grid_slot"]
+				payload['cards'][card_id]["node_index"] = positional_payload["node_index"]
+		var card_id := get_card_id(entry.card)
+		if not payload["cards"].has(card_id):
+			payload["cards"][card_id] = {}
+		payload['cards'][card_id] = entry.get_payload(
+				payload["cards"][card_id], container_node_map)
+		print_debug(payload)
+		if not entry in entries_to_unspool:
+			entries_to_unspool.append(entry)
+		if manipulation_spool.size() == 0:
+			# We want to wait until the state has been updated remotely,
+			# before unlocking the card for remote manipulations
+			yield(nakama_client.socket.send_match_state_async(
+					match_id,
+					NWConst.OpCodes.cards_updated,
+					JSON.print(payload)), "completed")
+			for e in entries_to_unspool:
+				e.unspool()
+			print_debug('unspooled all')
+			# if we've sent the call to sync match state
+			# we ensure we break out of the spool parsing loop
+			# even if an entry was added in while waiting for the async
+			# yield to return.
+			break
+#	print_debug(manipulation_spool.size())
 
-		# We want to wait until the state has been updated remotely,
-		# before unlocking the card for remote manipulations
-	yield(nakama_client.socket.send_match_state_async(
-			match_id,
-			NWConst.OpCodes.cards_updated,
-			JSON.print(payload)), "completed")
-	if typeof(cards) != TYPE_ARRAY:
-		cards = [cards]
-	for card in cards:
-		card.set_current_manipulation(Card.StateManipulation.NONE)
-
-func discover_card_container(card: Card) -> Node:
-	var card_parent = card.get_parent()
-	if card_parent and is_instance_valid(card_parent):
-		if "CardPopUpSlot" in card_parent.name:
-			card_parent = card_parent.get_parent().get_parent().get_parent()
-	else:
-		card_parent = null
-	return(card_parent)
 
 func _on_container_shuffled(container: CardContainer) -> void:
+	print_debug("shuffle signal received")
 	var payload := {"container_id": get_container_id(container)}
-	on_card_state_manipulated(container.get_all_cards())
+	for c in container.get_all_cards():
+		add_manipulation_to_spool(c, "card_index_changed")
 	yield(nakama_client.socket.send_match_state_async(
 			match_id,
 			NWConst.OpCodes.container_shuffled,
 			JSON.print(payload)), "completed")
 
-func _gather_tokens_payload(card: Card) -> Dictionary:
-	var token_payload := {}
-	for token in card.tokens.get_all_tokens():
-		token_payload[token.name] = token.get_unaltered_count()
-	return(token_payload)
+
+func add_manipulation_to_spool(card: Card, manipulation_type: String) -> void:
+	var manipulation_entry : SpooledEntry
+	for entry in manipulation_spool:
+		if entry.card == card:
+			manipulation_entry = entry
+			manipulation_entry.add_manipulation(manipulation_type)
+			break
+	if not manipulation_entry:
+		manipulation_entry = SpooledEntry.new(card, manipulation_type)
+		manipulation_spool.append(manipulation_entry)
+	if send_state_timer.is_stopped():
+		send_state_timer.start(spool_timer_delay)
+
+func _is_container_still_manipulated(card) -> bool:
+	for entry in manipulation_spool:
+		# We check if the parent of the checked card
+		# is the parent of any card in the manipulation_spool
+		if entry.is_container_manipulated(card):
+			return(true)
+	return(false)

@@ -238,6 +238,7 @@ func get_first_card() -> Card:
 func shuffle_cards() -> void:
 	for c in get_all_cards():
 		c.set_current_manipulation(Card.StateManipulation.LOCAL)
+#	print_debug('set to local before shuffle')
 	var cardsArray := []
 	for card in get_all_cards():
 		cardsArray.append(card)
