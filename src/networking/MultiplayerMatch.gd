@@ -110,8 +110,9 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 	if card._tween and card._tween.is_active():
 		return
 #	print_debug(card.current_manipulation == Card.StateManipulation.LOCAL)
-	if card.get_parent() == cfc.NMAP.board and card_entry.has('board_grid_slot'):
-		print_debug(card_entry.board_grid_slot)
+#	if card.get_parent() == cfc.NMAP.board\
+#			and card_entry.get('board_grid_slot', 'none') != 'none':
+#		print_debug(card_entry.board_grid_slot)
 	if card.current_manipulation == Card.StateManipulation.LOCAL:
 		return
 	if _is_container_still_manipulated(card):
@@ -125,8 +126,8 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 	#	print_debug(card_container)
 		var card_position = Vector2(card_entry.pos_x, card_entry.pos_y)
 		var board_grid_slot  = null
-		var board_grid_details = card_entry.get("board_grid_slot")
-		if board_grid_details:
+		var board_grid_details = card_entry.get("board_grid_slot", 'none')
+		if board_grid_details != 'none':
 			var board_grid = cfc.NMAP.board.get_grid(board_grid_details[0])
 			board_grid_slot = board_grid.get_slot(board_grid_details[1])
 		if card_container != card.get_parent():

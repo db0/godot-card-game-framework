@@ -72,7 +72,11 @@ static func get_positional_payload(card: Card, container_node_map: Dictionary) -
 	var card_parent = discover_card_container(card)
 	if card_parent:
 		payload["container"] = container_node_map[card_parent]
-		var board_grid_slot = null
+		# I would have preferred to send null, but lua interprets a key
+		# with a null value as if it doesn't exist, which means it will
+		# not iterate on it when setting values, which means it will never
+		# undo a previously set board_grid_slot value in the game state.
+		var board_grid_slot = 'none'
 		if card._placement_slot:
 			board_grid_slot = [
 					card._placement_slot.get_grid_name(),
