@@ -1263,6 +1263,8 @@ func move_to(targetHost: Node,
 				# This signal is mostly used for multiplayer
 				# To inform other players, a card's position on the board
 				# changed
+#				if board_position:
+#					print_debug(board_position)
 				emit_signal("card_board_position_changed",
 						self,
 						"card_board_position_changed",

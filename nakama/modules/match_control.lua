@@ -82,6 +82,9 @@ commands[OpCodes.cards_updated] = function(data, state)
 	-- nk.logger_info("Cards updated")
 	for index, card_state in pairs(data.cards) do
 		for key, value in pairs(card_state) do
+			if key == 'board_grid_slot' and index == 4 do
+				nk.logger_info(string.format("%s CARD: key %s. value %s", index, key, value))
+			end
 			state.cards[tonumber(index)][key] = value
 		end
 	end

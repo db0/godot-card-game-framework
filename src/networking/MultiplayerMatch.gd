@@ -110,6 +110,8 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 	if card._tween and card._tween.is_active():
 		return
 #	print_debug(card.current_manipulation == Card.StateManipulation.LOCAL)
+	if card.get_parent() == cfc.NMAP.board:
+		print_debug(card_entry.board_grid_slot)
 	if card.current_manipulation == Card.StateManipulation.LOCAL:
 		return
 	if _is_container_still_manipulated(card):
@@ -198,10 +200,10 @@ func _on_card_state_manipulated():
 			payload["cards"][card_id] = {}
 		payload['cards'][card_id] = entry.get_payload(
 				payload["cards"][card_id], container_node_map)
-		print_debug(payload)
 		if not entry in entries_to_unspool:
 			entries_to_unspool.append(entry)
 		if manipulation_spool.size() == 0:
+			print_debug(payload)
 			# We want to wait until the state has been updated remotely,
 			# before unlocking the card for remote manipulations
 			yield(nakama_client.socket.send_match_state_async(
