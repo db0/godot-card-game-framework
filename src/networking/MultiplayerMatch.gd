@@ -3,6 +3,10 @@ extends Reference
 
 signal received_mp_state
 
+const LUA_TO_BOOL := {
+	0: false,
+	1: true,
+}
 var card_states: Array
 var card_node_map: Dictionary
 var container_node_map: Dictionary
@@ -138,17 +142,20 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 					card.move_to(card_container, -1, card_position)
 			else:
 				card.move_to(card_container, card_entry.node_index)
-		elif card_container == cfc.NMAP.board:
+		# When the card is an attachment, we don't have to manually resync 
+		# it's position. The attachment repositioning code should be 
+		# handling that automatically
+		elif card_container == cfc.NMAP.board and not card.current_host_card:
 			if board_grid_slot and board_grid_slot != card._placement_slot:
 				card.move_to(card_container, -1, board_grid_slot)
 			elif not board_grid_slot and card_position != card.position:
 #				print_debug(card.current_manipulation,card_position,card.position )
 #				card.position = card_position
 				card._add_tween_position(
-					card.position, 
+					card.position,
 					card_position,
 					 0.15,
-					Tween.TRANS_SINE, 
+					Tween.TRANS_SINE,
 					Tween.EASE_IN_OUT)
 				card._tween.start()
 		elif card_entry.node_index != card.get_my_card_index():
@@ -162,8 +169,21 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 				and card.card_rotation != card_entry['rotation']:
 				card.card_rotation = card_entry['rotation']
 		if card_entry.has('is_faceup')\
-				and card.is_faceup != card_entry['is_faceup']:
-				card.is_faceup = card_entry['is_faceup']
+				and card.is_faceup != LUA_TO_BOOL[int(card_entry['is_faceup'])]:
+			card.is_faceup = LUA_TO_BOOL[int(card_entry['is_faceup'])]
+		if card_entry.has('attachment_host'):
+#			print_debug(card_entry['attachment_host'])
+			if str(card_entry['attachment_host']) != 'none'\
+					and card.current_host_card != get_card_node(card_entry['attachment_host']):
+				print(card_entry['attachment_host'])
+				card.attach_to_host(get_card_node(card_entry['attachment_host']))
+			if str(card_entry['attachment_host'])  == 'none'\
+					and card.current_host_card != null:
+				print(card_entry['attachment_host'])
+				card._clear_attachment_status()
+		if card_entry.has('is_viewed')\
+				and card.is_viewed != LUA_TO_BOOL[int(card_entry['is_viewed'])]:
+				card.is_viewed = LUA_TO_BOOL[int(card_entry['is_viewed'])]
 		for card_property in card_entry["properties"]:
 			var remote_value = card_entry["properties"][card_property]
 			if card.properties[card_property] != remote_value:
@@ -205,8 +225,7 @@ func _on_card_state_manipulated():
 		var card_id := get_card_id(entry.card)
 		if not payload["cards"].has(card_id):
 			payload["cards"][card_id] = {}
-		payload['cards'][card_id] = entry.get_payload(
-				payload["cards"][card_id], container_node_map)
+		payload['cards'][card_id] = entry.get_payload(payload["cards"][card_id])
 		if not entry in entries_to_unspool:
 			entries_to_unspool.append(entry)
 		if manipulation_spool.size() == 0:
@@ -239,6 +258,7 @@ func _on_container_shuffled(container: CardContainer) -> void:
 
 
 func add_manipulation_to_spool(card: Card, manipulation_type: String) -> void:
+#	print_debug(manipulation_type)
 	var manipulation_entry : SpooledEntry
 	for entry in manipulation_spool:
 		if entry.card == card:
@@ -246,7 +266,7 @@ func add_manipulation_to_spool(card: Card, manipulation_type: String) -> void:
 			manipulation_entry.add_manipulation(manipulation_type)
 			break
 	if not manipulation_entry:
-		manipulation_entry = SpooledEntry.new(card, manipulation_type)
+		manipulation_entry = SpooledEntry.new(card, manipulation_type, self)
 		manipulation_spool.append(manipulation_entry)
 	if send_state_timer.is_stopped():
 		send_state_timer.start(spool_timer_delay)

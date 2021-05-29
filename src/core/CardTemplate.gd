@@ -841,7 +841,8 @@ func set_is_viewed(value: bool) -> int:
 			retcode = CFConst.ReturnCode.CHANGED
 			# We only emit a signal when we view the card
 			# not when we unview it as that happens naturally
-			emit_signal("card_viewed", self, "card_viewed",  {"is_viewed": true})
+			if current_manipulation != StateManipulation.REMOTE and not is_display_card:
+				emit_signal("card_viewed", self, "card_viewed",  {"is_viewed": true})
 	else:
 		if value == is_viewed:
 			retcode = CFConst.ReturnCode.OK
@@ -1456,10 +1457,11 @@ func attach_to_host(
 		# also became an attachment here.
 		if current_host_card and not is_following_previous_host:
 			current_host_card.attachments.erase(self)
-			emit_signal("card_unattached",
-					self,
-					"card_unattached",
-					{"host": current_host_card, "tags": tags})
+			if current_manipulation != StateManipulation.REMOTE:
+				emit_signal("card_unattached",
+						self,
+						"card_unattached",
+						{"host": current_host_card, "tags": tags})
 		# If card was on a grid slot, we clear that occupation
 		if _placement_slot:
 			_placement_slot.occupying_card = null
@@ -1487,10 +1489,11 @@ func attach_to_host(
 				* CFConst.ATTACHMENT_OFFSET[attachment_offset].x,
 				(attach_index + 1)* card_size.y
 				* CFConst.ATTACHMENT_OFFSET[attachment_offset].y))
-		emit_signal("card_attached",
-				self,
-				"card_attached",
-				{"host": host, "tags": tags})
+		if current_manipulation != StateManipulation.REMOTE:
+			emit_signal("card_attached",
+					self,
+					"card_attached",
+					{"host": host, "tags": tags})
 
 
 # Overrides the built-in get_class to
@@ -1891,10 +1894,12 @@ func _tween_interpolate_visibility(visibility: float, time: float) -> void:
 # It is typically called when a card is removed from the table
 func _clear_attachment_status(tags := ["Manual"]) -> void:
 	if current_host_card:
-		emit_signal("card_unattached",
-				self,
-				"card_unattached",
-				{"host": current_host_card, "tags": tags})
+		set_current_manipulation(StateManipulation.LOCAL)
+		if current_manipulation != StateManipulation.REMOTE:
+			emit_signal("card_unattached",
+					self,
+					"card_unattached",
+					{"host": current_host_card, "tags": tags})
 		current_host_card.attachments.erase(self)
 		current_host_card = null
 	for card in attachments:

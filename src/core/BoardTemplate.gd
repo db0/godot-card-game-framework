@@ -97,3 +97,24 @@ func get_grid(grid_name: String) -> BoardPlacementGrid:
 # warning-ignore:unused_argument
 func get_final_placement_node(card: Card) -> Node:
 	return(self)
+
+# Translates requested card index to true node index.
+# By that, we mean the index the Card object it would have among all its
+# siblings, inlcuding non-Card nodes
+func translate_card_index_to_node_index(index: int) -> int:
+	var node_index := 0
+	# To figure out the index, we use the existing cards
+	var all_cards := get_all_cards()
+	# First we check if the requested index is higher than the amount of cards
+	# If so, we give back the next available index
+	if index > len(all_cards) - 1:
+		node_index = len(all_cards)
+		print_debug("WARNING: Higher card index than hosted cards requested on "
+				+ name + ". Returning max position:" + str(node_index))
+	else:
+		# If the requester index is not higher than the number of cards
+		# We figure out which card has the index at the moment, and return
+		# its node index
+		var card_at_index = all_cards[index]
+		node_index = card_at_index.get_index()
+	return node_index

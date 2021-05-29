@@ -7,13 +7,18 @@ const card_index_manipulations = [
 	"card_moved_to_pile",
 	"card_moved_to_hand",
 ]
-
+const BOOL_TO_LUA := {
+	false: 0,
+	true: 1,
+}
 var card: Card
 var manipulations: Array
+var _multiplayer_match
 
-func _init(_card: Card, type: String) -> void:
+func _init(_card: Card, type: String, multiplayer_match) -> void:
 	card = _card
 	manipulations.append(type)
+	_multiplayer_match = multiplayer_match
 
 func add_manipulation(type: String) -> void:
 	if not type in manipulations:
@@ -28,7 +33,7 @@ func is_container_manipulated(checked_card: Card) -> bool:
 func unspool() -> void:
 	card.set_current_manipulation(Card.StateManipulation.NONE)
 
-func get_payload(existing_payload := {}, container_node_map := {}) -> Dictionary:
+func get_payload(existing_payload := {}) -> Dictionary:
 	var payload := existing_payload.duplicate(true)
 	for type in manipulations:
 		match type: 
@@ -38,7 +43,7 @@ func get_payload(existing_payload := {}, container_node_map := {}) -> Dictionary
 					"card_moved_to_pile",\
 					"card_moved_to_hand":
 				var positional_payload := get_positional_payload(
-						card, container_node_map)
+						card, _multiplayer_match.container_node_map)
 				payload["pos_x"] = positional_payload["pos_x"]
 				payload["pos_y"] = positional_payload["pos_y"]
 				payload["board_grid_slot"] = positional_payload["board_grid_slot"]
@@ -50,13 +55,20 @@ func get_payload(existing_payload := {}, container_node_map := {}) -> Dictionary
 			"card_rotated":
 				payload["rotation"] = card.card_rotation
 			"card_flipped":
-				payload["is_faceup"] = card.is_faceup
+				# Lua tables do handle true/false values as is typical, so it's
+				# better to switch to good old 0/1 values instead
+				payload["is_viewed"] = 0
+				payload["is_faceup"] = BOOL_TO_LUA[card.is_faceup]
 			"card_viewed":
-				pass
+				payload["is_viewed"] = 1
 			"card_token_modified":
 				payload["tokens"] = _gather_tokens_payload(card)
 			"card_attached", "card_unattached":
-				pass
+				if card.current_host_card == null:
+					payload["attachment_host"] = 'none'
+				else:
+					payload["attachment_host"] = _multiplayer_match.get_card_id(
+							card.current_host_card)
 			"card_properties_modified":
 				payload["properties"] = card.properties
 				payload["card_name"] = card.canonical_name
