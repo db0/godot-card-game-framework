@@ -110,7 +110,7 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 	if card._tween and card._tween.is_active():
 		return
 #	print_debug(card.current_manipulation == Card.StateManipulation.LOCAL)
-	if card.get_parent() == cfc.NMAP.board:
+	if card.get_parent() == cfc.NMAP.board and card_entry.has('board_grid_slot'):
 		print_debug(card_entry.board_grid_slot)
 	if card.current_manipulation == Card.StateManipulation.LOCAL:
 		return
