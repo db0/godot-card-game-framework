@@ -161,7 +161,9 @@ func mod_token(
 			elif is_drawer_open:
 				token.expand()
 			retcode = CFConst.ReturnCode.CHANGED
+			print_debug(owner_card.current_manipulation)
 			if owner_card.current_manipulation != owner_card.StateManipulation.REMOTE:
+				owner_card.set_current_manipulation(owner_card.StateManipulation.LOCAL)
 				owner_card.emit_signal(
 						"card_token_modified",
 						owner_card,

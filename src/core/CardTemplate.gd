@@ -80,6 +80,8 @@ signal card_viewed(card,trigger,details)
 # Emited whenever the card is moved to the board
 signal card_moved_to_board(card,trigger,details)
 # Emited whenever the card is moved to a pile
+signal card_board_position_changed(card,trigger,details)
+# Emited whenever the card is moved to a pile
 signal card_moved_to_pile(card,trigger,details)
 # Emited whenever the card is moved to a hand
 signal card_moved_to_hand(card,trigger,details)
@@ -1258,6 +1260,14 @@ func move_to(targetHost: Node,
 					if _placement_slot:
 							_placement_slot.occupying_card = null
 							_placement_slot = null
+				# This signal is mostly used for multiplayer
+				# To inform other players, a card's position on the board
+				# changed
+				emit_signal("card_board_position_changed",
+						self,
+						"card_board_position_changed",
+						 {"tags": tags}
+				)
 				raise()
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP

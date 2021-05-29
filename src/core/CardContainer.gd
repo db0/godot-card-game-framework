@@ -374,3 +374,9 @@ func re_place():
 							accumulated_shift.x += cc.control.rect_size.x
 		# Finally, we move to the right location.
 		position = place
+
+func is_animation_ongoing() -> bool:
+	for card in get_all_cards():
+		if card._tween and card._tween.is_active():
+			return(true)
+	return(false)

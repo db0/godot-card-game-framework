@@ -302,6 +302,7 @@ class SignalPropagator:
 		"card_flipped",
 		"card_viewed",
 		"card_moved_to_board",
+		"card_board_position_changed",
 		"card_moved_to_pile",
 		"card_moved_to_hand",
 		"card_token_modified",

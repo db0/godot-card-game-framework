@@ -94,6 +94,8 @@ func _on_received_match_state(match_state: NakamaRTAPI.MatchData) -> void:
 	# The individual index of cards will be received from the data as well.
 	for container_id in shuffled_containers:
 		var container := get_container_node(container_id)
+		while container.is_animation_ongoing():
+			yield(container.get_tree().create_timer(0.1), "timeout")
 		if container.is_in_group("hands"):
 			container.shuffle_cards(true)
 		elif container.is_in_group("piles"):
@@ -143,7 +145,7 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 	#			card._add_tween_position(card.position, card_position, 0.15,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
 		elif card_entry.node_index != card.get_my_card_index():
 #			print_debug(card_container.name,card_entry.node_index,card.get_parent().name,card.get_my_card_index())
-			print_debug(card_entry.node_index,card.get_my_card_index())
+#			print_debug(card_entry.node_index,card.get_my_card_index())
 			card.get_parent().move_child(
 					card,
 					card.get_parent().translate_card_index_to_node_index(
@@ -161,7 +163,7 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 		for token_name in card_entry.get("tokens", {}):
 			var remote_value = card_entry["tokens"][token_name]
 			var token: Token = card.tokens.get_token(token_name)
-			if token.get_unaltered_count() != remote_value:
+			if token and token.get_unaltered_count() != remote_value:
 				card.tokens.mod_token(token_name, remote_value, true)
 		card.set_current_manipulation(Card.StateManipulation.NONE)
 #	print_debug(card_entry)
@@ -190,6 +192,7 @@ func _on_card_state_manipulated():
 				payload["cards"][card_id]["pos_y"] = positional_payload["pos_y"]
 				payload['cards'][card_id]["board_grid_slot"] = positional_payload["board_grid_slot"]
 				payload['cards'][card_id]["node_index"] = positional_payload["node_index"]
+				payload['cards'][card_id]["container"] = positional_payload["container"]
 		var card_id := get_card_id(entry.card)
 		if not payload["cards"].has(card_id):
 			payload["cards"][card_id] = {}

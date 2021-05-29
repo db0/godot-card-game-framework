@@ -34,6 +34,7 @@ func get_payload(existing_payload := {}, container_node_map := {}) -> Dictionary
 		match type: 
 			"card_index_changed",\
 					"card_moved_to_board",\
+					"card_board_position_changed",\
 					"card_moved_to_pile",\
 					"card_moved_to_hand":
 				var positional_payload := get_positional_payload(
@@ -42,6 +43,7 @@ func get_payload(existing_payload := {}, container_node_map := {}) -> Dictionary
 				payload["pos_y"] = positional_payload["pos_y"]
 				payload["board_grid_slot"] = positional_payload["board_grid_slot"]
 				payload["node_index"] = positional_payload["node_index"]
+				payload["container"] = positional_payload["container"]
 			"card_rotated":
 				payload["rotation"] = card.card_rotation
 			"card_flipped":
@@ -49,7 +51,7 @@ func get_payload(existing_payload := {}, container_node_map := {}) -> Dictionary
 			"card_viewed":
 				pass
 			"card_token_modified":
-				payload["is_faceup"] = _gather_tokens_payload(card)
+				payload["tokens"] = _gather_tokens_payload(card)
 			"card_attached", "card_unattached":
 				pass
 			"card_properties_modified":
@@ -92,6 +94,7 @@ static func discover_card_container(card: Card) -> Node:
 
 func _gather_tokens_payload(card: Card) -> Dictionary:
 	var token_payload := {}
-	for token in card.tokens.get_all_tokens():
-		token_payload[token.name] = token.get_unaltered_count()
+	var all_tokens := card.tokens.get_all_tokens()
+	for token_name in all_tokens:
+		token_payload[token_name] = all_tokens[token_name].get_unaltered_count()
 	return(token_payload)
