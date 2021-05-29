@@ -231,7 +231,7 @@ var _card_text
 # This prevents manipulations of other sorts from affecting it before it's
 # finished.
 var current_manipulation : int = StateManipulation.NONE setget set_current_manipulation
-
+var is_display_card := false
 
 
 # This variable will point to the scene which controls the targeting arrow
@@ -791,7 +791,7 @@ func set_is_faceup(
 					var dupe_back = dupe_card.get_node("Control/Back")
 					_flip_card(dupe_front, dupe_back, true)
 		retcode = CFConst.ReturnCode.CHANGED
-		if current_manipulation != StateManipulation.REMOTE:
+		if current_manipulation != StateManipulation.REMOTE and not is_display_card:
 			emit_signal(
 					"card_flipped",
 					self,
@@ -958,7 +958,7 @@ func set_card_rotation(
 			if start_tween:
 				$Tween.start()
 			#$Control/Tokens.rotation_degrees = -value # need to figure this out
-			if current_manipulation != StateManipulation.REMOTE:
+			if current_manipulation != StateManipulation.REMOTE and not is_display_card:
 				# When the card actually changes orientation
 				# We report that it changed.
 				emit_signal(
@@ -1206,8 +1206,8 @@ func move_to(targetHost: Node,
 			# we remove all tokens
 			# (The cfc._ut_tokens_only_on_board is there for unit testing)
 			if CFConst.TOKENS_ONLY_ON_BOARD or cfc._ut_tokens_only_on_board:
-				for token in tokens.get_all_tokens().values():
-					token.queue_free()
+				for token_name in tokens.get_all_tokens():
+					tokens.mod_token(token_name, 0, true)
 			# If the card was hosted in a board placement grid
 			# we clean the references.
 			if _placement_slot:
@@ -2003,8 +2003,8 @@ func _add_tween_position(
 		runtime := 0.3,
 		trans_type = Tween.TRANS_CUBIC,
 		ease_type = Tween.EASE_OUT):
-	$Tween.remove(self,'position')
-	$Tween.interpolate_property(self,'position',
+	_tween.remove(self,'position')
+	_tween.interpolate_property(self,'position',
 			expected_position, target_position, runtime,
 			trans_type, ease_type)
 

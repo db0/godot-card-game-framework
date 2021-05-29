@@ -1,6 +1,7 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/core/DeckBuilder/DBFilterLine.gd" type="Script" id=1]
+[ext_resource path="res://src/core/NoticeLabel.gd" type="Script" id=2]
 [ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=3]
 [ext_resource path="res://src/core/DeckBuilder/DeckBuilder.gd" type="Script" id=4]
 [ext_resource path="res://src/core/DeckBuilder/DeckNameRandomizer.gd" type="Script" id=5]
@@ -102,6 +103,7 @@ custom_fonts/font = SubResource( 3 )
 custom_colors/font_color = Color( 1, 0.992157, 0, 1 )
 text = "Deck deleted but current list not cleared"
 align = 2
+script = ExtResource( 2 )
 
 [node name="Tween" type="Tween" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer/NoticeLabel"]
 

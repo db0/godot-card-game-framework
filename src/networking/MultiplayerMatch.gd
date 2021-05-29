@@ -14,7 +14,7 @@ var manipulation_spool: Array
 # To avoid overwhelming the Nakama server during massive manipulations
 # we spool all requests coming in this amount of seconds and send them all
 # as one sync request.
-var spool_timer_delay := 1.15
+var spool_timer_delay := 0.05
 # This timer starts when a request to send the card state to nakama arrives
 # and when it expires, the state is sent.
 var send_state_timer := Timer.new()
@@ -142,10 +142,15 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 			if board_grid_slot and board_grid_slot != card._placement_slot:
 				card.move_to(card_container, -1, board_grid_slot)
 			elif not board_grid_slot and card_position != card.position:
-				print( card_position, board_grid_slot, card.position,card._placement_slot)
 #				print_debug(card.current_manipulation,card_position,card.position )
-				card.position = card_position
-	#			card._add_tween_position(card.position, card_position, 0.15,Tween.TRANS_SINE, Tween.EASE_IN_OUT)
+#				card.position = card_position
+				card._add_tween_position(
+					card.position, 
+					card_position,
+					 0.15,
+					Tween.TRANS_SINE, 
+					Tween.EASE_IN_OUT)
+				card._tween.start()
 		elif card_entry.node_index != card.get_my_card_index():
 #			print_debug(card_container.name,card_entry.node_index,card.get_parent().name,card.get_my_card_index())
 #			print_debug(card_entry.node_index,card.get_my_card_index())
@@ -166,7 +171,8 @@ func sync_card(card: Card, card_entry: Dictionary) -> void:
 		for token_name in card_entry.get("tokens", {}):
 			var remote_value = card_entry["tokens"][token_name]
 			var token: Token = card.tokens.get_token(token_name)
-			if token and token.get_unaltered_count() != remote_value:
+			if (token and token.get_unaltered_count() != remote_value)\
+					or (not token and remote_value != 0):
 				card.tokens.mod_token(token_name, remote_value, true)
 		card.set_current_manipulation(Card.StateManipulation.NONE)
 #	print_debug(card_entry)
@@ -204,7 +210,7 @@ func _on_card_state_manipulated():
 		if not entry in entries_to_unspool:
 			entries_to_unspool.append(entry)
 		if manipulation_spool.size() == 0:
-			print_debug(payload)
+#			print_debug(payload)
 			# We want to wait until the state has been updated remotely,
 			# before unlocking the card for remote manipulations
 			yield(nakama_client.socket.send_match_state_async(
@@ -213,7 +219,7 @@ func _on_card_state_manipulated():
 					JSON.print(payload)), "completed")
 			for e in entries_to_unspool:
 				e.unspool()
-			print_debug('unspooled all')
+#			print_debug('unspooled all')
 			# if we've sent the call to sync match state
 			# we ensure we break out of the spool parsing loop
 			# even if an entry was added in while waiting for the async
@@ -223,7 +229,6 @@ func _on_card_state_manipulated():
 
 
 func _on_container_shuffled(container: CardContainer) -> void:
-	print_debug("shuffle signal received")
 	var payload := {"container_id": get_container_id(container)}
 	for c in container.get_all_cards():
 		add_manipulation_to_spool(c, "card_index_changed")

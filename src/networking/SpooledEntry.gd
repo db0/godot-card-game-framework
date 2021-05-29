@@ -44,6 +44,9 @@ func get_payload(existing_payload := {}, container_node_map := {}) -> Dictionary
 				payload["board_grid_slot"] = positional_payload["board_grid_slot"]
 				payload["node_index"] = positional_payload["node_index"]
 				payload["container"] = positional_payload["container"]
+				# When the card leaves the board, its rotation is typically reset
+				if type in ['card_moved_to_pile','card_moved_to_hand']:
+					payload["rotation"] = 0.0
 			"card_rotated":
 				payload["rotation"] = card.card_rotation
 			"card_flipped":
