@@ -24,3 +24,6 @@ func populate_info_panels(card: Card, focus_info: DetailPanels) -> void:
 		for keyword in card_keywords:
 			if CardConfig.EXPLANATIONS.has(keyword):
 				focus_info.add_info(keyword, CardConfig.EXPLANATIONS[keyword])
+
+func get_subjects(subject_request, stored_integer : int = 0) -> Array:
+	return([])

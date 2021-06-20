@@ -3,6 +3,7 @@
 class_name Pile
 extends CardContainer
 
+signal shuffle_completed
 # The pile's name. If this value is changed, it will change the
 # `pile_name_label` text.
 export(String) var pile_name : String setget set_pile_name
@@ -406,6 +407,7 @@ func shuffle_cards(animate = true) -> void:
 		# if we're already running another animation, just shuffle
 		.shuffle_cards()
 	reorganize_stack()
+	emit_signal("shuffle_completed")
 
 
 # Overrides the re_place() function of [Pile] in order

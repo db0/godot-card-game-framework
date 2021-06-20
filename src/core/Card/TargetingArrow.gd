@@ -15,7 +15,7 @@ var is_targeting := false
 # Used to store a card succesfully targeted.
 # It should be cleared from whichever effect requires a target.
 # once it is used
-var target_object : Area2D = null
+var target_object : Node = null
 # Stores a reference to the Card that is hosting this node
 onready var owner_object = get_parent()
 
