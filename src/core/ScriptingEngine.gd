@@ -103,7 +103,10 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			if not script.is_primed:
 				yield(script,"primed")
 		if script.is_primed:
-			prev_subjects = script.subjects
+			# We don't want to record the previous subjects
+			# If their filters were not valid
+			if script.is_valid:
+				prev_subjects = script.subjects
 			#print("Scripting Subjects: " + str(script.subjects)) # Debug
 			if script.script_name == "custom_script":
 				# This class contains the customly defined scripts for each

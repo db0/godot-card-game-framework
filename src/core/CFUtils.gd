@@ -47,6 +47,10 @@ static func rand_bool() -> bool:
 	var rnd_bool = {0:true, 1: false}
 	return(rnd_bool[randi_range(0,1)])
 
+# Compares two floats within a threshold value
+static func compare_floats(a, b, epsilon = 0.00001):
+	return abs(a - b) <= epsilon
+
 # Returns a string of all elements in the array, separared by the
 # provided separator
 static func array_join(arr: Array, separator = "") -> String:
@@ -254,7 +258,7 @@ static func compare_strings(s1: String, s2: String, comparison_type: String) -> 
 	return(comp_result)
 
 
-# Calculates all unique values of one card property, 
+# Calculates all unique values of one card property,
 # among all card definitions
 #
 # Returns an array with all the unique values

@@ -914,6 +914,14 @@ const FILTER_PER_COUNTER := "filter_per_counter"
 # [FILTER_PER_BOARDSEEK](#FILTER_PER_BOARDSEEK) and needs to be placed within
 # those dictionaries
 const FILTER_CARD_COUNT := "filter_card_count"
+# Value Type: String.
+#
+# Filter used for checking against the group the card or object belongs to
+const FILTER_GROUP = "filter_group"
+# Value Type: String.
+#
+# Filter used for checking against the value of the get_class() of an object
+const FILTER_CLASS = "filter_class"
 
 #---------------------------------------------------------------------
 # Trigger Properties
@@ -1444,6 +1452,12 @@ static func check_validity(card, card_scripts, type := "trigger") -> bool:
 				# There's no possible "AND" state for a boolean filter.
 				elif filter == FILTER_PARENT\
 						and not check_parent_filter(card,state_filters[filter]):
+					card_matches = false
+				elif filter == FILTER_GROUP\
+						and not card.is_in_group(state_filters[filter]):
+					card_matches = false
+				elif filter == FILTER_CLASS\
+						and card.get_class() != state_filters[filter]:
 					card_matches = false
 			# If at least one of our "or" array elements matches,
 			# We do not need to check the others.

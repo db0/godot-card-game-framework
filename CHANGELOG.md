@@ -5,6 +5,9 @@
 ### New Features
 
 * Integrated the [Dark Theme](https://mounirtohami.itch.io/godot-dark-theme) provided by Mounir Tohami as the default theme of the CGF which gives a good guideline on how to integrate themes into the game and quickly change the look.
+* Can now filter against godot groups
+* Can now filter against `get_class()`
+* Added new overridable function `common_pre_run()` which can be used to run custom methods in an extended scripting engine before execution
 
 ### Tweaks
 

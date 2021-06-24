@@ -1306,6 +1306,7 @@ func execute_scripts(
 				self,
 				trigger_card,
 				trigger_details)
+		common_pre_run(sceng)
 		# In case the script involves targetting, we need to wait on further
 		# execution until targetting has completed
 		sceng.execute(CFInt.RunType.COST_CHECK)
@@ -1678,6 +1679,17 @@ func common_pre_execution_scripts(trigger: String) -> void:
 
 
 # This function can be overriden by any class extending Card, in order to provide
+# a way of running special functions on an extended scripting engine.
+#
+# It is called after the scripting engine is initiated, but before it's initiated
+# the first time
+#
+# warning-ignore:unused_argument
+func common_pre_run(sceng) -> void:
+	pass
+
+
+# This function can be overriden by any class extending Card, in order to provide
 # a way of running scripts for a whole class of cards, based on what the trigger was
 # after all normal scripts have been executed
 #
@@ -2003,7 +2015,7 @@ func _process_card_state() -> void:
 			if cfc.game_settings.hand_use_oval_shape:
 				_target_rotation  = _recalculate_rotation()
 				if not $Tween.is_active() \
-						and $Control.rect_rotation != _target_rotation:
+						and not CFUtils.compare_floats($Control.rect_rotation, _target_rotation):
 					_add_tween_rotation($Control.rect_rotation,_target_rotation)
 					$Tween.start()
 
