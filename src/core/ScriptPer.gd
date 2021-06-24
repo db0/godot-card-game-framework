@@ -8,7 +8,7 @@ extends ScriptObject
 func _init(per_msg: perMessage).(
 		per_msg.script_owner, 
 		per_msg.per_definitions, 
-		per_msg.trigger_card) -> void:
+		per_msg.trigger_object) -> void:
 	# The name of the type of per we're seeking gets its own var
 	script_name = per_msg.per_seek
 	var ret = _find_subjects(per_msg.subjects)

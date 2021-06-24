@@ -19,15 +19,15 @@ var is_else := false
 # prepares the script_definition needed by the task to function.
 func _init(owner,
 		script: Dictionary,
-		_trigger_card,
-		trigger_details).(owner, script, _trigger_card) -> void:
+		_trigger_object,
+		trigger_details).(owner, script, _trigger_object) -> void:
 	# The function name to be called gets its own var
 	script_name = get_property("name")
 	is_cost = get_property(SP.KEY_IS_COST)
 	is_else = get_property(SP.KEY_IS_ELSE)
 	if not SP.filter_trigger(
 			script,
-			trigger_card,
+			trigger_object,
 			owner,
 			trigger_details):
 		is_skipped = true

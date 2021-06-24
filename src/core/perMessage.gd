@@ -6,7 +6,7 @@ extends Reference
 var per_seek: String
 var script_owner # Card type, but cannot type to avoid cyclic dependency
 var per_definitions: Dictionary
-var trigger_card = null
+var trigger_object = null
 var subjects := []
 var found_things := 0 setget ,count_found_things
 
@@ -14,12 +14,12 @@ func _init(
 		_per_seek: String,
 		_script_owner,
 		_per_definitions: Dictionary,
-		_trigger_card = null,
+		_trigger_object = null,
 		_subjects := []) -> void:
 	per_seek = _per_seek
 	script_owner = _script_owner
 	per_definitions = _per_definitions
-	trigger_card = _trigger_card
+	trigger_object = _trigger_object
 	subjects = _subjects
 
 # Returns the amount of things the calling script is trying to count.

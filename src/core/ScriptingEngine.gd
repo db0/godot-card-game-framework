@@ -35,13 +35,13 @@ var scripts_queue: Array
 # Simply initiates the [run_next_script()](#run_next_script) loop
 func _init(state_scripts: Array,
 		owner,
-		trigger_card: Card,
+		trigger_object: Node,
 		trigger_details: Dictionary) -> void:
 	for task in state_scripts:
 		var script_task := ScriptTask.new(
 				owner,
 				task,
-				trigger_card,
+				trigger_object,
 				trigger_details)
 		scripts_queue.append(script_task)
 

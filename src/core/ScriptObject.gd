@@ -32,16 +32,16 @@ var is_valid := true
 # This is typically set during the _find_subjects() call
 var requested_subjects: int
 # The card which triggered this script.
-var trigger_card: Card
+var trigger_object: Node
 
 
 # prepares the properties needed by the script to function.
-func _init(_owner, script: Dictionary, _trigger_card = null) -> void:
+func _init(_owner, script: Dictionary, _trigger_object = null) -> void:
 	# We store the card which executes this task
 	owner = _owner
 	# We store all the task properties in our own dictionary
 	script_definition = script
-	trigger_card = _trigger_card
+	trigger_object = _trigger_object
 	parse_replacements()
 
 
@@ -209,9 +209,9 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 					requested_subjects = subjects_array.size()
 		SP.KEY_SUBJECT_V_TRIGGER:
 			# We check, just to make sure we didn't mess up
-			if trigger_card:
-				is_valid = SP.check_validity(trigger_card, script_definition, "subject")
-				subjects_array.append(trigger_card)
+			if trigger_object:
+				is_valid = SP.check_validity(trigger_object, script_definition, "subject")
+				subjects_array.append(trigger_object)
 			else:
 				print_debug("WARNING: Subject: trigger requested, but no trigger card passed")
 		SP.KEY_SUBJECT_V_SELF:
@@ -249,12 +249,12 @@ static func count_per(
 			per_seek: String,
 			script_owner: Card,
 			per_definitions: Dictionary,
-			_trigger_card = null) -> int:
+			_trigger_object = null) -> int:
 	var per_msg := perMessage.new(
 			per_seek,
 			script_owner,
 			per_definitions,
-			_trigger_card)
+			_trigger_object)
 	return(per_msg.found_things)
 
 
@@ -338,7 +338,7 @@ func parse_replacements() -> void:
 										SP.VALUE_COMPARE_WITH_OWNER:
 									card = owner
 								else:
-									card = trigger_card
+									card = trigger_object
 								# Card name is always grabbed from
 								# Card.canonical_name
 								if property == "Name":
@@ -363,7 +363,7 @@ func parse_replacements() -> void:
 										SP.VALUE_COMPARE_WITH_OWNER:
 									card = owner
 								else:
-									card = trigger_card
+									card = trigger_object
 								var owner_token_count :=\
 										card.tokens.get_token_count(
 										token_filters["filter_" + SP.KEY_TOKEN_NAME])
@@ -374,20 +374,20 @@ func parse_replacements() -> void:
 							var card: Card = owner
 							state_filters[filter] = card.card_rotation
 						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_TRIGGER:
-							var card: Card = trigger_card
+							var card: Card = trigger_object
 							state_filters[filter] = card.card_rotation
 					if SP.FILTER_FACEUP in filter:
 						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_OWNER:
 							var card: Card = owner
 							state_filters[filter] = card.is_faceup
 						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_TRIGGER:
-							var card: Card = trigger_card
+							var card: Card = trigger_object
 							state_filters[filter] = card.is_faceup
 					if SP.FILTER_PARENT in filter:
 						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_OWNER:
 							var card: Card = owner
 							state_filters[filter] = card.get_parent()
 						if str(state_filters[filter]) == SP.VALUE_COMPARE_WITH_TRIGGER:
-							var card: Card = trigger_card
+							var card: Card = trigger_object
 							state_filters[filter] = card.get_parent()
 	script_definition = wip_definitions

@@ -6,10 +6,16 @@
 
 * Integrated the [Dark Theme](https://mounirtohami.itch.io/godot-dark-theme) provided by Mounir Tohami as the default theme of the CGF which gives a good guideline on how to integrate themes into the game and quickly change the look.
 
+### Tweaks
+
+* Targeting Arrow can now handle any node type (not just area2d)
+* ScriptingEngine's trigger_card renamed to trigger_object and can now accept any Node class
+
 ### Bugs
 
 * Hands other than the first will now correctly rotate cards while in oval shape.
 * Debug button unclicked will re-hide the debug info.
+* Fixed CFUtils.shuffle_array() to be able to handle 2-element arrays as well
 
 ## 1.10
 
