@@ -36,12 +36,13 @@ func _ready():
 
 
 func _process(_delta) -> void:
-	# The below makes sure to display the closeup of the card, only on the side
-	# the player's mouse is not in.
-	if get_global_mouse_position().x < get_viewport().size.x/2:
-		$VBC.rect_position.x = get_viewport().size.x - $VBC.rect_size.x
-	else:
+	# The below makes sure to display the closeup of the card on the top right
+	# The closeup will switch sides if the player's mouse moves towards it.
+	if get_global_mouse_position().x > get_viewport().size.x - CFConst.CARD_SIZE.x*2.5\
+			and get_global_mouse_position().y < CFConst.CARD_SIZE.y*2:
 		$VBC.rect_position.x = 0
+	else:
+		$VBC.rect_position.x = get_viewport().size.x - $VBC.rect_size.x
 	# The below performs some garbage collection on previously focused cards.
 	for c in _previously_focused_cards:
 		# We only delete old dupes if there's no tweening currently ongoing.

@@ -132,6 +132,13 @@ func _on_viewport_resized() -> void:
 		re_place()
 
 
+func are_cards_still_animating() -> bool:
+	for c in get_all_cards():
+		var tt : Tween = c._tween
+		if tt.is_active():
+			return(true)
+	return(false)
+
 # Hides manipulation buttons
 func hide_buttons() -> void:
 	# We stop existing tweens to avoid deadlocks

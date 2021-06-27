@@ -1157,7 +1157,7 @@ func move_to(targetHost: Node,
 						"tags": tags
 					}
 			)
-		if parentHost and parentHost.is_in_group("hands"):
+		if is_instance_valid(parentHost) and parentHost.is_in_group("hands"):
 			# We also want to rearrange the hand when we take cards out of it
 			for c in parentHost.get_all_cards():
 				# But this time we don't want to rearrange ourselves, as we're

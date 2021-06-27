@@ -8,6 +8,7 @@
 * Can now filter against godot groups
 * Can now filter against `get_class()`
 * Added new overridable function `common_pre_run()` which can be used to run custom methods in an extended scripting engine before execution
+* Added new signal in cfc `cache_cleared` which fires every time the cache is cleared, which typically signifies a game-state-change
 
 ### Tweaks
 
@@ -64,6 +65,8 @@ Game has been adjusted to allow the ScriptingEngine to work non-Card classes. To
 
 * Fixed crash when window x-axis resized to minimum
 * Improved readability of card text in viewport focus
+* Fixes for changing pile opacity when adding/removing cards
+* Fixes for manipulating pile cards while they're in the popup container
 
 ### New Features
 

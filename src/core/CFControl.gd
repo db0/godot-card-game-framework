@@ -5,7 +5,7 @@ class_name CFControl
 extends Node
 
 signal all_nodes_mapped()
-
+signal cache_cleared
 
 #-----------------------------------------------------------------------------
 # BEGIN Unit Testing Variables
@@ -262,6 +262,7 @@ func reset_game() -> void:
 # to flush the cache afterwards using this function.
 func flush_cache() -> void:
 	alterant_cache.clear()
+	emit_signal("cache_cleared")
 
 # The SignalPropagator is responsible for collecting all card signals
 # and asking all cards to check if there's any automation they need to perform
