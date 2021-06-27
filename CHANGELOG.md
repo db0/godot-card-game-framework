@@ -20,6 +20,8 @@
 * Hands other than the first will now correctly rotate cards while in oval shape.
 * Debug button unclicked will re-hide the debug info.
 * Fixed CFUtils.shuffle_array() to be able to handle 2-element arrays as well
+* Fixes for changing pile opacity when adding/removing cards
+* Fixes for manipulating pile cards while they're in the popup container
 
 ## 1.10
 
@@ -65,8 +67,6 @@ Game has been adjusted to allow the ScriptingEngine to work non-Card classes. To
 
 * Fixed crash when window x-axis resized to minimum
 * Improved readability of card text in viewport focus
-* Fixes for changing pile opacity when adding/removing cards
-* Fixes for manipulating pile cards while they're in the popup container
 
 ### New Features
 

@@ -6,6 +6,9 @@ extends CardContainer
 signal shuffle_completed
 signal popup_closed
 
+
+var is_popup_open := false
+
 # The pile's name. If this value is changed, it will change the
 # `pile_name_label` text.
 export(String) var pile_name : String setget set_pile_name
@@ -25,7 +28,10 @@ onready var pile_name_label := $Control/CenterContainer/VBoxContainer/Label
 onready var card_count_label := $Control/CenterContainer/VBoxContainer\
 		/PanelContainer/CenterContainer/CardCount
 
-var is_popup_open := false
+# The popup node
+onready var _opacity_tween := $OpacityTween
+onready var _tween := $Tween
+
 
 func _ready():
 	add_to_group("piles")
@@ -145,12 +151,12 @@ func add_child(node, _legible_unique_name=false) -> void:
 			# If this was the first card which enterred this pile
 			# We hide the pile "floor" by making it transparent
 			if get_card_count() >= 1:
-				if not $Tween.is_active():
-					$Tween.remove($Control,'self_modulate:a')
-					$Tween.interpolate_property($Control,'self_modulate:a',
+				if not _opacity_tween.is_active():
+					_opacity_tween.remove($Control,'self_modulate:a')
+					_opacity_tween.interpolate_property($Control,'self_modulate:a',
 							$Control.self_modulate.a, 0.0, 1,
 							Tween.TRANS_SINE, Tween.EASE_OUT)
-					$Tween.start()
+					_opacity_tween.start()
 			card_count_label.text = str(get_card_count())
 	elif node as Card: # This triggers if the ViewPopup node is active
 		# When the player adds card while the viewpopup is active
@@ -158,16 +164,6 @@ func add_child(node, _legible_unique_name=false) -> void:
 		_slot_card_into_popup(node)
 		print_debug(node)
 
-func _set_control_opacity() -> void:
-	if get_card_count() == 0:
-		if not $Tween.is_active():
-			$Tween.remove($Control,'self_modulate:a')
-			$Tween.interpolate_property($Control,'self_modulate:a',
-					$Control.self_modulate.a, 0.4, 0.5,
-					Tween.TRANS_SINE, Tween.EASE_IN)
-			$Tween.start()
-	else:
-		$Control.self_modulate.a = 0.4
 
 # Overrides the function which removed chilren nodes so that it detects
 # when a Card class is removed. In that case it also shows
@@ -179,12 +175,12 @@ func remove_child(node, _legible_unique_name=false) -> void:
 	# Panel is made transparent so that the card backs are seen instead
 	if get_card_count() == 0:
 		reorganize_stack()
-		if not $Tween.is_active():
-			$Tween.remove($Control,'self_modulate:a')
-			$Tween.interpolate_property($Control,'self_modulate:a',
+		if not _opacity_tween.is_active():
+			_opacity_tween.remove($Control,'self_modulate:a')
+			_opacity_tween.interpolate_property($Control,'self_modulate:a',
 					$Control.self_modulate.a, 0.4, 0.5,
 					Tween.TRANS_SINE, Tween.EASE_IN)
-			$Tween.start()
+			_opacity_tween.start()
 	else:
 		$Control.self_modulate.a = 0.0
 
@@ -221,7 +217,6 @@ func reorganize_stack() -> void:
 		position.x -= get_card_count() * _shift_x()
 	$CollisionShape2D.shape.extents = $Control.rect_size / 2
 	$CollisionShape2D.position = $Control.rect_position + $Control.rect_size /2
-	print_debug($Control.self_modulate.a)
 
 
 # Override the godot builtin move_child() method,
@@ -305,7 +300,7 @@ func shuffle_cards(animate = true) -> void:
 	# but if we did so, we would not be able to refer to it from the Card
 	# class, as that would cause a cyclic dependency on the parser
 	# So we've placed it in CFConst instead.
-	if not $Tween.is_active() \
+	if not _tween.is_active() \
 			and animate \
 			and shuffle_style != CFConst.ShuffleStyle.NONE \
 			and get_card_count() > 1:
@@ -353,9 +348,9 @@ func shuffle_cards(animate = true) -> void:
 		if style == CFConst.ShuffleStyle.CORGI:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
-			$Tween.start()
+			_tween.start()
 			# We move the pile to a more central location to see the anim
-			yield($Tween, "tween_all_completed")
+			yield(_tween, "tween_all_completed")
 			# The animation speeds have been empirically tested to look good
 			next_card_speed = 0.05 - 0.002 * card_count
 			if next_card_speed < 0.01:
@@ -378,8 +373,8 @@ func shuffle_cards(animate = true) -> void:
 		elif style == CFConst.ShuffleStyle.SPLASH:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
-			$Tween.start()
-			yield($Tween, "tween_all_completed")
+			_tween.start()
+			yield(_tween, "tween_all_completed")
 			# The animation speeds have been empirically tested to look good
 			anim_speed = 0.6
 			for card in get_all_cards():
@@ -395,8 +390,8 @@ func shuffle_cards(animate = true) -> void:
 		elif style == CFConst.ShuffleStyle.SNAP:
 			_add_tween_position(position,shuffle_position,0.2)
 			_add_tween_rotation(rotation_degrees,shuffle_rotation,0.2)
-			$Tween.start()
-			yield($Tween, "tween_all_completed")
+			_tween.start()
+			yield(_tween, "tween_all_completed")
 			anim_speed = 0.2
 			var card = get_random_card()
 			card.animate_shuffle(anim_speed, CFConst.ShuffleStyle.SNAP)
@@ -423,7 +418,7 @@ func shuffle_cards(animate = true) -> void:
 		if position != init_position:
 			_add_tween_position(position,init_position,0.2)
 			_add_tween_rotation(rotation_degrees,0,0.2)
-			$Tween.start()
+			_tween.start()
 		z_index = 0
 	else:
 		# if we're already running another animation, just shuffle
@@ -446,8 +441,8 @@ func _add_tween_rotation(
 		runtime := 0.3,
 		trans_type = Tween.TRANS_BACK,
 		ease_type = Tween.EASE_IN_OUT):
-	$Tween.remove(self,'rotation_degrees')
-	$Tween.interpolate_property(self,'rotation_degrees',
+	_tween.remove(self,'rotation_degrees')
+	_tween.interpolate_property(self,'rotation_degrees',
 			expected_rotation, target_rotation, runtime,
 			trans_type, ease_type)
 
@@ -459,7 +454,7 @@ func _add_tween_position(
 		runtime := 0.3,
 		trans_type = Tween.TRANS_CUBIC,
 		ease_type = Tween.EASE_OUT):
-	$Tween.remove(self,'position')
-	$Tween.interpolate_property(self,'position',
+	_tween.remove(self,'position')
+	_tween.interpolate_property(self,'position',
 			expected_position, target_position, runtime,
 			trans_type, ease_type)

@@ -183,3 +183,5 @@ margin_bottom = 32.0
 margin_top = 36.0
 margin_right = 40.0
 margin_bottom = 50.0
+
+[node name="OpacityTween" type="Tween" parent="."]
