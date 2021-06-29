@@ -68,22 +68,27 @@ func get_all_cards() -> Array:
 	var cardsArray := []
 	for obj in get_children():
 		if obj as Card: cardsArray.append(obj)
-	return cardsArray
+	return(cardsArray)
+
+# Overridable function which returns all objects on the table which can
+# be used as subjects by the scripting engine.
+func get_all_scriptables() -> Array:
+	return(get_all_cards())
 
 
 # Returns an int with the amount of children nodes which are of Card class
 func get_card_count() -> int:
-	return len(get_all_cards())
+	return(get_all_cards().size())
 
 
 # Returns a card object of the card in the specified index among all cards.
 func get_card(idx: int) -> Card:
-	return get_all_cards()[idx]
+	return(get_all_cards()[idx])
 
 
 # Returns an int of the index of the card object requested
 func get_card_index(card: Card) -> int:
-	return get_all_cards().find(card)
+	return(get_all_cards().find(card))
 
 
 # Returns the BoardPlacementGrid object with the specified name

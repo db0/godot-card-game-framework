@@ -14,6 +14,7 @@
 
 * Targeting Arrow can now handle any node type (not just area2d)
 * ScriptingEngine's trigger_card renamed to trigger_object and can now accept any Node class
+* ScriptEngine's 'boardseek' now uses new board method `get_all_scriptables()` which can be extended to gather any type of object needed.
 
 ### Bugs
 
@@ -22,6 +23,7 @@
 * Fixed CFUtils.shuffle_array() to be able to handle 2-element arrays as well
 * Fixes for changing pile opacity when adding/removing cards
 * Fixes for manipulating pile cards while they're in the popup container
+* Fixes for adding and removing cards at the same time from pile.
 
 ## 1.10
 

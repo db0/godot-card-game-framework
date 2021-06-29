@@ -102,7 +102,7 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 				if get_property(SP.KEY_IS_INVERTED):
 					subject_count *= -1
 			requested_subjects = subject_count
-			var subject_list := sort_subjects(cfc.NMAP.board.get_all_cards())
+			var subject_list := sort_subjects(cfc.NMAP.board.get_all_scriptables())
 			for c in subject_list:
 				if SP.check_validity(c, script_definition, "seek"):
 					subjects_array.append(c)
