@@ -1080,7 +1080,7 @@ static func get_default(property: String):
 				KEY_OBJECT_COUNT,\
 				KEY_MODIFICATION:
 			default = 1
-		KEY_GRID_NAME:
+		KEY_GRID_NAME, KEY_SUBJECT:
 			default = ""
 		KEY_COMPARISON:
 			default = "eq"
