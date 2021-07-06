@@ -8,6 +8,8 @@ signal popup_closed
 
 
 var is_popup_open := false
+# Used to avoid performance-heavy checks in process
+var _has_cards:= false
 
 # The pile's name. If this value is changed, it will change the
 # `pile_name_label` text.
@@ -45,6 +47,7 @@ func _ready():
 
 
 func _process(_delta) -> void:
+	pass
 	# This performs a bit of garbage collection to make sure no Control temp objects
 	# are leftover empty in the popup
 	for obj in $ViewPopup/CardView.get_children():
@@ -52,7 +55,7 @@ func _process(_delta) -> void:
 			obj.queue_free()
 	# We make sure to adjust our popup if cards were removed from it while it's open
 	$ViewPopup.set_as_minsize()
-	if get_card_count() > 0 and cfc.game_settings.focus_style:
+	if _has_cards and cfc.game_settings.focus_style:
 		var top_card = get_top_card()
 		if cfc.NMAP.board.mouse_pointer in get_overlapping_areas()\
 				and not cfc.card_drag_ongoing:
@@ -145,6 +148,7 @@ func add_child(node, _legible_unique_name=false) -> void:
 	if not $ViewPopup.visible:
 		.add_child(node)
 		if node as Card:
+			_has_cards = true
 			# By raising the $Control every time a card is added
 			# we ensure it's always drawn on top of the card objects
 			$Control.raise()
@@ -174,6 +178,7 @@ func remove_child(node, _legible_unique_name=false) -> void:
 	# When we put the first card in the pile, we make sure the
 	# Panel is made transparent so that the card backs are seen instead
 	if get_card_count() == 0:
+		_has_cards = false
 		reorganize_stack()
 		if not _opacity_tween.is_active():
 			_opacity_tween.remove($Control,'self_modulate:a')

@@ -36,8 +36,10 @@ func _ready():
 
 
 func _process(_delta) -> void:
-	# The below makes sure to display the closeup of the card on the top right
-	# The closeup will switch sides if the player's mouse moves towards it.
+#	if cfc.game_paused:
+#		print_debug(_current_focus_source)
+	# The below makes sure to display the closeup of the card, only on the side
+	# the player's mouse is not in.
 	if get_global_mouse_position().x > get_viewport().size.x - CFConst.CARD_SIZE.x*2.5\
 			and get_global_mouse_position().y < CFConst.CARD_SIZE.y*2:
 		$VBC.rect_position.x = 0
@@ -130,6 +132,10 @@ func unfocus(card: Card) -> void:
 					Tween.TRANS_SINE, Tween.EASE_IN)
 		$VBC/Focus/Tween.start()
 
+
+func unfocus_all() -> void:
+	if _current_focus_source:
+		_current_focus_source.set_to_idle()
 
 # Overridable function for games to extend preprocessing of dupe card
 # before adding it to the scene

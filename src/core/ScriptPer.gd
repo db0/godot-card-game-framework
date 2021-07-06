@@ -49,7 +49,7 @@ func return_per_count() -> int:
 func _count_tokens() -> int:
 	var ret := 0
 	for card in subjects:
-		ret = card.tokens.get_token_count(get_property(SP.KEY_TOKEN_NAME))
+		ret += card.tokens.get_token_count(get_property(SP.KEY_TOKEN_NAME))
 	return(ret)
 
 

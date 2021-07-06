@@ -28,57 +28,57 @@ __meta__ = {
 deck_name_randomizer = ExtResource( 5 )
 
 [node name="VBC" type="VBoxContainer" parent="."]
-margin_right = 1280.0
-margin_bottom = 720.0
+margin_right = 1700.0
+margin_bottom = 900.0
 
 [node name="Title" type="Label" parent="VBC"]
-margin_right = 1280.0
+margin_right = 1700.0
 margin_bottom = 14.0
 text = "Deck Builder"
 align = 1
 
 [node name="HBC" type="HBoxContainer" parent="VBC"]
 margin_top = 18.0
-margin_right = 1280.0
-margin_bottom = 720.0
+margin_right = 1700.0
+margin_bottom = 900.0
 size_flags_vertical = 3
 
 [node name="MC" type="MarginContainer" parent="VBC/HBC"]
-margin_right = 638.0
-margin_bottom = 702.0
+margin_right = 848.0
+margin_bottom = 882.0
 size_flags_horizontal = 3
 custom_constants/margin_left = 5
 custom_constants/margin_bottom = 5
 
 [node name="CurrentDeck" type="VBoxContainer" parent="VBC/HBC/MC"]
 margin_left = 5.0
-margin_right = 638.0
-margin_bottom = 697.0
+margin_right = 848.0
+margin_bottom = 877.0
 size_flags_horizontal = 3
 
 [node name="DeckDetails" type="VBoxContainer" parent="VBC/HBC/MC/CurrentDeck"]
-margin_right = 633.0
+margin_right = 843.0
 
 [node name="LineSeparator2" type="Panel" parent="VBC/HBC/MC/CurrentDeck"]
 margin_top = 4.0
-margin_right = 633.0
+margin_right = 843.0
 margin_bottom = 4.0
 custom_styles/panel = SubResource( 2 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC/CurrentDeck"]
 margin_top = 8.0
-margin_right = 633.0
-margin_bottom = 621.0
+margin_right = 843.0
+margin_bottom = 801.0
 size_flags_vertical = 3
 
 [node name="CardsInDeck" type="VBoxContainer" parent="VBC/HBC/MC/CurrentDeck/ScrollContainer"]
-margin_bottom = 613.0
+margin_bottom = 793.0
 size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBC/HBC/MC/CurrentDeck"]
-margin_top = 625.0
-margin_right = 633.0
-margin_bottom = 645.0
+margin_top = 805.0
+margin_right = 843.0
+margin_bottom = 825.0
 
 [node name="DeckNameEditLabel" type="Label" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer"]
 margin_top = 3.0
@@ -95,7 +95,7 @@ text = "R"
 [node name="NoticeLabel" type="Label" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer"]
 modulate = Color( 1, 1, 1, 0 )
 margin_left = 66.0
-margin_right = 633.0
+margin_right = 843.0
 margin_bottom = 19.0
 size_flags_horizontal = 3
 custom_fonts/font = SubResource( 3 )
@@ -106,16 +106,16 @@ align = 2
 [node name="Tween" type="Tween" parent="VBC/HBC/MC/CurrentDeck/HBoxContainer/NoticeLabel"]
 
 [node name="DeckNameEdit" type="LineEdit" parent="VBC/HBC/MC/CurrentDeck"]
-margin_top = 649.0
-margin_right = 633.0
-margin_bottom = 673.0
+margin_top = 829.0
+margin_right = 843.0
+margin_bottom = 853.0
 text = "New Deck"
 max_length = 128
 
 [node name="Buttons" type="HBoxContainer" parent="VBC/HBC/MC/CurrentDeck"]
-margin_top = 677.0
-margin_right = 633.0
-margin_bottom = 697.0
+margin_top = 857.0
+margin_right = 843.0
+margin_bottom = 877.0
 
 [node name="Save" type="Button" parent="VBC/HBC/MC/CurrentDeck/Buttons"]
 margin_right = 41.0
@@ -143,20 +143,20 @@ margin_bottom = 20.0
 text = "Delete"
 
 [node name="MC2" type="MarginContainer" parent="VBC/HBC"]
-margin_left = 642.0
-margin_right = 1280.0
-margin_bottom = 702.0
+margin_left = 852.0
+margin_right = 1700.0
+margin_bottom = 882.0
 size_flags_horizontal = 3
 custom_constants/margin_right = 10
 custom_constants/margin_bottom = 5
 
 [node name="AvailableCards" type="VBoxContainer" parent="VBC/HBC/MC2"]
-margin_right = 628.0
-margin_bottom = 697.0
+margin_right = 838.0
+margin_bottom = 877.0
 size_flags_horizontal = 3
 
 [node name="HBC" type="HBoxContainer" parent="VBC/HBC/MC2/AvailableCards"]
-margin_right = 628.0
+margin_right = 838.0
 margin_bottom = 24.0
 
 [node name="ClearFilters" type="Button" parent="VBC/HBC/MC2/AvailableCards/HBC"]
@@ -166,7 +166,7 @@ text = "X"
 
 [node name="FilterLine" type="LineEdit" parent="VBC/HBC/MC2/AvailableCards/HBC"]
 margin_left = 24.0
-margin_right = 524.0
+margin_right = 734.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 placeholder_text = "Filter the list"
@@ -184,26 +184,26 @@ margin_bottom = 18.0
 text = "Syntax"
 
 [node name="CardCount" type="Label" parent="VBC/HBC/MC2/AvailableCards/HBC"]
-margin_left = 528.0
+margin_left = 738.0
 margin_top = 5.0
-margin_right = 628.0
+margin_right = 838.0
 margin_bottom = 19.0
 rect_min_size = Vector2( 100, 0 )
 text = "Total:"
 
 [node name="CC" type="CenterContainer" parent="VBC/HBC/MC2/AvailableCards"]
 margin_top = 28.0
-margin_right = 628.0
+margin_right = 838.0
 margin_bottom = 28.0
 size_flags_horizontal = 3
 
 [node name="ButtonFilters" type="HBoxContainer" parent="VBC/HBC/MC2/AvailableCards/CC"]
-margin_left = 314.0
-margin_right = 314.0
+margin_left = 419.0
+margin_right = 419.0
 
 [node name="CardListHeaders" type="HBoxContainer" parent="VBC/HBC/MC2/AvailableCards"]
 margin_top = 32.0
-margin_right = 628.0
+margin_right = 838.0
 margin_bottom = 46.0
 
 [node name="Quantity" type="Label" parent="VBC/HBC/MC2/AvailableCards/CardListHeaders"]
@@ -214,34 +214,34 @@ text = "Quantity"
 
 [node name="Name" type="Label" parent="VBC/HBC/MC2/AvailableCards/CardListHeaders"]
 margin_left = 154.0
-margin_right = 524.0
+margin_right = 734.0
 margin_bottom = 14.0
 size_flags_horizontal = 3
 text = "Name"
 
 [node name="Type" type="Label" parent="VBC/HBC/MC2/AvailableCards/CardListHeaders"]
-margin_left = 528.0
-margin_right = 628.0
+margin_left = 738.0
+margin_right = 838.0
 margin_bottom = 14.0
 rect_min_size = Vector2( 100, 0 )
 text = "Type"
 
 [node name="LineSeparator" type="Panel" parent="VBC/HBC/MC2/AvailableCards"]
 margin_top = 50.0
-margin_right = 628.0
+margin_right = 838.0
 margin_bottom = 50.0
 custom_styles/panel = SubResource( 2 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC2/AvailableCards"]
 margin_top = 54.0
-margin_right = 628.0
-margin_bottom = 653.0
+margin_right = 838.0
+margin_bottom = 833.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="CardList" type="VBoxContainer" parent="VBC/HBC/MC2/AvailableCards/ScrollContainer"]
 visible = false
-margin_right = 628.0
+margin_right = 838.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
@@ -251,12 +251,12 @@ __meta__ = {
 columns = 4
 
 [node name="Settings" type="HBoxContainer" parent="VBC/HBC/MC2/AvailableCards"]
-margin_top = 657.0
-margin_right = 628.0
-margin_bottom = 697.0
+margin_top = 837.0
+margin_right = 838.0
+margin_bottom = 877.0
 
 [node name="Control" type="Control" parent="VBC/HBC/MC2/AvailableCards/Settings"]
-margin_right = 483.0
+margin_right = 693.0
 margin_bottom = 40.0
 size_flags_horizontal = 3
 __meta__ = {
@@ -264,8 +264,8 @@ __meta__ = {
 }
 
 [node name="GridViewStyle" type="CheckButton" parent="VBC/HBC/MC2/AvailableCards/Settings"]
-margin_left = 487.0
-margin_right = 628.0
+margin_left = 697.0
+margin_right = 838.0
 margin_bottom = 40.0
 pressed = true
 text = "Grid View"

@@ -16,6 +16,7 @@
 * ScriptingEngine's trigger_card renamed to trigger_object and can now accept any Node class
 * ScriptEngine's 'boardseek' now uses new board method `get_all_scriptables()` which can be extended to gather any type of object needed.
 * Refactored ScriptObject
+* ScriptingEngine's `shuffle_container()` will now wait for animations to finish before shuffling, and then wait until its own animation is finished before proceeding.
 
 ### Bugs
 

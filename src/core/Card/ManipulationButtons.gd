@@ -8,6 +8,8 @@ export(PackedScene) var manipulation_button : PackedScene
 # The dictionary key is the button name, and the value is the text to add
 # to the button label.
 var needed_buttons: Dictionary
+# We use this variable to check if buttons are active for performance reasons
+var _are_active := true
 
 onready var _tween = $Tween
 # Hold the node which owns this node.
@@ -60,6 +62,9 @@ func are_hovered() -> bool:
 #    (this is useful when a card is in hand or a pile)
 # * When set to true, buttons can receive inputs again
 func set_active(value = true) -> void:
+	if _are_active == value:
+		return
+	_are_active = value
 	var button_filter := 1
 	# We also want the buttons disabled while the card is being targeted
 	# with a tarteting arrow.

@@ -1511,12 +1511,22 @@ func set_focus(requestedFocus: bool, colour := CFConst.FOCUS_HOVER_COLOUR) -> vo
 			cfc.NMAP.main.unfocus(self)
 	# Tokens drawer is an optional node, so we check if it exists
 	# We also generally only have tokens on the table
-	if $Control.has_node("Tokens") \
-			and state in [CardState.ON_PLAY_BOARD, CardState.FOCUSED_ON_BOARD]:
-		tokens.is_drawer_open = requestedFocus
+	if state in [CardState.ON_PLAY_BOARD, CardState.FOCUSED_ON_BOARD]:
+		if $Control.has_node("Tokens"):
+			tokens.is_drawer_open = requestedFocus
 #		if name == "Card" and get_parent() == cfc.NMAP.board:
 #			print(requestedFocus)
 
+func set_to_idle() -> void:
+	if not state in [
+		CardState.VIEWPORT_FOCUS, 
+		CardState.PREVIEW,
+		CardState.DECKBUILDER_GRID
+	]:
+		if state in [CardState.FOCUSED_IN_HAND, CardState.PUSHED_ASIDE]:
+			reorganize_self()
+		elif not state == CardState.REORGANIZING:
+			_determine_idle_state()
 
 # Tells us the focus-state of a card
 #
@@ -2277,7 +2287,8 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
-			set_is_faceup(get_parent().faceup_cards, true)
+			if get_parent() in get_tree().get_nodes_in_group("piles"):
+				set_is_faceup(get_parent().faceup_cards, true)
 
 		CardState.VIEWED_IN_PILE:
 			z_index = 0
@@ -2288,7 +2299,8 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
-			set_is_faceup(get_parent().faceup_cards, true)
+			if get_parent() in get_tree().get_nodes_in_group("piles"):
+				set_is_faceup(get_parent().faceup_cards, true)
 
 		CardState.IN_POPUP:
 			z_index = 0
@@ -2327,7 +2339,7 @@ func _process_card_state() -> void:
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
 				scale = Vector2(1.5,1.5)
 			else:
-				# We need to reset its scale, 
+				# We need to reset its scale,
 				# in case it was already scaled due to being on the table etc.
 				scale = Vector2(1,1)
 				set_card_size(CFConst.CARD_SIZE*1.5, true)

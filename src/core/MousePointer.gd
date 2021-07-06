@@ -119,6 +119,9 @@ func enable() -> void:
 	_discover_focus()
 
 
+func forget_focus() -> void:
+	current_focused_card = null
+
 # Parses all collided objects and figures out which card, if any, to focus on and
 # also while a card is being dragged, figures out which potential area to highlight
 # for the drop effect.
