@@ -15,7 +15,7 @@ In this part, we'll create a new project which is going to use the existing CGF 
 
 1. Use Godot to create a new project.
 2. Download the latest version of the CGF and extract all directories into your project's root folder. 
-3. Go to Project > Project Setting > Autoload. Press the browse button and search for `res://src/core/CFControl`. Type "cfc" in the "Node name:" field.
+3. Go to Project > Project Setting > Autoload. Press the browse button and search for `res://src/core/CFControl.gd`. Type "cfc" in the "Node name:" field.
 4. Go to Project > Project Settings > General > Application > Run and next to the Main Scene type `res://src/custom/CGFMain.tscn`
 5. Close Project Settings and press F5 to play the new project. A basic demo setup will appear and you'll be able to draw cards, move them around etc.
 
