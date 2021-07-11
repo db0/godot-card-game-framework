@@ -9,6 +9,7 @@
 * Can now filter against `get_class()`
 * Added new overridable function `common_pre_run()` which can be used to run custom methods in an extended scripting engine before execution
 * Added new signal in cfc `cache_cleared` which fires every time the cache is cleared, which typically signifies a game-state-change
+* New card method `set_to_idle()`
 
 ### Tweaks
 
