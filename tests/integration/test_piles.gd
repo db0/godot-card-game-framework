@@ -85,7 +85,7 @@ func test_popup_discard_view():
 	yield(yield_for(1), YIELD)
 	discard._on_View_Button_pressed()
 	yield(yield_for(1), YIELD)
-	assert_eq(0,len(discard.get_all_cards(false)),
+	assert_eq(6,len(discard.get_children()),
 			"No cards should appear in the pile root after popup")
 	assert_eq(10,discard.get_card_count(),
 			"Cards in popup should be returned with get_all_cards()")

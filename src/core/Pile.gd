@@ -233,7 +233,7 @@ func move_child(child_node, to_position) -> void:
 
 # Overrides [CardContainer] function to include cards in the popup window
 # Returns an array with all children nodes which are of Card class
-func get_all_cards(scanViewPopup := true) -> Array:
+func get_all_cards(_scanViewPopup := true) -> Array:
 	var cardsArray := .get_all_cards()
 	# For piles, we need to check if some card objects are inside the ViewPopup.
 	if is_popup_open:

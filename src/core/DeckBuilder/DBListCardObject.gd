@@ -116,6 +116,7 @@ func setup_grid_card_object() -> void:
 	if not grid_card_object:
 		grid_card_object = deckbuilder.grid_card_object_scene.instance()
 		deckbuilder._card_grid.add_child(grid_card_object)
+		# warning-ignore:return_value_discarded
 		grid_card_object.setup(card_name)
 		grid_card_object.card_list_object = self
 		grid_card_object.preview_popup.focus_info.info_panel_scene = deckbuilder.info_panel_scene

@@ -1,6 +1,17 @@
 # Changelog
 
-## 2.0 (Ongoing)
+## 1.11 (Ongoing)
+
+### Important for Upgrades
+
+New CFConst poperties added: 
+
+* `THUMBNAIL_SCALE`
+* `PREVIEW_SCALE`
+* `FOCUSED_SCALE`
+
+These allow you to adjust how much to scale the cards depending on where they're placed.
+You NEED to add these to CFConst.
 
 ### New Features
 
@@ -18,6 +29,9 @@
 * ScriptEngine's 'boardseek' now uses new board method `get_all_scriptables()` which can be extended to gather any type of object needed.
 * Refactored ScriptObject
 * ScriptingEngine's `shuffle_container()` will now wait for animations to finish before shuffling, and then wait until its own animation is finished before proceeding.
+* Card resizing when `VIEWPORT_FOCUS_ZOOM_TYPE` is set to "resize"now happens recursively which allows games to easily use this feature without manually specifying all the rects in the card_front.
+   This allows a designer to design the card layout in the GODOT GUI and then the game will automatically handle the scaling. 
+   This is not perfect as when scaling too high or too low, some elements might get slightly out of alignment compared to the scale 1,1, but it should be good enough.
 
 ### Bugs
 

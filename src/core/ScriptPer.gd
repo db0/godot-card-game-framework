@@ -49,7 +49,7 @@ func return_per_count() -> int:
 func _count_tokens() -> int:
 	var ret := 0
 	for card in subjects:
-		ret += card.tokens.get_token_count(get_property(SP.KEY_TOKEN_NAME))
+		ret = card.tokens.get_token_count(get_property(SP.KEY_TOKEN_NAME))
 	return(ret)
 
 
@@ -73,7 +73,7 @@ func _count_counter() -> int:
 
 # Do something per unique card in the gathered subjects
 func _count_unique() -> int:
-	var unique_subjects: Array
+	var unique_subjects := []
 	for c in subjects:
 		if not c.canonical_name in unique_subjects:
 			unique_subjects.append(c.canonical_name)

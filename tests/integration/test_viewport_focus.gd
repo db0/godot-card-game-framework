@@ -29,7 +29,7 @@ func test_single_card_focus():
 			"Duplicate card does not have duplicate card backs")
 	assert_eq(focus_dupe.card_back.modulate.a, 1,
 			"Duplicate card does not have visible highlight")
-	assert_eq(focus_dupe.card_size, CFConst.CARD_SIZE * 1.5,
+	assert_eq(focus_dupe.card_size, CFConst.CARD_SIZE,
 			"Duplicate resized correctly")
 	assert_eq(focus_dupe._control.rect_size, CFConst.CARD_SIZE * 1.5,
 			"Duplicate's control resized correctly")

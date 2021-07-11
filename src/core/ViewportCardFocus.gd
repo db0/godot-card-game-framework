@@ -67,7 +67,7 @@ func _process(_delta) -> void:
 
 # Takes care to resize the child viewport, when the main viewport is resized
 func _on_Viewport_size_changed() -> void:
-	if ProjectSettings.get("display/window/stretch/mode") == "disabled":
+	if ProjectSettings.get("display/window/stretch/mode") == "disabled" and is_instance_valid(get_viewport()):
 		$ViewportContainer.rect_size = get_viewport().size
 
 
@@ -151,4 +151,6 @@ func _extra_dupe_preparation(dupe_focus: Card, card: Card) -> void:
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
 func _extra_dupe_ready(dupe_focus: Card, card: Card) -> void:
-	pass
+	dupe_focus.resize_recursively(dupe_focus._control, CFConst.FOCUSED_SCALE)
+	dupe_focus.card_front.scale_to(CFConst.FOCUSED_SCALE)
+

@@ -156,6 +156,7 @@ func _process(_delta: float) -> void:
 			$"VBC/HBC/MC2/AvailableCards/ScrollContainer".rect_size.x
 			/ CFConst.CARD_SIZE.x)
 
+
 # Populates the list of available cards, with all defined cards in the game
 func populate_available_cards() -> void:
 	var counter := 0

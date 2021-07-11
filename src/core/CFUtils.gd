@@ -168,7 +168,6 @@ static func sort_card_containers(c1, c2) -> bool:
 # * card: The card object
 # * value: The value being compared.
 static func sort_by_card_field(c1, c2) -> bool:
-	var ret: bool
 	if c1.value < c2.value:
 		return true
 	return(false)

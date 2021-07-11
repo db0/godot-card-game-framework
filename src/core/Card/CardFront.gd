@@ -59,9 +59,9 @@ var card_label_min_sizes : Dictionary
 var scaled_fonts : Dictionary
 
 
+
 # Stores a reference to the Card that is hosting this node
 onready var card_owner = get_parent().get_parent()
-
 
 # Set a label node's text.
 # As the string becomes longer, the font size becomes smaller
@@ -166,10 +166,7 @@ func set_card_label_font(label: Label, font: Font) -> void:
 # Typically each game would override this function to fit its layout.
 func scale_to(scale_multiplier: float) -> void:
 	for l in card_labels:
-		var label : Label = card_labels[l]
-		if label.rect_min_size != card_label_min_sizes[l] * scale_multiplier:
-			label.rect_min_size = card_label_min_sizes[l] * scale_multiplier
-			font_sizes[l] = original_font_sizes.get(l) * scale_multiplier
+		font_sizes[l] = original_font_sizes.get(l) * scale_multiplier
 	for l in card_labels:
 		if scaled_fonts.get(l) != scale_multiplier:
 			var label : Label = card_labels[l]

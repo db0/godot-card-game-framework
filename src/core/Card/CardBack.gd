@@ -45,5 +45,5 @@ func stop_card_back_animation() -> void:
 # focus viewport.
 #
 # Override it according to the requirements of your card back
-func scale_to(scale_multiplier: float) -> void:
+func scale_to(_scale_multiplier: float) -> void:
 	pass

@@ -121,12 +121,6 @@ export(int, 0, 270, 90) var card_rotation  := 0 \
 export(BoardPlacement) var board_placement \
 		:= BoardPlacement.ANYWHERE
 export var mandatory_grid_name : String
-# This is **the** authorative name for this node
-#
-# If not set, will be set to the value of the Name label in the front.
-# if that is also not set, will be set.
-# to the human-readable value of the "name" node property.
-var canonical_name : String setget set_card_name, get_card_name
 # Contains the scene which has the Card Back design to use for this card type
 # It needs to be scene which uses a CardBack class script.
 export(PackedScene) var card_back_design : PackedScene
@@ -161,6 +155,12 @@ export var disable_dragging_from_pile := false
 # [disable_dragging_from_hand](#disable_dragging_from_hand)
 export var hand_drag_starts_targeting := false
 
+# This is **the** authorative name for this node
+#
+# If not set, will be set to the value of the Name label in the front.
+# if that is also not set, will be set.
+# to the human-readable value of the "name" node property.
+var canonical_name : String setget set_card_name, get_card_name
 # Ensures all nodes fit inside this rect.
 var card_size := CFConst.CARD_SIZE setget set_card_size
 # Starting state for each card
@@ -220,6 +220,8 @@ var _is_property_being_altered := false
 var card_back : CardBack
 var card_front : CardFront
 var _card_text
+var original_layouts:= {}
+
 # This variable will point to the scene which controls the targeting arrow
 onready var targeting_arrow
 
@@ -681,6 +683,27 @@ func get_property_and_alterants(property: String,
 	return(return_dict)
 
 
+# Adjust all control nodes in this card's hierarchy so that they are
+# scaled according to the requested scale, and then adjusted in position likewise
+# This allows the card layout to scale without using the .scale property
+# Which prevents the font from getting blurry
+func resize_recursively(control_node: Node, requested_scale: float) -> void:
+	if original_layouts.has(control_node)\
+			and CFUtils.compare_floats(requested_scale, original_layouts[control_node].get('scale')):
+		return
+	if control_node as Control and not original_layouts.has(control_node):
+		original_layouts[control_node] = {}
+		original_layouts[control_node]["size"] = control_node.rect_min_size
+		original_layouts[control_node]["position"] = control_node.rect_position
+	for child in control_node.get_children():
+		resize_recursively(child, requested_scale)
+	if control_node as Control:
+		control_node.rect_min_size = original_layouts[control_node]["size"] * requested_scale
+		control_node.call_deferred('set_size', control_node.rect_min_size)
+		control_node.rect_position = original_layouts[control_node]["position"] * requested_scale
+		original_layouts[control_node]["scale"] = requested_scale
+
+
 # Sets the card size and adjusts all nodes depending on it.
 func set_card_size(value: Vector2, ignore_area = false) -> void:
 	card_size = value
@@ -692,11 +715,12 @@ func set_card_size(value: Vector2, ignore_area = false) -> void:
 	# We set the card's Highlight to always extend 3 pixels over
 	# Either side of the card. This way its border will appear
 	# correctly when hovering over the card.
-	highlight.rect_min_size = value + Vector2(6, 6)
+	for node in [highlight._left_right, highlight._top_bottom, highlight]:
+		node.rect_min_size = value + Vector2(6, 6)
+		# We cannot set the rect_size immediately after setting the min_size
+		# As the engine won't allow it, as the min_size change has not happened yet
+		node.call_deferred('set_size', node.rect_min_size)
 	highlight.rect_position = Vector2(-3, -3)
-	# This switch is set to true when resizing dupes
-	# To avoid resizing all the area2D of all cards
-	# since they share the resource.
 	if not ignore_area:
 		$CollisionShape2D.shape.extents = value / 2
 		$CollisionShape2D.position = value / 2
@@ -1524,7 +1548,7 @@ func set_focus(requestedFocus: bool, colour := CFConst.FOCUS_HOVER_COLOUR) -> vo
 # cards to stay focused
 func set_to_idle() -> void:
 	if not state in [
-		CardState.VIEWPORT_FOCUS, 
+		CardState.VIEWPORT_FOCUS,
 		CardState.PREVIEW,
 		CardState.DECKBUILDER_GRID
 	]:
@@ -2101,6 +2125,8 @@ func _process_card_state() -> void:
 				_focus_completed = true
 				# We don't change state yet, only when the focus is removed
 				# from this card
+#				resize_recursively(highlight, 1.0)
+			
 
 		CardState.MOVING_TO_CONTAINER:
 			# Used when moving card between places
@@ -2343,14 +2369,15 @@ func _process_card_state() -> void:
 			$Control/Tokens.visible = false
 			# We scale the card dupe to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1.5,1.5)
+				scale = Vector2(1,1) * CFConst.FOCUSED_SCALE
 			else:
 				# We need to reset its scale,
 				# in case it was already scaled due to being on the table etc.
 				scale = Vector2(1,1)
-				set_card_size(CFConst.CARD_SIZE*1.5, true)
-				card_front.scale_to(1.5)
-				card_back.scale_to(1.5)
+				resize_recursively(_control, CFConst.FOCUSED_SCALE)
+#				set_card_size(CFConst.CARD_SIZE * CFConst.FOCUSED_SCALE, true)
+				card_front.scale_to(CFConst.FOCUSED_SCALE)
+				card_back.scale_to(CFConst.FOCUSED_SCALE)
 			# If the card has already been been viewed while down,
 			# we allow the player hovering over it to see it
 			if not is_faceup:
@@ -2367,10 +2394,11 @@ func _process_card_state() -> void:
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(2,2)
+				scale = Vector2(1,1) * CFConst.PREVIEW_SCALE
 			else:
-				set_card_size(CFConst.CARD_SIZE*2)
-				card_front.scale_to(2)
+#				set_card_size(CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE)
+				resize_recursively(_control, CFConst.PREVIEW_SCALE)
+				card_front.scale_to(CFConst.PREVIEW_SCALE)
 
 		CardState.DECKBUILDER_GRID:
 			$Control.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -2382,10 +2410,11 @@ func _process_card_state() -> void:
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1)
+				scale = Vector2(1,1) * CFConst.THUMBNAIL_SCALE
 			else:
-				set_card_size(CFConst.CARD_SIZE)
-				card_front.scale_to(1)
+#				set_card_size(CFConst.CARD_SIZE * CFConst.THUMBNAIL_SCALE)
+				resize_recursively(_control, CFConst.THUMBNAIL_SCALE)
+				card_front.scale_to(CFConst.THUMBNAIL_SCALE)
 
 
 

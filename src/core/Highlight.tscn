@@ -45,7 +45,7 @@ __meta__ = {
 }
 
 [node name="LeftRight" type="Panel" parent="."]
-margin_right = 420.0
+margin_right = 175.0
 margin_bottom = 180.0
 mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
@@ -55,7 +55,7 @@ __meta__ = {
 
 [node name="TopBottom" type="Panel" parent="."]
 modulate = Color( 1.8, 1.8, 1.8, 1 )
-margin_right = 420.0
+margin_right = 175.0
 margin_bottom = 180.0
 mouse_filter = 2
 custom_styles/panel = SubResource( 2 )

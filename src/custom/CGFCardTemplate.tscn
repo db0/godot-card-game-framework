@@ -12,6 +12,9 @@ script = ExtResource( 2 )
 card_back_design = ExtResource( 6 )
 card_front_design = ExtResource( 3 )
 
+[node name="Front" parent="Control" index="2"]
+rect_min_size = Vector2( 150, 240 )
+
 [node name="ManipulationButtons" parent="Control" index="4"]
 script = ExtResource( 4 )
 manipulation_button = ExtResource( 5 )
