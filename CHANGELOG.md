@@ -11,7 +11,9 @@ New CFConst poperties added:
 * `FOCUSED_SCALE`
 
 These allow you to adjust how much to scale the cards depending on where they're placed.
-You NEED to add these to CFConst.
+You **must** to add these to your own CFConst.
+
+If you've extended The scripting Engine, you'll have to adjust your references to `trigger_card` to be `trigger_object` instead
 
 ### New Features
 
