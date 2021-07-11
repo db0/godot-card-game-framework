@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.11 (Ongoing)
+## 1.11
 
 ### Important for Upgrades
 
