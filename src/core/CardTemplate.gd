@@ -688,6 +688,8 @@ func get_property_and_alterants(property: String,
 # This allows the card layout to scale without using the .scale property
 # Which prevents the font from getting blurry
 func resize_recursively(control_node: Node, requested_scale: float) -> void:
+	if card_size != CFConst.CARD_SIZE * requested_scale:
+		card_size = CFConst.CARD_SIZE * requested_scale
 	if original_layouts.has(control_node)\
 			and CFUtils.compare_floats(requested_scale, original_layouts[control_node].get('scale')):
 		return

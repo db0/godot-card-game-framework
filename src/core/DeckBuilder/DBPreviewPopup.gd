@@ -8,12 +8,19 @@ func _process(_delta: float) -> void:
 	if visible:
 		rect_position = get_preview_placement()
 		# This ensures the FocusInfoPanel is always on the bottom of the card
-		if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-			focus_info.rect_size.x = CFConst.CARD_SIZE.x * preview_card.scale.x
-			focus_info.rect_position.y = CFConst.CARD_SIZE.y * preview_card.scale.y
-		else:
-			focus_info.rect_size.x = preview_card.card_size.x * CFConst.PREVIEW_SCALE
-			focus_info.rect_position.y = preview_card.card_size.y * CFConst.PREVIEW_SCALE
+#		rect_min_size.x = 0.0
+#		rect_size.x = 0.0
+		for c in focus_info.get_children():
+			# We use this to adjust the info panel labels depending on how the 
+			# PREVIEW_SCALE is
+			c.get_node("Details").rect_min_size.x = CFConst.CARD_SIZE.x * CFConst.PREVIEW_SCALE
+			c.get_node("Details").rect_size.x = CFConst.CARD_SIZE.x * CFConst.PREVIEW_SCALE
+			c.rect_min_size.x = CFConst.CARD_SIZE.x * CFConst.PREVIEW_SCALE
+			c.rect_size.x = CFConst.CARD_SIZE.x * CFConst.PREVIEW_SCALE
+		focus_info.rect_min_size.x = 0.0
+		focus_info.rect_size.x = 0.0
+		focus_info.rect_position.y = CFConst.CARD_SIZE.y * CFConst.PREVIEW_SCALE
+#		print_debug(focus_info.rect_size.x)
 
 func get_preview_placement() -> Vector2:
 	# warning-ignore:unassigned_variable
@@ -21,8 +28,7 @@ func get_preview_placement() -> Vector2:
 	var focus_panel_offset = 0
 	if focus_info.visible:
 		focus_panel_offset = focus_info.rect_size.y
-	var card_size := preview_card.card_size
-	card_size = CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE
+	var card_size := CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE
 	if get_global_mouse_position().x\
 			+ card_size.x\
 			> get_viewport().size.x:
