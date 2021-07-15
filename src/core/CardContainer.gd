@@ -22,6 +22,7 @@ enum Anchors{
 	BOTTOM_RIGHT
 	BOTTOM_MIDDLE
 	BOTTOM_LEFT
+	CONTROL
 }
 
 # Spefifies the anchor of the card on the screen layout
@@ -74,6 +75,12 @@ func _ready() -> void:
 	_init_ui()
 	_init_signal()
 
+
+func _init_control_size() -> void:
+	var parent_control: Control = get_parent()
+	if placement == Anchors.CONTROL and parent_control.size_flags_horizontal != 3:
+		parent_control.rect_min_size = control.rect_size * scale
+		parent_control.rect_size = control.rect_size * scale
 
 # Initialize some of the controls to ensure
 # that they are in the expected state
@@ -294,12 +301,12 @@ func re_place():
 			# Right position always start from the right-side of the viewport
 			# minus the width of the container
 			Anchors.TOP_RIGHT, Anchors.RIGHT_MIDDLE, Anchors.BOTTOM_RIGHT:
-				place.x = get_viewport().size.x - CFConst.CARD_SIZE.x
+				place.x = get_viewport().size.x - (CFConst.CARD_SIZE.x * scale.x)
 				add_to_group("right")
 			# Middle placement is the middle of the viewport width,
 			# minues half the height of the container
 			Anchors.TOP_MIDDLE, Anchors.BOTTOM_MIDDLE:
-				place.x = get_viewport().size.x / 2 - CFConst.CARD_SIZE.x / 2
+				place.x = get_viewport().size.x / 2 - (CFConst.CARD_SIZE.x / 2 * scale.x)
 		# Now we adjust the y position. Same logic for
 		match placement:
 			# Top position always start from y == 0,
@@ -310,12 +317,12 @@ func re_place():
 			# Bottom position always start from the bottom of the viewport
 			# minus the height of the container
 			Anchors.BOTTOM_LEFT, Anchors.BOTTOM_MIDDLE, Anchors.BOTTOM_RIGHT:
-				place.y = get_viewport().size.y - CFConst.CARD_SIZE.y
+				place.y = get_viewport().size.y - (CFConst.CARD_SIZE.y * scale.y)
 				add_to_group("bottom")
 			# Middle placement is the middle of the viewport height
 			# minus half the height of the container
 			Anchors.RIGHT_MIDDLE, Anchors.LEFT_MIDDLE:
-				place.y = get_viewport().size.y / 2 - CFConst.CARD_SIZE.y / 2
+				place.y = get_viewport().size.y / 2 - (CFConst.CARD_SIZE.y / 2 * scale.y)
 		# Now we try to discover if more than one CardContainer share
 		# the same anchor and the figure out which to displace.
 		var duplicate_anchors := {}
@@ -375,3 +382,4 @@ func re_place():
 							accumulated_shift.x += cc.control.rect_size.x
 		# Finally, we move to the right location.
 		position = place
+		call_deferred("_init_control_size")

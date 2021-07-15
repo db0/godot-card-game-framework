@@ -63,5 +63,5 @@ func test_init_signal():
 
 func test_update_manipulation_buttons():
 	var deck : Pile = cfc.NMAP.deck
-	assert_eq(2,deck.get_all_manipulation_buttons().size(),
+	assert_eq(3,deck.get_all_manipulation_buttons().size(),
 				"Expected number of manipulation buttons are there")

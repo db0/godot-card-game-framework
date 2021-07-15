@@ -95,6 +95,7 @@ func test_state_executions():
 		"Target should be face-down")
 	card.move_to(cfc.NMAP.discard)
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	card.scripts = {"manual": {"pile": [
 			{"name": "move_card_to_board",
 			"subject": "self",
@@ -103,6 +104,7 @@ func test_state_executions():
 	yield(yield_for(1), YIELD)
 	card.execute_scripts()
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(Vector2(100,100),card.global_position,
 			"Card should have moved to specified position")
 	card.move_to(cfc.NMAP.discard)

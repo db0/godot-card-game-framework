@@ -40,7 +40,11 @@ onready var _counter_cards = $Counters/Cards
 
 func _ready() -> void:
 	add_to_group("hands")
-	if excess_discard_pile_name:
+
+func prepare_excess_discard_pile() -> void:
+	if excess_discard_pile_name\
+			and not _excess_discard_pile\
+			and cfc.NMAP.has(excess_discard_pile_name.to_lower()):
 		_excess_discard_pile = cfc.NMAP[excess_discard_pile_name.to_lower()]
 
 
@@ -97,6 +101,7 @@ func draw_card(pile : Pile = cfc.NMAP.deck) -> Card:
 
 func get_final_placement_node(card: Card) -> Node:
 	var container : Node = self
+	prepare_excess_discard_pile()
 	match excess_cards:
 		ExcessCardsBehaviour.DISALLOW:
 			if get_card_count() < hand_size:
@@ -182,15 +187,34 @@ func re_place() -> void:
 		$Control.rect_size.y = get_viewport().size.y - others_rect_y
 		position.x = start_pos_top
 		$Control.rect_size.x = CFConst.CARD_SIZE.x
+	if placement == Anchors.CONTROL:
+		# This yield allows the other control nodes to set their side
+		# In which case the hand, which is typically set to expand vertically
+		# doesn't expand too much
+		yield(get_tree().create_timer(0.01), "timeout")
+		$Control.call_deferred("set_size", get_parent().rect_size)
+#		$Control.rect_size = get_parent().rect_size
+#		print_debug(get_parent().rect_size)
 	# We also need to adjust the hand's collision area to match its new size
-	$CollisionShape2D.shape.extents = $Control.rect_size / 2
-	$CollisionShape2D.position = $Control.rect_size / 2
-	highlight.rect_size = $Control.rect_size
+	call_deferred("_adjust_collision_area")
+
 	# If the hand is supposed to be shifted slightly outside the viewport
 	# we do it now.
-	position.y += bottom_margin
+	if placement == Anchors.CONTROL:
+		# When the hand is adjusted by the parent control, its default position should always be 0
+		position.y = bottom_margin
+	else:
+		# When the hand is adjusted by its anchor
+		# we need to move adjust it according to the margin
+		position.y += bottom_margin
 	# Finally we make sure the cards organize according to the new
 	# hand-size.
+	call_deferred("_init_control_size")
+	yield(get_tree().create_timer(0.01), "timeout")
 	for c in get_all_cards():
 		c.position = c.recalculate_position()
 
+func _adjust_collision_area() -> void:
+	$CollisionShape2D.shape.extents = $Control.rect_size / 2
+	$CollisionShape2D.position = $Control.rect_size / 2
+	highlight.rect_size = $Control.rect_size

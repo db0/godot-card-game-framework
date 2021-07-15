@@ -43,6 +43,55 @@ script = ExtResource( 4 )
 placement = 8
 pile_name = "Deck"
 
+[node name="VBoxContainer" parent="Deck/Control/CenterContainer" index="0"]
+margin_right = 68.0
+margin_bottom = 109.0
+
+[node name="Label" parent="Deck/Control/CenterContainer/VBoxContainer" index="0"]
+margin_right = 68.0
+
+[node name="PanelContainer" parent="Deck/Control/CenterContainer/VBoxContainer" index="1"]
+margin_top = 32.0
+margin_right = 68.0
+margin_bottom = 61.0
+
+[node name="CenterContainer" parent="Deck/Control/CenterContainer/VBoxContainer/PanelContainer" index="0"]
+margin_right = 68.0
+
+[node name="CardCount" parent="Deck/Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer" index="0"]
+margin_right = 45.0
+
+[node name="View" parent="Deck/Control/ManipulationButtons" index="0"]
+margin_right = 22.0
+margin_bottom = 22.0
+
+[node name="ViewSorted" parent="Deck/Control/ManipulationButtons" index="1"]
+margin_top = 25.0
+margin_right = 22.0
+margin_bottom = 47.0
+
+[node name="Shuffle" parent="Deck/Control/ManipulationButtons" index="2"]
+margin_top = 50.0
+margin_right = 22.0
+margin_bottom = 72.0
+
+[node name="CardView" parent="Deck/ViewPopup" index="0"]
+margin_left = 2.0
+margin_top = 2.0
+margin_right = 6.0
+margin_bottom = 6.0
+
+[node name="Position" parent="Deck/Debug" index="0"]
+margin_bottom = 18.0
+
+[node name="AreaPos" parent="Deck/Debug" index="1"]
+margin_top = 21.0
+margin_bottom = 39.0
+
+[node name="Size" parent="Deck/Debug" index="2"]
+margin_top = 42.0
+margin_bottom = 60.0
+
 [node name="Discard" parent="." instance=ExtResource( 2 )]
 position = Vector2( 1124, 475 )
 script = ExtResource( 1 )
@@ -72,13 +121,18 @@ margin_right = 68.0
 margin_right = 45.0
 
 [node name="View" parent="Discard/Control/ManipulationButtons" index="0"]
-margin_right = 18.0
+margin_right = 22.0
 margin_bottom = 22.0
 
-[node name="Shuffle" parent="Discard/Control/ManipulationButtons" index="1"]
+[node name="ViewSorted" parent="Discard/Control/ManipulationButtons" index="1"]
 margin_top = 25.0
-margin_right = 18.0
+margin_right = 22.0
 margin_bottom = 47.0
+
+[node name="Shuffle" parent="Discard/Control/ManipulationButtons" index="2"]
+margin_top = 50.0
+margin_right = 22.0
+margin_bottom = 72.0
 
 [node name="CardView" parent="Discard/ViewPopup" index="0"]
 margin_left = 2.0
@@ -234,4 +288,5 @@ info_panel_scene = ExtResource( 11 )
 [connection signal="pressed" from="DeckBuilder" to="." method="_on_DeckBuilder_pressed"]
 [connection signal="toggled" from="Debug" to="." method="_on_Debug_toggled"]
 
+[editable path="Deck"]
 [editable path="Discard"]

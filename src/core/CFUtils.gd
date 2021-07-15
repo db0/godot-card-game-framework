@@ -196,6 +196,14 @@ static func sort_by_shift_priority(c1, c2) -> bool:
 	return(ret)
 
 
+# Sorts scriptable objects by their canonical names
+# all noes in the list need to have a "canonical_name" property
+static func sort_scriptables_by_name(c1, c2) -> bool:
+	if c1.canonical_name < c2.canonical_name:
+		return true
+	return(false)
+
+
 # Generates a random 10-char string to serve as a seed for a game.
 # This allows the seed to be viewed and shared for the same game to be replayed.
 static func generate_random_seed() -> String:

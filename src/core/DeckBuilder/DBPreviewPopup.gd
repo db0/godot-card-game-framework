@@ -8,8 +8,6 @@ func _process(_delta: float) -> void:
 	if visible:
 		rect_position = get_preview_placement()
 		# This ensures the FocusInfoPanel is always on the bottom of the card
-#		rect_min_size.x = 0.0
-#		rect_size.x = 0.0
 		for c in focus_info.get_children():
 			# We use this to adjust the info panel labels depending on how the 
 			# PREVIEW_SCALE is
@@ -20,7 +18,6 @@ func _process(_delta: float) -> void:
 		focus_info.rect_min_size.x = 0.0
 		focus_info.rect_size.x = 0.0
 		focus_info.rect_position.y = CFConst.CARD_SIZE.y * CFConst.PREVIEW_SCALE
-#		print_debug(focus_info.rect_size.x)
 
 func get_preview_placement() -> Vector2:
 	# warning-ignore:unassigned_variable

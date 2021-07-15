@@ -32,7 +32,9 @@ func _ready() -> void:
 	if not cfc.are_all_nodes_mapped:
 		yield(cfc, "all_nodes_mapped")
 	add_child(mouse_pointer)
-	for container in get_tree().get_nodes_in_group("card_containers"):
+	for container in get_tree().get_nodes_in_group("piles"):
+		container.re_place()
+	for container in get_tree().get_nodes_in_group("hands"):
 		container.re_place()
 
 

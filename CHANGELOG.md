@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.12 (Ongoing)
+
+* Made CardContainers capable of being aligned using control nodes. To do so, you need to set their placement as "CONTROL" and then place them in a dedicated control node which you can make a part of your table layout.
+* If piles are scaled, cards will now appear to scale up/down as they move into/out of them.
+* Sample board using a Control-node based layout can be seen in `CGFBoardControlLayout.tscn`
+* Added way to see the contents of a pile sorted. And new demo button for it labeled "VS"
+
 ## 1.11
 
 ### Important for Upgrades

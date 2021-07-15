@@ -23,6 +23,7 @@ func test_anchor_positioning_and_groups():
 			"Bottom right anchor placement works")
 	assert_true("bottom" in discard.get_groups(), "bottom Position group assigned")
 	assert_true("right" in discard.get_groups(), "right Position group assigned")
+	yield(yield_for(0.1), YIELD)
 	assert_almost_eq(hand.position, Vector2(160.5,600), Vector2(5,5),
 			"Bottom middle anchor placement works")
 	assert_almost_eq(hand.control.rect_size, Vector2(966.5,240), Vector2(5,5),
@@ -69,6 +70,7 @@ func test_overlap_shift_up():
 	deck2.overlap_shift_direction = CFInt.OverlapShiftDirection.UP
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()
+	yield(yield_for(0.1), YIELD)
 	assert_almost_eq(deck2.position, Vector2(0,219), Vector2(5,5),
 			"overlapping deck2 shifted up")
 	assert_almost_eq(deck.position, Vector2(0,480), Vector2(5,5),
@@ -91,6 +93,7 @@ func test_overlap_shift_left():
 	deck2.re_place()
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()
+	yield(yield_for(0.1), YIELD)
 	assert_almost_eq(deck2.position, Vector2(977,480), Vector2(5,5),
 			"overlapping deck2 shifted left")
 	assert_almost_eq(discard.position, Vector2(1130,480), Vector2(5,5),
@@ -113,6 +116,7 @@ func test_overlap_shift_right():
 	deck2.re_place()
 	for container in get_tree().get_nodes_in_group("card_containers"):
 		container.re_place()
+	yield(yield_for(0.1), YIELD)
 	assert_almost_eq(deck2.position, Vector2(160.5,480), Vector2(5,5),
 			"overlapping deck2 shifted left")
 	assert_almost_eq(deck.position, Vector2(0,480), Vector2(5,5),
@@ -130,6 +134,7 @@ func test_overlap_shift_right():
 
 func test_changing_viewport_size():
 	get_viewport().size = Vector2(1920, 1080)
+	yield(yield_for(0.1), YIELD)
 	assert_almost_eq(deck.position, Vector2(0,840), Vector2(5,5),
 			"Bottom left anchor placement works")
 	assert_almost_eq(discard.position, Vector2(1770,840), Vector2(5,5),

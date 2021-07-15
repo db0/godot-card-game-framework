@@ -20,10 +20,13 @@ export(CFConst.ShuffleStyle) var shuffle_style = CFConst.ShuffleStyle.AUTO
 # Otherwise they will be placed face-down.
 export var faceup_cards := false
 
+
 # The popup node
 onready var pile_popup := $ViewPopup
+onready var _popup_grid := $ViewPopup/CardView
 # Popup View button for Piles
 onready var view_button := $Control/ManipulationButtons/View
+onready var view_sorted_button := $Control/ManipulationButtons/ViewSorted
 # The label node where the pile_name is written.
 onready var pile_name_label := $Control/CenterContainer/VBoxContainer/Label
 # The label node which shows the amount of cards in the pile.
@@ -34,11 +37,13 @@ onready var card_count_label := $Control/CenterContainer/VBoxContainer\
 onready var _opacity_tween := $OpacityTween
 onready var _tween := $Tween
 
+var pre_sorted_order: Array
 
 func _ready():
 	add_to_group("piles")
 	# warning-ignore:return_value_discarded
 	view_button.connect("pressed",self,'_on_View_Button_pressed')
+	view_sorted_button.connect("pressed",self,'_on_ViewSorted_Button_pressed')
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("popup_hide",self,'_on_ViewPopup_popup_hide')
 	# warning-ignore:return_value_discarded
@@ -69,17 +74,12 @@ func _process(_delta) -> void:
 # Populates the popup view window with all the cards in the deck
 # then displays it
 func _on_View_Button_pressed() -> void:
-	# We prevent the button from being pressed twice while the popup is open
-	# as it will bug-out
-	$Control/ManipulationButtons.visible = false
-	# We set the size of the grid to hold slightly scaled-down cards
-	for card in get_all_cards(false):
-		# We remove the card to rehost it in the popup grid container
-		remove_child(card)
-		_slot_card_into_popup(card)
-	# Finally we Pop the Up :)
-	$ViewPopup.popup_centered()
-	is_popup_open = true
+	populate_popup()
+
+# Populates the popup view window with all the cards in the deck sorted by name
+# then displays it
+func _on_ViewSorted_Button_pressed() -> void:
+	populate_popup(true)
 
 
 # Ensures the popup window interpolates to visibility when opened
@@ -99,7 +99,7 @@ func _on_ViewPopup_popup_hide() -> void:
 			Tween.TRANS_EXPO, Tween.EASE_OUT)
 	$ViewPopup/Tween.start()
 	yield($ViewPopup/Tween, "tween_all_completed")
-	for card in get_all_cards():
+	for card in pre_sorted_order:
 		# For each card we have hosted, we check if it's hosted in the popup.
 		# If it is, we move it to the root.
 #		print_debug(card.canonical_name, card.get_parent().name)
@@ -120,6 +120,27 @@ func _on_ViewPopup_popup_hide() -> void:
 	$Control/ManipulationButtons.visible = true
 	emit_signal("popup_closed")
 	is_popup_open = false
+
+
+# Populated the popup card viewer with the cards and displays them
+func populate_popup(sorted:= false) -> void:
+	# We prevent the button from being pressed twice while the popup is open
+	# as it will bug-out
+	$Control/ManipulationButtons.visible = false
+	# We set the size of the grid to hold slightly scaled-down cards
+	var card_array := get_all_cards(false)
+	card_array.invert()
+	pre_sorted_order = get_all_cards()
+	if sorted:
+		card_array.sort_custom(CFUtils, "sort_scriptables_by_name")
+	for card in card_array:
+		# We remove the card to rehost it in the popup grid container
+		remove_child(card)
+		_slot_card_into_popup(card)
+	# Finally we Pop the Up :)
+	$ViewPopup.popup_centered()
+	is_popup_open = true
+	card_count_label.text = str(get_card_count())
 
 
 # Setter for pile_name.
@@ -234,18 +255,10 @@ func move_child(child_node, to_position) -> void:
 # Overrides [CardContainer] function to include cards in the popup window
 # Returns an array with all children nodes which are of Card class
 func get_all_cards(_scanViewPopup := true) -> Array:
-	var cardsArray := .get_all_cards()
-	# For piles, we need to check if some card objects are inside the ViewPopup.
 	if is_popup_open:
-		if $ViewPopup/CardView.get_child_count():
-			# We know it's not possible to have a temp control container
-			# (due to the garbage collection)
-			# So we know if we find one, it will have 1 child,
-			# which is a Card object.
-			for obj in $ViewPopup/CardView.get_children():
-				if obj.get_child_count():
-					cardsArray.append(obj.get_child(0))
-	return cardsArray
+		return(pre_sorted_order)
+	else:
+		return(.get_all_cards())
 
 
 # A wrapper for the CardContainer's get_last_card()
@@ -313,7 +326,7 @@ func shuffle_cards(animate = true) -> void:
 		var init_position = position
 		# The following calculation figures out the direction
 		# towards the center of the viewport from the center of the card
-		var shuffle_direction = (position + $Control.rect_size/2)\
+		var shuffle_direction = (global_position + $Control.rect_size/2)\
 				.direction_to(get_viewport().size / 2)
 		# We increase the intensity of the y direction, to make the shuffle
 		# position move higher up or down respective to its position.
