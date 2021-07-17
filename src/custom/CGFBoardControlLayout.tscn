@@ -228,13 +228,18 @@ margin_right = 68.0
 margin_right = 45.0
 
 [node name="View" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Control/ManipulationButtons" index="0"]
-margin_right = 18.0
+margin_right = 22.0
 margin_bottom = 22.0
 
-[node name="Shuffle" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Control/ManipulationButtons" index="1"]
+[node name="ViewSorted" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Control/ManipulationButtons" index="1"]
 margin_top = 25.0
-margin_right = 18.0
+margin_right = 22.0
 margin_bottom = 47.0
+
+[node name="Shuffle" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Control/ManipulationButtons" index="2"]
+margin_top = 50.0
+margin_right = 22.0
+margin_bottom = 72.0
 
 [node name="CardView" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/ViewPopup" index="0"]
 margin_left = 2.0
@@ -321,13 +326,18 @@ margin_right = 68.0
 margin_right = 45.0
 
 [node name="View" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Control/ManipulationButtons" index="0"]
-margin_right = 18.0
+margin_right = 22.0
 margin_bottom = 22.0
 
-[node name="Shuffle" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Control/ManipulationButtons" index="1"]
+[node name="ViewSorted" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Control/ManipulationButtons" index="1"]
 margin_top = 25.0
-margin_right = 18.0
+margin_right = 22.0
 margin_bottom = 47.0
+
+[node name="Shuffle" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Control/ManipulationButtons" index="2"]
+margin_top = 50.0
+margin_right = 22.0
+margin_bottom = 72.0
 
 [node name="CardView" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/ViewPopup" index="0"]
 margin_left = 2.0
