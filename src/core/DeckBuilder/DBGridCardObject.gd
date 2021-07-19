@@ -28,7 +28,7 @@ func setup(card_name) -> Card:
 	display_card.card_front.scale_to(CFConst.THUMBNAIL_SCALE)
 	display_card.state = Card.CardState.DECKBUILDER_GRID
 	rect_min_size = CFConst.CARD_SIZE * CFConst.THUMBNAIL_SCALE
-	rect_size = rect_min_size		
+	rect_size = rect_min_size
 	return(display_card)
 
 

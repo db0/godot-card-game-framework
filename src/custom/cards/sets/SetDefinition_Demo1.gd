@@ -4,6 +4,23 @@ extends Reference
 
 const SET = "Demo Set 1"
 const CARDS := {
+	"Rich Text Card": {
+		"Type": "Purple",
+		"Tags": ["Rich","Text"],
+		"Requirements": "",
+		"Abilities": "Raise [color=yellow]5[/color] {damage}.\n[i](this card is [color=red]not[/color] scripted)[/i]",
+		"Cost": 0,
+		"Power": 0,
+	},
+	"Shaking Card": {
+		"Type": "Purple",
+		"Tags": ["Rich","Text"],
+		"Requirements": "",
+		"Abilities": "We can really have [color=green][shake rate=5 level=10]some fun[/shake][/color] now!\n",
+
+		"Cost": 0,
+		"Power": 0,
+	},
 	"Test Card 1": {
 		"Type": "Blue",
 		"Tags": ["Tag 1","Tag 2"],

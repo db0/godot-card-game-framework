@@ -28,12 +28,11 @@ func get_preview_placement() -> Vector2:
 	var card_size := CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE
 	if get_global_mouse_position().x\
 			+ card_size.x\
+			+ 20\
 			> get_viewport().size.x:
-		ret.x = get_viewport().size.x\
-				- card_size.x\
-				* preview_card.scale.x
+		ret.x = get_global_mouse_position().x - card_size.x - 20
 	else:
-		ret.x = get_global_mouse_position().x + 10
+		ret.x = get_global_mouse_position().x + 20
 	if get_global_mouse_position().y\
 			+ card_size.y\
 			+ focus_panel_offset\

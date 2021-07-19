@@ -22,7 +22,7 @@ func test_setup():
 	assert_eq(deckbuilder._available_cards.get_child_count(),
 			cfc.card_definitions.size() - 1, # because of the token
 			"Available cards should match the unique cards defined")
-	assert_eq(deckbuilder._filter_buttons.get_child_count(), 3,
+	assert_eq(deckbuilder._filter_buttons.get_child_count(), 4,
 			"Filter buttons match the amounts of types")
 	var card_object: DBListCardObject = deckbuilder._available_cards.get_child(0)
 	var quantity_nodes : Array = card_object.get_node("Quantity").get_children()
@@ -97,7 +97,7 @@ func test_plus_minus_freeform_add_remove():
 		assert_null(card_object.deck_card_object)
 
 func test_save_load_reset():
-	var card_object: DBListCardObject = deckbuilder._available_cards.get_child(2)
+	var card_object: DBListCardObject = deckbuilder._available_cards.get_child(4)
 	card_object._qbuttons[3]._on_button_pressed()
 	var deck_name : String = deckbuilder._deck_name.text
 	deckbuilder._on_Save_pressed()
@@ -182,18 +182,18 @@ func test_filters() -> void:
 	deckbuilder._on_ClearFilters_pressed()
 	assert_eq(count_visible_list_cards(), all_visible)
 	fline.on_text_changed("!Choice")
-	assert_eq(count_visible_list_cards(), 3,
+	assert_eq(count_visible_list_cards(), 5,
 			"filter on name works")
 	fline.on_text_changed("a:blood")
 	assert_eq(count_visible_list_cards(), 1,
 			"filter on criteria works")
 	fline.text = "a!blood"
 	fline.on_text_changed("a!blood")
-	assert_eq(count_visible_list_cards(), 3,
+	assert_eq(count_visible_list_cards(), 5,
 			"negative filter works")
 	deckbuilder._filter_buttons.get_node("Red").pressed = false
 	deckbuilder._filter_buttons.get_node("Red").emit_signal("pressed")
-	assert_eq(count_visible_list_cards(), 2,
+	assert_eq(count_visible_list_cards(), 4,
 			"filter buttons and filter line working together")
 
 func test_name_randomize():

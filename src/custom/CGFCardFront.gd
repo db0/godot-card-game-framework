@@ -43,5 +43,7 @@ func _ready() -> void:
 				original_font_sizes[label] = 10
 			"Requirements":
 				original_font_sizes[label] = 11
+			"Abilities":
+				original_font_sizes[label] = 25
 			_:
 				original_font_sizes[label] = 16

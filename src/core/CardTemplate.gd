@@ -604,6 +604,8 @@ func modify_property(
 				# Normally they should be defined in CardConfig.PROPERTIES_STRINGS
 				# but this is also the fallback we use for
 				# properties undefined in CardConfig
+				elif card_front.card_labels[property] as RichTextLabel:
+					card_front.set_rich_label_text(label_node, str(value))
 				else:
 					card_front.set_label_text(label_node, str(value))
 					# If we have an empty property, we let the other labels
@@ -2348,6 +2350,8 @@ func _process_card_state() -> void:
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
 			if get_parent() in get_tree().get_nodes_in_group("piles"):
+				if card_front.rt_resizing and not get_parent().faceup_cards: 
+					return
 				set_is_faceup(get_parent().faceup_cards, true)
 
 		CardState.VIEWED_IN_PILE:

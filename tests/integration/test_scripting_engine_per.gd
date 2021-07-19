@@ -98,7 +98,7 @@ func test_per_tutor_and_spawn_card_per():
 			}}]}}
 	target.execute_scripts()
 	yield(yield_for(0.3), YIELD)
-	assert_eq(4,board.get_card_count(),
+	assert_eq(5,board.get_card_count(),
 		"Spawn 1 card per Blue card in the deck")
 
 
@@ -244,7 +244,7 @@ func test_filter_per_tutor_in_hand():
 				"src_container":  cfc.NMAP.hand,
 				"comparison": "ge",
 				"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}],
-				"filter_card_count": 3,}}}
+				"filter_card_count": 2,}}}
 	card.execute_scripts()
 	yield(yield_for(0.3), YIELD)
 	assert_false(card.is_faceup,
@@ -321,7 +321,7 @@ func test_filter_per_count_unique():
 	assert_not_null(bio_token,
 		"Put 1 Bio token per unique card in deck")
 	if bio_token:
-		assert_eq(bio_token.count, 4)
+		assert_eq(bio_token.count, 5)
 
 func test_modify_properties_per():
 	# warning-ignore:return_value_discarded

@@ -361,8 +361,8 @@ func test_target_script_on_drag_from_hand():
 
 func test_subject_previous_with_filters():
 	target = cfc.NMAP.deck.get_card(1)
-	# Discard a Blue card to get 1 research.
-	# Discard a Green card to get 2 research.
+	# Discard a Purple card to get 1 research.
+	# Discard a Red card to get 2 research.
 	card.scripts = {"manual": {
 				"hand":[
 					{
@@ -371,7 +371,7 @@ func test_subject_previous_with_filters():
 						"subject": "target",
 						"is_cost": true,
 						"filter_state_subject": [
-							{"filter_properties1": {"Type": "Blue"}},
+							{"filter_properties1": {"Type": "Purple"}},
 							{"filter_properties1": {"Type": "Red"}},
 						],
 					},
@@ -381,7 +381,7 @@ func test_subject_previous_with_filters():
 						"modification": 1,
 						"subject": "previous",
 						"filter_state_subject": [
-							{"filter_properties": {"Type": "Blue"}},
+							{"filter_properties": {"Type": "Purple"}},
 						],
 					},
 					{
