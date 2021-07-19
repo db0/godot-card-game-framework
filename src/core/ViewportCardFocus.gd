@@ -64,6 +64,9 @@ func _process(_delta) -> void:
 			c.queue_free()
 			if _previously_focused_cards.size() == 1:
 				break
+	if not is_instance_valid(_current_focus_source) and $VBC/Focus.modulate.a != 0 and not $VBC/Focus/Tween.is_active():
+		$VBC/Focus.modulate.a = 0
+
 
 # Takes care to resize the child viewport, when the main viewport is resized
 func _on_Viewport_size_changed() -> void:
