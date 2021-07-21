@@ -46,7 +46,7 @@ func test_move_to_multiple_container():
 			"Card 0 final position matches pile's position")
 	assert_eq(2,cfc.NMAP.discard.get_card_count(),
 			"Correct amount of cards are hosted in discard")
-	assert_eq(12,cfc.NMAP.deck.get_card_count(),
+	assert_eq(14,cfc.NMAP.deck.get_card_count(),
 			"Correct amount of cards are hosted in deck")
 	assert_eq(1,cfc.NMAP.hand.get_card_count(),
 			"Correct amount of cards are hosted in hand")
@@ -87,15 +87,15 @@ func test_popup_discard_view():
 	yield(yield_for(1), YIELD)
 	assert_eq(6,len(discard.get_children()),
 			"No cards should appear in the pile root after popup")
-	assert_eq(10,discard.get_card_count(),
+	assert_eq(12,discard.get_card_count(),
 			"Cards in popup should be returned with get_all_cards()")
-	assert_eq(10,discard.get_node("ViewPopup/CardView").get_child_count(),
+	assert_eq(12,discard.get_node("ViewPopup/CardView").get_child_count(),
 			"All cards all migrated to popup window")
 	assert_eq(1.0,discard.get_node("ViewPopup").modulate[3],
 			"ViewPopup should be visible")
 	cards[1].move_to(discard)
 	yield(yield_for(1), YIELD)
-	assert_eq(11,discard.get_node("ViewPopup/CardView").get_child_count(),
+	assert_eq(13,discard.get_node("ViewPopup/CardView").get_child_count(),
 			"Hosting a card in the pile, while popup is open, puts it in the popup")
 	assert_eq(Vector2(0.75,0.75),cards[1].scale,
 			"Moving a card into the popup, should scale it")

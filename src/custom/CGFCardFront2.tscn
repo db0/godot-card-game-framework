@@ -105,17 +105,14 @@ align = 1
 valign = 1
 autowrap = true
 
-[node name="Abilities" type="Label" parent="Margin/CardText"]
-margin_top = 104.0
+[node name="Abilities" type="RichTextLabel" parent="Margin/CardText"]
+margin_top = 164.0
 margin_right = 146.0
-margin_bottom = 224.0
-rect_min_size = Vector2( 146, 120 )
-size_flags_vertical = 1
+margin_bottom = 164.0
+size_flags_vertical = 6
 text = "This is the card ability text.
 "
-align = 1
-valign = 1
-autowrap = true
+scroll_active = false
 
 [node name="HB" type="HBoxContainer" parent="Margin/CardText"]
 margin_top = 227.0

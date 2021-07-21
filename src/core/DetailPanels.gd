@@ -59,7 +59,11 @@ func add_info(id: String, text: String, info_scene : PackedScene = null) -> void
 			new_info_panel = info_scene.instance()
 		else:
 			new_info_panel = info_panel_scene.instance()
-		new_info_panel.get_node("Details").text = text
+		var label = new_info_panel.get_node("Details")
+		if label as RichTextLabel:
+			label.bbcode_text = text
+		else:
+			label.text = text
 		add_child(new_info_panel)
 		existing_details[id] = new_info_panel
 

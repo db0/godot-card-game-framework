@@ -61,7 +61,8 @@ func test_signals():
 
 
 func test_card_properties_filter():
-	var target2: Card = cards[8]
+	cards += draw_test_cards(1)
+	var target2: Card = cards[9]
 	var ttype : String = target.properties["Type"]
 	var ttype2 : String = target2.properties["Type"]
 	card.scripts = {"card_rotated": {
@@ -235,7 +236,7 @@ func test_card_flipped():
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
-			"Card stayed face-up since filter_facup didn't match")
+		 "Card stayed face-up since filter_facup didn't match")
 	assert_false(cards[3].is_faceup,
 			"Card turned face-down since filter_facup matches")
 

@@ -32,6 +32,8 @@ func test_list_files_in_directory():
 func test_load_card_definitions():
 	var defs := cfc.load_card_definitions()
 	assert_eq([
+			"Rich Text Card",
+			"Shaking Card",
 			"Test Card 1",
 			"Test Card 2",
 			"Spawn Card",

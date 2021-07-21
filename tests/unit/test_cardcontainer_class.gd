@@ -22,7 +22,7 @@ func test_get_card_methods():
 			"get_card works")
 	assert_eq(4,container.get_card_index(container.get_child(9)),
 			"get_card_index works")
-	assert_eq(15,container.get_card_count(),
+	assert_eq(17,container.get_card_count(),
 			"get_card_count() works")
 	var sameget := 0
 	# We compare 2 random cards 5 times. Every time we have a match, we increment at 1.

@@ -37,3 +37,6 @@ const EXPLANATIONS = {
 	"Keyword 1": "Keyword 1: You can specify explanations for keywords that might appear in the text",
 	"Clarification A": "You can even provide longer clarification on card abilities"
 }
+const CARD_BBCODE := {
+	"damage": "[img={icon_size}]res://assets/icons/broadsword.png[/img]",
+}

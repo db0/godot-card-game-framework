@@ -60,42 +60,42 @@ size_flags_vertical = 3
 
 [node name="VButtons" type="VBoxContainer" parent="MainMenu/VBox/Center"]
 margin_left = 544.0
-margin_top = 104.0
+margin_top = 92.0
 margin_right = 736.0
-margin_bottom = 254.0
+margin_bottom = 267.0
 rect_min_size = Vector2( 192, 0 )
 custom_constants/separation = 10
 
 [node name="SinglePlayerDemo" type="Button" parent="MainMenu/VBox/Center/VButtons"]
 margin_right = 192.0
-margin_bottom = 22.0
+margin_bottom = 27.0
 text = "Single Player Demo"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Multiplayer" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_top = 32.0
+margin_top = 37.0
 margin_right = 192.0
-margin_bottom = 54.0
+margin_bottom = 64.0
 text = "Multiplayer Demo"
 
 [node name="Deckbuilder" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_top = 64.0
+margin_top = 74.0
 margin_right = 192.0
-margin_bottom = 86.0
+margin_bottom = 101.0
 text = "Deck Builder"
 
 [node name="GUT" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_top = 96.0
+margin_top = 111.0
 margin_right = 192.0
-margin_bottom = 118.0
+margin_bottom = 138.0
 text = "Tests"
 
 [node name="Exit" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_top = 128.0
+margin_top = 148.0
 margin_right = 192.0
-margin_bottom = 150.0
+margin_bottom = 175.0
 text = "Exit"
 
 [node name="MenuTween" type="Tween" parent="."]

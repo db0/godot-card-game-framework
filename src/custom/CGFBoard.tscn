@@ -62,18 +62,18 @@ margin_right = 68.0
 margin_right = 45.0
 
 [node name="View" parent="Deck/Control/ManipulationButtons" index="0"]
-margin_right = 22.0
-margin_bottom = 22.0
+margin_right = 26.0
+margin_bottom = 27.0
 
 [node name="ViewSorted" parent="Deck/Control/ManipulationButtons" index="1"]
-margin_top = 25.0
-margin_right = 22.0
-margin_bottom = 47.0
+margin_top = 30.0
+margin_right = 26.0
+margin_bottom = 57.0
 
 [node name="Shuffle" parent="Deck/Control/ManipulationButtons" index="2"]
-margin_top = 50.0
-margin_right = 22.0
-margin_bottom = 72.0
+margin_top = 60.0
+margin_right = 26.0
+margin_bottom = 87.0
 
 [node name="CardView" parent="Deck/ViewPopup" index="0"]
 margin_left = 2.0
@@ -82,15 +82,15 @@ margin_right = 6.0
 margin_bottom = 6.0
 
 [node name="Position" parent="Deck/Debug" index="0"]
-margin_bottom = 18.0
+margin_bottom = 23.0
 
 [node name="AreaPos" parent="Deck/Debug" index="1"]
-margin_top = 21.0
-margin_bottom = 39.0
+margin_top = 26.0
+margin_bottom = 49.0
 
 [node name="Size" parent="Deck/Debug" index="2"]
-margin_top = 42.0
-margin_bottom = 60.0
+margin_top = 52.0
+margin_bottom = 75.0
 
 [node name="Discard" parent="." instance=ExtResource( 2 )]
 position = Vector2( 1124, 475 )
@@ -121,18 +121,18 @@ margin_right = 68.0
 margin_right = 45.0
 
 [node name="View" parent="Discard/Control/ManipulationButtons" index="0"]
-margin_right = 22.0
-margin_bottom = 22.0
+margin_right = 26.0
+margin_bottom = 27.0
 
 [node name="ViewSorted" parent="Discard/Control/ManipulationButtons" index="1"]
-margin_top = 25.0
-margin_right = 22.0
-margin_bottom = 47.0
+margin_top = 30.0
+margin_right = 26.0
+margin_bottom = 57.0
 
 [node name="Shuffle" parent="Discard/Control/ManipulationButtons" index="2"]
-margin_top = 50.0
-margin_right = 22.0
-margin_bottom = 72.0
+margin_top = 60.0
+margin_right = 26.0
+margin_bottom = 87.0
 
 [node name="CardView" parent="Discard/ViewPopup" index="0"]
 margin_left = 2.0
@@ -141,15 +141,15 @@ margin_right = 6.0
 margin_bottom = 6.0
 
 [node name="Position" parent="Discard/Debug" index="0"]
-margin_bottom = 18.0
+margin_bottom = 23.0
 
 [node name="AreaPos" parent="Discard/Debug" index="1"]
-margin_top = 21.0
-margin_bottom = 39.0
+margin_top = 26.0
+margin_bottom = 49.0
 
 [node name="Size" parent="Discard/Debug" index="2"]
-margin_top = 42.0
-margin_bottom = 60.0
+margin_top = 52.0
+margin_bottom = 75.0
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )
