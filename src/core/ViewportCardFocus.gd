@@ -83,7 +83,7 @@ func focus_card(card: Card) -> void:
 		# our viewport world
 		# This way we can standardize its scale and look and not worry about
 		# what happens on the table.
-		var dupe_focus = card.duplicate()
+		var dupe_focus = card.duplicate(DUPLICATE_USE_INSTANCING)
 		dupe_focus.remove_from_group("cards")
 		_current_focus_source = card
 		_dupes_dict[dupe_focus] = card

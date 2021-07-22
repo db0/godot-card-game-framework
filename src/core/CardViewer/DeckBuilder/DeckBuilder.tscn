@@ -1,0 +1,68 @@
+[gd_scene load_steps=7 format=2]
+
+[ext_resource path="res://src/core/CardViewer/CardViewer.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckScene.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DeckBuilder.gd" type="Script" id=3]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBGridCardObject.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBListCardObject.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DeckNameRandomizer.gd" type="Script" id=6]
+
+[node name="DeckBuilder" instance=ExtResource( 1 )]
+script = ExtResource( 3 )
+list_card_object_scene = ExtResource( 5 )
+grid_card_object_scene = ExtResource( 4 )
+deck_name_randomizer = ExtResource( 6 )
+
+[node name="DeckMC" parent="VBC/HBC" index="0" instance=ExtResource( 2 )]
+
+[node name="MC" parent="VBC/HBC" index="1"]
+margin_left = 642.0
+
+[node name="AvailableCards" parent="VBC/HBC/MC" index="0"]
+margin_right = 628.0
+
+[node name="HBC" parent="VBC/HBC/MC/AvailableCards" index="0"]
+margin_right = 628.0
+
+[node name="FilterLine" parent="VBC/HBC/MC/AvailableCards/HBC" index="1"]
+margin_right = 524.0
+
+[node name="CardCount" parent="VBC/HBC/MC/AvailableCards/HBC" index="2"]
+margin_left = 528.0
+margin_right = 628.0
+
+[node name="CC" parent="VBC/HBC/MC/AvailableCards" index="1"]
+margin_right = 628.0
+
+[node name="ButtonFilters" parent="VBC/HBC/MC/AvailableCards/CC" index="0"]
+margin_left = 314.0
+margin_right = 314.0
+
+[node name="CardListHeaders" parent="VBC/HBC/MC/AvailableCards" index="2"]
+margin_right = 628.0
+
+[node name="Name" parent="VBC/HBC/MC/AvailableCards/CardListHeaders" index="0"]
+margin_right = 524.0
+
+[node name="Type" parent="VBC/HBC/MC/AvailableCards/CardListHeaders" index="1"]
+margin_left = 528.0
+margin_right = 628.0
+
+[node name="LineSeparator" parent="VBC/HBC/MC/AvailableCards" index="3"]
+margin_right = 628.0
+
+[node name="ScrollContainer" parent="VBC/HBC/MC/AvailableCards" index="4"]
+margin_right = 628.0
+
+[node name="CardList" parent="VBC/HBC/MC/AvailableCards/ScrollContainer" index="0"]
+margin_right = 628.0
+
+[node name="Settings" parent="VBC/HBC/MC/AvailableCards" index="5"]
+margin_right = 628.0
+
+[node name="Control" parent="VBC/HBC/MC/AvailableCards/Settings" index="0"]
+margin_right = 483.0
+
+[node name="GridViewStyle" parent="VBC/HBC/MC/AvailableCards/Settings" index="1"]
+margin_left = 487.0
+margin_right = 628.0

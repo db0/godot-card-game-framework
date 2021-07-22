@@ -1,0 +1,13 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/core/CardViewer/CardLibrary/CLListCardObject.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/custom/CGFDeckbuilder/CGFListCardObject.gd" type="Script" id=2]
+
+[node name="ListCardObject" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="Type" parent="." index="1"]
+bbcode_enabled = false
+text = "Blue"
+fit_content_height = false
+scroll_active = true

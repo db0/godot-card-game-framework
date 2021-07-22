@@ -1,5 +1,5 @@
 class_name CardLabel
-extends Label
+extends RichTextLabel
 
 onready var preview_popup := $PreviewPopup
 

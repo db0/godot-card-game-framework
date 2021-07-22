@@ -1,4 +1,4 @@
-class_name DBFilterButton
+class_name CVFilterButton
 extends Button
 
 # warning-ignore:unused_signal

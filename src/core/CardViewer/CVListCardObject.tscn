@@ -1,0 +1,26 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/core/CardViewer/CardLabel.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/core/CardViewer/CVListCardObject.gd" type="Script" id=3]
+
+[node name="ListCardObject" type="HBoxContainer"]
+margin_right = 628.0
+margin_bottom = 20.0
+script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="CardLabel" parent="." instance=ExtResource( 2 )]
+margin_left = 0.0
+margin_right = 524.0
+margin_bottom = 20.0
+
+[node name="Type" type="RichTextLabel" parent="."]
+margin_left = 528.0
+margin_right = 628.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 100, 0 )
+bbcode_enabled = true
+fit_content_height = true
+scroll_active = false

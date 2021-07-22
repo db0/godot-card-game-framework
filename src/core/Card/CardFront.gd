@@ -17,32 +17,6 @@ signal rt_resized
 var card_labels := {}
 # Simply points to the container which holds all the labels
 var _card_text
-# Stores the amount of adjustment that has happened to the height of all
-# labels, so that they fit their required text. This adjustment is then
-# reversed on the compensation_label.
-var _rect_adjustment := 0.0
-# This dictionary defines how much more a text field is allowed
-# to expand their rect in order to fit its text before shrinking its font size.
-#
-# The defaults of 1 means the text will shrink until it all fits within
-# the originally defined rect of the label.
-#
-# This is useful for things like card names, where it's preferable to expand
-# The title rect, instead of reducing the name's font size too much.
-#
-# You have to be careful with this field, as allowing too much expansion will
-# lead to cards with a lot of text, having it overflow their boundaries
-#
-# This dictionary is set inside the script extending this class
-# according to the needs of the labels defined within.
-var text_expansion_multiplier : Dictionary
-# If the card text is about to exceed the card's rect due to too much
-# expansion of a label using text_expansion_multiplier, then the
-# label specified in this var, will be shrunk extra to compensate.
-#
-# This string is set inside the script extending this class
-# according to the needs of their labels defined within.
-var compensation_label: String
 # It stores the font sizes as required by the developer. We keep it stored
 # In order to be able to compare against it during scale_to()
 #
@@ -80,70 +54,18 @@ func set_label_text(node: Label, value):
 	else:
 		working_value = value
 	_capture_original_font_size(node)
-	# We do not want some fields, like the name, to be too small.
-	# see CardConfig.TEXT_EXPANSION_MULTIPLIER documentation
-	var allowed_expansion = text_expansion_multiplier.get(node.name,1)
-	var adjust_size : float
-	# There is always one specified label that compensates for other nodes
-	# increasing or decreasing their y-rect.
-	if node.name in compensation_label:
-		adjust_size = _rect_adjustment
-	var label_size = node.rect_min_size
-	var label_font := get_card_label_font(node)
-	# We always start shrinking the size, starting from the original size.
-	label_font.size = font_sizes[node.name]
-	var line_height = label_font.get_height()
-	# line_spacing should be calculated into rect_size
 	var line_spacing = node.get("custom_constants/line_spacing")
 	if not line_spacing:
 		line_spacing = 3
-	# This calculates the amount of vertical pixels the text would take
-	# once it was word-wrapped.
-	var label_rect_y = label_font.get_wordwrap_string_size(
-			working_value, label_size.x).y \
-			/ line_height \
-			* (line_height + line_spacing) \
-			- line_spacing
-	# If the y-size of the wordwrapped text would be bigger than the current
-	# available y-size foir this label, we reduce the text, until we
-	# it's small enough to stay within the boundaries
-	while label_rect_y > label_size.y * allowed_expansion - adjust_size:
-		label_font.size = label_font.size - 1
-		if label_font.size < 3:
-			label_font.size = 2
-			break
-		label_rect_y = label_font.get_wordwrap_string_size(
-				working_value,label_size.x).y \
-				/ line_height \
-				* (line_height + line_spacing) \
-				- line_spacing
-	# If we allowed the card to expand its initial rect_size.y
-	# we need to compensate somewhere by reducing another label's size.
-	# We store the amount we increased in size from the
-	# initial amount,m for this purpose.
-	if label_rect_y > label_size.y:
-		_rect_adjustment += label_rect_y - label_size.y
-	if working_value == "":
-		_rect_adjustment -= node.rect_size.y
-		node.visible = false
+	var starting_font_size: int = font_sizes[node.name]
+	var label_font :Font = get_card_label_font(node)
+	label_font.size = starting_font_size
+	var font_adjustment := _adjust_font_size(label_font, working_value, node.rect_min_size, line_spacing)
+#	if  node.name == "Abilities": font_adjustment = -17
+	# We always start shrinking the size, starting from the original size.
+	label_font.size = starting_font_size + font_adjustment
 	set_card_label_font(node, label_font)
-	node.rect_min_size = label_size
 	node.text = value
-	# After any adjustmen of labels, we make sure the compensation_label font size
-	# is adjusted again, if needed, to avoid exceeding the card borders.
-	if compensation_label != ''\
-			and not node.name in compensation_label\
-			and _rect_adjustment != 0.0:
-		if card_labels[compensation_label] as RichTextLabel:
-			pass
-#			print_debug(card_labels[compensation_label].text)
-#			call_deferred("_adjust_rt_size", card_labels[compensation_label])
-#			_adjust_rt_size(card_labels[compensation_label])
-#			var ret = set_rich_label_text(card_labels[compensation_label], card_labels[compensation_label].bbcode_text, true)
-#			if ret is GDScriptFunctionState:
-#				ret = yield(ret, "completed")
-		else:
-			set_label_text(card_labels[compensation_label], card_labels[compensation_label].text)
 
 
 # Returns the font used by the current label
@@ -191,7 +113,7 @@ func scale_to(scale_multiplier: float) -> void:
 				call_deferred("set_rich_label_text",label, label.bbcode_text, true)
 			else:
 				var label : Label = card_labels[l]
-				set_label_text(label, label.text)
+				call_deferred("set_label_text",label, label.text)
 
 
 
@@ -212,11 +134,6 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 	# we modulate the card front to 0.
 	modulate.a = 0
 	var adjust_size : float
-	var allowed_expansion = text_expansion_multiplier.get(node.name,1)
-	# There is always one specified label that compensates for other nodes
-	# increasing or decreasing their y-rect.
-	if node.name in compensation_label:
-		adjust_size = _rect_adjustment
 	# I had to add this cache, because I cannot seem to get the bbcode_text
 	# out of the label once I set it
 	if not bbcode_texts.has(node) and not is_resize:
@@ -246,7 +163,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 	# which will not be taken into account.
 	# Therefore this gives us the starting point, but further reduction might be
 	# needed.
-	if bbcode_height > label_size.y * allowed_expansion - adjust_size:
+	if bbcode_height > label_size.y:
 		font_adjustment = _adjust_font_size(label_fonts["normal_font"], node.text, label_size)
 		_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
 		yield(get_tree(), "idle_frame")
@@ -259,7 +176,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 	# * Wait for the next frame
 	# * grab the new rich text height
 	# Unitl the rich text height is smaller than the labels' rect size.
-	while bbcode_height > label_size.y * allowed_expansion - adjust_size:
+	while bbcode_height > label_size.y:
 		font_adjustment -= 1
 		_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
 		_assign_bbcode_text(node, value, starting_font_size + font_adjustment)
@@ -277,15 +194,6 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 #			bbcode_height = node.get_content_height()
 		if starting_font_size + font_adjustment == 4:
 			break
-	# If we allowed the card to expand its initial rect_size.y
-	# we need to compensate somewhere by reducing another label's size.
-	# We store the amount we increased in size from the
-	# initial amount,m for this purpose.
-	if bbcode_height > label_size.y:
-		_rect_adjustment += bbcode_height - label_size.y
-	if value == "":
-		_rect_adjustment -= node.rect_size.y
-		node.visible = false
 	rt_resizing = false
 	modulate.a = 1
 	emit_signal("rt_resized")
@@ -380,7 +288,7 @@ func _adjust_font_size(
 	# line_spacing should be calculated into rect_size
 	# This calculates the amount of vertical pixels the text would take
 	# once it was word-wrapped.
-	var label_rect_y = font.get_wordwrap_string_size(
+	var label_rect_y = adjustment_font.get_wordwrap_string_size(
 			text, label_size.x).y \
 			/ line_height \
 			* (line_height + line_spacing) \
@@ -390,7 +298,8 @@ func _adjust_font_size(
 	# it's small enough to stay within the boundaries
 	while label_rect_y > label_size.y:
 		adjustment -= 1
-		adjustment_font.size = adjustment_font.size + adjustment
+		adjustment_font.size = font.size + adjustment
+		line_height = adjustment_font.get_height()
 		label_rect_y = adjustment_font.get_wordwrap_string_size(
 				text,label_size.x).y \
 				/ line_height \

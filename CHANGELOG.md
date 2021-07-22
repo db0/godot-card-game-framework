@@ -2,10 +2,25 @@
 
 ## 1.12 (Ongoing)
 
+### Important for Upgrades
+
+* Removed the automatic resizing of label nodes using a compensation label. I cannot make this work consistently, and in both games I've created, I never used this feature. I doubt anyone else will. Just more trouble than it's worth.As a result the following properties from CardFront are obsolete and need to be removed if you're setting them:
+   *  `_rect_adjustment`
+   * `text_expansion_multiplier`
+   * `compensation_label`
+   
+### New Features
+
+* Added support for Rich Text Labels on card fronts and info panels
 * Made CardContainers capable of being aligned using control nodes. To do so, you need to set their placement as "CONTROL" and then place them in a dedicated control node which you can make a part of your table layout.
 * If piles are scaled, cards will now appear to scale up/down as they move into/out of them.
 * Sample board using a Control-node based layout can be seen in `CGFBoardControlLayout.tscn`
 * Added way to see the contents of a pile sorted. And new demo button for it labeled "VS"
+* Removed the automatic resizing of label nodes using a compensation label. I cannot make this work consistently, and in both games I've created, I never used this feature. I doubt anyone else will. Just more trouble than it's worth.As a result the following properties from CardFront are obsolete and need to be removed if you're setting them:
+   *  `_rect_adjustment`
+   * `text_expansion_multiplier`
+   * `compensation_label`
+* Created the Card Library framework. Refactored Deckbuilder to inherit from new class CardViewer. CardLibrary inherits from the same class.
 
 ## 1.11
 

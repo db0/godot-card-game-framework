@@ -1,8 +1,8 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://src/core/DeckBuilder/DBFilterButton.gd" type="Script" id=1]
+[ext_resource path="res://src/core/CardViewer/CVFilterButton.gd" type="Script" id=1]
 
-[node name="DBFilterButton" type="Button"]
+[node name="CVFilterButton" type="Button"]
 margin_left = 308.0
 margin_right = 320.0
 margin_bottom = 20.0

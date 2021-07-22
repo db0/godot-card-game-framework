@@ -20,7 +20,7 @@ const NUMBER_WITH_LABEL := ["Cost","Power"]
 # Properties provided in a list which are converted into a string for the
 # label text, using the array_join() method
 const PROPERTIES_ARRAYS := ["Tags"]
-# This property matches the name of the scene file (without the .tcsn file)
+	# This property matches the name of the scene file (without the .tcsn file)
 # which is used as a template For this card.
 const SCENE_PROPERTY = "Type"
 # These are number carrying properties, which we want to hide their label

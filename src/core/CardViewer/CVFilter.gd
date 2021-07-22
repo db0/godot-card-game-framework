@@ -1,6 +1,6 @@
 # This class stores a filter for the Deckbuilder 
 # and is responsible for doing comparisons of expressions
-class_name DBFilter
+class_name CVFilter
 extends Reference
 
 # The property of a card this filter is checking against
@@ -51,7 +51,7 @@ func set_expression(value) -> void:
 # Compares the provided DBListCardObject against this filter
 #
 # Returns true if this filter matches the card_properties, else returns false
-func assess_card_object(card_object: DBListCardObject) -> bool:
+func assess_card_object(card_object: CVListCardObject) -> bool:
 	var card_match = true
 	var prop_value
 	# The card's name is not in the card properties, but in a special var

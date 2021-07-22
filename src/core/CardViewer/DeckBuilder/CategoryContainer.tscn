@@ -1,17 +1,17 @@
 [gd_scene load_steps=4 format=2]
 
-[ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=1]
-[ext_resource path="res://src/core/DeckBuilder/CategoryContainer.gd" type="Script" id=2]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/CategoryContainer.gd" type="Script" id=1]
+[ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=2]
 
 [sub_resource type="DynamicFont" id=1]
 size = 15
 use_filter = true
-font_data = ExtResource( 1 )
+font_data = ExtResource( 2 )
 
 [node name="CategoryContainer" type="VBoxContainer"]
 margin_right = 633.0
 margin_bottom = 46.0
-script = ExtResource( 2 )
+script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

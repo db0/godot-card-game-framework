@@ -52,7 +52,7 @@ __meta__ = {
 margin_left = 2.0
 margin_right = 148.0
 margin_bottom = 240.0
-rect_min_size = Vector2( 0, 139 )
+rect_min_size = Vector2( 0, 240 )
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
@@ -110,7 +110,7 @@ margin_top = 104.0
 margin_right = 146.0
 margin_bottom = 224.0
 rect_min_size = Vector2( 146, 120 )
-size_flags_vertical = 1
+size_flags_vertical = 3
 text = "This is the card ability text.
 "
 align = 1

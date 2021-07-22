@@ -1,10 +1,10 @@
 # A special LineEdit which compiles the text written
-# into distinct [DBFilter] objects
+# into distinct [CVFilter] objects
 #
 # The filters use roughly the same syntax as
 # [netrunnerdb](https://netrunnerdb.com/en/syntax)
 # but have different criteria (see [criteria_map](#criteria_map))
-class_name DBFilterLine
+class_name CVFilterLine
 extends LineEdit
 
 # Emited whenever the line text is changed. The deckbuilder grabs it and
@@ -84,7 +84,7 @@ func compile_filters(line_text: String) -> Array:
 	var filter_entries = line_text.to_lower().split(' ')
 	var filters := []
 	for filter in filter_entries:
-		var filter_entry := DBFilter.new()
+		var filter_entry := CVFilter.new()
 		var regex_result = _filter_parse.search(filter)
 		# If the filter matches the conditiona-operator-expression format
 		# we use the regex groups to populate the DBFilter object

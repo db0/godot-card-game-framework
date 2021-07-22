@@ -9,18 +9,20 @@
 [ext_resource path="res://src/custom/CGFPlacementGridDemo.tscn" type="PackedScene" id=7]
 [ext_resource path="res://src/custom/CGFModifiedLabelGrid.tscn" type="PackedScene" id=8]
 [ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=9]
-[ext_resource path="res://src/core/DeckBuilder/DeckBuilder.tscn" type="PackedScene" id=10]
-[ext_resource path="res://src/custom/CGFInfoPanel.tscn" type="PackedScene" id=11]
+[ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=10]
 [ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=12]
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="DynamicFont" id=1]
 size = 14
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
 font_data = ExtResource( 9 )
 
-[sub_resource type="StyleBoxFlat" id=1]
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
+
+[sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 0, 0, 0, 1 )
 corner_radius_top_left = 25
 corner_radius_top_right = 25
@@ -143,7 +145,7 @@ margin_left = 10.0
 margin_top = 175.0
 margin_right = 265.0
 margin_bottom = 200.0
-custom_fonts/font = SubResource( 2 )
+custom_fonts/font = SubResource( 1 )
 text = "Game Seed is: "
 __meta__ = {
 "_edit_use_anchors_": false
@@ -155,11 +157,13 @@ margin_bottom = 600.0
 rect_min_size = Vector2( 800, 0 )
 
 [node name="DeckBuilder" parent="DeckBuilderPopup" instance=ExtResource( 10 )]
+anchor_right = 1.0
+anchor_bottom = 1.0
 margin_left = 2.0
 margin_top = 2.0
 margin_right = -2.0
 margin_bottom = -2.0
-info_panel_scene = ExtResource( 11 )
+custom_styles/panel = SubResource( 3 )
 
 [node name="HandArea" type="MarginContainer" parent="."]
 anchor_top = 1.0
@@ -228,18 +232,18 @@ margin_right = 68.0
 margin_right = 45.0
 
 [node name="View" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Control/ManipulationButtons" index="0"]
-margin_right = 22.0
-margin_bottom = 22.0
+margin_right = 26.0
+margin_bottom = 27.0
 
 [node name="ViewSorted" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Control/ManipulationButtons" index="1"]
-margin_top = 25.0
-margin_right = 22.0
-margin_bottom = 47.0
+margin_top = 30.0
+margin_right = 26.0
+margin_bottom = 57.0
 
 [node name="Shuffle" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Control/ManipulationButtons" index="2"]
-margin_top = 50.0
-margin_right = 22.0
-margin_bottom = 72.0
+margin_top = 60.0
+margin_right = 26.0
+margin_bottom = 87.0
 
 [node name="CardView" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/ViewPopup" index="0"]
 margin_left = 2.0
@@ -248,15 +252,15 @@ margin_right = 6.0
 margin_bottom = 6.0
 
 [node name="Position" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Debug" index="0"]
-margin_bottom = 18.0
+margin_bottom = 23.0
 
 [node name="AreaPos" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Debug" index="1"]
-margin_top = 21.0
-margin_bottom = 39.0
+margin_top = 26.0
+margin_bottom = 49.0
 
 [node name="Size" parent="HandArea/HBC/DeckControl/VBoxContainer/Control/Deck/Debug" index="2"]
-margin_top = 42.0
-margin_bottom = 60.0
+margin_top = 52.0
+margin_bottom = 75.0
 
 [node name="HandControl" type="Control" parent="HandArea/HBC"]
 margin_left = 78.0
@@ -305,7 +309,7 @@ pile_name = "Discard"
 faceup_cards = true
 
 [node name="Control" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard" index="0"]
-custom_styles/panel = SubResource( 1 )
+custom_styles/panel = SubResource( 2 )
 
 [node name="VBoxContainer" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Control/CenterContainer" index="0"]
 margin_right = 68.0
@@ -326,18 +330,18 @@ margin_right = 68.0
 margin_right = 45.0
 
 [node name="View" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Control/ManipulationButtons" index="0"]
-margin_right = 22.0
-margin_bottom = 22.0
+margin_right = 26.0
+margin_bottom = 27.0
 
 [node name="ViewSorted" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Control/ManipulationButtons" index="1"]
-margin_top = 25.0
-margin_right = 22.0
-margin_bottom = 47.0
+margin_top = 30.0
+margin_right = 26.0
+margin_bottom = 57.0
 
 [node name="Shuffle" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Control/ManipulationButtons" index="2"]
-margin_top = 50.0
-margin_right = 22.0
-margin_bottom = 72.0
+margin_top = 60.0
+margin_right = 26.0
+margin_bottom = 87.0
 
 [node name="CardView" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/ViewPopup" index="0"]
 margin_left = 2.0
@@ -346,15 +350,15 @@ margin_right = 6.0
 margin_bottom = 6.0
 
 [node name="Position" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Debug" index="0"]
-margin_bottom = 18.0
+margin_bottom = 23.0
 
 [node name="AreaPos" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Debug" index="1"]
-margin_top = 21.0
-margin_bottom = 39.0
+margin_top = 26.0
+margin_bottom = 49.0
 
 [node name="Size" parent="HandArea/HBC/DiscardControl/VBC/Control/Discard/Debug" index="2"]
-margin_top = 42.0
-margin_bottom = 60.0
+margin_top = 52.0
+margin_bottom = 75.0
 
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]

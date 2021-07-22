@@ -1,11 +1,15 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=8 format=2]
 
 [ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=1]
 [ext_resource path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://src/custom/MainMenu.gd" type="Script" id=3]
-[ext_resource path="res://src/custom/CGFDeckBuilder.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=4]
+[ext_resource path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.tscn" type="PackedScene" id=5]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="StyleBoxFlat" id=3]
+bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
+
+[sub_resource type="DynamicFont" id=2]
 size = 107
 font_data = ExtResource( 2 )
 
@@ -19,6 +23,14 @@ __meta__ = {
 }
 
 [node name="DeckBuilder" parent="." instance=ExtResource( 4 )]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_styles/panel = SubResource( 3 )
+
+[node name="CardLibrary" parent="." instance=ExtResource( 5 )]
+anchor_right = 1.0
+anchor_bottom = 1.0
+custom_styles/panel = SubResource( 3 )
 
 [node name="MainMenu" type="MarginContainer" parent="."]
 anchor_right = 1.0
@@ -47,7 +59,7 @@ custom_constants/margin_top = 90
 margin_top = 108.0
 margin_right = 1280.0
 margin_bottom = 340.0
-custom_fonts/font = SubResource( 1 )
+custom_fonts/font = SubResource( 2 )
 text = "Godot 
 Card Game Framework"
 align = 1
@@ -60,9 +72,9 @@ size_flags_vertical = 3
 
 [node name="VButtons" type="VBoxContainer" parent="MainMenu/VBox/Center"]
 margin_left = 544.0
-margin_top = 92.0
+margin_top = 73.0
 margin_right = 736.0
-margin_bottom = 267.0
+margin_bottom = 285.0
 rect_min_size = Vector2( 192, 0 )
 custom_constants/separation = 10
 
@@ -86,16 +98,22 @@ margin_right = 192.0
 margin_bottom = 101.0
 text = "Deck Builder"
 
-[node name="GUT" type="Button" parent="MainMenu/VBox/Center/VButtons"]
+[node name="CardLibrary" type="Button" parent="MainMenu/VBox/Center/VButtons"]
 margin_top = 111.0
 margin_right = 192.0
 margin_bottom = 138.0
-text = "Tests"
+text = "Card Library"
 
-[node name="Exit" type="Button" parent="MainMenu/VBox/Center/VButtons"]
+[node name="GUT" type="Button" parent="MainMenu/VBox/Center/VButtons"]
 margin_top = 148.0
 margin_right = 192.0
 margin_bottom = 175.0
+text = "Tests"
+
+[node name="Exit" type="Button" parent="MainMenu/VBox/Center/VButtons"]
+margin_top = 185.0
+margin_right = 192.0
+margin_bottom = 212.0
 text = "Exit"
 
 [node name="MenuTween" type="Tween" parent="."]

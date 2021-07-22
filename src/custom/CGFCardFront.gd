@@ -1,13 +1,6 @@
 extends CardFront
 
 func _ready() -> void:
-	text_expansion_multiplier = {
-		"Name": 2,
-		"Tags": 1.2,
-		"Cost": 3,
-		"Power": 3,
-	}
-	compensation_label = "Abilities"
 	_card_text = $Margin/CardText
 	# Map your card text label layout here. We use this when scaling
 	# The card or filling up its text
@@ -25,7 +18,7 @@ func _ready() -> void:
 	card_label_min_sizes["Type"] = Vector2(CFConst.CARD_SIZE.x - 4, 13)
 	card_label_min_sizes["Tags"] = Vector2(CFConst.CARD_SIZE.x - 4, 17)
 	card_label_min_sizes["Requirements"] = Vector2(CFConst.CARD_SIZE.x - 4, 11)
-	card_label_min_sizes["Abilities"] = Vector2(CFConst.CARD_SIZE.x - 4, 144)
+	card_label_min_sizes["Abilities"] = Vector2(CFConst.CARD_SIZE.x - 4, 120)
 	card_label_min_sizes["Cost"] = Vector2(40,13)
 	card_label_min_sizes["Power"] = Vector2(40,13)
 

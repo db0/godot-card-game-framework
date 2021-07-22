@@ -1,4 +1,4 @@
-class_name DBPreviewPopup
+class_name CVPreviewPopup
 extends Popup
 
 var preview_card: Card
