@@ -9,6 +9,11 @@
 script = ExtResource( 2 )
 info_panel_scene = ExtResource( 3 )
 list_card_object_scene = ExtResource( 4 )
+default_property_width = 100
+property_width_exceptions = {
+"Cost": 30,
+"Power": 50
+}
 
 [node name="MC" parent="VBC/HBC" index="0"]
 custom_constants/margin_right = 5

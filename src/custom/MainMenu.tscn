@@ -23,13 +23,9 @@ __meta__ = {
 }
 
 [node name="DeckBuilder" parent="." instance=ExtResource( 4 )]
-anchor_right = 1.0
-anchor_bottom = 1.0
 custom_styles/panel = SubResource( 1 )
 
 [node name="CardLibrary" parent="." instance=ExtResource( 5 )]
-anchor_right = 1.0
-anchor_bottom = 1.0
 custom_styles/panel = SubResource( 1 )
 
 [node name="MainMenu" type="MarginContainer" parent="."]

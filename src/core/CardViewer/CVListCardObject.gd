@@ -12,6 +12,7 @@ var card_properties: Dictionary
 var card_name: String
 
 onready var _card_label:= $CardLabel
+onready var _card_type:= $Type
 
 func _ready() -> void:
 	_card_label.preview_popup.focus_info.info_panel_scene = card_viewer.info_panel_scene

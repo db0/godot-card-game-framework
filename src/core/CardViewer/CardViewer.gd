@@ -53,6 +53,7 @@ onready var _filter_buttons := $VBC/HBC/MC/AvailableCards/CC/ButtonFilters
 onready var _card_count := $VBC/HBC/MC/AvailableCards/HBC/CardCount
 onready var _card_headers := $VBC/HBC/MC/AvailableCards/CardListHeaders
 onready var _card_name_header := $VBC/HBC/MC/AvailableCards/CardListHeaders/Name
+onready var _card_type_header := $VBC/HBC/MC/AvailableCards/CardListHeaders/Type
 
 func _ready() -> void:
 	# This signal returns the load buttons' popup menu choice.
@@ -66,6 +67,7 @@ func _ready() -> void:
 			cfc.game_settings.deckbuilder_gridstyle
 	if cfc.game_settings.deckbuilder_gridstyle:
 		prepare_card_grid()
+
 
 
 
