@@ -12,6 +12,7 @@ Pull requests are more than welcome ;)
 * **Complete card text and rules enforcement** capacity, via provided Scripting Engine! (see scripting engine features, below)
 * Tween & GDScript-based animations that look good for card movements.
 * Customizable card highlights
+* Supports Rich Text for card text, including embedded images.
 * Choice between Oval or Straight hand shape
 * Automatic focus-in on cards when moused over in-hand.
 * Automatic re-arranging of hand as cards are added or removed.
