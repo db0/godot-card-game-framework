@@ -1,4 +1,4 @@
-# This class stores a filter for the Deckbuilder 
+# This class stores a filter for the Card Viewer 
 # and is responsible for doing comparisons of expressions
 class_name CVFilter
 extends Reference

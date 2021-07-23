@@ -8,6 +8,9 @@
 script = ExtResource( 4 )
 info_panel_scene = ExtResource( 2 )
 
+[node name="Title" parent="VBC" index="0"]
+text = "Deck Builder"
+
 [node name="Back" type="Button" parent="VBC/HBC/DeckMC/CurrentDeck/Buttons" index="4"]
 margin_left = 202.0
 margin_right = 244.0

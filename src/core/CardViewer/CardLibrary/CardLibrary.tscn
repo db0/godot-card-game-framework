@@ -5,3 +5,6 @@
 
 [node name="CardLibrary" instance=ExtResource( 1 )]
 script = ExtResource( 3 )
+
+[node name="Title" parent="VBC" index="0"]
+text = "Card Library"

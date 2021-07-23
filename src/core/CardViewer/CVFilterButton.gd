@@ -1,3 +1,4 @@
+# A Card Viewer button which is hides/shows all cards which match its text
 class_name CVFilterButton
 extends Button
 

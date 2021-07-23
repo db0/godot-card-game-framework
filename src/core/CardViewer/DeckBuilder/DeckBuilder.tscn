@@ -13,6 +13,9 @@ list_card_object_scene = ExtResource( 5 )
 grid_card_object_scene = ExtResource( 4 )
 deck_name_randomizer = ExtResource( 6 )
 
+[node name="Title" parent="VBC" index="0"]
+text = "Deck Builder"
+
 [node name="DeckMC" parent="VBC/HBC" index="0" instance=ExtResource( 2 )]
 
 [node name="MC" parent="VBC/HBC" index="1"]

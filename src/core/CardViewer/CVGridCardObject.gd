@@ -1,4 +1,5 @@
-
+# A container for a card instance which is meant to be placed in a grid container.
+# It will also show a larger image of the card when moused-over
 class_name CVGridCardObject
 extends CenterContainer
 

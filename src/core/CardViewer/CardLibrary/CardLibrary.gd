@@ -1,3 +1,4 @@
+# This class is used to simply display all cards available in the game
 class_name CardLibrary
 extends CardViewer
 

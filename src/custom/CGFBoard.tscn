@@ -275,6 +275,8 @@ margin_bottom = 600.0
 rect_min_size = Vector2( 800, 0 )
 
 [node name="DeckBuilder" parent="DeckBuilderPopup" instance=ExtResource( 10 )]
+anchor_right = 1.0
+anchor_bottom = 1.0
 margin_left = 2.0
 margin_top = 2.0
 margin_right = -2.0

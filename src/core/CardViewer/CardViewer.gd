@@ -1,5 +1,7 @@
-# A Deckbuilder which allows players to construct, save and load decks
-# to use in the game
+# The Card Viewer is a basic class which is responsible for displaying
+# all cards available in the game, either for preview, or for deckbuilding
+#
+# It is meant to be extended.
 class_name CardViewer
 extends PanelContainer
 
@@ -165,7 +167,8 @@ func _on_ClearFilters_pressed() -> void:
 	_filter_line.text = ''
 	_apply_filters(_filter_line.get_active_filters())
 
-
+# When the grid view is switched, we instance all cards available in the game
+# and put them in the grid.
 func _on_GridViewStyle_toggled(button_pressed: bool) -> void:
 	_available_cards.visible = !button_pressed
 	$"VBC/HBC/MC/AvailableCards/CardListHeaders".visible = !button_pressed

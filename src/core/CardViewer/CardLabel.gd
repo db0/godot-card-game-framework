@@ -1,3 +1,4 @@
+# A card title which includes a display of the card when hovered
 class_name CardLabel
 extends RichTextLabel
 

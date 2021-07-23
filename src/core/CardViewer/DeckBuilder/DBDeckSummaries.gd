@@ -1,3 +1,4 @@
+# Shows details about the current deck as a whole
 class_name DBDeckSummaries
 extends HBoxContainer
 
