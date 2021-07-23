@@ -106,10 +106,12 @@ expand_icon = true
 [node name="CardListHeaders" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards"]
 margin_top = 62.0
 margin_right = 1270.0
-margin_bottom = 62.0
+margin_bottom = 82.0
 
 [node name="Name" type="RichTextLabel" parent="VBC/HBC/MC/AvailableCards/CardListHeaders"]
 margin_right = 1166.0
+margin_bottom = 20.0
+rect_min_size = Vector2( 0, 20 )
 size_flags_horizontal = 3
 text = "Name"
 scroll_active = false
@@ -117,18 +119,19 @@ scroll_active = false
 [node name="Type" type="RichTextLabel" parent="VBC/HBC/MC/AvailableCards/CardListHeaders"]
 margin_left = 1170.0
 margin_right = 1270.0
-rect_min_size = Vector2( 100, 0 )
+margin_bottom = 20.0
+rect_min_size = Vector2( 100, 20 )
 text = "Type"
 scroll_active = false
 
 [node name="LineSeparator" type="Panel" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 66.0
+margin_top = 86.0
 margin_right = 1270.0
-margin_bottom = 66.0
+margin_bottom = 86.0
 custom_styles/panel = SubResource( 2 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 70.0
+margin_top = 90.0
 margin_right = 1270.0
 margin_bottom = 653.0
 size_flags_horizontal = 3

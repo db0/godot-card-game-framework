@@ -54,6 +54,7 @@ onready var _notice := $VBC/HBC/DeckMC/CurrentDeck/HBoxContainer/NoticeLabel
 onready var _save_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Save
 onready var _reset_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Reset
 onready var _delete_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Delete
+onready var _randomize_name_button := $VBC/HBC/DeckMC/CurrentDeck/HBoxContainer/RandomizeName
 
 func _ready() -> void:
 	deck_summaries = deck_summary_scene.instance()
@@ -68,6 +69,8 @@ func _ready() -> void:
 	_reset_button.connect("pressed",self,"_on_Reset_pressed")
 	# warning-ignore:return_value_discarded
 	_delete_button.connect("pressed",self,"_on_Delete_pressed")
+	# warning-ignore:return_value_discarded
+	_randomize_name_button.connect("pressed",self,"_on_RandomizeName_pressed")
 
 
 func _process(_delta: float) -> void:
