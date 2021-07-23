@@ -7,9 +7,12 @@ margin_left = 308.0
 margin_right = 320.0
 margin_bottom = 20.0
 toggle_mode = true
+shortcut_in_tooltip = false
 pressed = true
 text = "Filter"
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[connection signal="gui_input" from="." to="." method="_on_CVFilterButton_gui_input"]

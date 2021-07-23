@@ -20,6 +20,9 @@ const _FILTER_BUTTON_SCENE = preload(_FILTER_BUTTON_SCENE_FILE)
 const _INFO_PANEL_SCENE_FILE = CFConst.PATH_CORE\
 		+ "CardViewer/CVInfoPanel.tscn"
 const _INFO_PANEL_SCENE = preload(_INFO_PANEL_SCENE_FILE)
+const _SHOW_ALL_ICON_FILE = CFConst.PATH_CORE\
+		+ "CardViewer/open-book.png"
+const _SHOW_ALL_ICON = preload(_SHOW_ALL_ICON_FILE)
 
 # Set a property name defined in the cards. The deckbuilder will provide
 # one button per distinct property of that name
@@ -54,6 +57,7 @@ onready var _card_count := $VBC/HBC/MC/AvailableCards/HBC/CardCount
 onready var _card_headers := $VBC/HBC/MC/AvailableCards/CardListHeaders
 onready var _card_name_header := $VBC/HBC/MC/AvailableCards/CardListHeaders/Name
 onready var _card_type_header := $VBC/HBC/MC/AvailableCards/CardListHeaders/Type
+onready var _show_all_button := $VBC/HBC/MC/AvailableCards/CC/ButtonFilters/ShowAll
 
 func _ready() -> void:
 	# This signal returns the load buttons' popup menu choice.
@@ -67,8 +71,8 @@ func _ready() -> void:
 			cfc.game_settings.deckbuilder_gridstyle
 	if cfc.game_settings.deckbuilder_gridstyle:
 		prepare_card_grid()
-
-
+	_show_all_button.icon = CFUtils.convert_texture_to_image(
+			"res://src/core/CardViewer/open-book.png")
 
 
 ## Prepares the filter buttons based on the unique values in cards.
@@ -86,7 +90,9 @@ func prepate_filter_buttons() -> void:
 				var filter_button = _FILTER_BUTTON_SCENE.instance()
 				filter_button.setup(button_property, value)
 				filter_button.connect("pressed", self, "_on_filter_button_pressed")
+				filter_button.connect("right_pressed", self, "_on_filter_button_right_pressed", [filter_button])
 				_filter_buttons.add_child(filter_button)
+		_show_all_button.connect("pressed", self, "_on_ShowAll_button_pressed")
 
 
 func _process(_delta: float) -> void:
@@ -142,13 +148,17 @@ func _apply_filters(active_filters: Array) -> void:
 		for property in filter_button_properties:
 			var active_button_values = []
 			for button in _filter_buttons.get_children():
-				if button.pressed and button.property == property:
+				if button as CVFilterButton\
+						and button.pressed\
+						and button.property == property:
 					active_button_values.append(button.value)
 			if not card_object.card_properties.get(property):
 				set_visible = false
 			elif not card_object.card_properties[property]\
 					in active_button_values:
 				set_visible = false
+		if not _check_custom_filters(card_object):
+			set_visible = false
 		card_object.set_visibility(set_visible)
 		total_count += 1
 		if set_visible:
@@ -159,8 +169,30 @@ func _apply_filters(active_filters: Array) -> void:
 		_card_count.text = "Filtered: " + str(counter)
 
 
+# functions to override in order to put in custom filters checks
+func _check_custom_filters(card_object: CVListCardObject) -> bool:
+	return(true)
+
+
+# Simply calls _apply_filters()
+func _on_ShowAll_button_pressed() -> void:
+	for button in _filter_buttons.get_children():
+		if button as CVFilterButton\
+				and not button.pressed:
+			button.pressed = true
+	_apply_filters(_filter_line.get_active_filters())
+
 # Simply calls _apply_filters()
 func _on_filter_button_pressed() -> void:
+	_apply_filters(_filter_line.get_active_filters())
+
+# Simply calls _apply_filters()
+func _on_filter_button_right_pressed(filter_button: CVFilterButton) -> void:
+	for button in _filter_buttons.get_children():
+		if button as CVFilterButton\
+				and button.pressed\
+				and button != filter_button:
+			button.pressed = false
 	_apply_filters(_filter_line.get_active_filters())
 
 

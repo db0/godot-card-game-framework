@@ -2,11 +2,11 @@
 class_name CVFilterButton
 extends Button
 
-# warning-ignore:unused_signal
-signal filter_toggled()
+signal right_pressed()
 
 var property : String
 var value: String
+
 
 func setup(_property: String, _value: String) -> void:
 	property = _property
@@ -14,11 +14,10 @@ func setup(_property: String, _value: String) -> void:
 	text = _value
 	name = _value
 
-func _ready() -> void:
-	pass
-	# warning-ignore:return_value_discarded
-#	connect("pressed", self, "_on_pressed")
 
-#func _on_toggle(button_pressed) -> void:
-#	emit_signal("filter_toggled", filter, button_pressed)
-#
+func _on_CVFilterButton_gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton\
+			and event.is_pressed()\
+			and event.get_button_index() == 2:
+		pressed = true
+		emit_signal("right_pressed")

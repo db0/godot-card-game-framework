@@ -1,19 +1,20 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://src/core/CardViewer/CVFilterLine.gd" type="Script" id=1]
+[ext_resource path="res://src/core/CardViewer/open-book.png" type="Texture" id=2]
 [ext_resource path="res://src/core/CardViewer/CardViewer.gd" type="Script" id=3]
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
 
-[sub_resource type="StyleBoxLine" id=4]
+[sub_resource type="StyleBoxLine" id=2]
 color = Color( 1, 0.4, 0, 1 )
 thickness = 2
 
 [node name="CardViewer" type="PanelContainer"]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_styles/panel = SubResource( 3 )
+custom_styles/panel = SubResource( 1 )
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -86,17 +87,26 @@ text = "Total:"
 [node name="CC" type="CenterContainer" parent="VBC/HBC/MC/AvailableCards"]
 margin_top = 28.0
 margin_right = 1270.0
-margin_bottom = 28.0
+margin_bottom = 58.0
 size_flags_horizontal = 3
 
 [node name="ButtonFilters" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards/CC"]
-margin_left = 635.0
-margin_right = 635.0
+margin_left = 620.0
+margin_right = 650.0
+margin_bottom = 30.0
+
+[node name="ShowAll" type="Button" parent="VBC/HBC/MC/AvailableCards/CC/ButtonFilters"]
+margin_right = 30.0
+margin_bottom = 30.0
+rect_min_size = Vector2( 30, 30 )
+shortcut_in_tooltip = false
+icon = ExtResource( 2 )
+expand_icon = true
 
 [node name="CardListHeaders" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 32.0
+margin_top = 62.0
 margin_right = 1270.0
-margin_bottom = 46.0
+margin_bottom = 76.0
 
 [node name="Name" type="Label" parent="VBC/HBC/MC/AvailableCards/CardListHeaders"]
 margin_right = 1166.0
@@ -112,13 +122,13 @@ rect_min_size = Vector2( 100, 0 )
 text = "Type"
 
 [node name="LineSeparator" type="Panel" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 50.0
+margin_top = 80.0
 margin_right = 1270.0
-margin_bottom = 50.0
-custom_styles/panel = SubResource( 4 )
+margin_bottom = 80.0
+custom_styles/panel = SubResource( 2 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 54.0
+margin_top = 84.0
 margin_right = 1270.0
 margin_bottom = 653.0
 size_flags_horizontal = 3

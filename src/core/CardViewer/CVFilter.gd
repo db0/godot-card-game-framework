@@ -70,7 +70,7 @@ func assess_card_object(card_object: CVListCardObject) -> bool:
 			if compare_regex(pvalue.to_lower()):
 				card_match = true
 				break
-	if property in CardConfig.PROPERTIES_STRINGS or property == "Name":
+	else:
 		if not compare_regex(prop_value.to_lower()):
 			card_match = false
 	return(card_match)
