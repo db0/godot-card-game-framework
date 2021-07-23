@@ -19,6 +19,7 @@ font_data = ExtResource( 5 )
 [node name="DBDeckCardObject" type="HBoxContainer"]
 margin_right = 623.0
 margin_bottom = 18.0
+size_flags_horizontal = 3
 script = ExtResource( 4 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -46,12 +47,14 @@ margin_right = 70.0
 margin_bottom = 21.0
 custom_fonts/font = SubResource( 3 )
 text = "1x"
+valign = 2
 
 [node name="CardLabel" parent="." instance=ExtResource( 2 )]
 margin_left = 74.0
-margin_top = 3.0
 margin_right = 623.0
-margin_bottom = 21.0
+margin_bottom = 24.0
+size_flags_vertical = 5
+fit_content_height = false
 
 [connection signal="pressed" from="Plus" to="." method="_on_Plus_pressed"]
 [connection signal="pressed" from="Minus" to="." method="_on_Minus_pressed"]

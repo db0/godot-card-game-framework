@@ -7,7 +7,7 @@ func _ready() -> void:
 	text = "Test Card 1" # debug
 
 func setup(card_name) -> void:
-	text = card_name
+	bbcode_text = card_name
 
 
 func _on_CardLabel_mouse_entered() -> void:

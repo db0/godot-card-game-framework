@@ -39,7 +39,7 @@ var rt_resizing := false
 
 
 # Stores a reference to the Card that is hosting this node
-onready var card_owner = get_parent().get_parent()
+onready var card_owner = get_parent().get_parent().get_parent()
 
 # Set a label node's text.
 # As the string becomes longer, the font size becomes smaller

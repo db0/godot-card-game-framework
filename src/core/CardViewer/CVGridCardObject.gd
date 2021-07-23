@@ -8,8 +8,6 @@ var card_list_object
 onready var preview_popup := $PreviewPopup
 
 func _ready() -> void:
-	# warning-ignore:return_value_discarded
-	connect("gui_input",self,"on_gui_input")
 	rect_min_size = CFConst.CARD_SIZE
 
 

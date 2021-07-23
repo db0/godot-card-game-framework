@@ -4,6 +4,7 @@ onready var back_button := $VBC/HBC/MC/AvailableCards/Settings/Back
 var abilities_header : Label
 
 func _ready() -> void:
+	# warning-ignore:return_value_discarded
 	get_viewport().connect("size_changed",self,"_on_viewport_resized")
 
 # Populates the list of available cards, with all defined cards in the game

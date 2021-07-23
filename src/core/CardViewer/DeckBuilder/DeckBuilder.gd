@@ -64,7 +64,9 @@ func _ready() -> void:
 	_deck_name.text = generate_random_deck_name()
 	# warning-ignore:return_value_discarded
 	_save_button.connect("pressed",self,"_on_Save_pressed")
+	# warning-ignore:return_value_discarded
 	_reset_button.connect("pressed",self,"_on_Reset_pressed")
+	# warning-ignore:return_value_discarded
 	_delete_button.connect("pressed",self,"_on_Delete_pressed")
 
 

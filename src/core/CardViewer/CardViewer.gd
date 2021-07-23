@@ -89,7 +89,7 @@ func _process(_delta: float) -> void:
 	# We keep updating the card count label with the amount of cards in the deck
 	_card_grid.columns = int(
 			$"VBC/HBC/MC/AvailableCards/ScrollContainer".rect_size.x
-			/ CFConst.CARD_SIZE.x)
+			/ (CFConst.CARD_SIZE.x * CFConst.THUMBNAIL_SCALE))
 
 # Populates the list of available cards, with all defined cards in the game
 func populate_available_cards() -> void:
