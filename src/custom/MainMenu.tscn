@@ -6,7 +6,7 @@
 [ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.tscn" type="PackedScene" id=5]
 
-[sub_resource type="StyleBoxFlat" id=3]
+[sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
 
 [sub_resource type="DynamicFont" id=2]
@@ -25,12 +25,12 @@ __meta__ = {
 [node name="DeckBuilder" parent="." instance=ExtResource( 4 )]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_styles/panel = SubResource( 3 )
+custom_styles/panel = SubResource( 1 )
 
 [node name="CardLibrary" parent="." instance=ExtResource( 5 )]
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_styles/panel = SubResource( 3 )
+custom_styles/panel = SubResource( 1 )
 
 [node name="MainMenu" type="MarginContainer" parent="."]
 anchor_right = 1.0

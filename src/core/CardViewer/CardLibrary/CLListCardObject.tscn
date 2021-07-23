@@ -5,7 +5,3 @@
 
 [node name="ListCardObject" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
-
-[node name="CardLabel" parent="." index="0"]
-margin_top = 0.0
-margin_bottom = 20.0

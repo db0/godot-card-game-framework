@@ -1,6 +1,6 @@
 extends "res://tests/UTcommon.gd"
 
-const PATH_DECKBUILDER = "res://src/custom/CGFDeckBuilder.tscn"
+const PATH_DECKBUILDER = "res://src/custom/CGFDeckBuilder/CGFDeckBuilder.tscn"
 var deckbuilder: DeckBuilder
 
 func count_visible_list_cards() -> int:

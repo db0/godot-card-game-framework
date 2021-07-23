@@ -6,7 +6,7 @@
 [sub_resource type="StyleBoxFlat" id=3]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
 
-[sub_resource type="StyleBoxLine" id=2]
+[sub_resource type="StyleBoxLine" id=4]
 color = Color( 1, 0.4, 0, 1 )
 thickness = 2
 
@@ -115,7 +115,7 @@ text = "Type"
 margin_top = 50.0
 margin_right = 1270.0
 margin_bottom = 50.0
-custom_styles/panel = SubResource( 2 )
+custom_styles/panel = SubResource( 4 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC/AvailableCards"]
 margin_top = 54.0

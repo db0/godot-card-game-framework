@@ -1,6 +1,6 @@
 # Godot Card Game Framework Quick Start Guide
 
-**Written for v1.9**
+**Written for v1.9. Needs update**
 
 This guide is meant to take you through using the Card Game Framework (CGF from now on) for the first time in a simple step-by-step approach, starting from brand a new project.
 
@@ -15,7 +15,7 @@ In this part, we'll create a new project which is going to use the existing CGF 
 
 1. Use Godot to create a new project.
 2. Download the latest version of the CGF and extract all directories into your project's root folder. 
-3. Go to Project > Project Setting > Autoload. Press the browse button and search for `res://src/core/CFControl.gd`. Type "cfc" in the "Node name:" field.
+3. Go to Project > Project Setting > Autoload. Press the browse button and search for `res://src/core/CFControl`. Type "cfc" in the "Node name:" field.
 4. Go to Project > Project Settings > General > Application > Run and next to the Main Scene type `res://src/custom/CGFMain.tscn`
 5. Close Project Settings and press F5 to play the new project. A basic demo setup will appear and you'll be able to draw cards, move them around etc.
 
@@ -30,7 +30,7 @@ In order to be able to upgrade this framework in the future without losing your 
 1. From the filesystem tab, drag and drop Board.tcsn and Board.gd, InfoPanel.tcsn and SP.gd inside `res://src/new_card_game`
 1. Double click `res://src/new_card_game/Board.tcsn` to open it. Right click on the root node and "Attach Script". then in the path either nagivate, or type `res://src/new_card_game/Board.gd`
 1. find and Right click on `res://src/core/Main.tscn` and select "New Inherited Scene". A new unsaved scene will open.
-1. In the inspector, under "Script Variables", click on "[empty]" next to Board Scene, then "load" then navigate to your `res://src/new_card_game/Board.tcsn`. NOTE: If "Script Variables" are not shown you have to build or reload the project (see https://github.com/godotengine/godot/issues/35248).
+1. In the inspector, under "Script Variables", click on "[empty]" next to Board Scene, then "load" then navigate to your `res://src/new_card_game/Board.tcsn`
 1. In the inspector, under "Script Variables", click on "[empty]" next to "Info Panel Scene", then "load" then navigate to your `res://src/new_card_game/InfoPanel.tcsn`
 1. Save the unsaved scene as `res://src/new_card_game/Main.tcsn`
 1. Press play scene (F6). If you did everything above right, an identicaly demo should run off of your `res://src/new_card_game/` scenes.
