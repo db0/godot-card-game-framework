@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.13 (Ongoing)
+
+## Tweaks
+
+* Right click in the Card Viewer filter buttons, will not press that button and unpress all the others
+* Can now filter also on properties not mention in CardConfig
+* Added button which presses all filter buttons.
+
 ## 1.12
 
 ### Important for Upgrades
@@ -11,12 +19,12 @@
    
 ### New Features
 
-* Added support for Rich Text Labels on card fronts and info panels
+* **Created a Card Library framework**. Refactored Deckbuilder to inherit from new class `CardViewer`. new CardLibrary inherits from the same class.
+* **Added support for Rich Text Labels** on card fronts and info panels
 * Made CardContainers capable of being aligned using control nodes. To do so, you need to set their placement as "CONTROL" and then place them in a dedicated control node which you can make a part of your table layout.
 * If piles are scaled, cards will now appear to scale up/down as they move into/out of them.
 * Sample board using a Control-node based layout can be seen in `CGFBoardControlLayout.tscn`
 * Added way to see the contents of a pile sorted. And new demo button for it labeled "VS"
-* Created the Card Library framework. Refactored Deckbuilder to inherit from new class CardViewer. CardLibrary inherits from the same class.
 
 ## 1.11
 

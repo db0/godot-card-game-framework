@@ -28,11 +28,16 @@ func populate_available_cards() -> void:
 		# and the SCENE_PROPERTY is preset
 		if not property.begins_with('_')\
 				and property != CardConfig.SCENE_PROPERTY:
-			var new_label := Label.new()
-			new_label.name = property
-			new_label.text = property
+			var new_label := RichTextLabel.new()
 			if property_width_exceptions.has(property):
 				new_label.rect_min_size.x = property_width_exceptions[property]
 			else:
 				new_label.rect_min_size.x = default_property_width
+			new_label.rect_min_size.y = 20
+			new_label.name = property
+			new_label.bbcode_text = property
+			new_label.bbcode_enabled = true
+			new_label.scroll_active = false
+			new_label.fit_content_height = false
+
 			_card_headers.add_child(new_label)

@@ -1,7 +1,7 @@
 extends CardLibrary
 
 onready var back_button := $VBC/HBC/MC/AvailableCards/Settings/Back
-var abilities_header : Label
+var abilities_header : RichTextLabel
 
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
