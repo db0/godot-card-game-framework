@@ -6,8 +6,6 @@
 class_name CardFront
 extends Panel
 
-signal rt_resized
-
 # Maps the location of the card front labels so that they're findable even when
 # The card front is customized for games of different needs
 # Each card_front scene should have its own script extending this class
@@ -34,16 +32,33 @@ var card_label_min_sizes : Dictionary
 var scaled_fonts : Dictionary
 var bbcode_texts := {}
 var rich_text_font_size_variations := {}
-var rt_resizing := false
+var resizing_labels := []
 
+var font_thread: Thread
 
 
 # Stores a reference to the Card that is hosting this node
 onready var card_owner = get_parent().get_parent().get_parent()
 
+
+## Thread must be disposed (or "joined"), for portability.
+#func _exit_tree():
+#	font_thread.wait_to_finish()
+
 # Set a label node's text.
 # As the string becomes longer, the font size becomes smaller
 func set_label_text(node: Label, value):
+#	while font_thread and font_thread.is_active():
+#		yield(get_tree(), "idle_frame")
+#	font_thread = Thread.new()
+## warning-ignore:return_value_discarded
+#	font_thread.start(self, "_set_label_text", [node,value], Thread.PRIORITY_LOW)
+	if node in resizing_labels:
+		return
+	resizing_labels.append(node)
+	# We add a yield here to allow the calling function to continue
+	# and thus avoid the game waiting for the label to resize
+	yield(get_tree(), "idle_frame")
 	var working_value: String
 	# If the label node has been set to uppercase the text
 	# Then we need to work off-of uppercased text value
@@ -66,6 +81,7 @@ func set_label_text(node: Label, value):
 	label_font.size = starting_font_size + font_adjustment
 	set_card_label_font(node, label_font)
 	node.text = value
+	resizing_labels.erase(node)
 
 
 # Returns the font used by the current label
@@ -106,10 +122,10 @@ func scale_to(scale_multiplier: float) -> void:
 	for l in card_labels:
 		if scaled_fonts.get(l) != scale_multiplier:
 			scaled_fonts[l] = scale_multiplier
+			while card_labels[l] in resizing_labels:
+				yield(get_tree(), "idle_frame")
 			if card_labels[l] as RichTextLabel:
 				var label : RichTextLabel = card_labels[l]
-				if rt_resizing:
-					yield(self, "rt_resized")
 				call_deferred("set_rich_label_text",label, label.bbcode_text, true)
 			else:
 				var label : Label = card_labels[l]
@@ -123,9 +139,9 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 	# We need to avoid other functions to trying to resize this label
 	# while it's already resizing, as due to all the yields
 	# it causes a mess
-	if rt_resizing:
+	if node in resizing_labels:
 		return
-	rt_resizing = true
+	resizing_labels.append(node)
 	# This is used to hide a card with rich text while the rich text is resizing
 	# This is because richtext cannot resize properly while invisible
 	# Therefore we need to keep the front visible while the rich text label is resizing.
@@ -133,7 +149,6 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 	# Or to see the font resizing in front of their eyes (due to all the yields)
 	# we modulate the card front to 0.
 	modulate.a = 0
-	var adjust_size : float
 	# I had to add this cache, because I cannot seem to get the bbcode_text
 	# out of the label once I set it
 	if not bbcode_texts.has(node) and not is_resize:
@@ -194,9 +209,8 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 #			bbcode_height = node.get_content_height()
 		if starting_font_size + font_adjustment == 4:
 			break
-	rt_resizing = false
 	modulate.a = 1
-	emit_signal("rt_resized")
+	resizing_labels.erase(node)
 
 
 # Stores the original font size this label had.
@@ -216,8 +230,9 @@ func _assign_bbcode_text(rtlabel: RichTextLabel, bbcode_text : String, font_size
 	for key in format:
 		format[key] = format[key].format(bbcode_format)
 	rtlabel.push_align(RichTextLabel.ALIGN_CENTER)
+	# warning-ignore:return_value_discarded
 	rtlabel.append_bbcode(bbcode_text.format(format))
-#	print_debug(bbcode_text.format(format))
+	#	print_debug(bbcode_text.format(format))
 	rtlabel.pop()
 
 

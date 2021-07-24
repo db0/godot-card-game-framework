@@ -8,6 +8,7 @@
 * Can now filter also on properties not mention in CardConfig
 * Added button which presses all filter buttons.
 * Improved performance when showing/hiding the viewport focus
+* Improved performance when loading the card viewer in grid mode.
 
 ## 1.12
 

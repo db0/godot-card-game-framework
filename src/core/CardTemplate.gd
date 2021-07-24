@@ -282,23 +282,18 @@ func _init_card_layout() -> void:
 #  var canonical_name, "Name" label and self.name should use the same string.
 func _init_card_name() -> void:
 	if not canonical_name:
-		# If the variable has not been set on start
-		# But the Name label has been set, we set our name to that instead
-		if card_front.card_labels["Name"].text != "":
-			set_card_name(card_front.card_labels["Name"].text)
-		else:
-			# The node name changes depeding on how many other cards
-			# with the same node name are siblings
-			# We use this regex to discover the actual name
-			var regex = RegEx.new()
-			regex.compile("@{0,1}([\\w ]+)@{0,1}")
-			var result = regex.search(name)
-			var node_human_name = result.get_string(1)
-			set_card_name(node_human_name)
+		# The node name changes depeding on how many other cards
+		# with the same node name are siblings
+		# We use this regex to discover the actual name
+		var regex = RegEx.new()
+		regex.compile("@{0,1}([\\w ]+)@{0,1}")
+		var result = regex.search(name)
+		var node_human_name = result.get_string(1)
+		set_card_name(node_human_name, false)
 	else:
 		# If the variable has been set, we ensure label and node name
 		# are matching
-		set_card_name(canonical_name)
+		set_card_name(canonical_name, false)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -857,7 +852,7 @@ func get_is_viewed() -> bool:
 
 # Setter for canonical_name
 # Also changes the card label and the node name
-func set_card_name(value : String) -> void:
+func set_card_name(value : String, set_label := true) -> void:
 	# if the card_front.card_labels variable is not set it means ready() has not
 	# run yet, so we just store the card name for later.
 	if not card_front:
@@ -865,7 +860,8 @@ func set_card_name(value : String) -> void:
 	else:
 		# We set all areas of the card to match the canonical name.
 		var name_label = card_front.card_labels["Name"]
-		card_front.set_label_text(name_label,value)
+		if set_label:
+			card_front.set_label_text(name_label,value)
 		name = value
 		canonical_name = value
 		properties["Name"] = value
@@ -2337,7 +2333,7 @@ func _process_card_state() -> void:
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
 			if get_parent() in get_tree().get_nodes_in_group("piles"):
-				if card_front.rt_resizing and not get_parent().faceup_cards:
+				if card_front.resizing_labels.size() and not get_parent().faceup_cards:
 					return
 				set_is_faceup(get_parent().faceup_cards, true)
 
