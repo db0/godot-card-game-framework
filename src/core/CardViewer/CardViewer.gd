@@ -92,6 +92,7 @@ func prepate_filter_buttons() -> void:
 				filter_button.connect("pressed", self, "_on_filter_button_pressed")
 				filter_button.connect("right_pressed", self, "_on_filter_button_right_pressed", [filter_button])
 				_filter_buttons.add_child(filter_button)
+		# warning-ignore:return_value_discarded
 		_show_all_button.connect("pressed", self, "_on_ShowAll_button_pressed")
 
 
@@ -170,7 +171,7 @@ func _apply_filters(active_filters: Array) -> void:
 
 
 # functions to override in order to put in custom filters checks
-func _check_custom_filters(card_object: CVListCardObject) -> bool:
+func _check_custom_filters(_card_object: CVListCardObject) -> bool:
 	return(true)
 
 

@@ -7,12 +7,9 @@ extends Node2D
 export(PackedScene) var board_scene : PackedScene
 export(PackedScene) var info_panel_scene : PackedScene
 # This array holds all the previously focused cards.
-var _previously_focused_cards := []
+var _previously_focused_cards := {}
 # This var hold the currently focused card duplicate.
 var _current_focus_source : Card = null
-# This ductionary holds the source origin for each dupe.
-# We use this during cleanup
-var _dupes_dict := {}
 
 onready var card_focus := $VBC/Focus
 onready var focus_info := $VBC/FocusInfo
@@ -47,23 +44,12 @@ func _process(_delta) -> void:
 		$VBC.rect_position.x = get_viewport().size.x - $VBC.rect_size.x
 	# The below performs some garbage collection on previously focused cards.
 	for c in _previously_focused_cards:
-		# We only delete old dupes if there's no tweening currently ongoing.
-		# This is to allow the fade-to-alpha to complete nicely when we
-		# unfocus a card.
-		# It does create a small glitch when quickly changing card focus.
-		# Haven't found a good way to avoid it yet
-		if _current_focus_source != _dupes_dict[c]\
+		var current_dupe_focus: Card = _previously_focused_cards[c]
+		# We don't delete old dupes, to avoid overhead to the engine
+		# insteas, we just hide them.
+		if _current_focus_source != c\
 				and not $VBC/Focus/Tween.is_active():
-			_previously_focused_cards.erase(c)
-			c.queue_free()
-	# This ensures that quickly unfocusing and refocusing the same card
-	# Doesn't leave leftover objects.
-	if _previously_focused_cards.size() > 1:
-		for c in _previously_focused_cards:
-			_previously_focused_cards.erase(c)
-			c.queue_free()
-			if _previously_focused_cards.size() == 1:
-				break
+			current_dupe_focus.visible = false
 	if not is_instance_valid(_current_focus_source) and $VBC/Focus.modulate.a != 0 and not $VBC/Focus/Tween.is_active():
 		$VBC/Focus.modulate.a = 0
 
@@ -83,25 +69,38 @@ func focus_card(card: Card) -> void:
 		# our viewport world
 		# This way we can standardize its scale and look and not worry about
 		# what happens on the table.
-		var dupe_focus = card.duplicate(DUPLICATE_USE_INSTANCING)
-		dupe_focus.remove_from_group("cards")
+		var dupe_focus: Card
+		if _previously_focused_cards.has(card):
+			dupe_focus = _previously_focused_cards[card]
+		else:
+			dupe_focus = card.duplicate(DUPLICATE_USE_INSTANCING)
+			dupe_focus.remove_from_group("cards")
+			_extra_dupe_preparation(dupe_focus, card)
+			# We display a "pure" version of the card
+			# This means we hide buttons, tokens etc
+			dupe_focus.state = Card.CardState.VIEWPORT_FOCUS
+			$VBC/Focus/Viewport.add_child(dupe_focus)
+			_extra_dupe_ready(dupe_focus, card)
+			dupe_focus.is_faceup = card.is_faceup
+			dupe_focus.is_viewed = card.is_viewed
 		_current_focus_source = card
-		_dupes_dict[dupe_focus] = card
-		_extra_dupe_preparation(dupe_focus, card)
-		# We display a "pure" version of the card
-		# This means we hide buttons, tokens etc
-		dupe_focus.state = Card.CardState.VIEWPORT_FOCUS
-		for c in _previously_focused_cards:
-			c.visible = false
+		for c in _previously_focused_cards.values():
+			if c != dupe_focus:
+				c.visible = false
+			else:
+				c.visible = true
+		# If the card is facedown, we don't want the info panels
+		# giving away information
+		if not dupe_focus.is_faceup:
+			focus_info.visible = false
+		else:
+			cfc.ov_utils.populate_info_panels(card,focus_info)
+			focus_info.visible = true
 		# We store all our previously focused cards in an array, and clean them
 		# up when they're not focused anymore
-		_previously_focused_cards.append(dupe_focus)
-		$VBC/Focus/Viewport.add_child(dupe_focus)
-		_extra_dupe_ready(dupe_focus, card)
+		_previously_focused_cards[card] = dupe_focus
 		# We have to copy these internal vars because they are reset
 		# see https://github.com/godotengine/godot/issues/3393
-		dupe_focus.is_faceup = card.is_faceup
-		dupe_focus.is_viewed = card.is_viewed
 		# We make the viewport camera focus on it
 		$VBC/Focus/Viewport/Camera2D.position = dupe_focus.global_position
 		# We always make sure to clean tweening conflicts
@@ -136,9 +135,11 @@ func unfocus(card: Card) -> void:
 		$VBC/Focus/Tween.start()
 
 
+# Tells the currently focused card to stop focusing.
 func unfocus_all() -> void:
 	if _current_focus_source:
 		_current_focus_source.set_to_idle()
+
 
 # Overridable function for games to extend preprocessing of dupe card
 # before adding it to the scene
@@ -146,7 +147,6 @@ func _extra_dupe_preparation(dupe_focus: Card, card: Card) -> void:
 	dupe_focus.canonical_name = card.canonical_name
 	dupe_focus.properties = card.properties.duplicate()
 	focus_info.hide_all_info()
-	cfc.ov_utils.populate_info_panels(card,focus_info)
 
 
 # Overridable function for games to extend processing of dupe card

@@ -769,46 +769,31 @@ func set_is_faceup(
 			# Yet when a viewport focus dupe is instancing
 			buttons.set_button_visible("View", false)
 			card_back.stop_card_back_animation()
-			# When we flip face up, we also want to show the dupe card
-			# in the focus viewport
-			# However we also need to protect this call from the dupe itself
-			# calling it when it hasn't yet been added to its parent
-			if cfc.NMAP.get("main", null) and get_parent():
-				# we need to check if there's actually a viewport focus
-				# card, as we may be flipping the card via code
-				if len(cfc.NMAP.main._previously_focused_cards):
-					# The currently active viewport focus is always in the
-					# _previously_focused_cards list, as the last card
-					var dupe_card = cfc.NMAP.main._previously_focused_cards.back()
-					var dupe_front = dupe_card.get_node("Control/Front")
-					var dupe_back = dupe_card.get_node("Control/Back")
-					_flip_card(dupe_back, dupe_front, true)
 		else:
 			_flip_card($Control/Front, $Control/Back,instant)
 			buttons.set_button_visible("View", true)
 #			if get_parent() == cfc.NMAP.board:
 			card_back.start_card_back_animation()
-			# When we flip face down, we also want to hide the dupe card
-			# in the focus viewport
-			# However we also need to protect this call from the dupe itself
-			# calling it when it hasn't yet been added to its parent
-			if cfc.NMAP.get("main", null):
-				# we need to check if there's actually a viewport focus
-				# card, as we may be flipping the card via code
-				if len(cfc.NMAP.main._previously_focused_cards):
-					var dupe_card = cfc.NMAP.main._previously_focused_cards.back()
-					var dupe_front = dupe_card.get_node("Control/Front")
-					var dupe_back = dupe_card.get_node("Control/Back")
-					_flip_card(dupe_front, dupe_back, true)
+		# When we flip, we also want to adjust the dupe card
+		# in the focus viewport
+		if state != CardState.VIEWED_IN_PILE\
+				and cfc.NMAP.get("main", null)\
+				and cfc.NMAP.main._previously_focused_cards.has(self):
+			var dupe_card : Card = cfc.NMAP.main._previously_focused_cards[self]
+# warning-ignore:return_value_discarded
+			dupe_card.set_is_faceup(value, true)
 		retcode = CFConst.ReturnCode.CHANGED
-		emit_signal(
-				"card_flipped",
-				self,
-				"card_flipped",
-				{
-					"is_faceup": value,
-					"tags": tags,
-				})
+		# When the faceup has the instant switch, it's typically a built-in
+		# action, which we don't want trigerring scripts
+		if not instant:
+			emit_signal(
+					"card_flipped",
+					self,
+					"card_flipped",
+					{
+						"is_faceup": value,
+						"tags": tags,
+					})
 	# If we're doing a check, then we just report CHANGED.
 	else:
 		retcode = CFConst.ReturnCode.CHANGED
@@ -837,14 +822,12 @@ func set_is_viewed(value: bool) -> int:
 			retcode = CFConst.ReturnCode.OK
 		else:
 			is_viewed = true
-			if get_parent() != null\
-					and get_tree().get_root().has_node('Main')\
-					and cfc.NMAP.main._previously_focused_cards.size():
-				var dupe_front = cfc.NMAP.main._previously_focused_cards.back()\
-						.get_node("Control/Front")
-				var dupe_back = cfc.NMAP.main._previously_focused_cards.back()\
-						.get_node("Control/Back")
-				_flip_card(dupe_back, dupe_front, true)
+			if state != CardState.VIEWED_IN_PILE\
+					and cfc.NMAP.get("main", null)\
+					and cfc.NMAP.main._previously_focused_cards.has(self):
+				var dupe_card : Card = cfc.NMAP.main._previously_focused_cards[self]
+				# warning-ignore:return_value_discarded
+				dupe_card.set_is_faceup(true, true)
 			card_back.is_viewed_visible = true
 			retcode = CFConst.ReturnCode.CHANGED
 			# We only emit a signal when we view the card
@@ -860,6 +843,7 @@ func set_is_viewed(value: bool) -> int:
 		else:
 			# We don't allow players to unview cards
 			retcode = CFConst.ReturnCode.FAILED
+
 	return retcode
 
 
@@ -2350,7 +2334,7 @@ func _process_card_state() -> void:
 			if scale != Vector2(1,1):
 				scale = Vector2(1,1)
 			if get_parent() in get_tree().get_nodes_in_group("piles"):
-				if card_front.rt_resizing and not get_parent().faceup_cards: 
+				if card_front.rt_resizing and not get_parent().faceup_cards:
 					return
 				set_is_faceup(get_parent().faceup_cards, true)
 

@@ -16,7 +16,6 @@ onready var _tween = $Pulse
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	_tween.connect("tween_all_completed", self, "_on_Pulse_completed")
-	viewed_node = $VBoxContainer/CenterContainer/Viewed
 
 
 # Reverses the card back pulse and starts it again
