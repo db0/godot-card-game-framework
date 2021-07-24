@@ -7,6 +7,7 @@
 * Right click in the Card Viewer filter buttons, will not press that button and unpress all the others
 * Can now filter also on properties not mention in CardConfig
 * Added button which presses all filter buttons.
+* Improved performance when showing/hiding the viewport focus
 
 ## 1.12
 
