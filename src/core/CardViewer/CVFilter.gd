@@ -64,7 +64,7 @@ func assess_card_object(card_object: CVListCardObject) -> bool:
 			card_match = false
 	# For arrays, we want to return false, if none of the tags match the filter
 	# If a single tag matches, we're good.
-	if property in CardConfig.PROPERTIES_ARRAYS:
+	elif property in CardConfig.PROPERTIES_ARRAYS:
 		card_match = false
 		for pvalue in prop_value:
 			if compare_regex(pvalue.to_lower()):
