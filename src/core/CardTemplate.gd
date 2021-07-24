@@ -263,10 +263,13 @@ func _init_card_layout() -> void:
 		var card_front_instance = card_front_design.instance()
 		$Control/Front.add_child(card_front_instance)
 		card_front = card_front_instance
-		var card_back_instance = card_back_design.instance()
-		$Control/Back.add_child(card_back_instance)
-		card_back = card_back_instance
-		$Control/Back.move_child(card_back,0)
+		# We do not need to instance the card_back when card is seen 
+		# in a preview card grid
+		if get_parent().get_class() != "CVGridCardObject":
+			var card_back_instance = card_back_design.instance()
+			$Control/Back.add_child(card_back_instance)
+			card_back = card_back_instance
+			$Control/Back.move_child(card_back,0)
 	# If it is a viewport focus dupe, we still need to setup the
 	# card_back variable, as the .duplicate() method does not copy
 	# internal variables.

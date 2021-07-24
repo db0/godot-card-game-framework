@@ -29,3 +29,6 @@ func _on_GridCardObject_mouse_entered() -> void:
 
 func _on_GridCardObject_mouse_exited() -> void:
 	preview_popup.hide_preview_card()
+
+func get_class() -> String:
+	return("CVGridCardObject")

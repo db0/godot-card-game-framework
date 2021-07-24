@@ -110,9 +110,8 @@ text = "-"
 
 [node name="CardLabel" parent="." instance=ExtResource( 1 )]
 margin_left = 154.0
-margin_top = 1.0
 margin_right = 524.0
-margin_bottom = 19.0
+margin_bottom = 20.0
 
 [node name="Type" type="Label" parent="."]
 margin_left = 528.0
