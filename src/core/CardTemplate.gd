@@ -1576,10 +1576,10 @@ func get_focus() -> bool:
 
 # Returns the Card's index position among other card objects
 func get_my_card_index() -> int:
-	if "CardPopUpSlot" in get_parent().name:
-		return(0)
+	if get_parent().has_method('get_card_index'):
+		return(get_parent().get_card_index(self))
 	else:
-		return get_parent().get_card_index(self)
+		return(0)
 
 
 # Changes the hosted Control nodes filters

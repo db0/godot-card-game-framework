@@ -101,6 +101,35 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 		_:
 			subjects_array = cfc.ov_utils.get_subjects(
 					get_property(SP.KEY_SUBJECT), stored_integer)
+	if get_property(SP.KEY_NEEDS_SELECTION):
+		var selection_count = get_property(SP.KEY_SELECTION_COUNT)
+		var selection_type = get_property(SP.KEY_SELECTION_TYPE)
+		var selection_optional = get_property(SP.KEY_SELECTION_OPTIONAL)
+		if get_property(SP.KEY_SELECTION_IGNORE_SELF):
+			subjects_array.erase(owner)
+		var select_return = cfc.ov_utils.select_card(
+				subjects_array, selection_count, selection_type, selection_optional)
+		# In case the owner card is still focused (say because script was triggered
+		# on double-click and card was not moved
+		# Then we need to ensure it's unfocused
+		# Otherwise its z-index will make it draw on top of the popup.
+		if owner as Card:
+			if owner.state in [Card.CardState.FOCUSED_IN_HAND]:
+				# We also reorganize the whole hand to avoid it getting
+				# stuck like this.
+				for c in owner.get_parent().get_all_cards():
+					c.interruptTweening()
+					c.reorganize_self()
+		if select_return is GDScriptFunctionState: # Still working.
+			select_return = yield(select_return, "completed")
+			# If the return is not an array, it means that the selection
+			# was cancelled (either because there were not enough cards
+			# or because the player pressed cancel
+			# in which case we consider the task invalid
+			if typeof(select_return) == TYPE_ARRAY:
+				subjects_array = select_return
+			else:
+				is_valid = false
 	subjects = subjects_array
 	return(subjects_array)
 

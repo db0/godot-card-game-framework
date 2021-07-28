@@ -16,7 +16,7 @@ const CARDS := {
 		"Type": "Purple",
 		"Tags": ["Rich","Text"],
 		"Requirements": "",
-		"Abilities": "We can really have [color=green][shake rate=5 level=10]some fun[/shake][/color] now!\n",
+		"Abilities": "Gain 5 Research [color=green][shake rate=5 level=10]You may discard two cards[/shake][/color] to gain 3 more research.",
 
 		"Cost": 0,
 		"Power": 0,

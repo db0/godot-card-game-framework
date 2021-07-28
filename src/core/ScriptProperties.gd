@@ -109,6 +109,15 @@ const KEY_SUBJECT_COUNT_V_ALL := "all"
 const KEY_IS_COST := "is_cost"
 # Value Type: bool (Default = false).
 #
+# This key is used on a task marked with KEY_IS_COST
+# It means that its cost effects will not evn be evaluated if previous costs
+# have already failed.
+# This is useful when there's more than 1 interactive cost, 
+# such as targeting or selection boxes
+# To prevnent them from popping up even when previous costs have already failed.
+const KEY_ABORT_ON_COST_FAILURE := "abort_on_cost_failure"
+# Value Type: bool (Default = false).
+#
 # This key is used to mark a task to be executed only if the card costs
 # cannot be paid. As such, they will never fire,unless the card also has
 # an "is_cost" task.
@@ -440,6 +449,12 @@ const KEY_ALTERATION := "alteration"
 # Note using a minus-sign '-' in place of a plus-sign will not work as expected.
 # Use [KEY_IS_INVERTED](#KEY_IS_INVERTED) instead
 const VALUE_PER := "per_"
+# Value Type: Float/Int
+#
+# Used to multiply per results.
+# This allows us to craft scripts like 
+# "Gain 2 Health per card on the table" or "Gain 1 Health per two cards on the table" 
+const KEY_MULTIPLIER := "multiplier"
 # Value Type: String
 #
 # This key is typically needed in combination with
@@ -674,6 +689,44 @@ const VALUE_COMPARE_WITH_TRIGGER := "compare_with_trigger"
 #
 # At the script level, the whole script if cancelled.
 const KEY_IS_OPTIONAL := "is_optional_"
+# Value Type: Bool (default: False)
+#
+# If true, the script will popup a card selection window, among all the 
+# valid subjects detected for this script.
+const KEY_NEEDS_SELECTION := "needs_selection"
+# Value Type: Int (default: 0)
+#
+# How many cards need to be selected from the selection window
+const KEY_SELECTION_COUNT := "selection_count"
+# Value Type: String (default: 'min')
+# How to evaluate [SELECTION_COUNT](#SELECTION_COUNT) 
+# before the player is allowed to proceed
+# 
+# * 'min': The minimum amount of cards that need to be selected
+# * 'equal': The exact amount of cards that need to be selected
+# * 'max': The maximum amount of cards that need to be selected
+const KEY_SELECTION_TYPE := "selection_type"
+# Value Type: Bool (default: False)
+#
+# Marks a selection window as optional. This means the player can opt to
+# select none of the possible choices.
+# In which case, the underlying task will be considered invalid
+# and if it is a cost, it will also abort further execution.
+const KEY_SELECTION_OPTIONAL := "selection_optional"
+# Value Type: Bool (default: False)
+#
+# Ignores the card executing the script from the selection window
+# This is necessary in some instances where the selection encompases the
+# scripting card, but this is unwanted. For example because the card
+# is supposed to already be in a different pile but this will only 
+# technically happen as the last task.
+const KEY_SELECTION_IGNORE_SELF := "selection_ignore_self"
+# Value Type: Array
+#
+# Initiates a new instance of the scripting engine
+# Which runs through the specified task list
+# using its own cost calculations
+const KEY_NESTED_TASKS := "nested_tasks"
 #---------------------------------------------------------------------
 # Filter Definition Keys
 #
@@ -1051,7 +1104,8 @@ const TRIGGER_V_COUNT_INCREASED := "increased"
 const TRIGGER_V_COUNT_DECREASED := "decreased"
 
 
-# Returns the default value any script definition key should have
+# For any script key defined in this reference, 
+# returns the default it should have
 static func get_default(property: String):
 	var default
 	# for property details, see const definitionts
@@ -1061,13 +1115,18 @@ static func get_default(property: String):
 				KEY_IS_INVERTED,\
 				KEY_SET_TO_MOD,\
 				KEY_IS_OPTIONAL,\
+				KEY_NEEDS_SELECTION,\
+				KEY_SELECTION_OPTIONAL,\
 				KEY_SORT_DESCENDING,\
+				KEY_ABORT_ON_COST_FAILURE,\
 				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:
 			default = "any"
-		KEY_SUBJECT_INDEX:
+		KEY_SUBJECT_INDEX,KEY_SELECTION_COUNT:
 			default = 0
+		KEY_SELECTION_TYPE:
+			default = "min"
 		KEY_DEST_INDEX:
 			default = -1
 		KEY_BOARD_POSITION:
@@ -1078,7 +1137,8 @@ static func get_default(property: String):
 			default = {}
 		KEY_SUBJECT_COUNT,\
 				KEY_OBJECT_COUNT,\
-				KEY_MODIFICATION:
+				KEY_MODIFICATION,\
+				KEY_MULTIPLIER:
 			default = 1
 		KEY_GRID_NAME, KEY_SUBJECT:
 			default = ""

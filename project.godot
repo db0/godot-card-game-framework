@@ -269,6 +269,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/ScriptingEngine.gd"
 }, {
+"base": "AcceptDialog",
+"class": "SelectionWindow",
+"language": "GDScript",
+"path": "res://src/core/SelectionWindow.gd"
+}, {
 "base": "Line2D",
 "class": "TargetingArrow",
 "language": "GDScript",
@@ -352,6 +357,7 @@ _global_script_class_icons={
 "ScriptProperties": "",
 "ScriptTask": "",
 "ScriptingEngine": "",
+"SelectionWindow": "",
 "TargetingArrow": "",
 "Token": "",
 "TokenDrawer": "",
