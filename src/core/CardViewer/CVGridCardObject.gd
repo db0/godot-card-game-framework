@@ -12,8 +12,13 @@ func _ready() -> void:
 	rect_min_size = CFConst.CARD_SIZE
 
 
-func setup(card_name) -> Card:
-	display_card = cfc.instance_card(card_name)
+func setup(card) -> Card:
+	if typeof(card) == TYPE_STRING:
+		display_card = cfc.instance_card(card)		
+	else:
+		display_card = card
+		display_card.position = Vector2(0,0)
+		display_card.scale = Vector2(1,1)
 	add_child(display_card)
 	display_card.resize_recursively(display_card._control, CFConst.THUMBNAIL_SCALE)
 	display_card.card_front.scale_to(CFConst.THUMBNAIL_SCALE)

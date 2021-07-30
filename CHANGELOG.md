@@ -1,14 +1,24 @@
 # Changelog
 
-## 1.13 (Ongoing)
+## 1.13
 
-## Tweaks
+### Tweaks
 
 * Right click in the Card Viewer filter buttons, will not press that button and unpress all the others
-* Can now filter also on properties not mention in CardConfig
-* Added button which presses all filter buttons.
+* Can now filter also on properties not defined in CardConfig
 * Improved performance when showing/hiding the viewport focus
 * Improved performance when loading the card viewer in grid mode.
+
+### New Features 
+
+* In Cardviewer, added button which presses all filter buttons.
+
+
+#### ScriptingEngine
+
+* Added new `nested_script` task allows to execute more tasks recursively. It allows for infinite amount of nests, which can create pretty complex combinations of scripts.
+* Added new selection window functionality which creates an dialogue window to the player to select an amount of cards from those selected as subjects. Typically should be combined with boardseek, tutor or index subjects.
+    Controlled by the following new keys: `KEY_NEEDS_SELECTION`, `KEY_SELECTION_COUNT`, `KEY_SELECTION_TYPE`, `KEY_SELECTION_OPTIONAL`, `KEY_SELECTION_IGNORE_SELF` 
 
 ## 1.12
 

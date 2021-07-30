@@ -23,7 +23,7 @@ var current_focused_card : Card = null
 # Instead we populate according to signals,which are more immediate
 var overlaps := []
 # When set to false, prevents the player from disable interacting with the game.
-var is_disabled := false
+var is_disabled := false setget set_disabled
 
 
 # Called when the node enters the scene tree for the first time.
@@ -121,6 +121,11 @@ func enable() -> void:
 
 func forget_focus() -> void:
 	current_focused_card = null
+
+func set_disabled(value) -> void:
+	forget_focus()
+	overlaps.clear()
+	is_disabled = value
 
 # Parses all collided objects and figures out which card, if any, to focus on and
 # also while a card is being dragged, figures out which potential area to highlight

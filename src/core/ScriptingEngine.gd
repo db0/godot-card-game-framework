@@ -82,6 +82,12 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			"modifier": _retrieve_temp_modifiers(script, "properties")
 		}
 		if not script.is_primed:
+			# Since the costs are processed serially, we can mark some costs
+			# to only be paid, if all previous costs have been paid as well.
+			# This allows us to avoid opening popup windows for cost selection
+			# when previous costs have not been achieved (e.g. targeting)
+			if script.get_property(SP.KEY_ABORT_ON_COST_FAILURE) and not can_all_costs_be_paid:
+				continue
 			# If we have requested to use the previous target,
 			# but the subject_array is empty, we check if
 			# subject available in the next task and try to use that instead.
@@ -687,6 +693,46 @@ func execute_scripts(script: ScriptTask) -> int:
 					and not script.get_property(SP.KEY_SUBJECT)\
 					in [SP.KEY_SUBJECT_V_BOARDSEEK, SP.KEY_SUBJECT_V_TUTOR]:
 				retcode = CFConst.ReturnCode.FAILED
+	return(retcode)
+
+
+# Task for executing nested tasks
+# This task will execute internal non-cost cripts accordin to its own
+# nested cost instructions. 
+# Therefore if you set this task as a cost, 
+# it will modify the board, even if other costs of this script
+# could not be paid.
+# You can use [SP.KEY_ABORT_ON_COST_FAILURE](SP#KEY_ABORT_ON_COST_FAILURE) 
+# to control this behaviour better
+func nested_script(script: ScriptTask) -> int: 
+	var retcode : int = CFConst.ReturnCode.CHANGED
+	var nested_task_list: Array = script.get_property(SP.KEY_NESTED_TASKS)
+	var sceng = cfc.scripting_engine.new(
+			nested_task_list,
+			script.owner,
+			script.trigger_object,
+			script.trigger_details)
+	# In case the script involves targetting, we need to wait on further
+	# execution until targetting has completed
+	sceng.execute(CFInt.RunType.COST_CHECK)
+	if not sceng.all_tasks_completed:
+		yield(sceng,"tasks_completed")
+	# If the dry-run of the ScriptingEngine returns that all
+	# costs can be paid, then we proceed with the actual run
+	if sceng.can_all_costs_be_paid:
+		sceng.execute()
+		if not sceng.all_tasks_completed:
+			yield(sceng,"tasks_completed")
+	# This will only trigger when costs could not be paid, and will
+	# execute the "is_else" tasks
+	elif not sceng.can_all_costs_be_paid:
+		sceng.execute(CFInt.RunType.ELSE)
+	# If the nested task had a cost which could not be paid
+	# we return a failed result. This means that if the nested_script task
+	# was also marked as a cost itself, then it will block execution of 
+	# further non-cost tasks.
+	if not sceng.can_all_costs_be_paid:
+		retcode = CFConst.ReturnCode.FAILED
 	return(retcode)
 
 

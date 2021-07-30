@@ -6,6 +6,8 @@
 class_name OVUtils
 extends Reference
 
+const _CARD_SELECT_SCENE_FILE = CFConst.PATH_CORE + "SelectionWindow.tscn"
+const _CARD_SELECT_SCENE = preload(_CARD_SELECT_SCENE_FILE)
 
 # Populates the info panels under the card, when it is shown in the
 # viewport focus or deckbuilder
@@ -27,3 +29,24 @@ func populate_info_panels(card: Card, focus_info: DetailPanels) -> void:
 
 func get_subjects(_subject_request, _stored_integer : int = 0) -> Array:
 	return([])
+
+func select_card(
+		card_list: Array, 
+		selection_count: int, 
+		selection_type: String,
+		selection_optional: bool):
+	cfc.game_paused = true
+	var selected_cards
+	var selection = _CARD_SELECT_SCENE.instance()
+	cfc.NMAP.board.add_child(selection)
+	selection.initiate_selection(card_list,selection_count,selection_type,selection_optional)
+	# We have to wait until the player has finished selecting their cards
+	yield(selection,"confirmed")
+	if selection.is_cancelled:
+		selected_cards = false
+	else:
+		selected_cards = selection.selected_cards
+	# Garbage cleanup
+	selection.queue_free()
+	cfc.game_paused = false
+	return(selected_cards)
