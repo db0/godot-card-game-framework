@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.14 (Ongoing)
+
+### Important for Upgrades
+
+* New property `CardConfig.BOOL_PROPERTY_TO_HIDE_IN_CARDVIEWER` has to exist. Defaults to `"hide_in_dekbuilder"` but this const allows you to set it to anything else.
+* `CardConfig.TYPES_TO_HIDE_IN_DECKBUILDER` renamed to `CardConfig.TYPES_TO_HIDE_IN_CARDVIEWER`
+
+### New Features 
+
+* Selection Window can now be used independently of the ScriptingEngine
+* Selection window function can how handle both an Array of Card objects, as well as an array of card names.
+
+#### ScriptingEngine
+
+* Can now set multiplier in the per definition
+
 ## 1.13
 
 ### Tweaks

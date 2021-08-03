@@ -34,11 +34,13 @@ func select_card(
 		card_list: Array, 
 		selection_count: int, 
 		selection_type: String,
-		selection_optional: bool):
-	cfc.game_paused = true
+		selection_optional: bool,
+		parent_node):
+	if parent_node == cfc.NMAP.get("board"):
+		cfc.game_paused = true
 	var selected_cards
 	var selection = _CARD_SELECT_SCENE.instance()
-	cfc.NMAP.board.add_child(selection)
+	parent_node.add_child(selection)
 	selection.initiate_selection(card_list,selection_count,selection_type,selection_optional)
 	# We have to wait until the player has finished selecting their cards
 	yield(selection,"confirmed")
@@ -48,5 +50,6 @@ func select_card(
 		selected_cards = selection.selected_cards
 	# Garbage cleanup
 	selection.queue_free()
-	cfc.game_paused = false
+	if parent_node == cfc.NMAP.get("board"):
+		cfc.game_paused = false
 	return(selected_cards)

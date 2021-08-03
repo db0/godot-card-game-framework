@@ -98,13 +98,16 @@ func initiate_selection(
 	# we create a duplicate card inside a Card Grid object
 	for card in card_array:
 		var dupe_selection: Card
-		dupe_selection = card.duplicate(DUPLICATE_USE_INSTANCING)
-		# This prevents the card from being scripted with the
-		# signal propagator and other things going via groups
-		dupe_selection.remove_from_group("cards")
-		dupe_selection.canonical_name = card.canonical_name
-		dupe_selection.properties = card.properties.duplicate()
-		dupe_selection.is_faceup = true
+		if typeof(card) == TYPE_STRING:
+			dupe_selection = cfc.instance_card(card)
+		else:
+			dupe_selection = card.duplicate(DUPLICATE_USE_INSTANCING)
+			# This prevents the card from being scripted with the
+			# signal propagator and other things going via groups
+			dupe_selection.remove_from_group("cards")
+			dupe_selection.canonical_name = card.canonical_name
+			dupe_selection.properties = card.properties.duplicate()
+			dupe_selection.is_faceup = true
 		var card_grid_obj = grid_card_object_scene.instance()
 		_card_grid.add_child(card_grid_obj)
 		# This is necessary setup for the card grid container
@@ -141,7 +144,7 @@ func _extra_dupe_ready(dupe_selection: Card, _card: Card) -> void:
 	dupe_selection.targeting_arrow.visible = false
 
 # The player can select the cards using a simple left-click. 
-func on_selection_gui_input(event: InputEvent, dupe_selection: Card, origin_card: Card) -> void:
+func on_selection_gui_input(event: InputEvent, dupe_selection: Card, origin_card) -> void:
 	if event is InputEventMouseButton\
 			and event.is_pressed()\
 			and event.get_button_index() == 1:
