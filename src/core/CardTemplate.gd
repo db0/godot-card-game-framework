@@ -603,9 +603,9 @@ func modify_property(
 				# but this is also the fallback we use for
 				# properties undefined in CardConfig
 				elif card_front.card_labels[property] as RichTextLabel:
-					card_front.set_rich_label_text(label_node, str(value))
+					card_front.set_rich_label_text(label_node, _get_formatted_text(value))
 				else:
-					card_front.set_label_text(label_node, str(value))
+					card_front.set_label_text(label_node, _get_formatted_text(value))
 					# If we have an empty property, we let the other labels
 					# use the space vertical space it would have taken.
 	return(retcode)
@@ -1757,6 +1757,11 @@ func _has_targeting_cost_hand_script() -> bool:
 			if task.get(SP.KEY_SUBJECT) == SP.KEY_SUBJECT_V_TARGET:
 				ret = true
 	return(ret)
+
+
+# Overridable function for formatting card text
+func _get_formatted_text(value) -> String:
+	return(str(value))
 
 
 # Makes attachments always move with their parent around the board
