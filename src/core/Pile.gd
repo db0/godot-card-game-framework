@@ -43,6 +43,7 @@ func _ready():
 	add_to_group("piles")
 	# warning-ignore:return_value_discarded
 	view_button.connect("pressed",self,'_on_View_Button_pressed')
+	# warning-ignore:return_value_discarded
 	view_sorted_button.connect("pressed",self,'_on_ViewSorted_Button_pressed')
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("popup_hide",self,'_on_ViewPopup_popup_hide')

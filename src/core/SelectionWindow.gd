@@ -28,7 +28,7 @@ onready var _tween = $Tween
 #	var c2 = cfc.instance_card("Test Card 2")
 #	initiate_selection([c, c2])
 
-func _process(delta):
+func _process(_delta):
 	var current_count = selected_cards.size()
 	# We disable the OK button, if the amount of cards to be 
 	# chosen do not match our expectations
@@ -67,6 +67,7 @@ func initiate_selection(
 	# of the popup
 	if is_selection_optional:
 		var cancel_button := add_cancel("Cancel")
+		# warning-ignore:return_value_discarded
 		cancel_button.connect("pressed",self, "_on_cancel_pressed")
 	# If the amount of cards available for the choice are below the requirements
 	# We return that the selection was canceled
