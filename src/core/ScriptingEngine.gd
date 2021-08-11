@@ -110,7 +110,8 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				yield(script,"primed")
 		if script.is_primed:
 			#print("Scripting Subjects: " + str(script.subjects)) # Debug
-			if script.script_name == "custom_script":
+			if script.script_name == "custom_script"\
+					and not script.is_skipped and script.is_valid:
 				# This class contains the customly defined scripts for each
 				# card.
 				var custom := CustomScripts.new(costs_dry_run())
