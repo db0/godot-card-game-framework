@@ -860,7 +860,9 @@ func set_card_name(value : String, set_label := true) -> void:
 	else:
 		# We set all areas of the card to match the canonical name.
 		var name_label = card_front.card_labels["Name"]
-		if set_label:
+		if set_label and name_label as RichTextLabel:
+			card_front.set_rich_label_text(name_label,value)
+		elif set_label:
 			card_front.set_label_text(name_label,value)
 		name = value
 		canonical_name = value
