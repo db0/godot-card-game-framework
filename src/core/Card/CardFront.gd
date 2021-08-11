@@ -183,6 +183,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 		_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
 		yield(get_tree(), "idle_frame")
 		bbcode_height = node.get_content_height()
+#		print_debug(bbcode_height, ':', font_adjustment, ':', label_size.y)
 	# If the reduction of font sizes when checking against the normal font
 	# was not enough to bring the total rich label height into the rect.y we want
 	# we use a while loop where we do the following in order
@@ -229,11 +230,24 @@ func _assign_bbcode_text(rtlabel: RichTextLabel, bbcode_text : String, font_size
 	bbcode_format["icon_size"] = '{icon_size}x{icon_size}'.format({"icon_size":icon_size})
 	for key in format:
 		format[key] = format[key].format(bbcode_format)
+	if rtlabel == card_labels["Name"]:
+		_add_title_bbcode(rtlabel)
 	rtlabel.push_align(RichTextLabel.ALIGN_CENTER)
 	# warning-ignore:return_value_discarded
 	rtlabel.append_bbcode(bbcode_text.format(format))
 	#	print_debug(bbcode_text.format(format))
 	rtlabel.pop()
+	if rtlabel == card_labels["Name"]:
+		_pop_title_bbcode(rtlabel)
+
+
+# Overridable function for extra formatting of titles/card names
+func _add_title_bbcode(rtlabel: RichTextLabel):
+	pass
+
+# Overridable function for extra formatting of titles/card names
+func _pop_title_bbcode(rtlabel: RichTextLabel):
+	pass
 
 
 func _get_bbcode_format() -> Dictionary:
@@ -250,6 +264,7 @@ func _get_card_rtl_fonts(label: RichTextLabel) -> Dictionary:
 			"italics_font",
 			"bold_font",
 			"bold_italics_font",
+			"title_font",
 			"mono_font"]:
 		if theme:
 			label_font = theme.get_font(font_type, "RichTextLabel").duplicate()
@@ -275,6 +290,7 @@ func _capture_rt_font_size_variations(label: RichTextLabel) -> void:
 			"italics_font",
 			"bold_font",
 			"bold_italics_font",
+			"title_font",
 			"mono_font"]:
 		fvars[font_type] = label_fonts[font_type].size - label_fonts["normal_font"].size
 	rich_text_font_size_variations[label] = fvars

@@ -93,6 +93,8 @@ func initiate_selection(
 			window_title = "Select at most " + str(selection_count) + " cards."
 		"equal":
 			window_title = "Select exactly " + str(selection_count) + " cards."
+		"display":
+			window_title = "Press OK to continue"
 	for c in _card_grid.get_children():
 		c.queue_free()
 	# for each card that the player needs to select amonst
