@@ -10,12 +10,16 @@
 ### New Features 
 
 * Selection Window can now be used independently of the ScriptingEngine
-* Selection window function can how handle both an Array of Card objects, as well as an array of card names.
+* Selection Window function can how handle both an Array of Card objects, as well as an array of card names.
+* Selection Window can now be used as a mere display (using 0 selection and "display" type)
+* Card Name can now be a rich text label
+* Added code in card_front which can add extra formating to the card name.
+
 
 #### ScriptingEngine
 
 * Can now set multiplier in the per definition
-
+* CustomScripts will now correctly abort when costs cannot be paid
 ## 1.13
 
 ### Tweaks
