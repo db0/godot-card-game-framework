@@ -42,7 +42,7 @@ func get_preview_placement() -> Vector2:
 		ret.x = get_global_mouse_position().x - card_size.x - 20
 	else:
 		ret.x = get_global_mouse_position().x + 20
-	if get_global_mouse_position().y\
+	if is_instance_valid(preview_card) and get_global_mouse_position().y\
 			+ card_size.y\
 			+ focus_panel_offset\
 			> get_viewport().size.y:

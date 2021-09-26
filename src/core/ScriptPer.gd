@@ -59,7 +59,12 @@ func _count_property() -> int:
 	# Only number properties can be used for per
 	if get_property(SP.KEY_PROPERTY_NAME) in CardConfig.PROPERTIES_NUMBERS:
 		for card in subjects:
-			ret += card.get_property(get_property(SP.KEY_PROPERTY_NAME))
+			# We allow properties which are specified as numbers
+			# To have string values. But we cannot accumulate them, so we ignore
+			# those values
+			var value = card.get_property(get_property(SP.KEY_PROPERTY_NAME))
+			if typeof(value) == TYPE_INT:
+				ret += value
 	return(ret)
 
 

@@ -56,6 +56,7 @@ func set_label_text(node: Label, value):
 	if node in resizing_labels:
 		return
 	resizing_labels.append(node)
+	value = _check_for_replacements(node, value)
 	# We add a yield here to allow the calling function to continue
 	# and thus avoid the game waiting for the label to resize
 	yield(get_tree(), "idle_frame")
@@ -142,6 +143,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 	if node in resizing_labels:
 		return
 	resizing_labels.append(node)
+	value = _check_for_replacements(node, value)
 	# This is used to hide a card with rich text while the rich text is resizing
 	# This is because richtext cannot resize properly while invisible
 	# Therefore we need to keep the front visible while the rich text label is resizing.
@@ -339,3 +341,14 @@ func _adjust_font_size(
 		if adjustment_font.size < 5:
 			break
 	return(adjustment)
+
+
+# Overridable function which allows values to be replaced on the fly
+# when placed in the card front.
+func _check_for_replacements(node, value):
+	for repl_key in CardConfig.REPLACEMENTS:
+		if node == card_labels[repl_key]:
+			# This command will try to find a replacement for this value in the replacements
+			# But will keep the existing value if none is found.
+			value = CardConfig.REPLACEMENTS[repl_key].get(value, value)
+	return(value)

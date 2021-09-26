@@ -22,7 +22,7 @@ func test_setup():
 	assert_eq(deckbuilder._available_cards.get_child_count(),
 			cfc.card_definitions.size() - 1, # because of the token
 			"Available cards should match the unique cards defined")
-	assert_eq(deckbuilder._filter_buttons.get_child_count(), 4,
+	assert_eq(deckbuilder._filter_buttons.get_child_count(), 5,
 			"Filter buttons match the amounts of types")
 	var card_object: DBListCardObject = deckbuilder._available_cards.get_child(0)
 	var quantity_nodes : Array = card_object.get_node("Quantity").get_children()

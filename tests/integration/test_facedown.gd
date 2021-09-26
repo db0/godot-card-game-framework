@@ -17,7 +17,6 @@ func before_each():
 
 func test_board_facedown():
 	var card: Card
-	var dupe: Card
 	card = cards[3]
 	var card_front = card.get_node("Control/Front")
 	var card_back = card.get_node("Control/Back")
@@ -53,11 +52,9 @@ func test_board_facedown():
 
 	yield(move_mouse(card.global_position), 'completed')
 	yield(yield_for(0.1), YIELD) # Wait to allow dupe to be created
-	dupe = main._previously_focused_cards.back()
-	var dupe_front
-	dupe_front = dupe.get_node("Control/Front")
-	var dupe_back
-	dupe_back = dupe.get_node("Control/Back")
+	var dupe: Card = main._previously_focused_cards[card]
+	var dupe_front = dupe.get_node("Control/Front")
+	var dupe_back = dupe.get_node("Control/Back")
 	var view_button  = card.get_node("Control/ManipulationButtons/View")
 	var viewed_icon  = card.card_back.viewed_node
 	card.is_faceup = false
@@ -113,9 +110,8 @@ func test_board_facedown():
 #	yield(yield_for(0.2), YIELD) # Wait to allow dupe to be destroyed
 	yield(move_mouse(card.global_position), 'completed')
 #	yield(yield_for(0.2), YIELD) # Wait to allow dupe to be created
-	dupe = main._previously_focused_cards.back()
+	dupe = main._previously_focused_cards[card]
 	dupe_front = dupe.get_node("Control/Front")
-	dupe_back = dupe.get_node("Control/Back")
 	assert_true(dupe_front.visible,
 			"Dupe is visible after moving mouse in and out to restart focus")
 
@@ -123,8 +119,6 @@ func test_board_facedown():
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_eq(CFConst.ReturnCode.FAILED,card.set_is_viewed(true),
 			"View function returns FAILED when requesting true while card is faceup")
-	gut.p(card.is_viewed)
-	gut.p(card.is_faceup)
 	assert_eq(CFConst.ReturnCode.OK,card.set_is_viewed(false),
 			"View function returns OK when requesting false and is_viewed == false")
 

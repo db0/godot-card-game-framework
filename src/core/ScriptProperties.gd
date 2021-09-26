@@ -1208,7 +1208,7 @@ static func filter_trigger(
 			trigger_details.get(TRIGGER_TASK_NAME):
 		is_valid = false
 
-	# Card Rotation filter checks
+	# Card Parent filter checks
 	if is_valid and card_scripts.get(FILTER_PARENT) \
 			and check_parent_filter(trigger_card,card_scripts.get(FILTER_PARENT)):
 		is_valid = false
@@ -1387,17 +1387,28 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 					and comparison_type == "ne":
 				card_matches = false
 		elif property in CardConfig.PROPERTIES_NUMBERS:
-			var comparison_value: int
+			var comparison_value
 			if typeof(property_filters[property]) == TYPE_INT:
 				comparison_value = property_filters[property]
-			# We support comparing against counters. We assume any string
-			# value is a counter name
-			else:
+			# We support comparing against counters. We check if the value of the
+			# property is a counter name
+			elif cfc.NMAP.board.counters.needed_counters.has(property_filters[property]):
 				comparison_value = cfc.NMAP.board.counters.get_counter(
 						property_filters[property], card)
-			if not CFUtils.compare_numbers(
+			else:
+				# If the property value is a string, and that is not a counter name
+				# Then it must be a special value provided by the designer
+				# We obviously cannot compare it as int, so we will compare is as string.
+				comparison_value = property_filters[property]
+			if typeof(comparison_value) == TYPE_INT:
+				if not CFUtils.compare_numbers(
+						card.get_property(property),
+						comparison_value,
+						comparison_type):
+					card_matches = false
+			elif not CFUtils.compare_strings(
+					property_filters[property],
 					card.get_property(property),
-					comparison_value,
 					comparison_type):
 				card_matches = false
 		elif property == "Name":
@@ -1463,7 +1474,7 @@ static func check_faceup_filter(card, flip_state: bool) -> bool:
 	return(card_matches)
 
 
-# Returns true if the faceup state of the card matches the specified filter
+# Returns true if the parent container of the card matches the specified filter
 # or the filter key was not defined. Otherwise returns false.
 static func check_parent_filter(card, parent: Node) -> bool:
 	var card_matches := true

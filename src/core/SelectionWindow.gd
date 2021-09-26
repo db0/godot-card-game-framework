@@ -95,6 +95,7 @@ func initiate_selection(
 			window_title = "Select exactly " + str(selection_count) + " cards."
 		"display":
 			window_title = "Press OK to continue"
+			popup_exclusive = false
 	for c in _card_grid.get_children():
 		c.queue_free()
 	# for each card that the player needs to select amonst

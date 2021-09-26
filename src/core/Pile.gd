@@ -50,6 +50,14 @@ func _ready():
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("about_to_show",self,'_on_ViewPopup_about_to_show')
 	set_pile_name(pile_name)
+	connect(
+		"shuffle_completed", 
+		cfc.signal_propagator, 
+		"_on_signal_received",
+		[
+			"shuffle_completed", 
+			{"source": self}
+		])
 
 
 func _process(_delta) -> void:
@@ -252,6 +260,11 @@ func move_child(child_node, to_position) -> void:
 	.move_child(child_node, to_position)
 	$Control.raise()
 
+# The top position of a pile, is always the lowest
+func move_card_to_top(card: Card) -> void:
+	var lowest_index = get_children().size() - 1
+	move_child(card, lowest_index)
+	reorganize_stack()
 
 # Overrides [CardContainer] function to include cards in the popup window
 # Returns an array with all children nodes which are of Card class
@@ -443,7 +456,7 @@ func shuffle_cards(animate = true) -> void:
 		# if we're already running another animation, just shuffle
 		.shuffle_cards()
 	reorganize_stack()
-	emit_signal("shuffle_completed")
+	emit_signal("shuffle_completed", self)
 
 
 # Overrides the re_place() function of [Pile] in order

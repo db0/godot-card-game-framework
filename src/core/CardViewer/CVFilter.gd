@@ -38,8 +38,8 @@ func set_operator(value) -> void:
 
 
 # Setter for expression var
-func set_expression(value) -> void:
-	if type == "int":
+func set_expression(value: String) -> void:
+	if type == "int" and value.is_valid_integer():
 		expression = int(value)
 	else:
 		var string_regex := RegEx.new()
@@ -59,7 +59,10 @@ func assess_card_object(card_object: CVListCardObject) -> bool:
 		prop_value = card_object.card_name
 	else:
 		prop_value = card_object.card_properties.get(property)
-	if property in CardConfig.PROPERTIES_NUMBERS:
+	# we allow number properties to get string values to give flexibility to the 
+	# designer, but we need to check for it to make proper comparisons
+	if property in CardConfig.PROPERTIES_NUMBERS\
+			and (typeof(prop_value) == TYPE_INT or typeof(prop_value) == TYPE_REAL):
 		if not CFUtils.compare_numbers(prop_value,expression,operator):
 			card_match = false
 	# For arrays, we want to return false, if none of the tags match the filter

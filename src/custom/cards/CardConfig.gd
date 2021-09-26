@@ -40,6 +40,23 @@ const EXPLANATIONS = {
 	"Keyword 1": "Keyword 1: You can specify explanations for keywords that might appear in the text",
 	"Clarification A": "You can even provide longer clarification on card abilities"
 }
+# Allows the Card object and Card Viewer to replace specific entries during display.
+# For example, you can mark that a cost of 'U' is displayed as an empty string ('').
+# or a value of 0 to be displayed as 'X'.
+# This const is a series of nested constants. 
+# Each top key is a property name. 
+# Each second-level key is value to replace.
+# The value is the replacement.
+# Example
+#```
+#const REPLACEMENTS = {
+#	"Cost": {
+#		'U': '',
+#		-1: 'X',
+#	}
+#}
+#```
+const REPLACEMENTS = {}
 const CARD_BBCODE := {
 	"damage": "[img={icon_size}]res://assets/icons/broadsword.png[/img]",
 }

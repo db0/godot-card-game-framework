@@ -526,7 +526,7 @@ func modify_property(
 	elif check\
 			and property in CardConfig.PROPERTIES_NUMBERS\
 			and typeof(value) == TYPE_STRING\
-			and '-' in value\
+			and value.is_valid_integer()\
 			and properties.get(property,0) + int(value) < 0:
 		retcode = CFConst.ReturnCode.FAILED
 	else:
@@ -574,16 +574,22 @@ func modify_property(
 					# The designer is attempting to modify the property
 					# from its current value
 					if typeof(value) == TYPE_STRING:
-						if '+' in value or '-' in value:
+						if value.is_valid_integer():
 							properties[property] += int(value)
 							if property in CardConfig.NUMBER_WITH_LABEL:
 								card_front.set_label_text(label_node,property
 										+ ": " + str(previous_value + int(value)))
 							else:
 								card_front.set_label_text(label_node,str(value))
+						# We allow setting number properties as strings
+						# but if they're not modifiers to the current value
+						# Then we just put whatever the string is at the card
+						# label.
+						# This allows designers to put custom strings for 
+						# nominally numerical properties for other purposes
+						# (For example setting an 'X' as the card cost)
 						else:
-							print_debug("WARNING: Tried to assign " + value
-									+ " to numerical property:" + property)
+							card_front.set_label_text(label_node,value)
 					elif value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
 						card_front.set_label_text(label_node,"")
 					elif property in CardConfig.NUMBER_WITH_LABEL:

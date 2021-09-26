@@ -6,6 +6,7 @@
 
 * New property `CardConfig.BOOL_PROPERTY_TO_HIDE_IN_CARDVIEWER` has to exist. Defaults to `"hide_in_dekbuilder"` but this const allows you to set it to anything else.
 * `CardConfig.TYPES_TO_HIDE_IN_DECKBUILDER` renamed to `CardConfig.TYPES_TO_HIDE_IN_CARDVIEWER`
+* New property `CardConfig.REPLACEMENTS` has to exist. Defaults to an empty dictionary. See comments for its description
 
 ### New Features 
 
@@ -14,12 +15,17 @@
 * Selection Window can now be used as a mere display (using 0 selection and "display" type)
 * Card Name can now be a rich text label
 * Added code in card_front which can add extra formating to the card name.
+* Added new signal "shuffle_completed" emited after a pile is shuffled
+* Can now set replacement strings for specific properties. For example you can replace a Cost of "-1" with "X".
+* The above is also imported in an exported var in the CardViewer class. This means can extend it with further replacements that will appear only in the CardViewer classes.
+* Can now specify Strings as valid values for card properties marked as numbers in CardConfig. They will be excluded from numerical filters and comparisons in the scripting engine, so you need to provide appropriate logic.
 
 
 #### ScriptingEngine
 
 * Can now set multiplier in the per definition
 * CustomScripts will now correctly abort when costs cannot be paid
+
 ## 1.13
 
 ### Tweaks

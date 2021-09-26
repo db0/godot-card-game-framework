@@ -493,15 +493,22 @@ func modify_properties(script: ScriptTask) -> int:
 								null,
 								script.subjects)
 						modification = per_msg.found_things
+						# We cannot check for +/- using .is_valid_integer() because
+						# the value might be something like '+per_counter'
 						if '+' in properties[property] or '-' in properties[property]:
 							new_value = card.get_property(property)\
 									+ modification
 						else:
 							new_value = modification
-					# if the value is not a per, then it's just a +/- adjustemnt
-					else:
+					# if the value is not a per, then it might be a +/- adjustemnt
+					elif properties[property].is_valid_integer():
 						modification = int(properties[property])
 						new_value = card.get_property(property) + modification
+					# If the string in the modification is not a valid integer
+					# Then there's no point in checking for alterants,
+					# and we just assign it as is to the card's property
+					# (i.e. we do nothing at this point,
+					# and it is assigned later in the code)
 				else:
 					modification = properties[property]
 					new_value = modification
@@ -522,7 +529,10 @@ func modify_properties(script: ScriptTask) -> int:
 			# We need to convert the value + alteration into a string as well
 			if alteration != null:
 				value = modification + alteration
-				if '+' in str(properties[property]) or '-' in str(properties[property]):
+				# We cannot check for +/- using .is_valid_integer() because
+				# the value might be something like '+per_counter'
+				if typeof(properties[property]) == TYPE_STRING\
+						and ('+' in properties[property] or '-' in properties[property]):
 					# If the value is positive, we need to put the '+' in front
 					if value >= 0:
 						value = '+' + str(value)
@@ -699,13 +709,13 @@ func execute_scripts(script: ScriptTask) -> int:
 
 # Task for executing nested tasks
 # This task will execute internal non-cost cripts accordin to its own
-# nested cost instructions. 
-# Therefore if you set this task as a cost, 
+# nested cost instructions.
+# Therefore if you set this task as a cost,
 # it will modify the board, even if other costs of this script
 # could not be paid.
-# You can use [SP.KEY_ABORT_ON_COST_FAILURE](SP#KEY_ABORT_ON_COST_FAILURE) 
+# You can use [SP.KEY_ABORT_ON_COST_FAILURE](SP#KEY_ABORT_ON_COST_FAILURE)
 # to control this behaviour better
-func nested_script(script: ScriptTask) -> int: 
+func nested_script(script: ScriptTask) -> int:
 	var retcode : int = CFConst.ReturnCode.CHANGED
 	var nested_task_list: Array = script.get_property(SP.KEY_NESTED_TASKS)
 	var sceng = cfc.scripting_engine.new(
@@ -730,7 +740,7 @@ func nested_script(script: ScriptTask) -> int:
 		sceng.execute(CFInt.RunType.ELSE)
 	# If the nested task had a cost which could not be paid
 	# we return a failed result. This means that if the nested_script task
-	# was also marked as a cost itself, then it will block execution of 
+	# was also marked as a cost itself, then it will block execution of
 	# further non-cost tasks.
 	if not sceng.can_all_costs_be_paid:
 		retcode = CFConst.ReturnCode.FAILED

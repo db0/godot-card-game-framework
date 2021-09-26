@@ -42,6 +42,9 @@ export var filter_button_properties := ["Type"]
 # Make sure that the values specified will never match normal values for that
 # property.
 export var generation_keys := []
+# See CardConfig.REPLACEMENTS. This allows for extra replacements in the card
+# Viewer, if needed.
+export var replacements := CardConfig.REPLACEMENTS
 # The custom scene which displays the card when its name is hovered.
 export var info_panel_scene = _INFO_PANEL_SCENE
 # We use this variable, so that the scene can be overriden with a custom one

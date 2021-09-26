@@ -34,6 +34,8 @@ func setup(_card_name: String) -> void:
 			if property in CardConfig.PROPERTIES_ARRAYS:
 				new_label.bbcode_text = CFUtils.array_join(card_properties[property],
 							CFConst.ARRAY_PROPERTY_JOIN)
+			elif card_viewer.replacements.has(property) and card_viewer.replacements[property].has(card_properties[property]):
+				new_label.bbcode_text = card_viewer.replacements[property][card_properties[property]]
 			else:
 				new_label.bbcode_text = str(card_properties[property]).format(format)
 			add_child(new_label)

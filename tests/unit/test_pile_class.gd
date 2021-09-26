@@ -26,7 +26,9 @@ func test_get_card_methods():
 
 func test_facedown_cards():
 	var pile : Pile = cfc.NMAP.deck
-	yield(yield_for(0.1), YIELD)
+	# We need a longer yield because we're also waiting for the richtextlabels
+	# To populate, during which time, cards are left face-up
+	yield(yield_for(0.3), YIELD)
 	assert_eq(pile.get_top_card().is_faceup, pile.faceup_cards,\
 			"Card has to be facedown when moved into pile")
 

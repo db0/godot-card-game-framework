@@ -39,5 +39,4 @@ func populate_available_cards() -> void:
 			new_label.bbcode_enabled = true
 			new_label.scroll_active = false
 			new_label.fit_content_height = false
-
 			_card_headers.add_child(new_label)

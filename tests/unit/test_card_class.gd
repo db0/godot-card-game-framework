@@ -59,6 +59,8 @@ func test_move_to():
 			'move_to can takeover/push index spots of other cards')
 
 func test_init_card_name():
+	# We need a yield to allow the richtextlabel setup complete
+	yield(yield_for(0.1), YIELD)
 	# We know which are the last 3 card types of the test cards
 	var test3 = cfc.NMAP.deck.get_card(15)
 	var test2 = cfc.NMAP.deck.get_card(14)
@@ -80,13 +82,16 @@ func test_init_card_name():
 			'Name Label text is set correctly')
 
 func test_card_name_setget():
+	yield(yield_for(0.05), YIELD)
 	card.set_name("Testing Name Change 1")
+	# We need a yield to allow the richtextlabel setup complete
 	assert_eq("Testing Name Change 1",card.canonical_name,
 			'card_name variable is set correctly')
 	assert_string_contains(card.name, "Testing Name Change 1")
 	assert_eq("Testing Name Change 1",card.card_front.card_labels["Name"].text,
 			'Name Label text is set correctly')
 	card.canonical_name = "Testing Name Change 2"
+	yield(yield_for(0.05), YIELD)
 	assert_eq("Testing Name Change 2",card.canonical_name,
 			'card_name variable is set correctly')
 	assert_string_contains(card.name, "Testing Name Change 2")
@@ -107,6 +112,8 @@ func test_CardDefinition_properties():
 	var new_card = cfc.instance_card("GUT Card")
 	board.add_child(new_card)
 	new_card._determine_idle_state()
+	# We need a yield to allow the richtextlabel setup complete
+	yield(yield_for(0.1), YIELD)
 	assert_eq(new_card.card_front.card_labels["Tags"].text,"Tag 1 - Tag 2 - GUT Tag",
 			"Array property uses the separator")
 	assert_eq(new_card.card_front.card_labels["Cost"].text, "Cost: 10",

@@ -265,7 +265,7 @@ static func compare_strings(s1: String, s2: String, comparison_type: String) -> 
 	return(comp_result)
 
 
-# Calculates all unique values of one card property, 
+# Calculates all unique values of one card property,
 # among all card definitions
 #
 # Returns an array with all the unique values
@@ -281,16 +281,18 @@ static func get_unique_values(property: String) -> Array:
 						cfc.card_definitions[card_def][property])
 	return(unique_property_values)
 
-# Converts a resource path to a texture, or a StreamTexture object 
+# Converts a resource path to a texture, or a StreamTexture object
 # (which you get with `preload()`)
 # into an ImageTexture you can assign to a node's texture property.
-static func convert_texture_to_image(texture) -> ImageTexture:
+static func convert_texture_to_image(texture, is_lossless = false) -> ImageTexture:
 	var tex: StreamTexture
 	if typeof(texture) == TYPE_STRING:
 		tex = load(texture)
 	else:
 		tex = texture
 	var new_texture = ImageTexture.new();
+	if is_lossless:
+		new_texture.storage = ImageTexture.STORAGE_COMPRESS_LOSSLESS
 	var image = tex.get_data()
 	new_texture.create_from_image(image)
 	return(new_texture)
