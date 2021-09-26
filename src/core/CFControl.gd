@@ -298,8 +298,6 @@ class SignalPropagator:
 	# trigger variable, is this is the key sought in the CardScriptDefinitions
 	func _on_signal_received(
 			trigger_card: Card, trigger: String, details: Dictionary):
-		if trigger == "shuffle_completed":
-			pass
 		# We use Godot groups to ask every card to check if they
 		# have [ScriptingEngine] triggers for this signal.
 		#

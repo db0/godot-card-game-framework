@@ -35,6 +35,9 @@ const TYPES_TO_HIDE_IN_CARDVIEWER := ["Token"]
 # If this property exists in a card and is set to true, the card will not be
 # displayed in the cardviewer
 const BOOL_PROPERTY_TO_HIDE_IN_CARDVIEWER := "_hide_in_deckbuilder"
+# When these keys are detected in the the "Tag" or "_keyword" fields, they
+# will add extra info panel with the specified information to the player.
+# See `OVUtils.populate_info_panels()`
 const EXPLANATIONS = {
 	"Tag 1": "Tag 1: You can add extra explanations for tags",
 	"Keyword 1": "Keyword 1: You can specify explanations for keywords that might appear in the text",
@@ -57,6 +60,9 @@ const EXPLANATIONS = {
 #}
 #```
 const REPLACEMENTS = {}
+# Defined bbcode which will replace the specified string in RichTextLabels
+# For example, a key of 'damage' in this dictionary, will replace all instances
+# of `{damage}` in card text with the provided bbcode value.
 const CARD_BBCODE := {
 	"damage": "[img={icon_size}]res://assets/icons/broadsword.png[/img]",
 }
