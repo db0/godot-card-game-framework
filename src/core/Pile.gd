@@ -50,6 +50,7 @@ func _ready():
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("about_to_show",self,'_on_ViewPopup_about_to_show')
 	set_pile_name(pile_name)
+	# warning-ignore:return_value_discarded
 	connect(
 		"shuffle_completed", 
 		cfc.signal_propagator, 
@@ -84,6 +85,7 @@ func _process(_delta) -> void:
 # then displays it
 func _on_View_Button_pressed() -> void:
 	populate_popup()
+
 
 # Populates the popup view window with all the cards in the deck sorted by name
 # then displays it

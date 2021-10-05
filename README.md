@@ -144,6 +144,10 @@ You can join us on Discord with this invite code: https://discord.gg/AjZMFY7jD4
 
 Please see the [Contribution Guide](CONTRIBUTING.md)
 
+## Support
+
+If you wish to support the development of the Card Game Framework, consider becoming a patron via [liberapay](https://liberapay.com/db0/)
+
 ## Credits
 
 Some initial ideas were taken from this excellent [Godot Card Game Tutorial video series](https://www.youtube.com/watch?v=WjT5sLMD7Kw). This framework uses some of the concepts but also attempts to create better quality code in the process.

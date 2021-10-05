@@ -3,7 +3,9 @@
 [ext_resource path="res://src/core/CardViewer/CVPreviewPopup.gd" type="Script" id=1]
 [ext_resource path="res://src/core/DetailPanels.gd" type="Script" id=2]
 
-[node name="PreviewPopup" type="Popup"]
+[node name="PreviewPopup" type="Popup" groups=[
+"card_preview",
+]]
 margin_right = 40.0
 margin_bottom = 40.0
 script = ExtResource( 1 )
