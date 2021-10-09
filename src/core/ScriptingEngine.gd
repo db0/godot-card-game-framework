@@ -120,7 +120,6 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 					and (not costs_dry_run()
 						or (costs_dry_run() and script.is_cost)):
 				#print(script.is_valid,':',costs_dry_run())
-				prev_subjects = script.subjects
 				for card in script.subjects:
 					card.temp_properties_modifiers[self] = {
 						"requesting_object": script.owner,
@@ -129,6 +128,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				var retcode = call(script.script_name, script)
 				if retcode is GDScriptFunctionState:
 					retcode = yield(retcode, "completed")
+				prev_subjects = script.subjects
 				if costs_dry_run():
 					if retcode != CFConst.ReturnCode.CHANGED:
 						can_all_costs_be_paid = false

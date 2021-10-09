@@ -218,9 +218,17 @@ var _is_property_being_altered := false
 # And the methods which are used for its potential animation.
 # This will be loaded in `_init_card_back()`
 var card_back : CardBack
+# The node which has the design of the card front
+# And the methods which are used for modifying the card labels and sizing.
+# This will be loaded in `_init_card_layout()`
 var card_front : CardFront
 var _card_text
 var original_layouts:= {}
+# This is true while the card is in the process of executing its scripts
+# This flag not used in the core CGF, but games build on it can use
+# This flag to prevent the player from "double-dipping" on a script
+# while animations are playing.
+var is_executing_scripts := false
 
 # This variable will point to the scene which controls the targeting arrow
 onready var targeting_arrow
@@ -263,7 +271,7 @@ func _init_card_layout() -> void:
 		var card_front_instance = card_front_design.instance()
 		$Control/Front.add_child(card_front_instance)
 		card_front = card_front_instance
-		# We do not need to instance the card_back when card is seen 
+		# We do not need to instance the card_back when card is seen
 		# in a preview card grid
 		if get_parent().get_class() != "CVGridCardObject":
 			var card_back_instance = card_back_design.instance()
@@ -585,7 +593,7 @@ func modify_property(
 						# but if they're not modifiers to the current value
 						# Then we just put whatever the string is at the card
 						# label.
-						# This allows designers to put custom strings for 
+						# This allows designers to put custom strings for
 						# nominally numerical properties for other purposes
 						# (For example setting an 'X' as the card cost)
 						else:
@@ -643,7 +651,7 @@ func get_property_and_alterants(property: String,
 		"value_modification": 0,
 		"modifier_details": {}
 	}
-	if property in CardConfig.PROPERTIES_NUMBERS:
+	if property in CardConfig.PROPERTIES_NUMBERS and typeof(property_value) == TYPE_INT:
 		var tmp_mods : Dictionary
 		# The global card modifications record in cfc is not typically used
 		# A game will have to be setup to explicitly request its use in this
@@ -1332,8 +1340,10 @@ func execute_scripts(
 		choices_menu.queue_free()
 	# To avoid unnecessary operations
 	# we evoke the ScriptingEngine only if we have something to execute
+	# We do not statically type it as this causes a circular reference
 	var sceng = null
 	if len(state_scripts):
+		is_executing_scripts = true
 		# This evocation of the ScriptingEngine, checks the card for
 		# cost-defined tasks, and performs a dry-run on them
 		# to ascertain whether they can all be paid,
@@ -1370,6 +1380,9 @@ func execute_scripts(
 		elif not sceng.can_all_costs_be_paid and not only_cost_check:
 			#print("DEBUG:" + str(state_scripts))
 			sceng.execute(CFInt.RunType.ELSE)
+			if not sceng.all_tasks_completed:
+				yield(sceng,"tasks_completed")
+		is_executing_scripts = false
 	return(sceng)
 
 

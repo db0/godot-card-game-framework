@@ -19,7 +19,8 @@
 * Can now set replacement strings for specific properties. For example you can replace a Cost of "-1" with "X".
 * The above is also imported in an exported var in the CardViewer class. This means can extend it with further replacements that will appear only in the CardViewer classes.
 * Can now specify Strings as valid values for card properties marked as numbers in CardConfig. They will be excluded from numerical filters and comparisons in the scripting engine, so you need to provide appropriate logic.
-
+* Added new function in `cfc.hide_all_previews()` which will hide all currently opened card preview popups.
+* SignalPropagator will not emit its own signal duplicating the signal it just received. Allows any object (including non-scriptables) to hook into the card triggers from a central spot.
 
 #### ScriptingEngine
 
