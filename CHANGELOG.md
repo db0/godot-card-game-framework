@@ -1,6 +1,6 @@
 # Changelog
 
-## 1.14 (Ongoing)
+## 1.14
 
 ### Important for Upgrades
 
@@ -21,6 +21,7 @@
 * Can now specify Strings as valid values for card properties marked as numbers in CardConfig. They will be excluded from numerical filters and comparisons in the scripting engine, so you need to provide appropriate logic.
 * Added new function in `cfc.hide_all_previews()` which will hide all currently opened card preview popups.
 * SignalPropagator will now emit its own signal duplicating the signal it just received. Allows any object (including non-scriptables) to hook into the card triggers from a central spot.
+* Larger focus card (coming form the viewport) will now not have an opaque background.
 
 #### ScriptingEngine
 

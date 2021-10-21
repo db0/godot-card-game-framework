@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework [1.13](CHANGELOG.md)
+# Godot Card Game Framework [1.14](CHANGELOG.md)
 
 ![Godot Card Game Framework preview image](preview.png "Godot Card Game Framework preview image")
 
