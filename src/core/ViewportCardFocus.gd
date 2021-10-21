@@ -13,6 +13,7 @@ var _current_focus_source : Card = null
 
 onready var card_focus := $VBC/Focus
 onready var focus_info := $VBC/FocusInfo
+onready var _focus_viewport := $VBC/Focus/Viewport
 
 
 # Called when the node enters the scene tree for the first time.
@@ -79,7 +80,7 @@ func focus_card(card: Card) -> void:
 			# We display a "pure" version of the card
 			# This means we hide buttons, tokens etc
 			dupe_focus.state = Card.CardState.VIEWPORT_FOCUS
-			$VBC/Focus/Viewport.add_child(dupe_focus)
+			_focus_viewport.add_child(dupe_focus)
 			_extra_dupe_ready(dupe_focus, card)
 			dupe_focus.is_faceup = card.is_faceup
 			dupe_focus.is_viewed = card.is_viewed
@@ -157,3 +158,14 @@ func _extra_dupe_ready(dupe_focus: Card, card: Card) -> void:
 	dupe_focus.resize_recursively(dupe_focus._control, CFConst.FOCUSED_SCALE)
 	dupe_focus.card_front.scale_to(CFConst.FOCUSED_SCALE)
 
+
+func _input(event):
+	# We use this to allow the developer to take card screenshots
+	# for any number of purposes
+	if event.is_action_pressed("screenshot_card"):
+		var img = _focus_viewport.get_texture().get_data()
+		yield(get_tree(), "idle_frame")
+		yield(get_tree(), "idle_frame")
+		img.convert(Image.FORMAT_RGBA8)
+		img.flip_y()
+		img.save_png("user://" + _current_focus_source.canonical_name + ".png")

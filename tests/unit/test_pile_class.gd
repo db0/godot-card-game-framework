@@ -54,7 +54,7 @@ func test_popup_view():
 	assert_eq(pile.get_all_cards(), card_order,\
 			"Retrieved card order remains when viewed in pile")
 	assert_eq(pile.get_all_cards(), retieve_popup_order(pile),\
-			"Viewed card order from topleft, to botright")			
+			"Viewed card order from topleft, to botright")
 	pile.pile_popup.hide()
 	yield(yield_for(0.7), YIELD)
 	pile.populate_popup(true)
@@ -70,7 +70,7 @@ func test_popup_view():
 	yield(yield_for(0.7), YIELD)
 	assert_eq(pile.get_all_cards(), card_order,\
 			"Pile order resumed after being viewed ordered")
-	
+
 
 func retieve_popup_order(pile: Pile) -> Array:
 	var popup_cards := []
@@ -84,11 +84,18 @@ func retieve_popup_order(pile: Pile) -> Array:
 			# top card to be on the top right
 #			popup_cards.append(obj.get_child(0))
 			popup_cards.insert(0, obj.get_child(0))
-			print_debug(obj.get_child(0), obj.get_child(0).canonical_name)
 	return(popup_cards)
-	
+
 func test_set_pile_name():
 	var pile : Pile = cfc.NMAP.discard
 	pile.pile_name = "GUT Test"
 	assert_eq(pile.pile_name, pile.pile_name_label.text,
 			"Label is renamed whe pile_name changes")
+
+
+func test_shuffle_signal():
+	var pile : Pile = cfc.NMAP.deck
+	watch_signals(pile)
+	pile.shuffle_cards(false)
+	assert_signal_emitted(pile,"shuffle_completed",
+			"shuffle_completed emited")

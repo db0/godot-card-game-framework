@@ -1,27 +1,14 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/core/ViewportCardFocus.gd" type="Script" id=1]
 [ext_resource path="res://src/core/DetailPanels.gd" type="Script" id=2]
+[ext_resource path="res://src/core/MainWorld.tres" type="Environment" id=3]
 
-[sub_resource type="Environment" id=1]
-background_mode = 4
-ssao_radius = 95.17
-ssao_bias = 0.961
-glow_enabled = true
-glow_levels/1 = true
-glow_levels/2 = true
-glow_levels/5 = false
-glow_intensity = 0.1
-glow_blend_mode = 0
-glow_hdr_threshold = 1.3
-glow_hdr_luminance_cap = 2.0
-glow_bicubic_upscale = true
+[sub_resource type="World" id=1]
 
 [node name="Main" type="Node2D"]
+self_modulate = Color( 1, 1, 1, 0 )
 script = ExtResource( 1 )
-
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource( 1 )
 
 [node name="ViewportContainer" type="ViewportContainer" parent="."]
 margin_left = 1.5874
@@ -43,15 +30,14 @@ anchor_mode = 0
 current = true
 
 [node name="VBC" type="VBoxContainer" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+margin_right = 300.0
+margin_bottom = 454.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Focus" type="ViewportContainer" parent="VBC"]
-modulate = Color( 1, 1, 1, 0 )
 margin_right = 300.0
 margin_bottom = 450.0
 rect_min_size = Vector2( 300, 450 )
@@ -63,7 +49,11 @@ __meta__ = {
 
 [node name="Viewport" type="Viewport" parent="VBC/Focus"]
 size = Vector2( 300, 450 )
+world = SubResource( 1 )
+transparent_bg = true
 handle_input_locally = false
+disable_3d = true
+usage = 0
 render_target_update_mode = 3
 gui_disable_input = true
 
@@ -82,5 +72,8 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = ExtResource( 3 )
 
 [connection signal="size_changed" from="ViewportContainer/Viewport" to="." method="_on_Viewport_size_changed"]

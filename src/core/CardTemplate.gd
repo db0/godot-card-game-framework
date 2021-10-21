@@ -583,8 +583,13 @@ func modify_property(
 					# from its current value
 					if typeof(value) == TYPE_STRING:
 						if value.is_valid_integer():
-							properties[property] += int(value)
-							if property in CardConfig.NUMBER_WITH_LABEL:
+							# We catch the designer by mistake putting a number
+							# as an integer in the card definition
+							if is_init:
+								properties[property] = int(properties[property])
+							else:
+								properties[property] += int(value)
+							if property in CardConfig.NUMBER_WITH_LABEL and not is_init:
 								card_front.set_label_text(label_node,property
 										+ ": " + str(previous_value + int(value)))
 							else:
