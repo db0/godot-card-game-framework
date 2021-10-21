@@ -20,12 +20,14 @@
 * The above is also imported in an exported var in the CardViewer class. This means can extend it with further replacements that will appear only in the CardViewer classes.
 * Can now specify Strings as valid values for card properties marked as numbers in CardConfig. They will be excluded from numerical filters and comparisons in the scripting engine, so you need to provide appropriate logic.
 * Added new function in `cfc.hide_all_previews()` which will hide all currently opened card preview popups.
-* SignalPropagator will not emit its own signal duplicating the signal it just received. Allows any object (including non-scriptables) to hook into the card triggers from a central spot.
+* SignalPropagator will now emit its own signal duplicating the signal it just received. Allows any object (including non-scriptables) to hook into the card triggers from a central spot.
 
 #### ScriptingEngine
 
 * Can now set multiplier in the per definition
 * CustomScripts will now correctly abort when costs cannot be paid
+* New boolean var on Card class "is_executing_script" which is turned on while ScriptingEngine is running for this card's script. Games can hook into it to prevent multiple executions.
+* Moved the spot where previous_subjects are assigned to after the task is triggered. This allows tasks to change the subjects list and this will can then be used in the next script's `"subject":"previous"` tasks
 
 ## 1.13
 
