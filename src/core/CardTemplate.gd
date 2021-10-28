@@ -173,6 +173,9 @@ var attachments := []
 var current_host_card : Card = null
 # If true, the card will be displayed faceup. If false, it will be facedown
 var is_faceup := true setget set_is_faceup, get_is_faceup
+# Used to keep the card and mouse cursor in sync when dragging the card around
+# Represents the cursor's position relative to the card origin when drag was initiated
+var _drag_offset: Vector2
 # Used for animating the card.
 var _target_position: Vector2
 # Used for animating the card.
@@ -437,7 +440,7 @@ func _on_Card_gui_input(event) -> void:
 						else:
 							# While the mouse is kept pressed, we tell the engine
 							# that a card is being dragged
-							_start_dragging()
+							_start_dragging(event.position)
 			# If the mouse button was released we drop the dragged card
 			# This also means a card clicked once won't try to immediately drag
 		elif not event.is_pressed() and event.get_button_index() == 1:
@@ -1827,7 +1830,7 @@ func _organize_attachments() -> void:
 #
 # Returns the adjusted global_mouse_position
 func _determine_board_position_from_mouse() -> Vector2:
-	var targetpos: Vector2 = cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos()
+	var targetpos: Vector2 = cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos() - (_drag_offset * scale)
 	if targetpos.x + card_size.x * scale.x >= get_viewport().size.x:
 		targetpos.x = get_viewport().size.x - card_size.x * scale.x
 	if targetpos.x < 0:
@@ -1844,6 +1847,7 @@ func _determine_board_position_from_mouse() -> Vector2:
 # It takes extra care not to drop the card outside viewport margins
 func _determine_target_position_from_mouse() -> void:
 	_target_position = _determine_board_position_from_mouse()
+
 	# The below ensures the card doesn't leave the viewport dimentions
 	if _target_position.x + card_size.x * CFConst.PLAY_AREA_SCALE.x \
 			> get_viewport().size.x:
@@ -1855,7 +1859,7 @@ func _determine_target_position_from_mouse() -> void:
 		_target_position.y = get_viewport().size.y \
 				- card_size.y \
 				* CFConst.PLAY_AREA_SCALE.y
-
+				
 
 # Instructs the card to move aside for another card enterring focus
 func _pushAside(targetpos: Vector2, target_rotation: float) -> void:
@@ -1866,7 +1870,8 @@ func _pushAside(targetpos: Vector2, target_rotation: float) -> void:
 
 
 # Pick up a card to drag around with the mouse.
-func _start_dragging() -> void:
+func _start_dragging(drag_offset: Vector2) -> void:
+	_drag_offset = drag_offset
 	# When dragging we want the dragged card to always be drawn above all else
 	z_index = 99
 	# We have use parent viewport to calculate global_position
@@ -1875,12 +1880,12 @@ func _start_dragging() -> void:
 	# in full-creen.
 	if not cfc.ut:
 		Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
-		if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
-			get_tree().current_scene.get_viewport().warp_mouse(global_position + Vector2(5,5))
+#		if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
+#			get_tree().current_scene.get_viewport().warp_mouse(global_position + Vector2(5,5))
 		# However the above messes things if we don't have stretch mode,
 		# so we ignore it then
-		else:
-			get_viewport().warp_mouse(global_position)
+#		else:
+#			get_viewport().warp_mouse(global_position + _drag_anchor)
 	state = CardState.DRAGGED
 	# We check if the card was already overlapping with other card
 	# before we started dragging. If so, we activate the code
