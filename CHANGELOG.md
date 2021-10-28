@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.15 (Ongoing)
+
+### New Features
+
+* Added exported vars for controlling card tween duration (@stevosaurus)
+
 ## 1.14
 
 ### Important for Upgrades
@@ -8,7 +14,7 @@
 * `CardConfig.TYPES_TO_HIDE_IN_DECKBUILDER` renamed to `CardConfig.TYPES_TO_HIDE_IN_CARDVIEWER`
 * New property `CardConfig.REPLACEMENTS` has to exist. Defaults to an empty dictionary. See comments for its description
 
-### New Features 
+### New Features
 
 * Selection Window can now be used independently of the ScriptingEngine
 * Selection Window function can how handle both an Array of Card objects, as well as an array of card names.
@@ -39,7 +45,7 @@
 * Improved performance when showing/hiding the viewport focus
 * Improved performance when loading the card viewer in grid mode.
 
-### New Features 
+### New Features
 
 * In Cardviewer, added button which presses all filter buttons.
 
@@ -48,7 +54,7 @@
 
 * Added new `nested_script` task allows to execute more tasks recursively. It allows for infinite amount of nests, which can create pretty complex combinations of scripts.
 * Added new selection window functionality which creates an dialogue window to the player to select an amount of cards from those selected as subjects. Typically should be combined with boardseek, tutor or index subjects.
-    Controlled by the following new keys: `KEY_NEEDS_SELECTION`, `KEY_SELECTION_COUNT`, `KEY_SELECTION_TYPE`, `KEY_SELECTION_OPTIONAL`, `KEY_SELECTION_IGNORE_SELF` 
+    Controlled by the following new keys: `KEY_NEEDS_SELECTION`, `KEY_SELECTION_COUNT`, `KEY_SELECTION_TYPE`, `KEY_SELECTION_OPTIONAL`, `KEY_SELECTION_IGNORE_SELF`
 
 ## 1.12
 
@@ -58,7 +64,7 @@
    *  `_rect_adjustment`
    * `text_expansion_multiplier`
    * `compensation_label`
-   
+
 ### New Features
 
 * **Created a Card Library framework**. Refactored Deckbuilder to inherit from new class `CardViewer`. new CardLibrary inherits from the same class.
@@ -72,7 +78,7 @@
 
 ### Important for Upgrades
 
-New CFConst poperties added: 
+New CFConst poperties added:
 
 * `THUMBNAIL_SCALE`
 * `PREVIEW_SCALE`
@@ -100,7 +106,7 @@ If you've extended The scripting Engine, you'll have to adjust your references t
 * Refactored ScriptObject
 * ScriptingEngine's `shuffle_container()` will now wait for animations to finish before shuffling, and then wait until its own animation is finished before proceeding.
 * Card resizing when `VIEWPORT_FOCUS_ZOOM_TYPE` is set to "resize"now happens recursively which allows games to easily use this feature without manually specifying all the rects in the card_front.
-   This allows a designer to design the card layout in the GODOT GUI and then the game will automatically handle the scaling. 
+   This allows a designer to design the card layout in the GODOT GUI and then the game will automatically handle the scaling.
    This is not perfect as when scaling too high or too low, some elements might get slightly out of alignment compared to the scale 1,1, but it should be good enough.
 
 ### Bugs
@@ -140,7 +146,7 @@ A sample such scene has been provided in `res://src/custom/CGFInfoPanel.tcsn`. I
 If the deckbuilder is also inherited in a custom scene, it will likewise has the same `FocusInfo` node for which the "Info Panel Scene" has to be specified in the inspector on the root of the Deckbuilder scene.
 
 New **mandatory** CardConfig property added: `TYPES_TO_HIDE_IN_DECKBUILDER` (Array). Any card type specified here will not be shown in the deckbuilder.
-New **mandatory** CardConfig property added: `EXPLANATIONS` (Dictionary). It stores details about tags and keywords that you want to display under your card popups in game or deckbuilder. 
+New **mandatory** CardConfig property added: `EXPLANATIONS` (Dictionary). It stores details about tags and keywords that you want to display under your card popups in game or deckbuilder.
 
 **You will need to specify these new CardConfig properties, even if they're empty**
 
@@ -164,7 +170,7 @@ Game has been adjusted to allow the ScriptingEngine to work non-Card classes. To
 * Deckbuilder will now display the total or filtered count of cards shown
 * Added new class: GameStats, which can be used to submit stats to your own instance of [CGF-Stats](https://github.com/db0/CGF-Stats)
 * Can now show extra info below card focus viewport, such as keyword explanations or illustrator info
-* Can now extend deckbuilder DBListCardObject and 
+* Can now extend deckbuilder DBListCardObject and
 
 #### ScriptingEngine
 
@@ -212,10 +218,10 @@ tags will contain the tags send to the `move_to()` method
 * Can now store an integer with the difference of mod_tokens or mod_counter operations. This allows to do effects such as "Discard all blue credits. Draw a card per credit discarded".
 * Can now compare card properties against counter values
 * temp_mod_counters and temp_mod_properties can now use retrieve_integer on their values
-* All card manipulation Signals now send a list of tags marking the type of effect that triggered them. By Default it's "Manual" for 
+* All card manipulation Signals now send a list of tags marking the type of effect that triggered them. By Default it's "Manual" for
 
 
-## 1.7 
+## 1.7
 
 ### Important for Upgrades
 
@@ -262,7 +268,7 @@ Some ScriptProperty consts have been adjusted to allow `counter_modified` signal
 * The scripts property of a card, can be populated with some triggers, without affecting the other triggers defined in Script Definitions
 	This allows, for example, for some cardscripts to be added during runtime with a custom trigger, then executed immediately.
 * Added new task: `execute_script` which allows one to execute scripts on other cards. This can be useful when, for example, you want a card that activates other cards with modifiers.
-* Two new keys added which temporary modify counters or subject card propeties during execution of a task. 
+* Two new keys added which temporary modify counters or subject card propeties during execution of a task.
 * Added new exported var for a Card: `initiate_targeting_scripts_from_hand_drag`. It allows to initiate scripts which require targeting, by long-clicking the card while in hand. Great for use with Action cards.
 * Card's move_to will now be aware when it's moving cards due to scripts. This can give more flexibility to developers
 * Alterants can now affect the retrieved number of counters, tokens or numeric card properties. This allows effects such as "Increase the power of all soldiers by 1"
