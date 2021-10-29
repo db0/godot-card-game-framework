@@ -18,8 +18,8 @@ func before_each():
 	yield(yield_for(0.5), YIELD)
 	card = cards[0]
 	target = cards[1]
-
-
+#
+#
 func test_basics():
 	card.scripts = {"manual": { "hand": [
 			{"name": "rotate_card",
@@ -343,6 +343,7 @@ func test_target_script_on_drag_from_hand():
 				"counter_name": "credits"}]}}
 	yield(drag_card(card, Vector2(300,300)), 'completed')
 	unclick_card_anywhere(card)
+	yield(yield_for(0.1), YIELD)
 	assert_eq(board.counters.get_counter("credits"),8,
 			"Counter not reduced since nothing was targeted")
 	card.scripts = {"manual": {"hand": [

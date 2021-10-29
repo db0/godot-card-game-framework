@@ -70,7 +70,7 @@ func draw_test_cards(count: int, fast := true) -> Array:
 	return cards
 
 func click_card(card: Card, use_fake_mouse := true) -> void:
-	var fc:= fake_click(true, Vector2(0,0), use_fake_mouse)
+	var fc:= fake_click(true, Vector2(0,0))
 	card._on_Card_gui_input(fc)
 
 func unclick_card(card: Card) -> void:
