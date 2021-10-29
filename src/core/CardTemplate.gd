@@ -1575,8 +1575,11 @@ func set_focus(requestedFocus: bool, colour := CFConst.FOCUS_HOVER_COLOUR) -> vo
 	if highlight.visible != requestedFocus and \
 			highlight.modulate in CFConst.CostsState.values():
 		highlight.set_highlight(requestedFocus,colour)
+	# focus_style value 0 means only scaling focus
+	# We also recheck that main exists, as sometimes GUT messes it up
 	if not state in [CardState.PREVIEW, CardState.DECKBUILDER_GRID]\
-			and cfc.game_settings.focus_style: # value 0 means only scaling focus
+			and cfc.game_settings.focus_style\
+			and cfc.NMAP.has("main"):
 		if requestedFocus:
 			cfc.NMAP.main.focus_card(self)
 		else:
