@@ -13,7 +13,7 @@ func before_each():
 	if confirm_return is GDScriptFunctionState: # Still working.
 		confirm_return = yield(confirm_return, "completed")
 	cards = draw_test_cards(5)
-
+	yield(yield_for(0.1), YIELD)
 
 func test_board_facedown():
 	var card: Card
@@ -37,6 +37,7 @@ func test_board_facedown():
 			"Back rect_position.x == 0 when card is turned face down")
 	card.is_faceup = true
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_true(card_front.visible,
 			"Front should be visible when card is turned face up again")
 	assert_almost_eq(card_front.rect_scale.x, 1.0, 0.1,
@@ -59,11 +60,12 @@ func test_board_facedown():
 	var viewed_icon  = card.card_back.viewed_node
 	card.is_faceup = false
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_false(dupe_front.visible,
 			"Dupe Front should be invisible when card is turned face down")
 	assert_almost_eq(dupe_front.rect_scale.x, 0.0, 0.1,
 			"Dupe Front should be scaled.x to 0 when card is turned face down")
-	assert_almost_eq(dupe_front.rect_position.x, card_front.rect_size.x/2, 0.1,
+	assert_almost_eq(dupe_front.rect_position.x, dupe_front.rect_size.x/2, 0.1,
 			"Dupe Front rect_position.x == rect_size.x/2 when card is turned face down")
 	assert_true(dupe_back.visible,
 			"Dupe Back should be visible when card is turned face down")
@@ -84,7 +86,7 @@ func test_board_facedown():
 			"Dupe Back should be invisible when card is turned face up again")
 	assert_almost_eq(dupe_back.rect_scale.x, 0.0, 0.1,
 			"Dupe Back should b scaled.x to 0 when card is turned face up again")
-	assert_almost_eq(dupe_back.rect_position.x, card_front.rect_size.x/2, 0.1,
+	assert_almost_eq(dupe_back.rect_position.x, dupe_front.rect_size.x/2, 0.1,
 			"Dupe Back rect_position.x == rect_size.x/2 when card is turned face up again")
 
 	assert_false(viewed_icon.visible,
@@ -143,10 +145,11 @@ func test_off_board_facedown():
 			"Back rect_position.x == 0 when card is turned face down")
 	card.is_faceup = true
 	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
+	yield(yield_to(card._flip_tween, "tween_all_completed", 1), YIELD)
 	assert_true(card_front.visible,
 			"Front should be visible when card is turned face up again")
 	assert_almost_eq(card_front.rect_scale.x, 1.0, 0.1,
-			"ront should be scaled.x to 0 when card is turned face up again")
+			"Front should be scaled.x to 0 when card is turned face up again")
 	assert_almost_eq(card_front.rect_position.x, 0.0, 0.1,
 			"Front rect_position.x == 0 when card is turned face up again")
 	assert_false(card_back.visible,

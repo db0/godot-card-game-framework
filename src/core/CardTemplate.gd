@@ -1239,8 +1239,9 @@ func move_to(targetHost: Node,
 			# If the card has tokens, and tokens_only_on_board is true
 			# we remove all tokens
 			# (The cfc._ut_tokens_only_on_board is there for unit testing)
-			if CFConst.TOKENS_ONLY_ON_BOARD or cfc._ut_tokens_only_on_board:
+			if CFConst.TOKENS_ONLY_ON_BOARD and cfc._ut_tokens_only_on_board:
 				for token in tokens.get_all_tokens().values():
+					print_debug(cfc._ut_tokens_only_on_board)
 					token.queue_free()
 			# If the card was hosted in a board placement grid
 			# we clean the references.
