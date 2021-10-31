@@ -597,6 +597,17 @@ const KEY_COMPARISON := "comparison"
 # * [KEY_TEMP_MOD_PROPERTIES](#KEY_TEMP_MOD_PROPERTIES) (In the value fields)
 # * [KEY_TEMP_MOD_COUNTERS](#KEY_TEMP_MOD_COUNTERS) (In the value fields)
 const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
+# Value Type: Int
+#
+# A way to adjust the value of the [VALUE_RETRIEVE_INTEGER](#VALUE_RETRIEVE_INTEGER)
+# Before using it. This happens after the [KEY_IS_INVERTED])(#KEY_IS_INVERTED) modification.
+# While this functionality can also be done with an extra task after, using this variable
+# Allows the script to also capture the complete change in its own [KEY_STORE_INTEGER](#KEY_STORE_INTEGER).
+#
+# For example this allows effects like: 
+# "Pay 3 Research. Gain a number of coins equal to that amount + 1 
+# and draw a number of cards equal to that amount + 1"
+const KEY_ADJUST_RETRIEVED_INTEGER := "adjust_retrieved_integer"
 # This value can be inserted as the value in one of the following:
 # * [FILTER_PROPERTIES](#FILTER_PROPERTIES)
 # * [FILTER_TOKENS](#FILTER_TOKENS)
@@ -1123,7 +1134,9 @@ static func get_default(property: String):
 			default = false
 		KEY_TRIGGER:
 			default = "any"
-		KEY_SUBJECT_INDEX,KEY_SELECTION_COUNT:
+		KEY_SUBJECT_INDEX,\
+				KEY_SELECTION_COUNT,\
+				KEY_ADJUST_RETRIEVED_INTEGER:
 			default = 0
 		KEY_SELECTION_TYPE:
 			default = "min"

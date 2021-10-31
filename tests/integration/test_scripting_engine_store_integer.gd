@@ -69,7 +69,7 @@ func test_store_integer_with_counters():
 	card.execute_scripts()
 	yield(yield_for(0.5), YIELD)
 	assert_eq(board.counters.get_counter("credits"),7,
-		"3 Credits removed")
+		"2 Credits added")
 
 func test_store_integer_with_tokens():
 	yield(table_move(cards[1], Vector2(800,200)), "completed")
@@ -180,3 +180,57 @@ func test_retrieve_integer_temp_mod_counter():
 	yield(yield_for(0.5), YIELD)
 	assert_eq(hand.get_card_count(), 8,
 		"Draw the temp modified amount of cards")
+
+func test_adjust_retrieved_integer():
+# warning-ignore:return_value_discarded
+	board.counters.mod_counter("research", 3)
+# warning-ignore:return_value_discarded
+	board.counters.mod_counter("credits", 5, true)
+	card.scripts = {"manual": {
+			"hand": [
+				{
+					"name": "mod_counter",
+					"modification": 5,
+					"set_to_mod": true,
+					"counter_name":  "research",
+					"store_integer": true
+					# Should store a difference of +2
+				},
+				{
+					"name": "mod_counter",
+					"counter_name": "credits",
+					"modification": "retrieve_integer",
+					"adjust_retrieved_integer": 2,
+				}]}}
+	card.execute_scripts()
+	yield(yield_for(0.5), YIELD)
+	assert_eq(board.counters.get_counter("credits"),9,
+		"4 Credits added")
+
+func test_adjust_retrieved_integer_inverted():
+# warning-ignore:return_value_discarded
+	board.counters.mod_counter("research", 3)
+# warning-ignore:return_value_discarded
+	board.counters.mod_counter("credits", 5, true)
+	card.scripts = {"manual": {
+			"hand": [
+				{
+					"name": "mod_counter",
+					"modification": 7,
+					"set_to_mod": true,
+					"counter_name":  "research",
+					"store_integer": true
+					# Should store a difference of +4
+				},
+				{
+					"name": "mod_counter",
+					"counter_name": "credits",
+					"modification": "retrieve_integer",
+					"adjust_retrieved_integer": 2,
+					"is_inverted": true
+				}]}}
+	card.execute_scripts()
+	yield(yield_for(0.5), YIELD)
+	assert_eq(board.counters.get_counter("credits"),3,
+		"2 Credits Removed")
+

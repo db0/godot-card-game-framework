@@ -5,7 +5,11 @@
 ### New Features
 
 * Added exported vars for controlling card tween duration (@stevosaurus)
+* Mouse will not teleport to a card's top-right when dragging starts. (@stevosaurus)
 
+#### ScriptingEngine
+
+* Added new ScEng key KEY_ADJUST_RETRIEVED_INTEGER which allows the script to tweak the retrieved integer before applying it.
 ## 1.14
 
 ### Important for Upgrades

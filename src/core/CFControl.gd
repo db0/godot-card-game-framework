@@ -226,7 +226,6 @@ func set_setting(setting_name: String, value) -> void:
 	file.open(CFConst.SETTINGS_FILENAME, File.WRITE)
 	file.store_string(JSON.print(game_settings, '\t'))
 	file.close()
-	print_debug(setting_name,value)
 
 
 # Initiates game_settings from the contents of CFConst.SETTINGS_FILENAME

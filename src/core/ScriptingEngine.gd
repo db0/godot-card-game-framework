@@ -321,6 +321,7 @@ func mod_tokens(script: ScriptTask) -> int:
 		modification = stored_integer
 		if script.get_property(SP.KEY_IS_INVERTED):
 			modification *= -1
+		modification += script.get_property(SP.KEY_ADJUST_RETRIEVED_INTEGER)
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
@@ -382,6 +383,7 @@ func spawn_card(script: ScriptTask) -> void:
 		count = stored_integer
 		if script.get_property(SP.KEY_IS_INVERTED):
 			count *= -1
+		count += script.get_property(SP.KEY_ADJUST_RETRIEVED_INTEGER)
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_OBJECT_COUNT)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_OBJECT_COUNT),
@@ -592,6 +594,7 @@ func add_grid(script: ScriptTask) -> void:
 		count = stored_integer
 		if script.get_property(SP.KEY_IS_INVERTED):
 			count *= -1
+		count += script.get_property(SP.KEY_ADJUST_RETRIEVED_INTEGER)
 	else:
 		count = script.get_property(SP.KEY_OBJECT_COUNT)
 	for iter in range(count):
@@ -632,6 +635,7 @@ func mod_counter(script: ScriptTask) -> int:
 		modification = stored_integer
 		if script.get_property(SP.KEY_IS_INVERTED):
 			modification *= -1
+		modification += script.get_property(SP.KEY_ADJUST_RETRIEVED_INTEGER)
 	elif SP.VALUE_PER in str(script.get_property(SP.KEY_MODIFICATION)):
 		var per_msg = perMessage.new(
 				script.get_property(SP.KEY_MODIFICATION),
@@ -801,4 +805,5 @@ func _retrieve_temp_modifiers(script: ScriptTask, type: String) -> Dictionary:
 			temp_modifiers[value] = stored_integer
 			if script.get_property(SP.KEY_IS_INVERTED):
 				temp_modifiers[value] *= -1
+			temp_modifiers[value] += script.get_property(SP.KEY_ADJUST_RETRIEVED_INTEGER)
 	return(temp_modifiers)
