@@ -453,8 +453,14 @@ const VALUE_PER := "per_"
 #
 # Used to multiply per results.
 # This allows us to craft scripts like 
-# "Gain 2 Health per card on the table" or "Gain 1 Health per two cards on the table" 
+# "Gain 2 Health per card on the table"
 const KEY_MULTIPLIER := "multiplier"
+# Value Type: Float/Int
+#
+# Used to divide per results.
+# This allows us to craft scripts like 
+# "Gain 1 Health per two cards on the table" 
+const KEY_DIVIDER := "divider"
 # Value Type: String
 #
 # This key is typically needed in combination with
@@ -738,6 +744,12 @@ const KEY_SELECTION_IGNORE_SELF := "selection_ignore_self"
 # Which runs through the specified task list
 # using its own cost calculations
 const KEY_NESTED_TASKS := "nested_tasks"
+# Value Type: Int
+#
+# Repeats the whole task this amount of times.
+# Careful when adding it to a task with a target, as it will force the 
+# targeting the
+const KEY_REPEAT := "repeat"
 #---------------------------------------------------------------------
 # Filter Definition Keys
 #
@@ -1140,7 +1152,7 @@ static func get_default(property: String):
 			default = 0
 		KEY_SELECTION_TYPE:
 			default = "min"
-		KEY_DEST_INDEX:
+		KEY_DEST_INDEX, KEY_REPEAT:
 			default = -1
 		KEY_BOARD_POSITION:
 			default = Vector2(-1,-1)
@@ -1151,7 +1163,8 @@ static func get_default(property: String):
 		KEY_SUBJECT_COUNT,\
 				KEY_OBJECT_COUNT,\
 				KEY_MODIFICATION,\
-				KEY_MULTIPLIER:
+				KEY_MULTIPLIER,\
+				KEY_DIVIDER:
 			default = 1
 		KEY_GRID_NAME, KEY_SUBJECT:
 			default = ""

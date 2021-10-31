@@ -37,13 +37,25 @@ func _init(state_scripts: Array,
 		owner,
 		trigger_object: Node,
 		trigger_details: Dictionary) -> void:
-	for task in state_scripts:
-		var script_task := ScriptTask.new(
-				owner,
-				task,
-				trigger_object,
-				trigger_details)
-		scripts_queue.append(script_task)
+	for t in state_scripts:
+		# We do a duplicate to allow repeat to modify tasks without danger.
+		var task: Dictionary = t.duplicate(true)
+		# This is the only script property which we use outside of the
+		# ScriptTask object. The repeat property duplicates the whole task
+		# definition in multiple tasks
+		var repeat = task.get(SP.KEY_REPEAT, 1)
+		for iter in range(repeat):
+			# In case it's a targeting task, we assume we don't want to
+			# spawn X targeting arrows at the same time, so we convert
+			# all subsequent repeats into "previous" targets
+			if iter > 0 and task.has("subject") and task["subject"] == "target":
+				task["subject"] = "previous"
+			var script_task := ScriptTask.new(
+					owner,
+					task,
+					trigger_object,
+					trigger_details)
+			scripts_queue.append(script_task)
 
 # This flag will be true if we're attempting to find if the card
 # has costs that need to be paid, before the effects take place.
