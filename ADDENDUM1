@@ -2,4 +2,4 @@ Addendum: The Card Game Framework is licenced under the AGPL3. However for usabi
 Therefore this addendum specifies that the authors of this software consider the Steamworks SDK just a communication with a service and does not invoke the copyleft requirement of the AGPL.
 By contributing to this project, you accept this proviso and allow communication with Steamworks SDK as a service. Furthemore, to allow this software to adjust to changing circumstances, you also agree to allow the original author of this framework (Konstantinos Thoukydidis) the rights to adjust this addendum to allow other such SDK in the future.
 
-Keep in mind that distribution via Steam still falls under AGPL licence, so you need to provide the source code on demand, even if through a different channel than steam.
+Keep in mind that distribution via Steam still falls under AGPL licence, so you need to provide the source code of the non-Steamwork SDK parts on demand, even if through a different channel than steam.
