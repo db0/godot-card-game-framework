@@ -84,7 +84,7 @@ You can find documentation about all the provided methods [in the wiki](https://
 
 #### Card Manipulation buttons
 
-Hover over the card to reveal its manipulation buttons. 
+Hover over the card to reveal its manipulation buttons.
 
 #### Targeting
 
@@ -115,7 +115,7 @@ The demonstration board has been setup with two different grid placements you ca
 
 ### Card Scripts
 
-The first four cards you will draw from your deck each have different prepared automations. 
+The first four cards you will draw from your deck each have different prepared automations.
 Their text explains these effects.
 
 You can double click any of them in the hand or board to see their scripts in action.
@@ -151,3 +151,7 @@ If you wish to support the development of the Card Game Framework, consider beco
 ## Credits
 
 Some initial ideas were taken from this excellent [Godot Card Game Tutorial video series](https://www.youtube.com/watch?v=WjT5sLMD7Kw). This framework uses some of the concepts but also attempts to create better quality code in the process.
+
+## License
+
+This software is licensed undel AGPL3. However [an addendum](ADDENDUM1) has been added to allow distribution via Steam and integration with Steamworks SDK.
