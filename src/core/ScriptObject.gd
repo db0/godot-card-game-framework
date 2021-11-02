@@ -101,6 +101,9 @@ func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
 		_:
 			subjects_array = cfc.ov_utils.get_subjects(
 					get_property(SP.KEY_SUBJECT), stored_integer)
+			for c in subjects_array:
+				if not SP.check_validity(c, script_definition, "subject"):
+					is_valid = false
 	if get_property(SP.KEY_NEEDS_SELECTION):
 		var selection_count = get_property(SP.KEY_SELECTION_COUNT)
 		var selection_type = get_property(SP.KEY_SELECTION_TYPE)
