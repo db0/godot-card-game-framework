@@ -33,6 +33,7 @@ var is_valid := true
 var requested_subjects: int
 # The card which triggered this script.
 var trigger_object: Node
+var prev_subjects := []
 
 
 # prepares the properties needed by the script to function.
@@ -58,7 +59,7 @@ func get_property(property: String, default = null):
 # Figures out what the subjects of this script is supposed to be.
 #
 # Returns a Card object if subjects is defined, else returns null.
-func _find_subjects(prev_subjects := [], stored_integer := 0) -> Array:
+func _find_subjects(stored_integer := 0) -> Array:
 	var subjects_array := []
 	# See SP.KEY_SUBJECT doc
 	match get_property(SP.KEY_SUBJECT):

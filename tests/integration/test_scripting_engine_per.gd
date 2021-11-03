@@ -19,7 +19,7 @@ func before_each():
 	card = cards[0]
 	target = cards[2]
 
-
+#
 func test_per_token_and_modify_token_per():
 	yield(table_move(card, Vector2(100,200)), "completed")
 	card.tokens.mod_token("void",5)
@@ -349,4 +349,42 @@ func test_modify_properties_per():
 		"Power set equal to research")
 	assert_eq(card.get_property("Cost"), 5,
 		"Cost increased by the amount of research")
+#
 
+func test_original_previous():
+	yield(table_move(card, Vector2(100,200)), "completed")
+	yield(table_move(target, Vector2(300,200)), "completed")
+	yield(yield_for(0.1), YIELD)
+	card.scripts = {"manual": {
+		"board": [
+			{
+				"name": "mod_tokens",
+				"subject": "target",
+				"token_name":  "bio",
+				"modification": 5,
+			},
+			{
+				"name": "mod_tokens",
+				"subject": "self",
+				"token_name":  "blood",
+				"modification": "per_token",
+				"per_token": {
+					"subject": "previous",
+					"token_name": "bio",
+					"original_previous": true}
+				},
+		]}
+	}
+	yield(execute_with_target(card,target), "completed")
+	var bio_token_card = card.tokens.get_token("bio")
+	var bio_token_target = target.tokens.get_token("bio")
+	var blood_token_card = card.tokens.get_token("blood")
+	var blood_token_target = target.tokens.get_token("blood")
+	assert_not_null(bio_token_target,
+		"Put 5 Bio tokens on target")
+	assert_not_null(blood_token_card,
+		"Put 5 Blood tokens on card")
+	if bio_token_target:
+		assert_eq(bio_token_target.count, 5)
+	if blood_token_card:
+		assert_eq(blood_token_card.count, 5)

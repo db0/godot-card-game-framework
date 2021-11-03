@@ -340,7 +340,8 @@ func mod_tokens(script: ScriptTask) -> int:
 				script.owner,
 				script.get_property(script.get_property(SP.KEY_MODIFICATION)),
 				null,
-				script.subjects)
+				script.subjects,
+				script.prev_subjects)
 		modification = per_msg.found_things
 		print_debug(per_msg.found_things, modification)
 	else:
@@ -402,7 +403,8 @@ func spawn_card(script: ScriptTask) -> void:
 				script.owner,
 				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)),
 				null,
-				script.subjects)
+				script.subjects,
+				script.prev_subjects)
 		count = per_msg.found_things
 	else:
 		count = script.get_property(SP.KEY_OBJECT_COUNT)
@@ -506,7 +508,8 @@ func modify_properties(script: ScriptTask) -> int:
 								# per_value
 								script.get_property(properties[property].lstrip('+')),
 								null,
-								script.subjects)
+								script.subjects,
+								script.prev_subjects)
 						modification = per_msg.found_things
 						# We cannot check for +/- using .is_valid_integer() because
 						# the value might be something like '+per_counter'
@@ -655,7 +658,8 @@ func mod_counter(script: ScriptTask) -> int:
 				script.owner,
 				script.get_property(script.get_property(SP.KEY_MODIFICATION)),
 				null,
-				script.subjects)
+				script.subjects,
+				script.prev_subjects)
 		modification = per_msg.found_things
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)

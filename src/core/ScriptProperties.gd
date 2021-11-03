@@ -71,6 +71,15 @@ const KEY_SUBJECT_V_INDEX := "index"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we use the subject specified in the previous task
 const KEY_SUBJECT_V_PREVIOUS := "previous"
+# Value Type: Bool (Default = False)
+#
+# This is a special property for the [KEY_PER](#KEY_PER) dictionary in combination
+# with a [KEY_SUBJECT_V_PREVIOUS](#KEY_SUBJECT_V_PREVIOUS) value.
+# It specifies that the subject for the per seek should be the prev_subjects
+# passed to the task which calls this [KEY_PER](#KEY_PER). 
+# As opposed to a normal [KEY_SUBJECT_V_PREVIOUS](#KEY_SUBJECT_V_PREVIOUS) behaviour
+# inside per, which will use the same subjects as the parent task.
+const KEY_ORIGINAL_PREVIOUS := "original_previous"
 # Value Type: Dynamic (Default = 1)
 # * int
 # * [KEY_SUBJECT_COUNT_V_ALL](#KEY_SUBJECT_COUNT_V_ALL)
@@ -1142,6 +1151,7 @@ static func get_default(property: String):
 				KEY_SELECTION_OPTIONAL,\
 				KEY_SORT_DESCENDING,\
 				KEY_ABORT_ON_COST_FAILURE,\
+				KEY_ORIGINAL_PREVIOUS,\
 				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:

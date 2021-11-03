@@ -15,7 +15,6 @@ var is_skipped := false
 var is_cost := false
 var is_else := false
 
-
 # prepares the script_definition needed by the task to function.
 func _init(owner,
 		script: Dictionary,
@@ -35,7 +34,10 @@ func _init(owner,
 
 
 
-func prime(prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
+func prime(_prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
+	# We store the prev_subjects we sent to this task in case we need to
+	# refer to them later
+	prev_subjects = _prev_subjects
 	if ((run_type != CFInt.RunType.COST_CHECK
 			and not is_cost)
 			# This is the typical spot we're checking
@@ -61,8 +63,8 @@ func prime(prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
 	if not is_skipped and is_accepted and (run_type != CFInt.RunType.COST_CHECK
 			or (run_type == CFInt.RunType.COST_CHECK
 			and get_property(SP.KEY_IS_COST))):
-	# We discover which other card this task will affect, if any
-		var ret =_find_subjects(prev_subjects, sceng_stored_int)
+		# We discover which other card this task will affect, if any
+		var ret =_find_subjects(sceng_stored_int)
 		if ret is GDScriptFunctionState: # Still working.
 			ret = yield(ret, "completed")
 	#print_debug(str(subjects), str(cost_dry_run))

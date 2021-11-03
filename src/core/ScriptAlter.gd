@@ -39,7 +39,7 @@ func _init(
 		is_valid = confirm_return
 	if is_valid:
 	# The script might require counting other cards.
-		var ret =_find_subjects([], 0)
+		var ret =_find_subjects(0)
 		if ret is GDScriptFunctionState: # Still working.
 			ret = yield(ret, "completed")
 	# We emit a signal when done so that our ScriptingEngine

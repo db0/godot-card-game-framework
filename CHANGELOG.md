@@ -11,6 +11,8 @@
 
 * Added new ScEng key KEY_ADJUST_RETRIEVED_INTEGER which allows the script to tweak the retrieved integer before applying it.
 * Added KEY_DIVIDER for per calculations, to allow to check "per X cards" and only count full sets.
+* Added KEY_ORIGINAL_PREVIOUS to allow per_ to user task's prev_subjects. Had to refactor slightly to make this work.
+
 ## 1.14
 
 ### Important for Upgrades

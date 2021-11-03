@@ -7,20 +7,31 @@ var per_seek: String
 var script_owner # Card type, but cannot type to avoid cyclic dependency
 var per_definitions: Dictionary
 var trigger_object = null
+# This is the subject selected by the task from which this per message
+# originates
 var subjects := []
+# These are the prev_subject which were sent to the task 
+# from which this per message originates
+var prev_subjects := []
 var found_things := 0 setget ,count_found_things
 
+# Why do we send each element isolated, instead of just sending the ScriptTask object
+# from which we extract them directly, I hear you ask?  Because this class
+# can also be generated as part of a ScriptObject's subject methods, which does not utilize
+# a ScriptTask object
 func _init(
 		_per_seek: String,
 		_script_owner,
 		_per_definitions: Dictionary,
 		_trigger_object = null,
-		_subjects := []) -> void:
+		_subjects := [],
+		_prev_subjects := []) -> void:
 	per_seek = _per_seek
 	script_owner = _script_owner
 	per_definitions = _per_definitions
 	trigger_object = _trigger_object
 	subjects = _subjects
+	prev_subjects = _prev_subjects
 
 # Returns the amount of things the calling script is trying to count.
 func count_found_things() -> int:
