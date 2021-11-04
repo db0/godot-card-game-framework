@@ -628,7 +628,7 @@ func add_grid(script: ScriptTask) -> void:
 		# +1 card-width below, becase we assume they're spanwining with more
 		# than 1 column.
 		grid.rect_position.y += \
-				iter * grid.canonical_size.y * grid.card_play_scale
+				iter * grid.card_size.y * grid.card_play_scale
 
 # Task for modifying a a counter.
 # If this task is specified, the variable [counters](Board#counters) **has** to be set

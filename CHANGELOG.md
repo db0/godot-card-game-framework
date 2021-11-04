@@ -8,12 +8,12 @@
 
 ### New Features
 
-* Now each card type has exported variables for the canonical card size as well as the various scaling. **This finally allows the game to utilize different card sizes at the same time**. CardContainers and BoardGrid for different card sizes now also need to have a defined card_size of the card they're going to host.
+* Now each card type has exported variables for the canonical card size as well as the various scaling. **This finally allows the game to utilize different card sizes at the same time**. CardContainers and BoardGrids for different card sizes now also need to have a defined card_size matching the card they're going to host.
 * Added exported vars for controlling card tween duration (@stevosaurus)
 * Mouse will not teleport to a card's top-right when dragging starts. (@stevosaurus)
 * Adjustments to prevent Rich Text Labels from sizing at 4 font size
 * Recursive rescaling will also now take into account MarginContainer margins
-* Added font_size_caching which should now reduce time lost while calculating font sizes.
+* Added font_size_caching which should now reduce time lost while calculating font sizes.Requires CFConst.FONT_SIZE_CACHE
 
 #### ScriptingEngine
 

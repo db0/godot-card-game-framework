@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework [1.14](CHANGELOG.md)
+# Godot Card Game Framework [1.15](CHANGELOG.md)
 
 ![Godot Card Game Framework preview image](preview.png "Godot Card Game Framework preview image")
 
@@ -34,6 +34,7 @@ Pull requests are more than welcome ;)
 * Can select layout of your CardContainers from a simple drop-down menu.
 * Automatic and manual Grid-based, or Free-form placement on the board, or a combination of both, on a per-card-type basis.
 * Functions from saving/loading settings from disk.
+* Caching mechanisms to reduce loading and instancing times.
 * Collecting [game statistics](https://github.com/db0/CGF-Stats)
 * Easy customization via Themes. [Dark Theme](https://mounirtohami.itch.io/godot-dark-theme) used in Demo, provided by Mounir Tohami
 * A functional and customizable Card Library.
