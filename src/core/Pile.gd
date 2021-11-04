@@ -198,7 +198,6 @@ func add_child(node, _legible_unique_name=false) -> void:
 		# When the player adds card while the viewpopup is active
 		# we move them automatically to the viewpopup grid.
 		_slot_card_into_popup(node)
-		print_debug(node)
 
 
 # Overrides the function which removed chilren nodes so that it detects

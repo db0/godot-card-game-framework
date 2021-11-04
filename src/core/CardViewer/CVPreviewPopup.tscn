@@ -6,6 +6,7 @@
 [node name="PreviewPopup" type="Popup" groups=[
 "card_preview",
 ]]
+modulate = Color( 1, 1, 1, 0 )
 margin_right = 40.0
 margin_bottom = 40.0
 script = ExtResource( 1 )

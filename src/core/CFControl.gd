@@ -264,7 +264,6 @@ func _commit_font_cache() -> void:
 	file.store_string(JSON.print(font_size_cache, '\t'))
 	file.close()
 	cache_commit_timer = null
-	print_debug('commit')
 
 
 # Initiates game_settings from the contents of CFConst.SETTINGS_FILENAME

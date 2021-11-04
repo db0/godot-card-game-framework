@@ -750,12 +750,22 @@ func resize_recursively(control_node: Node, requested_scale: float) -> void:
 		_original_layouts[control_node] = {}
 		_original_layouts[control_node]["size"] = control_node.rect_min_size
 		_original_layouts[control_node]["position"] = control_node.rect_position
+		if control_node as MarginContainer:
+			for margin in ["top","bottom", "left", "right"]:
+				_original_layouts[control_node]["margin_" + margin]\
+						= control_node.get("custom_constants/margin_" + margin)
 	for child in control_node.get_children():
 		resize_recursively(child, requested_scale)
 	if control_node as Control:
 		control_node.rect_min_size = _original_layouts[control_node]["size"] * requested_scale
 		control_node.call_deferred('set_size', control_node.rect_min_size)
 		control_node.rect_position = _original_layouts[control_node]["position"] * requested_scale
+		if control_node as MarginContainer:
+			for margin in ["top","bottom", "left", "right"]:
+				var current_margin = control_node.get("custom_constants/margin_" + margin)
+				if not current_margin:
+					current_margin = 0.0
+				control_node.set("custom_constants/margin_" + margin,current_margin * requested_scale)
 		_original_layouts[control_node]["scale"] = requested_scale
 
 
@@ -2504,6 +2514,8 @@ func _process_card_state() -> void:
 			# We scale the card to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
 				scale = Vector2(1,1) * thumbnail_scale
+			# Commenting this out because it is messing with RichTextLabel
+			# Font resizing
 			else:
 #				set_card_size(CFConst.CARD_SIZE * thumbnail_scale)
 				resize_recursively(_control, thumbnail_scale)

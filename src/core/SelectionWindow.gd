@@ -130,7 +130,12 @@ func initiate_selection(
 	# We don't want to show a popup longer than the cards. So the width is based on the lowest
 	# between the grid columns or the amount of cards
 	var shown_columns = min(_card_grid.columns, card_array.size())
-	var popup_size_x = (card_sample.canonical_size.x * card_sample.thumbnail_scale * shown_columns)\
+	var card_size = CFConst.CARD_SIZE
+	var thumbnail_scale = CFConst.THUMBNAIL_SCALE
+	if card_sample as Card:
+		card_size = card_sample.canonical_size
+		thumbnail_scale = card_sample.thumbnail_scale
+	var popup_size_x = (card_size.x * thumbnail_scale * shown_columns)\
 			+ _card_grid.get("custom_constants/vseparation") * shown_columns
 	# The height will be automatically adjusted based on the amount of cards
 	rect_size = Vector2(popup_size_x,0)

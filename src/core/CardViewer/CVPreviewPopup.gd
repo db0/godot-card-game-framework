@@ -68,8 +68,9 @@ func show_preview_card(card_name) -> void:
 		rect_position = get_preview_placement()
 		cfc.ov_utils.populate_info_panels(preview_card,focus_info)
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
+	modulate.a = 1
 	visible = true
 
 # Deinstances the currently shown card.
 func hide_preview_card() -> void:
-	visible = false
+	modulate.a = 0
