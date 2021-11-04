@@ -14,7 +14,7 @@ enum ExcessCardsBehaviour {
 
 # The maximum amount of cards allowed to draw in this hand
 # Offsets the hand position based on the configuration
-var bottom_margin: float = CFConst.CARD_SIZE.y * CFConst.BOTTOM_MARGIN_MULTIPLIER
+var bottom_margin: float = card_size.y * CFConst.BOTTOM_MARGIN_MULTIPLIER
 # During _read(), this variable will be populated with a node from cfc.NMAP
 # according to the name specified in excess_discard_pile_name
 var _excess_discard_pile : Pile = null
@@ -180,13 +180,13 @@ func re_place() -> void:
 	if "top" in get_groups() or "bottom" in get_groups():
 		$Control.rect_size.x = get_viewport().size.x - others_rect_x
 		position.x = start_pos_left
-		$Control.rect_size.y = CFConst.CARD_SIZE.y
+		$Control.rect_size.y = card_size.y
 	# If the hand is oriented vertically, we reduce its size by other
 	# containers on the same column
 	if "left" in get_groups() or "right" in get_groups():
 		$Control.rect_size.y = get_viewport().size.y - others_rect_y
 		position.x = start_pos_top
-		$Control.rect_size.x = CFConst.CARD_SIZE.x
+		$Control.rect_size.x = card_size.x
 	if placement == Anchors.CONTROL:
 		# This yield allows the other control nodes to set their side
 		# In which case the hand, which is typically set to expand vertically

@@ -305,7 +305,7 @@ func move_card_to_board(script: ScriptTask) -> int:
 			# To avoid overlapping on the board, we spawn the cards
 			# Next to each other.
 			board_position.x += \
-					count * CFConst.CARD_SIZE.x * CFConst.PLAY_AREA_SCALE.x
+					count * card.canonical_size.x * card.play_area_scale
 			count += 1
 			# We assume cards moving to board want to be face-up
 			if not costs_dry_run():
@@ -437,7 +437,7 @@ func spawn_card(script: ScriptTask) -> void:
 			# If we're spawning more than 1 card, we place the extra ones
 			# +1 card-length to the right each.
 			card.position.x += \
-					iter * CFConst.CARD_SIZE.x * CFConst.PLAY_AREA_SCALE.x
+					iter * card.canonical_size.x * card.play_area_scale
 			card.state = Card.CardState.ON_PLAY_BOARD
 
 
@@ -628,7 +628,7 @@ func add_grid(script: ScriptTask) -> void:
 		# +1 card-width below, becase we assume they're spanwining with more
 		# than 1 column.
 		grid.rect_position.y += \
-				iter * CFConst.CARD_SIZE.y * CFConst.PLAY_AREA_SCALE.y
+				iter * grid.canonical_size.y * grid.card_play_scale
 
 # Task for modifying a a counter.
 # If this task is specified, the variable [counters](Board#counters) **has** to be set

@@ -38,8 +38,9 @@ func _process(_delta) -> void:
 #		print_debug(_current_focus_source)
 	# The below makes sure to display the closeup of the card, only on the side
 	# the player's mouse is not in.
-	if get_global_mouse_position().x > get_viewport().size.x - CFConst.CARD_SIZE.x*2.5\
-			and get_global_mouse_position().y < CFConst.CARD_SIZE.y*2:
+	if _current_focus_source\
+			and get_global_mouse_position().x > get_viewport().size.x - _current_focus_source.canonical_size.x*2.5\
+			and get_global_mouse_position().y < _current_focus_source.canonical_size.y*2:
 		$VBC.rect_position.x = 0
 	else:
 		$VBC.rect_position.x = get_viewport().size.x - $VBC.rect_size.x
@@ -155,8 +156,8 @@ func _extra_dupe_preparation(dupe_focus: Card, card: Card) -> void:
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
 func _extra_dupe_ready(dupe_focus: Card, card: Card) -> void:
-	dupe_focus.resize_recursively(dupe_focus._control, CFConst.FOCUSED_SCALE)
-	dupe_focus.card_front.scale_to(CFConst.FOCUSED_SCALE)
+	dupe_focus.resize_recursively(dupe_focus._control, dupe_focus.focused_scale)
+	dupe_focus.card_front.scale_to(dupe_focus.focused_scale)
 
 
 func _input(event):

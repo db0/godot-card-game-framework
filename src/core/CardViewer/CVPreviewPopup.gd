@@ -15,13 +15,13 @@ func _process(_delta: float) -> void:
 		for c in focus_info.get_children():
 			# We use this to adjust the info panel labels depending on how the 
 			# PREVIEW_SCALE is
-			c.get_node("Details").rect_min_size.x = CFConst.CARD_SIZE.x * CFConst.PREVIEW_SCALE
-			c.get_node("Details").rect_size.x = CFConst.CARD_SIZE.x * CFConst.PREVIEW_SCALE
-			c.rect_min_size.x = CFConst.CARD_SIZE.x * CFConst.PREVIEW_SCALE
-			c.rect_size.x = CFConst.CARD_SIZE.x * CFConst.PREVIEW_SCALE
+			c.get_node("Details").rect_min_size.x = preview_card.canonical_size.x * preview_card.preview_scale
+			c.get_node("Details").rect_size.x = preview_card.canonical_size.x * preview_card.preview_scale
+			c.rect_min_size.x = preview_card.canonical_size.x * preview_card.preview_scale
+			c.rect_size.x = preview_card.canonical_size.x * preview_card.preview_scale
 		focus_info.rect_min_size.x = 0.0
 		focus_info.rect_size.x = 0.0
-		focus_info.rect_position.y = CFConst.CARD_SIZE.y * CFConst.PREVIEW_SCALE
+		focus_info.rect_position.y = preview_card.canonical_size.y * preview_card.preview_scale
 
 
 # Figures out where to place the card preview in respect to the player's mouse.
@@ -31,7 +31,7 @@ func get_preview_placement() -> Vector2:
 	var focus_panel_offset = 0
 	if focus_info.visible:
 		focus_panel_offset = focus_info.rect_size.y
-	var card_size := CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE
+	var card_size := preview_card.canonical_size * preview_card.preview_scale
 	# We want the card to be on the right of the mouse always
 	# Unless that would make it hide outside the viewport.
 	# In which case we place it on the left of the mouse instead
@@ -63,13 +63,14 @@ func show_preview_card(card_name) -> void:
 		# It's necessary we do this here because if we only we it during
 		# the process, the card will appear to teleport
 		if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "resize":
-			preview_card.resize_recursively(preview_card._control, CFConst.PREVIEW_SCALE)
-			preview_card.card_front.scale_to(CFConst.PREVIEW_SCALE)
+			preview_card.resize_recursively(preview_card._control, preview_card.preview_scale)
+			preview_card.card_front.scale_to(preview_card.preview_scale)
 		rect_position = get_preview_placement()
 		cfc.ov_utils.populate_info_panels(preview_card,focus_info)
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
+	modulate.a = 1
 	visible = true
 
 # Deinstances the currently shown card.
 func hide_preview_card() -> void:
-	visible = false
+	modulate.a = 0

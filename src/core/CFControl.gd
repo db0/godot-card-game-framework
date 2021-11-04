@@ -24,6 +24,11 @@ var _ut_show_token_buttons := CFConst.SHOW_TOKEN_BUTTONS
 # It is initiated by looking for [CFConst#SETTINGS_FILENAME], but if it
 # doesn't exist, defaults to the values specified in CFConst, if applicable.
 var game_settings := {}
+# This variable stores the font and icon size for each string of text.
+# based on the current card size. This allows us to avoid calculating fonts
+# on the fly all the time and adding delay to card instancing.
+var font_size_cache := {}
+var cache_commit_timer: SceneTreeTimer
 # If set to true, the player will be prevented from interacting with the game
 var game_paused := false setget set_game_paused
 # If this is false, all CardContainers will pause in their ready() scene
@@ -85,6 +90,7 @@ var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
 
 func _ready() -> void:
 	init_settings_from_file()
+	init_font_cache()
 	if not game_settings.has('fancy_movement'):
 		game_settings['fancy_movement'] = CFConst.FANCY_MOVEMENT
 	if not game_settings.has('focus_style'):
@@ -107,7 +113,6 @@ func _ready() -> void:
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
-
 
 # Run when all necessary nodes (Board, CardContainers etc) for the game
 # have been initialized. Allows them to proceed with their ready() functions.
@@ -238,6 +243,38 @@ func init_settings_from_file() -> void:
 		if typeof(data) == TYPE_DICTIONARY:
 			game_settings = data.duplicate()
 
+
+func set_font_cache() -> void:
+#	var timer = Timer.new()
+#	timer.connect("timeout", self, "_commit_font_cache", [timer])
+#	timer.wait_time = 1
+#	timer.start()
+	if not cache_commit_timer:
+		cache_commit_timer = get_tree().create_timer(1.0)
+		cache_commit_timer.connect("timeout", self, "_commit_font_cache")
+		
+	
+# Whenever a setting is changed via this function, it also stores it
+# permanently on-disk.
+func _commit_font_cache() -> void:
+#	timer.disconnect("timeout", self, "_commit_font_cache")
+#	timer.queue_free()
+	var file = File.new()
+	file.open(CFConst.FONT_SIZE_CACHE, File.WRITE)
+	file.store_string(JSON.print(font_size_cache, '\t'))
+	file.close()
+	cache_commit_timer = null
+
+
+# Initiates game_settings from the contents of CFConst.SETTINGS_FILENAME
+func init_font_cache() -> void:
+	var file = File.new()
+	if file.file_exists(CFConst.FONT_SIZE_CACHE):
+		file.open(CFConst.FONT_SIZE_CACHE, File.READ)
+		var data = parse_json(file.get_as_text())
+		file.close()
+		if typeof(data) == TYPE_DICTIONARY:
+			font_size_cache = data.duplicate()
 
 # This function resets the game to the same state as when
 # the board loads for the first time. Only works when you're running
