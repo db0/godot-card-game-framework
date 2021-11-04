@@ -47,7 +47,7 @@ onready var card_owner = get_parent().get_parent().get_parent()
 
 # Set a label node's text.
 # As the string becomes longer, the font size becomes smaller
-func set_label_text(node: Label, value):
+func set_label_text(node: Label, value, scale: float = 1):
 #	while font_thread and font_thread.is_active():
 #		yield(get_tree(), "idle_frame")
 #	font_thread = Thread.new()
@@ -57,29 +57,36 @@ func set_label_text(node: Label, value):
 		return
 	resizing_labels.append(node)
 	value = _check_for_replacements(node, value)
-	# We add a yield here to allow the calling function to continue
-	# and thus avoid the game waiting for the label to resize
-	yield(get_tree(), "idle_frame")
-	var working_value: String
-	# If the label node has been set to uppercase the text
-	# Then we need to work off-of uppercased text value
-	# otherwise our calculation will be off and we'll
-	# end up extending the rect_size.y anyway
-	if node.uppercase:
-		working_value = value.to_upper()
-	else:
-		working_value = value
-	_capture_original_font_size(node)
-	var line_spacing = node.get("custom_constants/line_spacing")
-	if not line_spacing:
-		line_spacing = 3
-	var starting_font_size: int = font_sizes[node.name]
 	var label_font :Font = get_card_label_font(node)
-	label_font.size = starting_font_size
-	var font_adjustment := _adjust_font_size(label_font, working_value, node.rect_min_size, line_spacing)
-#	if  node.name == "Abilities": font_adjustment = -17
-	# We always start shrinking the size, starting from the original size.
-	label_font.size = starting_font_size + font_adjustment
+#	print_debug(scaled_fonts.get(node.name, 1))
+	var cached_font_size = get_cached_font_size(node,value,scale)
+	if cached_font_size:
+		label_font.size = cached_font_size
+	else:
+		# We add a yield here to allow the calling function to continue
+		# and thus avoid the game waiting for the label to resize
+		yield(get_tree(), "idle_frame")
+		var working_value: String
+		# If the label node has been set to uppercase the text
+		# Then we need to work off-of uppercased text value
+		# otherwise our calculation will be off and we'll
+		# end up extending the rect_size.y anyway
+		if node.uppercase:
+			working_value = value.to_upper()
+		else:
+			working_value = value
+		_capture_original_font_size(node)
+		var line_spacing = node.get("custom_constants/line_spacing")
+		if not line_spacing:
+			line_spacing = 3
+		var starting_font_size: int = font_sizes[node.name]
+		label_font.size = starting_font_size
+		var font_adjustment := _adjust_font_size(label_font, working_value, node.rect_min_size, line_spacing)
+	#	if  node.name == "Abilities": font_adjustment = -17
+		# We always start shrinking the size, starting from the original size.
+#		print_debug(scaled_fonts.get(node.name, 1))
+		_cache_font_size(node,value,starting_font_size + font_adjustment,scale)
+		label_font.size = starting_font_size + font_adjustment
 	set_card_label_font(node, label_font)
 	node.text = value
 	resizing_labels.erase(node)
@@ -127,16 +134,16 @@ func scale_to(scale_multiplier: float) -> void:
 				yield(get_tree(), "idle_frame")
 			if card_labels[l] as RichTextLabel:
 				var label : RichTextLabel = card_labels[l]
-				call_deferred("set_rich_label_text",label, label.bbcode_text, true)
+				call_deferred("set_rich_label_text",label, label.bbcode_text, true, scale_multiplier)
 			else:
 				var label : Label = card_labels[l]
-				call_deferred("set_label_text",label, label.text)
+				call_deferred("set_label_text",label, label.text, scale_multiplier)
 
 
 
 # Set a label node's bbcode text.
 # As the string becomes longer, the font size becomes smaller
-func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false):
+func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false, scale : float = 1):
 	# We need to avoid other functions to trying to resize this label
 	# while it's already resizing, as due to all the yields
 	# it causes a mess
@@ -163,58 +170,85 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false)
 	# We always start shrinking the size, starting from the original size.
 	_capture_original_font_size(node)
 	_capture_rt_font_size_variations(node)
-	var starting_font_size: int = font_sizes[node.name]
-	var font_adjustment:= 0
-#	label_font.size = font_sizes[node.name]
-	var label_size = node.rect_min_size
-	_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
-	_assign_bbcode_text(node, value, starting_font_size + font_adjustment)
-	# Rich Text has no way to grab its total size without setting the bbcode first
-	# After we set the bbcode, we need to wait for the next frame for the label to adjust
-	# and then we can grab its height
-	yield(get_tree(), "idle_frame")
-	var bbcode_height = node.get_content_height()
-	# To save some time, we use the same trick we do in normal labels
-	# where we reduce the font size to fits its rect
-	# However unlike normal labels, we might have icons and different font sizes
-	# which will not be taken into account.
-	# Therefore this gives us the starting point, but further reduction might be
-	# needed.
-	if bbcode_height > label_size.y:
-		font_adjustment = _adjust_font_size(label_fonts["normal_font"], node.text, label_size)
-		_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
-		yield(get_tree(), "idle_frame")
-		bbcode_height = node.get_content_height()
-#		print_debug(bbcode_height, ':', font_adjustment, ':', label_size.y)
-	# If the reduction of font sizes when checking against the normal font
-	# was not enough to bring the total rich label height into the rect.y we want
-	# we use a while loop where we do the following in order
-	# * reduce all rich-text font sizes by 1
-	# * reset the bbcode text
-	# * Wait for the next frame
-	# * grab the new rich text height
-	# Unitl the rich text height is smaller than the labels' rect size.
-	while bbcode_height > label_size.y:
-		font_adjustment -= 1
+	var cached_font_size = get_cached_font_size(node,value,scale)
+	if cached_font_size:
+		_set_card_rtl_fonts(node, label_fonts, cached_font_size)
+		_assign_bbcode_text(node, value, cached_font_size)
+	else:
+		var starting_font_size: int = font_sizes[node.name]
+		var font_adjustment:= 0
+	#	label_font.size = font_sizes[node.name]
+		var label_size = node.rect_min_size
 		_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
 		_assign_bbcode_text(node, value, starting_font_size + font_adjustment)
+		# Rich Text has no way to grab its total size without setting the bbcode first
+		# After we set the bbcode, we need to wait for the next frame for the label to adjust
+		# and then we can grab its height
 		yield(get_tree(), "idle_frame")
-		bbcode_height = node.get_content_height()
-		# If we don't keep the card front face-up while setting the RTL,
-		# The bbcode_height will be returned as either 0 or 1000 after setting the
-		# bbcode_text. Regardless of how long we wait.
-		# The below snipper was debugging code to keep the code waiting to resize
-		# until the card was turned face-up
-#		while bbcode_height == 0 or bbcode_height > 1000:
-#			_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
-#			_assign_bbcode_text(node, value, starting_font_size + font_adjustment)
-#			yield(get_tree(), "idle_frame")
-#			bbcode_height = node.get_content_height()
-		if starting_font_size + font_adjustment == 4:
-			break
+		var bbcode_height = node.get_content_height()
+		# To save some time, we use the same trick we do in normal labels
+		# where we reduce the font size to fits its rect
+		# However unlike normal labels, we might have icons and different font sizes
+		# which will not be taken into account.
+		# Therefore this gives us the starting point, but further reduction might be
+		# needed.
+		if bbcode_height > label_size.y:
+			font_adjustment = _adjust_font_size(label_fonts["normal_font"], node.text, label_size)
+			_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
+			yield(get_tree(), "idle_frame")
+			bbcode_height = node.get_content_height()
+	#		print_debug(bbcode_height, ':', font_adjustment, ':', label_size.y)
+		# If the reduction of font sizes when checking against the normal font
+		# was not enough to bring the total rich label height into the rect.y we want
+		# we use a while loop where we do the following in order
+		# * reduce all rich-text font sizes by 1
+		# * reset the bbcode text
+		# * Wait for the next frame
+		# * grab the new rich text height
+		# Unitl the rich text height is smaller than the labels' rect size.
+		while bbcode_height > label_size.y:
+			font_adjustment -= 1
+			_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
+			_assign_bbcode_text(node, value, starting_font_size + font_adjustment)
+			yield(get_tree(), "idle_frame")
+			bbcode_height = node.get_content_height()
+			# If we don't keep the card front face-up while setting the RTL,
+			# The bbcode_height will be returned as either 0 or 1000 after setting the
+			# bbcode_text. Regardless of how long we wait.
+			# The below snipper was debugging code to keep the code waiting to resize
+			# until the card was turned face-up
+	#		while bbcode_height == 0 or bbcode_height > 1000:
+	#			_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
+	#			_assign_bbcode_text(node, value, starting_font_size + font_adjustment)
+	#			yield(get_tree(), "idle_frame")
+	#			bbcode_height = node.get_content_height()
+			if starting_font_size + font_adjustment == 4:
+				break
+		_cache_font_size(node,value,starting_font_size + font_adjustment, scale)
 	modulate.a = 1
 	resizing_labels.erase(node)
 
+
+func _cache_font_size(label: Control, text: String, font_size: int, scale : float) -> void:
+	var text_md5 =  text.md5_text()
+	# We will store each label's font size in a key based on the card scale
+	# The default scale being 1
+	# It has to be a string because the Godot Json print converts ints to
+	# Strings when saving to file
+	var card_size = str(scale)
+	if not cfc.font_size_cache.has(card_size):
+		cfc.font_size_cache[card_size] = {}
+	if not cfc.font_size_cache[card_size].has(label.name):
+		cfc.font_size_cache[card_size][label.name] = {}
+	cfc.font_size_cache[card_size][label.name][text_md5] = font_size
+	cfc.set_font_cache()
+
+
+func get_cached_font_size(label: Control, text: String, scale : float):
+	var text_md5 =  text.md5_text()
+	var card_size = str(scale)
+	var cached_font_size = cfc.font_size_cache.get(card_size, {}).get(label.name, {}).get(text_md5)
+	return(cached_font_size)
 
 # Stores the original font size this label had.
 # We use this to start shrinking the label from this size, which allows us to

@@ -6,6 +6,7 @@
 
 * Added exported vars for controlling card tween duration (@stevosaurus)
 * Mouse will not teleport to a card's top-right when dragging starts. (@stevosaurus)
+* Now each card type has exported variables for the canonical card size as well as the various scaling. This allows the game to utilize different card sizes at the same time. CardContainers and BoardGrid for different card sizes now also need to have a defined card_size of the card they're going to host.
 
 #### ScriptingEngine
 

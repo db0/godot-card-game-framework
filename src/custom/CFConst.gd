@@ -67,6 +67,8 @@ const HAND_USE_OVAL_SHAPE := true
 const CARD_SCALE_WHILE_DRAGGING := Vector2(0.4, 0.4)
 # The location and name of the file into which to store game settings
 const SETTINGS_FILENAME := "user://CGFSettings.json"
+# The location and name of the file into which to store the font size cache
+const FONT_SIZE_CACHE := "user://CGFFontCache.json"
 # The location where this game will store deck files
 const DECKS_PATH := "user://Decks/"
 # The path where the Card Game Framework core files exist.

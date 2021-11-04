@@ -255,7 +255,9 @@ var card_back : CardBack
 # This will be loaded in `_init_card_layout()`
 var card_front : CardFront
 var _card_text
-var original_layouts:= {}
+# Holds which controls have already been resized through resize_recursively()
+# to avoid trying to resize them again
+var _original_layouts:= {}
 # This is true while the card is in the process of executing its scripts
 # This flag not used in the core CGF, but games build on it can use
 # This flag to prevent the player from "double-dipping" on a script
@@ -741,20 +743,20 @@ func get_property_and_alterants(property: String,
 func resize_recursively(control_node: Node, requested_scale: float) -> void:
 	if card_size != canonical_size * requested_scale:
 		card_size = canonical_size * requested_scale
-	if original_layouts.has(control_node)\
-			and CFUtils.compare_floats(requested_scale, original_layouts[control_node].get('scale')):
+	if _original_layouts.has(control_node)\
+			and CFUtils.compare_floats(requested_scale, _original_layouts[control_node].get('scale')):
 		return
-	if control_node as Control and not original_layouts.has(control_node):
-		original_layouts[control_node] = {}
-		original_layouts[control_node]["size"] = control_node.rect_min_size
-		original_layouts[control_node]["position"] = control_node.rect_position
+	if control_node as Control and not _original_layouts.has(control_node):
+		_original_layouts[control_node] = {}
+		_original_layouts[control_node]["size"] = control_node.rect_min_size
+		_original_layouts[control_node]["position"] = control_node.rect_position
 	for child in control_node.get_children():
 		resize_recursively(child, requested_scale)
 	if control_node as Control:
-		control_node.rect_min_size = original_layouts[control_node]["size"] * requested_scale
+		control_node.rect_min_size = _original_layouts[control_node]["size"] * requested_scale
 		control_node.call_deferred('set_size', control_node.rect_min_size)
-		control_node.rect_position = original_layouts[control_node]["position"] * requested_scale
-		original_layouts[control_node]["scale"] = requested_scale
+		control_node.rect_position = _original_layouts[control_node]["position"] * requested_scale
+		_original_layouts[control_node]["scale"] = requested_scale
 
 
 # Sets the card size and adjusts all nodes depending on it.
