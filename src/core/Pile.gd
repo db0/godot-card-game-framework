@@ -198,7 +198,6 @@ func add_child(node, _legible_unique_name=false) -> void:
 		# When the player adds card while the viewpopup is active
 		# we move them automatically to the viewpopup grid.
 		_slot_card_into_popup(node)
-		print_debug(node)
 
 
 # Overrides the function which removed chilren nodes so that it detects
@@ -236,8 +235,8 @@ func reorganize_stack() -> void:
 	# of the card stack
 	# TODO: This logic has to be adapted depending on where on the viewport
 	# This pile is anchored. The below calculations assume bottom-left.
-	$Control.rect_size = Vector2(CFConst.CARD_SIZE.x + 3 + _shift_x() * get_card_count(),
-			CFConst.CARD_SIZE.y + 6 + _shift_y() * get_card_count())
+	$Control.rect_size = Vector2(card_size.x + 3 + _shift_x() * get_card_count(),
+			card_size.y + 6 + _shift_y() * get_card_count())
 	$Control/Highlight.rect_size = $Control.rect_size
 	# The highlight has to also be shifted higher or else it will just extend
 	# below the viewport

@@ -98,6 +98,9 @@ func initiate_selection(
 			popup_exclusive = false
 	for c in _card_grid.get_children():
 		c.queue_free()
+	# We use this to quickly store a copy of a card object to use to get
+	# the card sizes for adjusting the size of the popup
+	var card_sample: Card
 	# for each card that the player needs to select amonst
 	# we create a duplicate card inside a Card Grid object
 	for card in card_array:
@@ -112,6 +115,7 @@ func initiate_selection(
 			dupe_selection.canonical_name = card.canonical_name
 			dupe_selection.properties = card.properties.duplicate()
 			dupe_selection.is_faceup = true
+		card_sample = dupe_selection
 		var card_grid_obj = grid_card_object_scene.instance()
 		_card_grid.add_child(card_grid_obj)
 		# This is necessary setup for the card grid container
@@ -126,7 +130,12 @@ func initiate_selection(
 	# We don't want to show a popup longer than the cards. So the width is based on the lowest
 	# between the grid columns or the amount of cards
 	var shown_columns = min(_card_grid.columns, card_array.size())
-	var popup_size_x = (CFConst.CARD_SIZE.x * CFConst.THUMBNAIL_SCALE * shown_columns)\
+	var card_size = CFConst.CARD_SIZE
+	var thumbnail_scale = CFConst.THUMBNAIL_SCALE
+	if card_sample as Card:
+		card_size = card_sample.canonical_size
+		thumbnail_scale = card_sample.thumbnail_scale
+	var popup_size_x = (card_size.x * thumbnail_scale * shown_columns)\
 			+ _card_grid.get("custom_constants/vseparation") * shown_columns
 	# The height will be automatically adjusted based on the amount of cards
 	rect_size = Vector2(popup_size_x,0)
