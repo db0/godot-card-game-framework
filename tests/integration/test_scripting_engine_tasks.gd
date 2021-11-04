@@ -228,7 +228,7 @@ func test_spawn_card():
 		"Spawned card left in correct state")
 	assert_almost_eq(Vector2(500,200),card.position,Vector2(2,2),
 		"Card spawned in correct location")
-	var offsetx = CFConst.CARD_SIZE.x * CFConst.PLAY_AREA_SCALE.x
+	var offsetx = CFConst.CARD_SIZE.x * CFConst.PLAY_AREA_SCALE
 	assert_almost_eq(Vector2(500 + offsetx * 2,200),
 			board.get_card(2).position,Vector2(2,2),
 			"Third Card spawned in correct location")

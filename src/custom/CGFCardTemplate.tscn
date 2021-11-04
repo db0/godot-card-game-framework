@@ -11,6 +11,7 @@
 script = ExtResource( 2 )
 card_back_design = ExtResource( 6 )
 card_front_design = ExtResource( 3 )
+card_size = null
 
 [node name="Front" parent="Control" index="2"]
 rect_min_size = Vector2( 150, 240 )

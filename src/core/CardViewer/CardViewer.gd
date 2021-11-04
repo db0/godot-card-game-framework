@@ -104,7 +104,7 @@ func prepate_filter_buttons() -> void:
 
 
 func _process(_delta: float) -> void:
-	# We keep updating the card count label with the amount of cards in the deck
+	# We keep updating the columns based on the card size
 	_card_grid.columns = int(
 			$"VBC/HBC/MC/AvailableCards/ScrollContainer".rect_size.x
 			/ (CFConst.CARD_SIZE.x * CFConst.THUMBNAIL_SCALE))

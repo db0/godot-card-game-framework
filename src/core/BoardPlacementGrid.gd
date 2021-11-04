@@ -6,7 +6,7 @@
 #
 # Adjust its highlight colour and the amount of columns it should have as well
 #
-# The BoardPlacementSlots will adjust to CFConst.CARD_SIZE on runtime, but
+# The BoardPlacementSlots will adjust to card_size on runtime, but
 # If you want to visually see on the editor your result
 class_name BoardPlacementGrid
 extends Control
@@ -22,11 +22,16 @@ export(Color) var highlight = CFConst.TARGET_HOVER_COLOUR
 # when find_available_slot() is used and there's no more available slots
 # (only useful when using the ScriptingEngine)
 export var auto_extend := false
+# Used to adjust the grid according to the card size that will be put into it.
+# This size should match the
+export var card_size := CFConst.CARD_SIZE
+export var card_play_scale := CFConst.PLAY_AREA_SCALE
 
 # Sets a custom label for this grid
 onready var name_label = $Control/Label
 
 func _ready() -> void:
+	rect_size = (card_size * card_play_scale) + Vector2(4,4)
 	# We ensure the separation of the grid slots is always 1 pixel larger
 	# Than the radius of the mouse pointer collision area.
 	# This ensures that we don't highlight 2 slots at the same time.

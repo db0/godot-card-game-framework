@@ -117,12 +117,16 @@ const PATH_MOUSE_POINTER := PATH_CORE + "MousePointer.tscn"
 # It's based on the card width. Bigger percentage means larger push.
 const NEIGHBOUR_PUSH := 0.75
 # The scale of a card while on the play area
-const PLAY_AREA_SCALE := Vector2(1, 1) * 0.8
-# The scale of a card while on a thumbnail area such as the deckbuilder
+# You can adjust this for each different card type
+const PLAY_AREA_SCALE := 0.8
+# The default scale of a card while on a thumbnail area such as the deckbuilder
+# You can adjust this for each different card type
 const THUMBNAIL_SCALE := 0.85
 # The scale of a card while on a larger preview following the mouse
+# You can adjust this for each different card type
 const PREVIEW_SCALE := 1.5
 # The scale of a card while it's shown focused on the top right.
+# You can adjust this for each different card type
 const FOCUSED_SCALE := 1.5
 # The margin towards the bottom of the viewport on which to draw the cards.
 #
