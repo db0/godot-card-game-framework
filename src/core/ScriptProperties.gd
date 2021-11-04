@@ -71,6 +71,7 @@ const KEY_SUBJECT_V_INDEX := "index"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we use the subject specified in the previous task
 const KEY_SUBJECT_V_PREVIOUS := "previous"
+const KEY_PROTECT_PREVIOUS := "protect_previous"
 # Value Type: Bool (Default = False)
 #
 # This is a special property for the [KEY_PER](#KEY_PER) dictionary in combination
@@ -1152,6 +1153,7 @@ static func get_default(property: String):
 				KEY_SORT_DESCENDING,\
 				KEY_ABORT_ON_COST_FAILURE,\
 				KEY_ORIGINAL_PREVIOUS,\
+				KEY_PROTECT_PREVIOUS,\
 				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:
