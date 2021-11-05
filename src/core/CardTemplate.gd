@@ -351,7 +351,8 @@ func _process(delta) -> void:
 		_tween_stuck_time = 0
 	# We do this check, to avoid trying to process stuff while the scene
 	# is being torn-down
-	_process_card_state()
+	if is_instance_valid(get_tree().current_scene):
+		_process_card_state()
 	# Having to do all these checks due to godotengine/godot#16854
 	if cfc._debug and not get_parent().is_in_group("piles"):
 		var stateslist = [
