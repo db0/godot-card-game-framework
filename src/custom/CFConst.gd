@@ -39,6 +39,7 @@ enum ShuffleStyle {
 # If you modify this property, you **must** adjust
 # the min_rect of the various control nodes inside the card front and back scenes.
 const CARD_SIZE := Vector2(150,240)
+const DESIGN_RESOLUTION := Vector2(1280,720)
 # Switch this off to disable fancy movement of cards during draw/discard
 const FANCY_MOVEMENT := true
 # The focus style selected for this game. See enum `FocusStyle`

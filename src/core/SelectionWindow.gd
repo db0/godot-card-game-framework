@@ -135,7 +135,7 @@ func initiate_selection(
 	if card_sample as Card:
 		card_size = card_sample.canonical_size
 		thumbnail_scale = card_sample.thumbnail_scale
-	var popup_size_x = (card_size.x * thumbnail_scale * shown_columns)\
+	var popup_size_x = (card_size.x * thumbnail_scale * shown_columns * cfc.curr_scale)\
 			+ _card_grid.get("custom_constants/vseparation") * shown_columns
 	# The height will be automatically adjusted based on the amount of cards
 	rect_size = Vector2(popup_size_x,0)

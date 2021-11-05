@@ -87,6 +87,7 @@ var alterant_cache: Dictionary
 # A game need to explicitly make use of it.
 var card_temp_property_modifiers = {}
 var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
+var curr_scale: float
 
 func _ready() -> void:
 	init_settings_from_file()
@@ -113,6 +114,8 @@ func _ready() -> void:
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
+	get_viewport().connect("size_changed", self, '_on_viewport_resized')
+	_on_viewport_resized()	
 
 # Run when all necessary nodes (Board, CardContainers etc) for the game
 # have been initialized. Allows them to proceed with their ready() functions.
@@ -307,6 +310,13 @@ func hide_all_previews() -> void:
 		card_preview_node.hide_preview_card()
 
 
+func _on_viewport_resized() -> void:
+	var pix = CFConst.DESIGN_RESOLUTION.x * CFConst.DESIGN_RESOLUTION.y
+	var curr_pix = get_viewport().size.x * get_viewport().size.y
+	curr_scale = curr_pix / pix
+	if curr_scale > 1:
+		curr_scale = 1
+	
 # The SignalPropagator is responsible for collecting all card signals
 # and asking all cards to check if there's any automation they need to perform
 class SignalPropagator:

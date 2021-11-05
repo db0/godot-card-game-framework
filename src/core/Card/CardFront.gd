@@ -189,7 +189,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false,
 		var bbcode_height = node.get_content_height()
 		while bbcode_height == 0 or bbcode_height > 1000:
 			_retries += 1
-			print_debug("BBcode height:" + bbcode_height + " retrying: " + _retries)
+			print_debug("BBcode height:" + str(bbcode_height) + " retrying: " + str(_retries))
 			yield(get_tree(), "idle_frame")
 			bbcode_height = node.get_content_height()
 			if _retries >= 10:
@@ -223,7 +223,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false,
 			_retries = 0
 			while bbcode_height == 0 or bbcode_height > 1000:
 				_retries += 1
-				print_debug("BBcode height:" + bbcode_height + " retrying: " + _retries)
+				print_debug("BBcode height:" + str(bbcode_height) + " retrying: " + str(_retries))
 				yield(get_tree(), "idle_frame")
 				bbcode_height = node.get_content_height()
 				if _retries >= 10:
@@ -294,12 +294,10 @@ func _assign_bbcode_text(rtlabel: RichTextLabel, bbcode_text : String, font_size
 
 
 # Overridable function for extra formatting of titles/card names
-# warning-ignore:unused_argument
 func _add_title_bbcode(rtlabel: RichTextLabel):
 	pass
 
 # Overridable function for extra formatting of titles/card names
-# warning-ignore:unused_argument
 func _pop_title_bbcode(rtlabel: RichTextLabel):
 	pass
 

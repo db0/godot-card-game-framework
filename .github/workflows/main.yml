@@ -25,9 +25,9 @@ jobs:
           # Your Godot version number e.g. 3.2.2
           version: 3.3.4
           # How long to spend on importing assets, don't set if testing is not required
-          import-time: 1 # optional, default is 1
+          import-time: 20 # optional, default is 1
           # How long the test should be run before it's timed out and fails
           test-timeout: 1200
-          minimum-pass: 100 # optional, default is 0.99
+          minimum-pass: 99 # optional, default is 0.99
           # Directory containing Gut tests
           test-dir: res://tests

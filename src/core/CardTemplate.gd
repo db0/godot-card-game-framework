@@ -349,10 +349,7 @@ func _process(delta) -> void:
 			_tween_stuck_time = 0
 	else:
 		_tween_stuck_time = 0
-	# We do this check, to avoid trying to process stuff while the scene
-	# is being torn-down
-	if is_instance_valid(get_tree().current_scene):
-		_process_card_state()
+	_process_card_state()
 	# Having to do all these checks due to godotengine/godot#16854
 	if cfc._debug and not get_parent().is_in_group("piles"):
 		var stateslist = [
@@ -1612,7 +1609,10 @@ func set_focus(requestedFocus: bool, colour := CFConst.FOCUS_HOVER_COLOUR) -> vo
 			and cfc.game_settings.focus_style\
 			and cfc.NMAP.has("main"):
 		if requestedFocus:
-			cfc.NMAP.main.focus_card(self)
+			var show_preview := true
+			if cfc.curr_scale < 0.8:
+				show_preview = false
+			cfc.NMAP.main.focus_card(self, show_preview)
 		else:
 			cfc.NMAP.main.unfocus(self)
 	# Tokens drawer is an optional node, so we check if it exists
@@ -2475,15 +2475,15 @@ func _process_card_state() -> void:
 			$Control/Tokens.visible = false
 			# We scale the card dupe to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * focused_scale
+				scale = Vector2(1,1) * focused_scale * cfc.curr_scale
 			else:
 				# We need to reset its scale,
 				# in case it was already scaled due to being on the table etc.
 				scale = Vector2(1,1)
-				resize_recursively(_control, focused_scale)
+				resize_recursively(_control, focused_scale * cfc.curr_scale)
 #				set_card_size(CFConst.CARD_SIZE * CFConst.FOCUSED_SCALE, true)
-				card_front.scale_to(focused_scale)
-				card_back.scale_to(focused_scale)
+				card_front.scale_to(focused_scale * cfc.curr_scale)
+				card_back.scale_to(focused_scale * cfc.curr_scale)
 			# If the card has already been been viewed while down,
 			# we allow the player hovering over it to see it
 			if not is_faceup:
@@ -2500,11 +2500,11 @@ func _process_card_state() -> void:
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * preview_scale
+				scale = Vector2(1,1) * preview_scale * cfc.curr_scale
 			else:
 #				set_card_size(CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE)
-				resize_recursively(_control, preview_scale)
-				card_front.scale_to(preview_scale)
+				resize_recursively(_control, preview_scale * cfc.curr_scale)
+				card_front.scale_to(preview_scale * cfc.curr_scale)
 
 		CardState.DECKBUILDER_GRID:
 			$Control.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -2521,8 +2521,8 @@ func _process_card_state() -> void:
 			# Font resizing
 			else:
 #				set_card_size(CFConst.CARD_SIZE * thumbnail_scale)
-				resize_recursively(_control, thumbnail_scale)
-				card_front.scale_to(thumbnail_scale)
+				resize_recursively(_control, thumbnail_scale * cfc.curr_scale)
+				card_front.scale_to(thumbnail_scale * cfc.curr_scale)
 
 
 
