@@ -106,6 +106,7 @@ func test_execute_scripts_with_temp_mod_property():
 	assert_eq(hand.get_card_count(), 7,
 		"Ensure the property does not go negative")
 	target.execute_scripts()
+	yield(yield_for(0.1), YIELD)
 	assert_eq(hand.get_card_count(), 8,
 		"Ensure temp property modifiers don't remain")
 
@@ -147,6 +148,7 @@ func test_execute_scripts_with_temp_mod_counter():
 	assert_eq(hand.get_card_count(), 7,
 		"Ensure the counter does not go negative")
 	target.execute_scripts()
+	yield(yield_for(0.1), YIELD)
 	assert_eq(hand.get_card_count(), 8,
 		"Ensure temp property modifiers don't remain")
 

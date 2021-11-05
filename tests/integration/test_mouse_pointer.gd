@@ -17,7 +17,7 @@ func before_each():
 func test_highlight_priority():
 	var card : Card = cards[0]
 	yield(table_move(cards[2], Vector2(550,500)), 'completed')
-	card.is_attachment = true
+	card.attachment_mode = Card.AttachmentMode.ATTACH_BEHIND
 	yield(drag_card(card, Vector2(600,500)), 'completed')
 	assert_null(grid.get_highlighted_slot(),
 		"No slot highlighted when potential host highlighted")
