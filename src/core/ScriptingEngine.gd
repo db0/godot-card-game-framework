@@ -159,8 +159,16 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			# (such as because the subjects cannot be matched)
 			# Then we consider the costs cannot be paid.
 			# However is the task was merely skipped (because filters didn't match)
-			# we don't consider the whole script failed
+			# we don't consider the whole script failed.
+			# This allows us to have conditional costs based on the board state
+			# which will not abort the overall script.
 			elif not script.is_valid and script.is_cost:
+				can_all_costs_be_paid = false
+			# This allows a skipped board state filter such as filter_per_counter
+			# placed in an is_cost task, to block all other tasks.
+			elif script.is_skipped\
+					and script.get_property(SP.KEY_FAIL_COST_ON_SKIP)\
+					and script.is_cost:
 				can_all_costs_be_paid = false
 			# At the end of the task run, we loop back to the start, but of course
 			# with one less item in our scripts_queue.
@@ -770,6 +778,7 @@ func nested_script(script: ScriptTask) -> int:
 
 
 # Does nothing. Useful for selecting subjects to pass to further filters etc.
+# warning-ignore:unused_argument
 func null_script(script: ScriptTask) -> int:
 	return(CFConst.ReturnCode.CHANGED)
 

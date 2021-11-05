@@ -77,7 +77,7 @@ const KEY_PROTECT_PREVIOUS := "protect_previous"
 # This is a special property for the [KEY_PER](#KEY_PER) dictionary in combination
 # with a [KEY_SUBJECT_V_PREVIOUS](#KEY_SUBJECT_V_PREVIOUS) value.
 # It specifies that the subject for the per seek should be the prev_subjects
-# passed to the task which calls this [KEY_PER](#KEY_PER). 
+# passed to the task which calls this [KEY_PER](#KEY_PER).
 # As opposed to a normal [KEY_SUBJECT_V_PREVIOUS](#KEY_SUBJECT_V_PREVIOUS) behaviour
 # inside per, which will use the same subjects as the parent task.
 const KEY_ORIGINAL_PREVIOUS := "original_previous"
@@ -122,7 +122,7 @@ const KEY_IS_COST := "is_cost"
 # This key is used on a task marked with KEY_IS_COST
 # It means that its cost effects will not evn be evaluated if previous costs
 # have already failed.
-# This is useful when there's more than 1 interactive cost, 
+# This is useful when there's more than 1 interactive cost,
 # such as targeting or selection boxes
 # To prevnent them from popping up even when previous costs have already failed.
 const KEY_ABORT_ON_COST_FAILURE := "abort_on_cost_failure"
@@ -462,14 +462,14 @@ const VALUE_PER := "per_"
 # Value Type: Float/Int
 #
 # Used to multiply per results.
-# This allows us to craft scripts like 
+# This allows us to craft scripts like
 # "Gain 2 Health per card on the table"
 const KEY_MULTIPLIER := "multiplier"
 # Value Type: Float/Int
 #
 # Used to divide per results.
-# This allows us to craft scripts like 
-# "Gain 1 Health per two cards on the table" 
+# This allows us to craft scripts like
+# "Gain 1 Health per two cards on the table"
 const KEY_DIVIDER := "divider"
 # Value Type: String
 #
@@ -620,8 +620,8 @@ const VALUE_RETRIEVE_INTEGER := "retrieve_integer"
 # While this functionality can also be done with an extra task after, using this variable
 # Allows the script to also capture the complete change in its own [KEY_STORE_INTEGER](#KEY_STORE_INTEGER).
 #
-# For example this allows effects like: 
-# "Pay 3 Research. Gain a number of coins equal to that amount + 1 
+# For example this allows effects like:
+# "Pay 3 Research. Gain a number of coins equal to that amount + 1
 # and draw a number of cards equal to that amount + 1"
 const KEY_ADJUST_RETRIEVED_INTEGER := "adjust_retrieved_integer"
 # This value can be inserted as the value in one of the following:
@@ -718,7 +718,7 @@ const VALUE_COMPARE_WITH_TRIGGER := "compare_with_trigger"
 const KEY_IS_OPTIONAL := "is_optional_"
 # Value Type: Bool (default: False)
 #
-# If true, the script will popup a card selection window, among all the 
+# If true, the script will popup a card selection window, among all the
 # valid subjects detected for this script.
 const KEY_NEEDS_SELECTION := "needs_selection"
 # Value Type: Int (default: 0)
@@ -726,9 +726,9 @@ const KEY_NEEDS_SELECTION := "needs_selection"
 # How many cards need to be selected from the selection window
 const KEY_SELECTION_COUNT := "selection_count"
 # Value Type: String (default: 'min')
-# How to evaluate [SELECTION_COUNT](#SELECTION_COUNT) 
+# How to evaluate [SELECTION_COUNT](#SELECTION_COUNT)
 # before the player is allowed to proceed
-# 
+#
 # * 'min': The minimum amount of cards that need to be selected
 # * 'equal': The exact amount of cards that need to be selected
 # * 'max': The maximum amount of cards that need to be selected
@@ -745,7 +745,7 @@ const KEY_SELECTION_OPTIONAL := "selection_optional"
 # Ignores the card executing the script from the selection window
 # This is necessary in some instances where the selection encompases the
 # scripting card, but this is unwanted. For example because the card
-# is supposed to already be in a different pile but this will only 
+# is supposed to already be in a different pile but this will only
 # technically happen as the last task.
 const KEY_SELECTION_IGNORE_SELF := "selection_ignore_self"
 # Value Type: Array
@@ -757,9 +757,15 @@ const KEY_NESTED_TASKS := "nested_tasks"
 # Value Type: Int
 #
 # Repeats the whole task this amount of times.
-# Careful when adding it to a task with a target, as it will force the 
+# Careful when adding it to a task with a target, as it will force the
 # targeting the
 const KEY_REPEAT := "repeat"
+# Value Type: Bool.
+#
+# If true, then the script will be considered to have failed if any of the
+# task filters fail. (Normally the task is merely skipped).
+# This will cause an [KEY_IS_COST](#LEY_IS_COST] to abort all effects.
+const KEY_FAIL_COST_ON_SKIP = "fail_cost_on_skip"
 #---------------------------------------------------------------------
 # Filter Definition Keys
 #
@@ -1137,7 +1143,7 @@ const TRIGGER_V_COUNT_INCREASED := "increased"
 const TRIGGER_V_COUNT_DECREASED := "decreased"
 
 
-# For any script key defined in this reference, 
+# For any script key defined in this reference,
 # returns the default it should have
 static func get_default(property: String):
 	var default
@@ -1154,6 +1160,7 @@ static func get_default(property: String):
 				KEY_ABORT_ON_COST_FAILURE,\
 				KEY_ORIGINAL_PREVIOUS,\
 				KEY_PROTECT_PREVIOUS,\
+				KEY_FAIL_COST_ON_SKIP,\
 				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:

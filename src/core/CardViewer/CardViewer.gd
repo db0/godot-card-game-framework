@@ -72,12 +72,12 @@ func _ready() -> void:
 			cfc.game_settings.get('deckbuilder_gridstyle', false)
 	$VBC/HBC/MC/AvailableCards/Settings/GridViewStyle.pressed =\
 			cfc.game_settings.deckbuilder_gridstyle
-	
+
 	if cfc.game_settings.deckbuilder_gridstyle:
 		var load_start_time = OS.get_ticks_msec()
 		prepare_card_grid()
 		var load_end_time = OS.get_ticks_msec()
-		print("Resource load time = " + str(load_end_time - load_start_time))		
+		print("Resource load time = " + str(load_end_time - load_start_time))
 	_show_all_button.icon = CFUtils.convert_texture_to_image(
 			"res://src/core/CardViewer/open-book.png")
 
