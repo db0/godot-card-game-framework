@@ -294,10 +294,12 @@ func _assign_bbcode_text(rtlabel: RichTextLabel, bbcode_text : String, font_size
 
 
 # Overridable function for extra formatting of titles/card names
+# warning-ignore:unused_argument
 func _add_title_bbcode(rtlabel: RichTextLabel):
 	pass
 
 # Overridable function for extra formatting of titles/card names
+# warning-ignore:unused_argument
 func _pop_title_bbcode(rtlabel: RichTextLabel):
 	pass
 

@@ -43,8 +43,7 @@ func setup_main() -> void:
 
 func setup_board() -> void:
 	cfc._ready()
-	board = autoqfree(BOARD_SCENE.instance())
-	get_tree().get_root().add_child(board)
+	board = add_child_autofree(BOARD_SCENE.instance())
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 	if not cfc.are_all_nodes_mapped:
 		yield(cfc, "all_nodes_mapped")
@@ -52,6 +51,13 @@ func setup_board() -> void:
 	hand = cfc.NMAP.hand
 	deck = cfc.NMAP.deck
 	discard = cfc.NMAP.discard
+
+func teardown_board() -> void:
+	cfc.flush_cache()
+	cfc.are_all_nodes_mapped = false
+	cfc.card_drag_ongoing = null
+	cfc.NMAP.clear()
+	
 
 func draw_test_cards(count: int, fast := true) -> Array:
 	var cards = []
@@ -69,6 +75,7 @@ func draw_test_cards(count: int, fast := true) -> Array:
 		c.reorganize_self()
 	return cards
 
+# warning-ignore:unused_argument
 func click_card(card: Card, use_fake_mouse := true) -> void:
 	var fc:= fake_click(true, Vector2(0,0))
 	card._on_Card_gui_input(fc)

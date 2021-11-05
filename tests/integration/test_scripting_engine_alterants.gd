@@ -346,7 +346,9 @@ func test_get_counter_alterants():
 
 func test_get_token_alterants():
 	yield(table_move(target, Vector2(200,200)), "completed")
+# warning-ignore:return_value_discarded
 	target.tokens.mod_token("blood")
+# warning-ignore:return_value_discarded
 	target.tokens.mod_token("industry")
 	var industry_token: Token = target.tokens.get_token("industry")
 	var blood_token: Token = target.tokens.get_token("blood")
@@ -367,8 +369,11 @@ func test_get_token_alterants():
 
 
 func test_get_property_alterants():
+# warning-ignore:return_value_discarded
 	target.modify_property("Cost", 2)
+# warning-ignore:return_value_discarded
 	target.modify_property("Power", 2)
+# warning-ignore:return_value_discarded
 	card.modify_property("Cost", 2)
 	card.scripts = {"alterants": {"hand": [
 			{"filter_task": "get_property",
@@ -383,7 +388,9 @@ func test_get_property_alterants():
 			"Alterant not modified retrieved counter value when trigger is self")
 
 func test_properties_alterants():
+# warning-ignore:return_value_discarded
 	card.modify_property("Power", 0)
+# warning-ignore:return_value_discarded
 	card.modify_property("Cost",0)
 	target.scripts = {"alterants": {"hand": [
 			{"filter_task": "modify_properties",
@@ -419,6 +426,7 @@ func test_properties_alterants():
 			"Cost altered correctly")
 
 func test_properties_alterants_with_polarity():
+# warning-ignore:return_value_discarded
 	card.modify_property("Cost",0)
 	target.scripts = {"alterants": {"hand": [
 			{"filter_task": "modify_properties",

@@ -22,6 +22,7 @@ func before_each():
 #
 func test_per_token_and_modify_token_per():
 	yield(table_move(card, Vector2(100,200)), "completed")
+# warning-ignore:return_value_discarded
 	card.tokens.mod_token("void",5)
 	yield(yield_for(0.1), YIELD)
 	card.scripts = {"manual": {
@@ -376,9 +377,11 @@ func test_original_previous():
 		]}
 	}
 	yield(execute_with_target(card,target), "completed")
+# warning-ignore:unused_variable
 	var bio_token_card = card.tokens.get_token("bio")
 	var bio_token_target = target.tokens.get_token("bio")
 	var blood_token_card = card.tokens.get_token("blood")
+# warning-ignore:unused_variable
 	var blood_token_target = target.tokens.get_token("blood")
 	assert_not_null(bio_token_target,
 		"Put 5 Bio tokens on target")

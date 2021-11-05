@@ -213,6 +213,10 @@ __meta__ = {
 margin_right = 40.0
 margin_bottom = 40.0
 
+[node name="SeedLabel" type="Label" parent="."]
+margin_right = 40.0
+margin_bottom = 14.0
+
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
 [connection signal="item_selected" from="ScalingFocusOptions" to="." method="_on_ScalingFocusOptions_item_selected"]
