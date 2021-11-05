@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.16 (Ongoing)
+
+
+#### ScriptingEngine
+
+* Added SP.KEY_FAIL_COST_ON_SKIP
+
 ## 1.15
 
 ### Important for Upgrades
