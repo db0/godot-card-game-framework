@@ -25,7 +25,7 @@ jobs:
           # Your Godot version number e.g. 3.2.2
           version: 3.3.4
           # should be long enough for asset import files to get generated
-          import-time: 25 
+          import-time: 5 
           # How long the test should be run before it's timed out and fails
           test-timeout: 1200
           # Directory containing Gut tests
