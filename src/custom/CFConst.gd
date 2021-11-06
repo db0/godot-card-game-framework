@@ -34,11 +34,18 @@ enum ShuffleStyle {
 	SNAP,
 	OVERHAND,
 }
+# This is used to know when to refresh the font size cache, but you can use it
+# for other purposes as well.
+# If you never adjust this, the font cache might start growing too large.
+const GAME_VERSION := "1.0.0"
 # The card size you want your  cards to have.
 # This will also adjust all CardContainers to match
 # If you modify this property, you **must** adjust
 # the min_rect of the various control nodes inside the card front and back scenes.
 const CARD_SIZE := Vector2(150,240)
+# This is the resolution the game was developed in. It is used to adjust the card sizes
+# for smaller resolutions. Any lower resoluton will adjust its card sizes for previews/thumbnails
+# based on the percentage of difference between the two resolutions in absolute pixel number.
 const DESIGN_RESOLUTION := Vector2(1280,720)
 # Switch this off to disable fancy movement of cards during draw/discard
 const FANCY_MOVEMENT := true

@@ -277,7 +277,13 @@ func init_font_cache() -> void:
 		var data = parse_json(file.get_as_text())
 		file.close()
 		if typeof(data) == TYPE_DICTIONARY:
-			font_size_cache = data.duplicate()
+			if font_size_cache.get('version') == CFConst.GAME_VERSION:
+				font_size_cache = data.duplicate()
+			else:
+				# If the version of the game has increased, we wipe the 
+				# font size cache and a new one will start being populated
+				font_size_cache['version'] = CFConst.GAME_VERSION
+
 
 # This function resets the game to the same state as when
 # the board loads for the first time. Only works when you're running
