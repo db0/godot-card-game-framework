@@ -26,8 +26,8 @@ jobs:
           version: 3.3.4
           # should be long enough for asset import files to get generated
           import-time: 5
-          minimum-pass: .90
+          minimum-pass: .999
           # How long the test should be run before it's timed out and fails
-          test-timeout: 1800
+          test-timeout: 900
           # Directory containing Gut tests
           direct-scene: tests/cli/tests.tscn
