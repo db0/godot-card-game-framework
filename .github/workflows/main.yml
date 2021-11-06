@@ -26,6 +26,7 @@ jobs:
           version: 3.3.4
           # should be long enough for asset import files to get generated
           import-time: 5 
+          minimum-pass: .90
           # How long the test should be run before it's timed out and fails
           test-timeout: 1200
           # Directory containing Gut tests
