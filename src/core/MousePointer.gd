@@ -90,8 +90,8 @@ func determine_global_mouse_pos() -> Vector2:
 	if get_viewport() and get_viewport().has_node("Camera2D"):
 		zoom = get_viewport().get_node("Camera2D").zoom
 	var offset_mouse_position = \
-			get_tree().current_scene.get_global_mouse_position() \
-			- get_viewport_transform().origin
+		get_tree().current_scene.get_global_mouse_position() \
+		- get_viewport_transform().origin
 	offset_mouse_position *= zoom
 	#var scaling_offset = get_tree().get_root().get_node('Main').get_viewport().get_size_override() * OS.window_size
 	if cfc.ut and cfc.NMAP.get("board"):
