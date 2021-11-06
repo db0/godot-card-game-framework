@@ -184,3 +184,101 @@ func test_multi_host_hover():
 			"Potential host highlight changes as it changes hover areas")
 	drop_card(card,board._UT_mouse_position)
 	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+	
+func test_attachment_node_order():
+	var host_card : Card
+	var attached_cards = []
+
+	host_card = cards[0]
+	yield(drag_drop(host_card,Vector2(300,300)), 'completed')
+	attached_cards = [cards[1],cards[2], cards[3]]
+		
+	attached_cards[0].attachment_mode = Card.AttachmentMode.ATTACH_BEHIND
+	yield(drag_drop(attached_cards[0], Vector2(310,310)), "completed")
+	
+	assert_true(host_card.get_index() > attached_cards[0].get_index(), 
+		"Card attached behind host card comes before host parent node heirarchy")
+		
+	yield(drag_drop(attached_cards[0], Vector2(400,600)), "completed")	
+	yield(yield_for(0.1), YIELD)
+	
+	attached_cards[0].attachment_mode = Card.AttachmentMode.ATTACH_IN_FRONT
+	yield(drag_drop(attached_cards[0], Vector2(310,310)), "completed")
+	
+	assert_true(host_card.get_index() < attached_cards[0].get_index(), 
+		"Card attached above host card comes after host parent node heirarchy")
+		
+	yield(drag_drop(attached_cards[0], Vector2(400,600)), "completed")	
+	yield(yield_for(0.1), YIELD)
+	
+	for attached_card in attached_cards:
+		attached_card.attachment_mode = Card.AttachmentMode.ATTACH_BEHIND
+		yield(drag_drop(attached_card, Vector2(310,310)), "completed")
+		yield(yield_for(0.1), YIELD)
+	
+	assert_true(host_card.get_index() > attached_cards[0].get_index(),		
+		"Multiple attachments behind host are correctly ordered relative to host in parent node heirarchy")
+	assert_true(attached_cards[0].get_index() > attached_cards[1].get_index(),		
+		"Multiple attachments behind host are correctly ordered relative to host in parent node heirarchy")
+	assert_true(attached_cards[0].get_index() > attached_cards[2].get_index(),		
+		"Multiple attachments behind host are correctly ordered relative to host in parent node heirarchy")
+	assert_true(attached_cards[1].get_index() > attached_cards[2].get_index(),		
+		"Multiple attachments behind host are correctly ordered relative to host in parent node heirarchy")
+	
+	host_card._on_Card_mouse_entered()
+	click_card(host_card)
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
+	board._UT_interpolate_mouse_move(Vector2(500,300),host_card.global_position)
+	yield(yield_for(0.2), YIELD)
+	assert_true(host_card.get_index() > attached_cards[0].get_index(),		
+		"Multiple attachments are correctly ordered relative to host when dragging")
+	assert_true(attached_cards[0].get_index() > attached_cards[1].get_index(),		
+		"Multiple attachments are correctly ordered relative to host when dragging")
+	assert_true(attached_cards[0].get_index() > attached_cards[2].get_index(),		
+		"Multiple attachments are correctly ordered relative to host when dragging")
+	assert_true(attached_cards[1].get_index() > attached_cards[2].get_index(),		
+		"Multiple attachments are correctly ordered relative to host when dragging")
+	yield(yield_for(0.4), YIELD)
+	drop_card(host_card,board._UT_mouse_position)
+	host_card._on_Card_mouse_exited()
+	
+	#move cards back to hand and then reattach with other attach mode
+	for attached_card in attached_cards:
+		yield(drag_drop(attached_card, Vector2(400,600)), "completed")
+	
+	for attached_card in attached_cards:
+		attached_card.attachment_mode = Card.AttachmentMode.ATTACH_IN_FRONT
+		yield(drag_drop(attached_card, Vector2(510,310)), "completed")
+		yield(yield_for(0.1), YIELD)
+
+	assert_true(host_card.get_index() < attached_cards[0].get_index(),		
+		"Multiple attachments in front of host are correctly ordered relative to host in parent node heirarchy")
+	assert_true(attached_cards[0].get_index() < attached_cards[1].get_index(),		
+		"Multiple attachments in front of host are correctly ordered relative to host in parent node heirarchy")
+	assert_true(attached_cards[0].get_index() < attached_cards[2].get_index(),		
+		"Multiple attachments in front of host are correctly ordered relative to host in parent node heirarchy")
+	assert_true(attached_cards[1].get_index() < attached_cards[2].get_index(),		
+		"Multiple attachments in front of host are correctly ordered relative to host in parent node heirarchy")
+		
+	#attachments are covering the card origin, so click with an offset
+	var click_offset = Vector2(0, (host_card.card_size.y * CFConst.PLAY_AREA_SCALE) - 20)
+	board._UT_interpolate_mouse_move(host_card.global_position + click_offset,
+			board._UT_mouse_position)
+	yield(yield_for(0.5), YIELD)
+	host_card._on_Card_mouse_entered()	
+	click_card(host_card, true, click_offset)
+	yield(yield_for(0.5), YIELD) # Wait to allow dragging to start
+	board._UT_interpolate_mouse_move(Vector2(300,300)+click_offset,board._UT_mouse_position)
+	yield(yield_for(0.5), YIELD)
+	assert_true(host_card.get_index() < attached_cards[0].get_index(),		
+		"Multiple attachments are correctly ordered relative to host when dragging")
+	assert_true(attached_cards[0].get_index() < attached_cards[1].get_index(),		
+		"Multiple attachments are correctly ordered relative to host when dragging")
+	assert_true(attached_cards[0].get_index() < attached_cards[2].get_index(),		
+		"Multiple attachments are correctly ordered relative to host when dragging")
+	assert_true(attached_cards[1].get_index() < attached_cards[2].get_index(),		
+		"Multiple attachments are correctly ordered relative to host when dragging")
+	yield(yield_for(0.5), YIELD)
+	drop_card(host_card,board._UT_mouse_position)
+	yield(yield_to(host_card._tween, "tween_all_completed", 1), YIELD)
+

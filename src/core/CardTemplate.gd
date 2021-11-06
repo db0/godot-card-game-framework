@@ -45,6 +45,11 @@ enum BoardPlacement{
 	ANY_GRID
 	ANYWHERE
 }
+enum AttachmentMode{
+	DO_NOT_ATTACH	
+	ATTACH_BEHIND
+	ATTACH_IN_FRONT
+}
 enum AttachmentOffset{
 	TOP_LEFT
 	TOP
@@ -108,7 +113,7 @@ export var scripts : Dictionary
 # If true, the card can be attached to other cards and will follow
 # their host around the table. The card will always return to its host
 # when dragged away
-export var is_attachment := false setget set_is_attachment, get_is_attachment
+export(AttachmentMode) var attachment_mode = AttachmentMode.DO_NOT_ATTACH
 # If true, staggers the attachment so the side is also visible
 export(AttachmentOffset) var attachment_offset = AttachmentOffset.TOP
 # If true, the card front will be displayed when mouse hovers over the card
@@ -484,6 +489,9 @@ func _on_Card_gui_input(event) -> void:
 					# to always draw above other objects
 					# We need to reset it to the default of 0
 					z_index = 0
+					for attachment in self.attachments:
+						attachment.z_index = 0
+										
 					var destination = cfc.NMAP.board
 					if potential_container:
 						destination = potential_container
@@ -790,15 +798,6 @@ func set_card_size(value: Vector2, ignore_area = false) -> void:
 		$CollisionShape2D.shape.extents = value / 2
 		$CollisionShape2D.position = value / 2
 
-
-# Setter for _is_attachment
-func set_is_attachment(value: bool) -> void:
-	is_attachment = value
-
-
-# Getter for _is_attachment
-func get_is_attachment() -> bool:
-	return is_attachment
 
 # Setter for is_faceup
 #
@@ -1849,18 +1848,16 @@ func _organize_attachments() -> void:
 			# We use the index of the attachment among other attachments
 			# to figure out its index and placement
 			var attach_index = attachments.find(card)
-			if attach_index:
-				# if the card is not the first attachment to this host
-				# Then we make sure that each subsequent card is higher
-				# in the node hierarchy than its parent
-				# This will make latter cards draw below the others
-				if card.get_index() > attachments[attach_index - 1].get_index():
-					get_parent().move_child(card,
-							attachments[attach_index - 1].get_index())
-			# If the card if the first for its host, we need to make sure
-			# it is higher in the hierarchy than the host
-			elif card.get_index() > self.get_index():
-				get_parent().move_child(card,self.get_index())
+
+			# offset the attachment's position in the boards hierarchy
+			# by the attachment offset
+			if (card.attachment_mode == AttachmentMode.ATTACH_BEHIND and 
+				card.get_index() > (self.get_index()-attach_index)):
+				get_parent().move_child(card, self.get_index()-attach_index)
+			elif(card.attachment_mode == AttachmentMode.ATTACH_IN_FRONT and 
+				card.get_index() < (self.get_index()+attach_index)):
+				get_parent().move_child(card, self.get_index()+attach_index)
+
 			# We don't want to try and move it if it's still tweening.
 			# But if it isn't, we make sure it always follows its parent
 			if not card.get_node('Tween').is_active() and \
@@ -1920,8 +1917,10 @@ func _pushAside(targetpos: Vector2, target_rotation: float) -> void:
 # Pick up a card to drag around with the mouse.
 func _start_dragging(drag_offset: Vector2) -> void:
 	_drag_offset = drag_offset
-	# When dragging we want the dragged card to always be drawn above all else
+	# When dragging we want the dragged card and attachments to always be drawn above all else
 	z_index = 99
+	for attachment in self.attachments:
+		attachment.z_index = 99
 	# We have use parent viewport to calculate global_position
 	# due to godotengine/godot#30215
 	# This is caused because we're using a viewport node and scaling the game
@@ -2366,6 +2365,12 @@ func _process_card_state() -> void:
 		CardState.ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			z_index = 0
+			
+			# if this card is an attachment and it's host is being dragged 
+			# then we want this card to be above everything like the host
+			if current_host_card and current_host_card.state == CardState.DRAGGED:
+				z_index = 99
+												
 			set_focus(false)
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
