@@ -75,7 +75,7 @@ func draw_test_cards(count: int, fast := true) -> Array:
 		c.reorganize_self()
 	return cards
 
-func click_card(card: Card, use_fake_mouse := true, offset:=Vector2(0,0)) -> void:
+func click_card(card: Card, _use_fake_mouse := true, offset:=Vector2(0,0)) -> void:
 	var fc:= fake_click(true, offset)
 	card._on_Card_gui_input(fc)
 
