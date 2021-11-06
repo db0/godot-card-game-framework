@@ -23,4 +23,5 @@ func _ready() -> void:
 			 "CounterTitle": "Research: ",
 			"Value": 0},
 	}
+	# warning-ignore:return_value_discarded
 	spawn_needed_counters()

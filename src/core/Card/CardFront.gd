@@ -223,7 +223,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false,
 			_retries = 0
 			while bbcode_height == 0 or bbcode_height > 1000:
 				_retries += 1
-				print_debug("BBcode height:" + bbcode_height + " retrying: " + _retries)
+				print_debug("BBcode height:" + str(bbcode_height) + " retrying: " + str(_retries))
 				yield(get_tree(), "idle_frame")
 				bbcode_height = node.get_content_height()
 				if _retries >= 10:

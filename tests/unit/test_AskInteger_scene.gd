@@ -23,6 +23,10 @@ func before_each():
 	vh = ask_integer.get_node("VecticalHighlights")
 	line = ask_integer.get_node("IntegerLineEdit")
 
+func after_each():
+	teardown_board()
+
+
 func test_title_and_highlights():
 	ask_integer.prep("UT Card",1,5)
 	assert_eq("Please enter number for the effect of UT Card", ask_integer.window_title)

@@ -158,6 +158,7 @@ func test_subject_boardseek():
 			"subject_count": "all",
 			"filter_state_seek": [{"filter_properties": {"Type": ttype2}}],
 			"degrees": 90}]}}
+# warning-ignore:unused_variable
 	var scripting_engine = card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(target.card_rotation, 180,
@@ -190,6 +191,7 @@ func test_subject_previous():
 
 func test_subject_boardseek_previous():
 	var target2: Card = cards[2]
+# warning-ignore:unused_variable
 	var ttype : String = target.properties["Type"]
 	yield(table_move(target, Vector2(500,200)), "completed")
 	yield(table_move(cards[2], Vector2(800,200)), "completed")
@@ -202,6 +204,7 @@ func test_subject_boardseek_previous():
 			{"name": "flip_card",
 			"subject": "previous",
 			"set_faceup": false}]}}
+# warning-ignore:unused_variable
 	var scripting_engine = card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_false(target.is_faceup,

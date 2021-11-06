@@ -120,6 +120,7 @@ func test_occupied_slot():
 func test_move_script_placed_card_out_of_grid():
 	yield(yield_for(0.2), YIELD)
 	var card: Card = cards[1]
+# warning-ignore:unused_variable
 	var target: Card
 	target = deck.get_card(0)
 	card.scripts = {"manual": {"hand": [

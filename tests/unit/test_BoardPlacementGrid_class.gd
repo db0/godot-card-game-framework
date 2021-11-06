@@ -32,6 +32,6 @@ func test_get_slot():
 
 func test_add_slot():
 	var old_count = grid.get_slot_count()
-	var new_slot = grid.add_slot()
+	var _new_slot = grid.add_slot()
 	assert_lt(old_count,grid.get_slot_count(),
 			'New slot added')

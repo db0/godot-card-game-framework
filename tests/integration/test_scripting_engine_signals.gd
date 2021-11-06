@@ -637,6 +637,7 @@ func test_card_properties_modified():
 			"filter_modified_properties": {"Type":
 				{"new_value": "Purple"}},
 			"trigger": "another"}}
+	# warning-ignore:return_value_discarded
 	target.modify_property("Type", "Orange")
 	cards[4]._debugger_hook = true
 	yield(yield_for(0.1), YIELD)

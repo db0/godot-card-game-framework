@@ -370,6 +370,7 @@ func test_state_filter_parent():
 			"Card turned face-down since filter_parent matches")
 
 func test_counter_comparison():
+# warning-ignore:return_value_discarded
 	board.counters.mod_counter("research", 3)
 	cards[4].modify_property("Cost", 2)
 	cards[0].modify_property("Cost", 3)

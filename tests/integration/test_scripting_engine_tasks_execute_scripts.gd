@@ -68,6 +68,7 @@ func test_execute_scripts():
 				"scripts not executed because exec_trigger does not match")
 
 func test_execute_scripts_with_temp_mod_property():
+	# warning-ignore:return_value_discarded
 	target.modify_property("Cost", 1)
 	card.scripts = {"manual": {"hand": [
 			{"name": "execute_scripts",

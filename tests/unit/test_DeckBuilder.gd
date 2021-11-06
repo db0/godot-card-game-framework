@@ -12,8 +12,7 @@ func count_visible_list_cards() -> int:
 
 func before_each():
 	cfc._ready()
-	deckbuilder = autoqfree(load(PATH_DECKBUILDER).instance())
-	get_tree().get_root().add_child(deckbuilder)
+	deckbuilder = add_child_autofree(load(PATH_DECKBUILDER).instance())
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 
 func test_setup():

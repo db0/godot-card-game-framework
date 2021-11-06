@@ -58,6 +58,7 @@ func test_move_from_board_to_deck_to_hand():
 	yield(drag_drop(card, cfc.NMAP.deck.position), 'completed')
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
+# warning-ignore:return_value_discarded
 	hand.draw_card()
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(card.get_node('Tween'), "tween_all_completed", 0.5), YIELD)
