@@ -90,6 +90,12 @@ var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
 var curr_scale: float
 
 func _ready() -> void:
+	connect("all_nodes_mapped", self, "_on_all_nodes_mapped")
+	get_viewport().connect("size_changed", self, '_on_viewport_resized')
+	_on_viewport_resized()
+	_setup()
+
+func _setup() -> void:
 	init_settings_from_file()
 	init_font_cache()
 	if not game_settings.has('fancy_movement'):
@@ -102,7 +108,6 @@ func _ready() -> void:
 	# as they repopulate during unit testing many times.
 	# warning-ignore:return_value_discarded
 	flush_cache()
-	connect("all_nodes_mapped", self, "_on_all_nodes_mapped")
 	# We need to reset these values for UNIT testing
 	NMAP = {}
 	are_all_nodes_mapped = false
@@ -114,8 +119,7 @@ func _ready() -> void:
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
-	get_viewport().connect("size_changed", self, '_on_viewport_resized')
-	_on_viewport_resized()	
+
 
 # Run when all necessary nodes (Board, CardContainers etc) for the game
 # have been initialized. Allows them to proceed with their ready() functions.

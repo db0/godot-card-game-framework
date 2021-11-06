@@ -27,9 +27,8 @@ func fake_click(pressed, position, flags=0) -> InputEvent:
 	return ev
 
 
-
 func setup_main() -> void:
-	cfc._ready()
+	cfc._setup()
 	main = autoqfree(MAIN_SCENE.instance())
 	get_tree().get_root().add_child(main)
 	if not cfc.are_all_nodes_mapped:
@@ -41,8 +40,9 @@ func setup_main() -> void:
 	deck = cfc.NMAP.deck
 	discard = cfc.NMAP.discard
 
+
 func setup_board() -> void:
-	cfc._ready()
+	cfc._setup()
 	board = add_child_autofree(BOARD_SCENE.instance())
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 	if not cfc.are_all_nodes_mapped:

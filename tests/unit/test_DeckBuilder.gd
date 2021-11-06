@@ -11,7 +11,7 @@ func count_visible_list_cards() -> int:
 	return(visible_cards)
 
 func before_each():
-	cfc._ready()
+	cfc._setup()
 	deckbuilder = add_child_autofree(load(PATH_DECKBUILDER).instance())
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 
@@ -97,6 +97,9 @@ func test_plus_minus_freeform_add_remove():
 
 func test_save_load_reset():
 	var card_object: DBListCardObject = deckbuilder._available_cards.get_child(4)
+	# To ensure the max allowed allows the 3 cards we want to add
+	print_debug(card_object.card_name)
+	card_object.max_allowed = 10
 	card_object._qbuttons[3]._on_button_pressed()
 	var deck_name : String = deckbuilder._deck_name.text
 	deckbuilder._on_Save_pressed()

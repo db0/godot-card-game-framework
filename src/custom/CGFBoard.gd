@@ -20,7 +20,7 @@ func _ready() -> void:
 		cfc.game_rng_seed = CFUtils.generate_random_seed()
 		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
 	if not get_tree().get_root().has_node('Gut'):
-		load_test_cards()
+		load_test_cards(false)
 	# warning-ignore:return_value_discarded
 	$DeckBuilderPopup.connect('popup_hide', self, '_on_DeckBuilder_hide')
 
@@ -80,22 +80,48 @@ func _on_Debug_toggled(button_pressed: bool) -> void:
 	cfc._debug = button_pressed
 
 # Loads a sample set of cards to use for testing
-func load_test_cards(extras := 11) -> void:
-	var test_cards := []
-	for ckey in cfc.card_definitions.keys():
-		if ckey != "Spawn Card":
-			test_cards.append(ckey)
+func load_test_cards(gut := true) -> void:
+	var extras = 11
+	# Hardcoded the card order because for some reason, GUT on low-powered VMs
+	# ends up with a different card order, even when the seed is the same.
+	var gut_cards := [
+		"Multiple Choices Test Card",
+		"Test Card 2",
+		"Test Card 3",
+		"Test Card 2",
+		"Test Card 2",
+		"Test Card 1",
+		"Test Card 2",
+		"Multiple Choices Test Card",
+		"Test Card 3",
+		"Multiple Choices Test Card",
+		"Multiple Choices Test Card",
+		"Rich Text Card",
+		"Shaking Card",
+		"Test Card 1",
+		"Test Card 2",
+		"Test Card 3",
+		"Multiple Choices Test Card",
+	]
 	var test_card_array := []
-	for _i in range(extras):
-		if not test_cards.empty():
-			var random_card_name = \
-					test_cards[CFUtils.randi() % len(test_cards)]
-			test_card_array.append(cfc.instance_card(random_card_name))
-	# 11 is the cards GUT expects. It's the testing standard
-	if extras == 11:
-	# I ensure there's of each test card, for use in GUT
-		for card_name in test_cards:
-			test_card_array.append(cfc.instance_card(card_name))
+	if gut:
+		for card in gut_cards:
+			test_card_array.append(cfc.instance_card(card))
+	else:
+		var test_cards := []
+		for ckey in cfc.card_definitions.keys():
+			if ckey != "Spawn Card":
+				test_cards.append(ckey)
+		for _i in range(extras):
+			if not test_cards.empty():
+				var random_card_name = \
+						test_cards[CFUtils.randi() % len(test_cards)]
+				test_card_array.append(cfc.instance_card(random_card_name))
+		# 11 is the cards GUT expects. It's the testing standard
+		if extras == 11:
+		# I ensure there's of each test card, for use in GUT
+			for card_name in test_cards:
+				test_card_array.append(cfc.instance_card(card_name))
 	for card in test_card_array:
 		cfc.NMAP.deck.add_child(card)
 		#card.set_is_faceup(false,true)
