@@ -26,8 +26,8 @@ func test_list_files_in_directory():
 	list = CFUtils.list_files_in_directory(
 			"res://src/custom/cards/sets/", "SetScripts_")
 	assert_eq(2,len(list), "There should be 2 set files")
-	assert_eq(["SetScripts_Demo1.gd","SetScripts_Demo2.gd"],
-			list, "List contents should be accurate")
+	assert_true(list.has("SetScripts_Demo1.gd"), "Should contain demo1")
+	assert_true(list.has("SetScripts_Demo2.gd"), "Should contain demo2")
 
 func test_load_card_definitions():
 	var defs := cfc.load_card_definitions()
