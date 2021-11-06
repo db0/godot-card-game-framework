@@ -70,7 +70,10 @@ func _on_ScalingFocusOptions_item_selected(index) -> void:
 # Button to make all cards act as attachments
 func _on_EnableAttach_toggled(button_pressed: bool) -> void:
 	for c in get_tree().get_nodes_in_group("cards"):
-		c.is_attachment = button_pressed
+		if button_pressed:
+			c.attachment_mode = Card.AttachmentMode.ATTACH_BEHIND
+		else:
+			c.attachment_mode = Card.AttachmentMode.DO_NOT_ATTACH
 
 
 func _on_Debug_toggled(button_pressed: bool) -> void:

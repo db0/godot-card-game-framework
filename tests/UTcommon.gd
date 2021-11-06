@@ -75,9 +75,8 @@ func draw_test_cards(count: int, fast := true) -> Array:
 		c.reorganize_self()
 	return cards
 
-# warning-ignore:unused_argument
-func click_card(card: Card, use_fake_mouse := true) -> void:
-	var fc:= fake_click(true, Vector2(0,0))
+func click_card(card: Card, use_fake_mouse := true, offset:=Vector2(0,0)) -> void:
+	var fc:= fake_click(true, offset)
 	card._on_Card_gui_input(fc)
 
 func unclick_card(card: Card) -> void:
