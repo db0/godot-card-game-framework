@@ -29,6 +29,7 @@ enum FocusStyle {
 	SCALED
 	VIEWPORT
 	BOTH
+	BOTH_INFO_PANELS_ONLY
 }
 # Options for displacing choosing which of the [CardContainer]s
 # sharing the same anchor to displace more.

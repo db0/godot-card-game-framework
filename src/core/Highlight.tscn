@@ -48,8 +48,8 @@ __meta__ = {
 [node name="LeftRight" type="Panel" parent="."]
 modulate = Color( 3.2, 3.2, 3.2, 1 )
 use_parent_material = true
-margin_right = 25.0
-margin_bottom = 100.0
+margin_right = 200.0
+margin_bottom = 280.0
 mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 __meta__ = {
@@ -59,8 +59,8 @@ __meta__ = {
 [node name="TopBottom" type="Panel" parent="."]
 modulate = Color( 2.8, 2.8, 2.8, 1 )
 use_parent_material = true
-margin_right = 25.0
-margin_bottom = 100.0
+margin_right = 200.0
+margin_bottom = 280.0
 mouse_filter = 2
 custom_styles/panel = SubResource( 2 )
 __meta__ = {

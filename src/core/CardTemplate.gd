@@ -1609,7 +1609,8 @@ func set_focus(requestedFocus: bool, colour := CFConst.FOCUS_HOVER_COLOUR) -> vo
 			and cfc.NMAP.has("main"):
 		if requestedFocus:
 			var show_preview := true
-			if cfc.curr_scale < 0.8:
+			if cfc.curr_scale < 0.8\
+					or cfc.game_settings.focus_style == CFInt.FocusStyle.BOTH_INFO_PANELS_ONLY:
 				show_preview = false
 			cfc.NMAP.main.focus_card(self, show_preview)
 		else:

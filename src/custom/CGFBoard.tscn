@@ -187,7 +187,7 @@ margin_right = 187.665
 margin_bottom = 84.0497
 pressed = true
 text = "Scaling + Viewport Focus"
-items = [ "Scaling Focus", null, false, 0, null, "Viewport Focus", null, false, 1, null, "Scaling + Viewport Focus", null, false, 2, null ]
+items = [ "Scaling Focus", null, false, 0, null, "Viewport Focus", null, false, 1, null, "Scaling + Viewport Focus", null, false, 2, null, "Scaling + Info Panels", null, false, 3, null ]
 selected = 2
 __meta__ = {
 "_edit_use_anchors_": false

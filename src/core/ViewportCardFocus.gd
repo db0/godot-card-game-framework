@@ -37,22 +37,34 @@ func _process(_delta) -> void:
 #	if cfc.game_paused:
 #		print_debug(_current_focus_source)
 	# This code makes sure that the focus viewport size always matches the size of the card
-	# shown into it.
-	if _current_focus_source:
-		card_focus.rect_min_size = _current_focus_source.canonical_size * _current_focus_source.focused_scale * cfc.curr_scale
-		card_focus.rect_min_size.y *= 1.25
-		card_focus.rect_size = _current_focus_source.canonical_size * _current_focus_source.focused_scale * cfc.curr_scale
-		card_focus.rect_size.y *= 1.25
-		_focus_viewport.size = _current_focus_source.canonical_size * _current_focus_source.focused_scale * cfc.curr_scale
-		focus_info.rect_size.x = _current_focus_source.canonical_size.x * _current_focus_source.focused_scale * cfc.curr_scale
+	# shown into it. Don't know why but it's a bit buggy still, but only in CFG. Works in Hypnagonia.
+#	if _current_focus_source:
+#		pass
+##		card_focus.rect_min_size = _current_focus_source.canonical_size * _current_focus_source.focused_scale * cfc.curr_scale
+#		card_focus.rect_min_size.y *= 1.25
+#		card_focus.rect_size = _current_focus_source.canonical_size * _current_focus_source.focused_scale * cfc.curr_scale
+#		card_focus.rect_size.y *= 1.25
+#		_focus_viewport.size = _current_focus_source.canonical_size * _current_focus_source.focused_scale * cfc.curr_scale
+#		focus_info.rect_size.x = _current_focus_source.canonical_size.x * _current_focus_source.focused_scale * cfc.curr_scale
 	# The below makes sure to display the closeup of the card, only on the side
 	# the player's mouse is not in.
 	if _current_focus_source\
+			and _current_focus_source.get_state_exec() != "pile"\
+			and cfc.game_settings.focus_style == CFInt.FocusStyle.BOTH_INFO_PANELS_ONLY:
+		if get_global_mouse_position().y + focus_info.rect_size.y / 2 > get_viewport().size.y:
+			$VBC.rect_position.y = get_viewport().size.y - focus_info.rect_size.y
+		else:
+			$VBC.rect_position.y = get_global_mouse_position().y - focus_info.rect_size.y / 2
+		$VBC.rect_position.x = get_global_mouse_position().x + 60
+
+	elif _current_focus_source\
 			and get_global_mouse_position().x > get_viewport().size.x - _current_focus_source.canonical_size.x*2.5\
 			and get_global_mouse_position().y < _current_focus_source.canonical_size.y*2:
 		$VBC.rect_position.x = 0
-	else:
+		$VBC.rect_position.y = 0
+	elif _current_focus_source:
 		$VBC.rect_position.x = get_viewport().size.x - $VBC.rect_size.x
+		$VBC.rect_position.y = 0
 	# The below performs some garbage collection on previously focused cards.
 	for c in _previously_focused_cards:
 		if not is_instance_valid(_previously_focused_cards[c]):
@@ -130,7 +142,7 @@ func focus_card(card: Card, show_preview := true) -> void:
 					Tween.TRANS_SINE, Tween.EASE_IN)
 		$VBC/Focus/Tween.start()
 		card_focus.visible = show_preview
-			
+
 
 
 # Hides the focus viewport when we're done looking at it
@@ -187,5 +199,5 @@ func _input(event):
 func _on_Viewport_size_changed() -> void:
 	if ProjectSettings.get("display/window/stretch/mode") == "disabled" and is_instance_valid(get_viewport()):
 		$ViewportContainer.rect_size = get_viewport().size
-		for c in _previously_focused_cards.values().duplicate():
-			c.queue_free()
+#		for c in _previously_focused_cards.values().duplicate():
+#			c.queue_free()

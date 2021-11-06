@@ -21,35 +21,35 @@ __meta__ = {
 }
 
 [node name="VBC" type="VBoxContainer" parent="."]
-margin_right = 1280.0
-margin_bottom = 720.0
+margin_right = 1455.0
+margin_bottom = 900.0
 
 [node name="Title" type="Label" parent="VBC"]
-margin_right = 1280.0
+margin_right = 1455.0
 margin_bottom = 14.0
 text = "Card Viewer"
 align = 1
 
 [node name="HBC" type="HBoxContainer" parent="VBC"]
 margin_top = 18.0
-margin_right = 1280.0
-margin_bottom = 720.0
+margin_right = 1455.0
+margin_bottom = 900.0
 size_flags_vertical = 3
 
 [node name="MC" type="MarginContainer" parent="VBC/HBC"]
-margin_right = 1280.0
-margin_bottom = 702.0
+margin_right = 1455.0
+margin_bottom = 882.0
 size_flags_horizontal = 3
 custom_constants/margin_right = 10
 custom_constants/margin_bottom = 5
 
 [node name="AvailableCards" type="VBoxContainer" parent="VBC/HBC/MC"]
-margin_right = 1270.0
-margin_bottom = 697.0
+margin_right = 1445.0
+margin_bottom = 877.0
 size_flags_horizontal = 3
 
 [node name="HBC" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_right = 1270.0
+margin_right = 1445.0
 margin_bottom = 24.0
 
 [node name="ClearFilters" type="Button" parent="VBC/HBC/MC/AvailableCards/HBC"]
@@ -59,7 +59,7 @@ text = "X"
 
 [node name="FilterLine" type="LineEdit" parent="VBC/HBC/MC/AvailableCards/HBC"]
 margin_left = 24.0
-margin_right = 1166.0
+margin_right = 1341.0
 margin_bottom = 24.0
 size_flags_horizontal = 3
 placeholder_text = "Filter the list"
@@ -77,22 +77,22 @@ margin_bottom = 18.0
 text = "Syntax"
 
 [node name="CardCount" type="Label" parent="VBC/HBC/MC/AvailableCards/HBC"]
-margin_left = 1170.0
+margin_left = 1345.0
 margin_top = 5.0
-margin_right = 1270.0
+margin_right = 1445.0
 margin_bottom = 19.0
 rect_min_size = Vector2( 100, 0 )
 text = "Total:"
 
 [node name="CC" type="CenterContainer" parent="VBC/HBC/MC/AvailableCards"]
 margin_top = 28.0
-margin_right = 1270.0
+margin_right = 1445.0
 margin_bottom = 58.0
 size_flags_horizontal = 3
 
 [node name="ButtonFilters" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards/CC"]
-margin_left = 620.0
-margin_right = 650.0
+margin_left = 707.0
+margin_right = 737.0
 margin_bottom = 30.0
 
 [node name="ShowAll" type="Button" parent="VBC/HBC/MC/AvailableCards/CC/ButtonFilters"]
@@ -105,11 +105,11 @@ expand_icon = true
 
 [node name="CardListHeaders" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards"]
 margin_top = 62.0
-margin_right = 1270.0
+margin_right = 1445.0
 margin_bottom = 82.0
 
 [node name="Name" type="RichTextLabel" parent="VBC/HBC/MC/AvailableCards/CardListHeaders"]
-margin_right = 1166.0
+margin_right = 1341.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 0, 20 )
 size_flags_horizontal = 3
@@ -117,8 +117,8 @@ text = "Name"
 scroll_active = false
 
 [node name="Type" type="RichTextLabel" parent="VBC/HBC/MC/AvailableCards/CardListHeaders"]
-margin_left = 1170.0
-margin_right = 1270.0
+margin_left = 1345.0
+margin_right = 1445.0
 margin_bottom = 20.0
 rect_min_size = Vector2( 100, 20 )
 text = "Type"
@@ -126,20 +126,20 @@ scroll_active = false
 
 [node name="LineSeparator" type="Panel" parent="VBC/HBC/MC/AvailableCards"]
 margin_top = 86.0
-margin_right = 1270.0
+margin_right = 1445.0
 margin_bottom = 86.0
 custom_styles/panel = SubResource( 2 )
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC/AvailableCards"]
 margin_top = 90.0
-margin_right = 1270.0
-margin_bottom = 653.0
+margin_right = 1445.0
+margin_bottom = 833.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="CardList" type="VBoxContainer" parent="VBC/HBC/MC/AvailableCards/ScrollContainer"]
 visible = false
-margin_right = 1270.0
+margin_right = 1445.0
 size_flags_horizontal = 3
 __meta__ = {
 "_edit_use_anchors_": false
@@ -149,12 +149,12 @@ __meta__ = {
 columns = 4
 
 [node name="Settings" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 657.0
-margin_right = 1270.0
-margin_bottom = 697.0
+margin_top = 837.0
+margin_right = 1445.0
+margin_bottom = 877.0
 
 [node name="Control" type="Control" parent="VBC/HBC/MC/AvailableCards/Settings"]
-margin_right = 1125.0
+margin_right = 1300.0
 margin_bottom = 40.0
 size_flags_horizontal = 3
 __meta__ = {
@@ -162,8 +162,8 @@ __meta__ = {
 }
 
 [node name="GridViewStyle" type="CheckButton" parent="VBC/HBC/MC/AvailableCards/Settings"]
-margin_left = 1129.0
-margin_right = 1270.0
+margin_left = 1304.0
+margin_right = 1445.0
 margin_bottom = 40.0
 pressed = true
 text = "Grid View"
