@@ -20,15 +20,13 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Godot Tester
-        uses: croconut/godot-tester@v2.3
+        uses: croconut/godot-tester@v2.4
         with:
-          # Your Godot version number e.g. 3.2.2
-          version: 3.3.4
+          version: 3.4
           # should be long enough for asset import files to get generated
           import-time: 5
-          # I cannot put .99999 as I wanted, as it fails due to pending checks.
-          # See https://github.com/croconut/godot-tester/issues/12
-          minimum-pass: .98
+          assert-check: true
+          max-fails: 0
           # How long the test should be run before it's timed out and fails
           test-timeout: 900
           # Directory containing Gut tests
