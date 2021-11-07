@@ -1,6 +1,8 @@
 
 # Godot Card Game Framework [1.15](CHANGELOG.md)
 
+[![GUT](https://github.com/db0/godot-card-game-framework/actions/workflows/main.yml/badge.svg)](https://github.com/db0/godot-card-game-framework/actions/workflows/main.yml)
+
 ![Godot Card Game Framework preview image](preview.png "Godot Card Game Framework preview image")
 
 This framework is meant to provide well designed, statically typed, and fully commented classes and scenes which you can plug into any potential card game to handle typical behaviour expected from cards in a game in a polished manner.
