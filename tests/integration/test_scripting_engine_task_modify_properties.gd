@@ -53,9 +53,9 @@ func test_modify_properties():
 			"subject": "self",
 			"set_properties": {"Cost": "-4"}}]}}
 	card.execute_scripts()
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 	card.execute_scripts()
-	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
-	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
+	yield(yield_for(0.5), YIELD)
 	assert_eq(card.get_property("Cost"),2,
 			"Card cost decreased")
 	assert_eq(card.card_front.card_labels["Cost"].text,"Cost: 2",
