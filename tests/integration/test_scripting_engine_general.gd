@@ -402,11 +402,11 @@ func test_subject_previous_with_filters():
 		}
 	card._debugger_hook = true
 	yield(execute_with_target(card,cards[2]), "completed")
-	yield(yield_for(0.3), YIELD)
+	yield(yield_for(0.4), YIELD)
 	assert_eq(board.counters.get_counter("research"),2,
 			"Counter increased by specified amount")
 	yield(execute_with_target(card,cards[4]), "completed")
-	yield(yield_for(0.3), YIELD)
+	yield(yield_for(0.4), YIELD)
 	assert_eq(board.counters.get_counter("research"),3,
 			"Counter increased by specified amount")
 
