@@ -306,40 +306,6 @@ func test_host_card():
 			"target has been hosted on the card")
 
 
-func test_modify_properties():
-	card.scripts = {"manual": {"hand": [
-			{"name": "modify_properties",
-			"subject": "self",
-			"set_properties": {"Name": "GUT Test", "Type": "Orange"}}]}}
-	card.execute_scripts()
-	assert_eq(card.canonical_name,"GUT Test",
-			"Card name should be changed")
-	assert_eq(card.get_property("Type"),"Orange",
-			"Card type should be changed")
-	card.scripts = {"manual": {"hand": [
-			{"name": "modify_properties",
-			"subject": "self",
-			"set_properties": {"Cost": "+5"}}]}}
-	card.execute_scripts()
-	assert_eq(card.get_property("Cost"),5,
-			"Card cost increased")
-	card.scripts = {"manual": {"hand": [
-			{"name": "modify_properties",
-			"subject": "self",
-			"set_properties": {"Cost": "-2"}}]}}
-	card.scripts = {"manual": {"hand": [
-			{"name": "modify_properties",
-			"subject": "self",
-			"set_properties": {"Cost": "-2"}}]}}
-	card.execute_scripts()
-	card.execute_scripts()
-	assert_eq(card.get_property("Cost"),1,
-			"Card cost decreased")
-	card.execute_scripts()
-	assert_eq(card.get_property("Cost"),0,
-			"Card cost not below 0 ")
-
-
 func test_create_grid():
 	card.scripts = {"manual": {"hand": [
 			{"name": "add_grid",

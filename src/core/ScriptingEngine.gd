@@ -515,6 +515,7 @@ func modify_properties(script: ScriptTask) -> int:
 								script.owner,
 								# This retrieves the dictionary named after the
 								# per_value
+								# -per is not supported!
 								script.get_property(properties[property].lstrip('+')),
 								null,
 								script.subjects,

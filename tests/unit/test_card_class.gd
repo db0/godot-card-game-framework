@@ -60,7 +60,7 @@ func test_move_to():
 
 func test_init_card_name():
 	# We need a yield to allow the richtextlabel setup complete
-	yield(yield_for(0.1), YIELD)
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 	# We know which are the last 3 card types of the test cards
 	var test3 = cfc.NMAP.deck.get_card(15)
 	var test2 = cfc.NMAP.deck.get_card(14)
@@ -82,7 +82,7 @@ func test_init_card_name():
 			'Name Label text is set correctly')
 
 func test_card_name_setget():
-	yield(yield_for(0.05), YIELD)
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 	card.set_name("Testing Name Change 1")
 	# We need a yield to allow the richtextlabel setup complete
 	assert_eq("Testing Name Change 1",card.canonical_name,
@@ -91,7 +91,7 @@ func test_card_name_setget():
 	assert_eq("Testing Name Change 1",card.card_front.card_labels["Name"].text,
 			'Name Label text is set correctly')
 	card.canonical_name = "Testing Name Change 2"
-	yield(yield_for(0.05), YIELD)
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 	assert_eq("Testing Name Change 2",card.canonical_name,
 			'card_name variable is set correctly')
 	assert_string_contains(card.name, "Testing Name Change 2")
@@ -113,7 +113,7 @@ func test_CardDefinition_properties():
 	board.add_child(new_card)
 	new_card._determine_idle_state()
 	# We need a yield to allow the richtextlabel setup complete
-	yield(yield_for(0.1), YIELD)
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 	assert_eq(new_card.card_front.card_labels["Tags"].text,"Tag 1 - Tag 2 - GUT Tag",
 			"Array property uses the separator")
 	assert_eq(new_card.card_front.card_labels["Cost"].text, "Cost: 10",
@@ -141,12 +141,39 @@ func test_number_properties_with_string_value():
 	board.add_child(new_card)
 	new_card._determine_idle_state()
 	# We need a yield to allow the richtextlabel setup complete
-	yield(yield_for(0.1), YIELD)
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 	assert_eq(new_card.card_front.card_labels["Cost"].text,"X",
 			"Numerical array allowed string value")
 	assert_eq(new_card.card_front.card_labels["Power"].text, '1',
 			"String number handled properly")
 	new_card.modify_property('Power', 'U')
-	yield(yield_for(0.1), YIELD)
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 	assert_eq(new_card.card_front.card_labels["Power"].text,"U",
 			"Numerical array allowed string value")
+
+
+func test_number_properties_adjust():
+	cfc.card_definitions["GUT Card"] = {
+		"Type": "Red",
+		"Tags": ["Tag 1","Tag 2","GUT Tag"],
+		"Requirements": "",
+		"Abilities": "Gut Test",
+		"Cost": '1',
+		"Power": '5',
+	}
+	var new_card = cfc.instance_card("GUT Card")
+	board.add_child(new_card)
+	new_card._determine_idle_state()
+	# We need a yield to allow the richtextlabel setup complete
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
+	new_card.modify_property("Cost", "+3")
+	new_card.modify_property("Power", "-3")
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
+	assert_eq(new_card.card_front.card_labels["Cost"].text,"Cost: 4",
+			"Number property label adjusted upwards")
+	assert_eq(new_card.properties.Cost, 4,
+			"Number property adjusted upwards")
+	assert_eq(new_card.card_front.card_labels["Power"].text, 'Power: 2',
+			"Number property label adjusted downwards")
+	assert_eq(new_card.properties.Power, 2,
+			"Number property adjusted upwards")
