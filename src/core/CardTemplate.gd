@@ -46,7 +46,7 @@ enum BoardPlacement{
 	ANYWHERE
 }
 enum AttachmentMode{
-	DO_NOT_ATTACH	
+	DO_NOT_ATTACH
 	ATTACH_BEHIND
 	ATTACH_IN_FRONT
 }
@@ -177,7 +177,7 @@ export(float, 0.0, 1.0, 0.05) var on_board_tween_duration := 0.3
 # The duration of the tweening animation when cards are scaled when being dragged
 export(float, 0.0, 1.0, 0.05) var dragged_tween_duration := 0.2
 # Stores the normal size of the card as it should appear on the hand.
-# It should typically should be the same as card_size, 
+# It should typically should be the same as card_size,
 # but unlike card_size, it should not be adjusted in runtime
 export var canonical_size := CFConst.CARD_SIZE
 # the size of the card when seen smaller (usually in a card-grid of selection window)
@@ -491,7 +491,7 @@ func _on_Card_gui_input(event) -> void:
 					z_index = 0
 					for attachment in self.attachments:
 						attachment.z_index = 0
-										
+
 					var destination = cfc.NMAP.board
 					if potential_container:
 						destination = potential_container
@@ -631,11 +631,17 @@ func modify_property(
 								properties[property] = int(properties[property])
 							else:
 								properties[property] += int(value)
+							var value_for_label = str(properties[property])
+							# While the actual property can go below 0
+							# We typically do not want to display a -value on a card label
+							# but only keep track of it being below 0
+							if properties[property] < 0:
+								value_for_label = '0'
 							if property in CardConfig.NUMBER_WITH_LABEL and not is_init:
 								card_front.set_label_text(label_node,property
-										+ ": " + str(previous_value + int(value)))
+										+ ": " + value_for_label)
 							else:
-								card_front.set_label_text(label_node,str(value))
+								card_front.set_label_text(label_node,value_for_label)
 						# We allow setting number properties as strings
 						# but if they're not modifiers to the current value
 						# Then we just put whatever the string is at the card
@@ -649,9 +655,9 @@ func modify_property(
 						card_front.set_label_text(label_node,"")
 					elif property in CardConfig.NUMBER_WITH_LABEL:
 						card_front.set_label_text(label_node,property
-								+ ": " + str(value))
+								+ ": " + str(properties[property]))
 					else:
-						card_front.set_label_text(label_node,str(value))
+						card_front.set_label_text(label_node,str(properties[property]))
 				# These are arrays of properties which are put in a label
 				# with a simple join character
 				elif property in CardConfig.PROPERTIES_ARRAYS:
@@ -664,9 +670,9 @@ func modify_property(
 				# but this is also the fallback we use for
 				# properties undefined in CardConfig
 				elif card_front.card_labels[property] as RichTextLabel:
-					card_front.set_rich_label_text(label_node, _get_formatted_text(value))
+					card_front.set_rich_label_text(label_node, _get_formatted_text(properties[property]))
 				else:
-					card_front.set_label_text(label_node, _get_formatted_text(value))
+					card_front.set_label_text(label_node, _get_formatted_text(properties[property]))
 					# If we have an empty property, we let the other labels
 					# use the space vertical space it would have taken.
 	return(retcode)
@@ -1852,10 +1858,10 @@ func _organize_attachments() -> void:
 
 			# offset the attachment's position in the boards hierarchy
 			# by the attachment offset
-			if (card.attachment_mode == AttachmentMode.ATTACH_BEHIND and 
+			if (card.attachment_mode == AttachmentMode.ATTACH_BEHIND and
 				card.get_index() > (self.get_index()-attach_index)):
 				get_parent().move_child(card, self.get_index()-attach_index)
-			elif(card.attachment_mode == AttachmentMode.ATTACH_IN_FRONT and 
+			elif(card.attachment_mode == AttachmentMode.ATTACH_IN_FRONT and
 				card.get_index() < (self.get_index()+attach_index)):
 				get_parent().move_child(card, self.get_index()+attach_index)
 
@@ -1905,7 +1911,7 @@ func _determine_target_position_from_mouse() -> void:
 		_target_position.y = get_viewport().size.y \
 				- card_size.y \
 				* play_area_scale
-				
+
 
 # Instructs the card to move aside for another card enterring focus
 func _pushAside(targetpos: Vector2, target_rotation: float) -> void:
@@ -2366,12 +2372,12 @@ func _process_card_state() -> void:
 		CardState.ON_PLAY_BOARD:
 			# Used when the card is idle on the board
 			z_index = 0
-			
-			# if this card is an attachment and it's host is being dragged 
+
+			# if this card is an attachment and it's host is being dragged
 			# then we want this card to be above everything like the host
 			if current_host_card and current_host_card.state == CardState.DRAGGED:
 				z_index = 99
-												
+
 			set_focus(false)
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
