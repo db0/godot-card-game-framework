@@ -90,7 +90,9 @@ var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
 var curr_scale: float
 
 func _ready() -> void:
+# warning-ignore:return_value_discarded
 	connect("all_nodes_mapped", self, "_on_all_nodes_mapped")
+# warning-ignore:return_value_discarded
 	get_viewport().connect("size_changed", self, '_on_viewport_resized')
 	_on_viewport_resized()
 	_setup()

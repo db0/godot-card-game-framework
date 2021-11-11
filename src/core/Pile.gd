@@ -52,11 +52,11 @@ func _ready():
 	set_pile_name(pile_name)
 	# warning-ignore:return_value_discarded
 	connect(
-		"shuffle_completed", 
-		cfc.signal_propagator, 
+		"shuffle_completed",
+		cfc.signal_propagator,
 		"_on_signal_received",
 		[
-			"shuffle_completed", 
+			"shuffle_completed",
 			{"source": self}
 		])
 
@@ -74,8 +74,7 @@ func _process(_delta) -> void:
 		var top_card = get_top_card()
 		if cfc.NMAP.board.mouse_pointer in get_overlapping_areas()\
 				and not cfc.card_drag_ongoing:
-			if (top_card.is_faceup or top_card.is_viewed)\
-					and top_card.state == Card.CardState.IN_PILE:
+			if top_card.state == Card.CardState.IN_PILE:
 				top_card.state = Card.CardState.VIEWED_IN_PILE
 		elif top_card.state == Card.CardState.VIEWED_IN_PILE:
 			top_card.state = Card.CardState.IN_PILE
@@ -227,7 +226,7 @@ func reorganize_stack() -> void:
 	if are_cards_still_animating():
 		return
 #	while are_cards_still_animating():
-#		yield(get_tree().create_timer(0.3), "timeout")	
+#		yield(get_tree().create_timer(0.3), "timeout")
 	for c in get_all_cards():
 		if c.position != get_stack_position(c):
 			c.position = get_stack_position(c)

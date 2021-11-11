@@ -4,15 +4,25 @@
 [ext_resource path="res://assets/card_backs/godot_back.png" type="Texture" id=2]
 [ext_resource path="res://src/core/Card/CardBackTexture.gd" type="Script" id=3]
 
-[sub_resource type="StyleBoxTexture" id=1]
-texture = ExtResource( 2 )
-region_rect = Rect2( 0, 0, 141, 225 )
+[sub_resource type="StyleBoxEmpty" id=1]
 
 [node name="PlayingCardBack" type="Panel"]
 rect_min_size = Vector2( 150, 240 )
 mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 3 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+back_texture = ExtResource( 2 )
+
+[node name="CardTexture" type="TextureRect" parent="."]
+margin_right = 40.0
+margin_bottom = 40.0
+rect_min_size = Vector2( 150, 240 )
+texture = ExtResource( 2 )
+expand = true
+stretch_mode = 6
 __meta__ = {
 "_edit_use_anchors_": false
 }
