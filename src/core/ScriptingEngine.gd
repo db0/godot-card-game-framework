@@ -77,7 +77,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 	for task in scripts_queue:
 		# We put it into another variable to allow Static Typing benefits
 		var script: ScriptTask = task
-		if ((run_type == CFInt.RunType.COST_CHECK and not script.is_cost)
+		if ((run_type == CFInt.RunType.COST_CHECK and not script.is_cost and not script.needs_subject)
 				or (run_type == CFInt.RunType.ELSE and not script.is_else)
 				or (run_type != CFInt.RunType.ELSE and script.is_else)):
 			continue
@@ -128,7 +128,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				# card.
 				var custom := CustomScripts.new(costs_dry_run())
 				custom.custom_script(script)
-			elif not script.is_skipped and script.is_valid \
+			elif not script.is_skipped and script.is_valid\
 					and (not costs_dry_run()
 						or (costs_dry_run() and script.is_cost)):
 				#print(script.is_valid,':',costs_dry_run())
@@ -169,6 +169,11 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			elif script.is_skipped\
 					and script.get_property(SP.KEY_FAIL_COST_ON_SKIP)\
 					and script.is_cost:
+				can_all_costs_be_paid = false
+			# This allows a script which is not a cost to be evaluated 
+			# along with the costs, but only for having subjects.
+			elif not script.is_valid\
+					and script.needs_subject:
 				can_all_costs_be_paid = false
 			# At the end of the task run, we loop back to the start, but of course
 			# with one less item in our scripts_queue.

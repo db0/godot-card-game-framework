@@ -15,7 +15,7 @@ func _init(_dry_run) -> void:
 # And to have a self-reference in case it affects itself
 #
 # You can pass a predefined subject, but it's optional.
-func custom_script(script: ScriptObject) -> void:
+func custom_script(script: ScriptTask) -> void:
 	var card: Card = script.owner
 	var subjects: Array = script.subjects
 	# I don't like the extra indent caused by this if, 
@@ -38,6 +38,6 @@ func custom_script(script: ScriptObject) -> void:
 					print("Destroying: " + subjects[0].canonical_name)
 
 # warning-ignore:unused_argument
-func custom_alterants(script: ScriptObject) -> int:
+func custom_alterants(script: ScriptAlter) -> int:
 	var alteration := 0
 	return(alteration)

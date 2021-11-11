@@ -14,6 +14,7 @@ var is_accepted := true
 var is_skipped := false
 var is_cost := false
 var is_else := false
+var needs_subject := false
 
 # prepares the script_definition needed by the task to function.
 func _init(owner,
@@ -24,6 +25,7 @@ func _init(owner,
 	script_name = get_property("name")
 	trigger_details = _trigger_details
 	is_cost = get_property(SP.KEY_IS_COST)
+	needs_subject = get_property(SP.KEY_NEEDS_SUBJECT)
 	is_else = get_property(SP.KEY_IS_ELSE)
 	if not SP.filter_trigger(
 			script,
@@ -39,7 +41,7 @@ func prime(_prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
 	# refer to them later
 	prev_subjects = _prev_subjects
 	if ((run_type != CFInt.RunType.COST_CHECK
-			and not is_cost)
+			and not is_cost and not needs_subject)
 			# This is the typical spot we're checking
 			# for non-cost optional confirmations.
 			# The only time we're testing here during a cost-dry-run
@@ -48,7 +50,7 @@ func prime(_prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
 			# Non-targeting is_cost tasks are confirmed in the
 			# ScriptingEngine loop
 			or (run_type == CFInt.RunType.COST_CHECK
-			and is_cost
+			and (is_cost or needs_subject)
 			and get_property(SP.KEY_SUBJECT) == "target")):
 		# If this task has been specified as optional
 		# We check if the player confirms it, before looking for targets
@@ -62,7 +64,7 @@ func prime(_prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
 	# or the card is not a cost and we're in the normal run
 	if not is_skipped and is_accepted and (run_type != CFInt.RunType.COST_CHECK
 			or (run_type == CFInt.RunType.COST_CHECK
-			and get_property(SP.KEY_IS_COST))):
+			and (is_cost or needs_subject))):
 		# We discover which other card this task will affect, if any
 		var ret =_find_subjects(sceng_stored_int)
 		if ret is GDScriptFunctionState: # Still working.

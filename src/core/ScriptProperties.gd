@@ -109,6 +109,10 @@ const KEY_SUBJECT_COUNT_V_ALL := "all"
 # If any tasks marked as costs will not be able to fulfil, then the whole
 # script is not executed.
 #
+# Likewise, if the script has a [KEY_SUBJECT](#KEY_SUBJECT), 
+# and less than [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT)
+# are found, then the whole script is not executed.
+#
 # Currently the following tasks support being set as costs:
 # * [rotate_card](ScriptingEngine#rotate_card)
 # * [flip_card](ScriptingEngine#flip_card)
@@ -119,12 +123,30 @@ const KEY_SUBJECT_COUNT_V_ALL := "all"
 const KEY_IS_COST := "is_cost"
 # Value Type: bool (Default = false).
 #
+# This key is used to mark a task as requiring at least one valid subject
+# for its smooth operation. While you can mark the task as cost to achieve
+# a similar effect, this conflicts when the effect done is optional, but you still
+# need to have selected a target to use with subsequent "previous" subjects.
+#
+# This for example allows you to have a script which removes tokens from a target card
+# but still continue to other subsequent tasks if the target has no tokens.
+#
+# Like costs, these tasks are evaluated first. Along with the costs
+# but unlike is_cost, these tasks do not care if the script called will perform any modifications.
+# However, if any tasks marked as needing subjects cannot find enough subject to fulfil their
+# [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT), then the whole script will abort, just like a failed cost.
+# 
+# is_cost superceeded this effect, as it covers both eventualities (lacking subjects, lacking change)
+# so it's superfluous to use them together
+const KEY_NEEDS_SUBJECT := "needs_subject"
+# Value Type: bool (Default = false).
+#
 # This key is used on a task marked with KEY_IS_COST
-# It means that its cost effects will not evn be evaluated if previous costs
+# It means that its cost effects will not even be evaluated if previous costs
 # have already failed.
 # This is useful when there's more than 1 interactive cost,
 # such as targeting or selection boxes
-# To prevnent them from popping up even when previous costs have already failed.
+# To prevent them from popping up even when previous costs have already failed.
 const KEY_ABORT_ON_COST_FAILURE := "abort_on_cost_failure"
 # Value Type: bool (Default = false).
 #
@@ -1150,6 +1172,7 @@ static func get_default(property: String):
 	# for property details, see const definitionts
 	match property:
 		KEY_IS_COST,\
+				KEY_NEEDS_SUBJECT,\
 				KEY_IS_ELSE,\
 				KEY_IS_INVERTED,\
 				KEY_SET_TO_MOD,\
