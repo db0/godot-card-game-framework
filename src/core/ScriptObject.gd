@@ -33,6 +33,7 @@ var is_valid := true
 var requested_subjects: int
 # The card which triggered this script.
 var trigger_object: Node
+# Stores the subjects discovered by the task previous to this one
 var prev_subjects := []
 
 

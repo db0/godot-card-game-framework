@@ -1344,7 +1344,7 @@ func execute_scripts(
 		only_cost_check := false):
 	if cfc.game_paused:
 		return
-	common_pre_execution_scripts(trigger)
+	common_pre_execution_scripts(trigger, trigger_details)
 	var card_scripts = retrieve_scripts(trigger)
 	# I use this spot to add a breakpoint when testing script behaviour
 	# especially on filters
@@ -1801,19 +1801,17 @@ func common_post_move_scripts(new_host: Node, old_host: Node, move_tags: Array) 
 # before all normal scripts have been executed
 #
 # This is useful for example, for paying the costs of one-use cards before executing them
-# warning-ignore:unused_argument
-func common_pre_execution_scripts(trigger: String) -> void:
+func common_pre_execution_scripts(_trigger: String, _trigger_details: Dictionary) -> void:
 	pass
 
 
 # This function can be overriden by any class extending Card, in order to provide
 # a way of running special functions on an extended scripting engine.
 #
-# It is called after the scripting engine is initiated, but before it's initiated
+# It is called after the scripting engine is initiated, but before it's run
 # the first time
 #
-# warning-ignore:unused_argument
-func common_pre_run(sceng) -> void:
+func common_pre_run(_sceng) -> void:
 	pass
 
 
@@ -1822,8 +1820,7 @@ func common_pre_run(sceng) -> void:
 # after all normal scripts have been executed
 #
 # This is useful for example, for discarding one-use cards after playing them
-# warning-ignore:unused_argument
-func common_post_execution_scripts(trigger: String) -> void:
+func common_post_execution_scripts(_trigger: String) -> void:
 	pass
 
 # Returns true is the card has hand_drag_starts_targeting set to true

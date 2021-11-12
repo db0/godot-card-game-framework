@@ -2,10 +2,17 @@
 
 ## 1.16 (Ongoing)
 
+### Tweaks
+
+* Improved CardBacKTexture so that it converts the StreamTexture into ImageTexture
 
 #### ScriptingEngine
 
 * Added SP.KEY_FAIL_COST_ON_SKIP
+* common_pre_execution_scripts() now also sends the trigger_details, which allows the extending code to inject extra trigger properties.
+* Added KEY_NEEDS_SUBJECT which causes the task to be checked during the cost checks, but will not abort if the task will not change anything. It will only abort if the task ends up with invalid subjects.
+
+
 
 ## 1.15
 
