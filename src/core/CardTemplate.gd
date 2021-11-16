@@ -420,7 +420,7 @@ func _input(event) -> void:
 
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
-	if event is InputEventMouseButton:
+	if event is InputEventMouseButton and cfc.NMAP.has("board"):
 		# because of https://github.com/godotengine/godot/issues/44138
 		# we need to double check that the card which is receiving the
 		# gui input, is actually the one with the highest index.
