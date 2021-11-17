@@ -44,6 +44,23 @@ func _init(state_scripts: Array,
 		# ScriptTask object. The repeat property duplicates the whole task
 		# definition in multiple tasks
 		var repeat = task.get(SP.KEY_REPEAT, 1)
+		if SP.VALUE_PER in str(repeat):
+			var per_msg = perMessage.new(
+					repeat,
+					owner,
+					task.get(repeat),
+					trigger_object,
+					[],
+					[])
+			repeat = per_msg.found_things
+		# If there are no targets to repeat,  and the task was targetting
+		# It means it might have fired off of a dragging action, and we want to avoid
+		# it triggering when the player tries to drag it from hand and doing nothing.
+		if repeat == 0 \
+				and cfc.card_drag_ongoing == owner\
+				and task.get(SP.KEY_SUBJECT) == SP.KEY_SUBJECT_V_TARGET\
+				and (task.get(SP.KEY_IS_COST) or task.get(SP.KEY_NEEDS_SUBJECT)):
+			can_all_costs_be_paid = false
 		for iter in range(repeat):
 			# In case it's a targeting task, we assume we don't want to
 			# spawn X targeting arrows at the same time, so we convert
@@ -140,6 +157,8 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				var retcode = call(script.script_name, script)
 				if retcode is GDScriptFunctionState:
 					retcode = yield(retcode, "completed")
+				# We set the targets only after the execution, because some tasks
+				# might change the previous subjects for the future tasks
 				if not script.get_property(SP.KEY_PROTECT_PREVIOUS):
 					prev_subjects = script.subjects
 				if costs_dry_run():
@@ -170,11 +189,18 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 					and script.get_property(SP.KEY_FAIL_COST_ON_SKIP)\
 					and script.is_cost:
 				can_all_costs_be_paid = false
-			# This allows a script which is not a cost to be evaluated 
+			# This allows a script which is not a cost to be evaluated
 			# along with the costs, but only for having subjects.
 			elif not script.is_valid\
 					and script.needs_subject:
 				can_all_costs_be_paid = false
+			# If this is a dry run and the script needs a target
+			# we need to set the previous_subjects now
+			# because these are typically only set before the script executes.
+			elif costs_dry_run() \
+					and script.needs_subject \
+					and not script.get_property(SP.KEY_PROTECT_PREVIOUS):
+				prev_subjects = script.subjects
 			# At the end of the task run, we loop back to the start, but of course
 			# with one less item in our scripts_queue.
 			cfc.NMAP.board.counters.temp_count_modifiers.erase(self)
@@ -357,7 +383,6 @@ func mod_tokens(script: ScriptTask) -> int:
 				script.subjects,
 				script.prev_subjects)
 		modification = per_msg.found_things
-		print_debug(per_msg.found_things, modification)
 	else:
 		modification = script.get_property(SP.KEY_MODIFICATION)
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)

@@ -40,10 +40,13 @@ func count_found_things() -> int:
 			"multiplier", 1)
 	var divider = per_definitions.get(
 			"divider", 1)
+	# This key is added/removed from the total count
+	var modifier = per_definitions.get(
+			"modifier", 0)
 	var per_discovery = cfc.script_per.new(self)
 #	if not per_discovery.has_init_completed:
 #		yield(per_discovery,"primed")
-	found_count = per_discovery.return_per_count()
+	found_count = per_discovery.return_per_count() + modifier
 	# We have to divide before we multiply because we fall back into an ingeger
 	# This allows us to code things like "for every 4 cards in the deck, do 2 damage"
 	# and return 4 damage on 11 cards, instead of 5.
