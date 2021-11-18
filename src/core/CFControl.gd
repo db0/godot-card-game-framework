@@ -89,6 +89,10 @@ var card_temp_property_modifiers = {}
 var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
 var curr_scale: float
 
+var script_load_thread : Thread
+
+onready var load_start_time := OS.get_ticks_msec()
+
 func _ready() -> void:
 # warning-ignore:return_value_discarded
 	connect("all_nodes_mapped", self, "_on_all_nodes_mapped")
@@ -121,6 +125,9 @@ func _setup() -> void:
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
+	# We're loading the script definitions in a thread to avoid delaying game load too much
+	script_load_thread = Thread.new()
+	script_load_thread.start(self, "load_script_definitions")
 
 
 # Run when all necessary nodes (Board, CardContainers etc) for the game
@@ -138,7 +145,6 @@ func _on_all_nodes_mapped() -> void:
 		# viewports active
 		if NMAP.board and NMAP.board.has_node("ScalingFocusOptions"): # Needed for UT
 			NMAP.board.get_node("ScalingFocusOptions").disabled = true
-	set_scripts = load_script_definitions()
 
 
 # The below code allows us to quickly refer to nodes meant to host cards
@@ -148,6 +154,7 @@ func _on_all_nodes_mapped() -> void:
 # of the framework, all CardContainers will wait in their ready() process
 # for NMAP to be completed.
 func map_node(node) -> void:
+#	print_debug("Map Node %s Start: %sms" % [node.name, str(OS.get_ticks_msec() - load_start_time)])
 	# The nmap always stores lowercase keys. Each key is a node name
 	var node_name: String = node.name.to_lower()
 	# I don't know why but suring UT sometimes I get duplicate board nodes.
@@ -174,6 +181,7 @@ func map_node(node) -> void:
 		# Once all nodes have been mapped, we emit a signal so that
 		# all nodes waiting to complete their ready()  method, can continue.
 		emit_signal("all_nodes_mapped")
+#	print_debug("Map Node %s End: %sms" % [node.name, str(OS.get_ticks_msec() - load_start_time)])
 
 
 # Setter for the ranom seed.
@@ -207,7 +215,7 @@ func load_card_definitions() -> Dictionary:
 
 
 # Returns a Dictionary with the combined Script definitions of all set files
-func load_script_definitions() -> Dictionary:
+func load_script_definitions() -> void:
 	var script_definitions := CFUtils.list_files_in_directory(
 				CFConst.PATH_SETS, CFConst.SCRIPT_SET_NAME_PREPEND)
 	var combined_scripts := {}
@@ -223,7 +231,7 @@ func load_script_definitions() -> Dictionary:
 			var card_script = scripts_obj.get_scripts(card_name)
 			if not card_script.empty():
 				combined_scripts[card_name] = card_script
-	return(combined_scripts)
+				set_scripts[card_name] = card_script
 
 
 # Setter for game_paused
@@ -383,3 +391,7 @@ class SignalPropagator:
 #		cfc.get_tree().call_group_flags(SceneTree.GROUP_CALL_UNIQUE  ,"cards",
 #				"execute_scripts",trigger_card,trigger,details)
 		emit_signal("signal_received", trigger_card, trigger, details)
+
+
+func _exit_tree():
+	script_load_thread.wait_to_finish()

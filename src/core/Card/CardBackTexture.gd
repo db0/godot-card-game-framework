@@ -16,8 +16,7 @@ func _ready() -> void:
 func _prepare_back_from_texture() -> void:
 	if back_texture:
 		card_texture.texture = CFUtils.convert_texture_to_image(
-				back_texture, true)	
-
+				back_texture, true)
 
 
 func set_card_back(filename) -> void:

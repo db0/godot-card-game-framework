@@ -98,7 +98,6 @@ margin_bottom = 75.0
 position = Vector2( 1124, 475 )
 script = ExtResource( 1 )
 placement = 6
-pile_name = "Discard"
 faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
@@ -155,7 +154,6 @@ margin_bottom = 75.0
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )
-excess_cards = 0
 
 [node name="Counters" parent="." instance=ExtResource( 6 )]
 margin_top = 205.0

@@ -276,7 +276,7 @@ func move_card_to_container(script: ScriptTask) -> int:
 	if not costs_dry_run():
 		# We inject the tags from the script into the tags sent by the signal
 		var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
-		var dest_container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
+		var dest_container: CardContainer = cfc.NMAP[script.get_property(SP.KEY_DEST_CONTAINER).to_lower()]
 		var dest_index = script.get_property(SP.KEY_DEST_INDEX)
 		if str(dest_index) == SP.KEY_SUBJECT_INDEX_V_TOP:
 			dest_index = -1
@@ -483,7 +483,7 @@ func spawn_card(script: ScriptTask) -> void:
 # * Requires the following keys:
 #	* [KEY_DEST_CONTAINER](ScriptProperties#KEY_DEST_CONTAINER)
 func shuffle_container(script: ScriptTask) -> void:
-	var container: CardContainer = script.get_property(SP.KEY_DEST_CONTAINER)
+	var container: CardContainer = cfc.NMAP[script.get_property(SP.KEY_DEST_CONTAINER).to_lower()]
 	while container.are_cards_still_animating():
 		yield(container.get_tree().create_timer(0.2), "timeout")
 	container.shuffle_cards()

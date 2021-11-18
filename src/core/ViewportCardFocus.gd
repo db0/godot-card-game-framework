@@ -93,6 +93,11 @@ func focus_card(card: Card, show_preview := true) -> void:
 		var dupe_focus: Card
 		if _previously_focused_cards.has(card) and is_instance_valid(_previously_focused_cards[card]):
 			dupe_focus = _previously_focused_cards[card]
+			# Not sure why, but sometimes the dupe card will report is_faceup
+			# while having the card back visible. Workaround until I figure it out.
+			if dupe_focus.get_node('Control/Back').visible == dupe_focus.is_faceup:
+				dupe_focus.set_is_faceup(!dupe_focus.is_faceup, true)
+			dupe_focus.set_is_faceup(card.is_faceup, true)
 		else:
 			dupe_focus = card.duplicate(DUPLICATE_USE_INSTANCING)
 			dupe_focus.remove_from_group("cards")

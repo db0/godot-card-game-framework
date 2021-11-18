@@ -1330,7 +1330,7 @@ func move_to(targetHost: Node,
 				raise()
 		elif "CardPopUpSlot" in parentHost.name:
 			state = CardState.IN_POPUP
-	common_post_move_scripts(targetHost, parentHost, tags)
+	common_post_move_scripts(targetHost.name, parentHost.name, tags)
 
 
 # Executes the tasks defined in the card's scripts in order.
@@ -1792,7 +1792,7 @@ func common_pre_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
-func common_post_move_scripts(new_host: Node, old_host: Node, move_tags: Array) -> void:
+func common_post_move_scripts(new_host: String, old_host: String, move_tags: Array) -> void:
 	pass
 
 
