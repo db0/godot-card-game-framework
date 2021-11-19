@@ -35,8 +35,8 @@ func test_store_integer_inverted():
 				},
 				{
 					"name": "move_card_to_container",
-					"src_container": cfc.NMAP.deck,
-					"dest_container": cfc.NMAP.discard,
+					"src_container": "deck",
+					"dest_container": "discard",
 					"subject": "index",
 					"subject_count": "retrieve_integer",
 					"is_inverted": true,
@@ -92,8 +92,8 @@ func test_store_integer_with_tokens():
 				# is going to be +2 (5-1 + 5-7)
 			{
 				"name": "move_card_to_container",
-				"src_container": cfc.NMAP.deck,
-				"dest_container": cfc.NMAP.discard,
+				"src_container": "deck",
+				"dest_container": "discard",
 				"subject": "index",
 				"subject_count": "retrieve_integer",
 				"subject_index": "top"
@@ -129,8 +129,8 @@ func test_retrieve_integer_temp_mod_properties():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_count": "per_property",
-			"src_container": deck,
-			"dest_container": hand,
+			"src_container": "deck",
+			"dest_container": "hand",
 			"subject_index": "top",
 			"per_property": {
 				"subject": "self",
@@ -167,8 +167,8 @@ func test_retrieve_integer_temp_mod_counter():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_count": "per_counter",
-			"src_container": deck,
-			"dest_container": hand,
+			"src_container": "deck",
+			"dest_container": "hand",
 			"subject_index": "top",
 			"per_counter": {
 				"counter_name": "research"}

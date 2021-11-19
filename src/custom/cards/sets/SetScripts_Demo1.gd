@@ -52,7 +52,7 @@ const scripts := {
 #					{
 #						"name": "move_card_to_container",
 #						"subject": "self",
-#						"dest_container": cfc.NMAP.discard,
+#						"dest_container": "discard",
 #					},
 				{
 					"name": "nested_script",

@@ -173,7 +173,7 @@ func test_subject_previous():
 			{"name": "move_card_to_board",
 			"subject": "index",
 			"subject_index": 1,
-			"src_container":  cfc.NMAP.deck,
+			"src_container": "deck",
 			"board_position":  Vector2(1000,200)},
 			{"name": "flip_card",
 			"subject": "previous",
@@ -217,7 +217,7 @@ func test_subject_tutor():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_board",
 			"subject": "tutor",
-			"src_container":  cfc.NMAP.deck,
+			"src_container": "deck",
 			"filter_state_tutor": [{"filter_properties": {"Type": "Red"}}],
 			"board_position":  Vector2(1000,200)}]}}
 	card.execute_scripts()
@@ -228,7 +228,7 @@ func test_subject_tutor():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_board",
 			"subject": "tutor",
-			"src_container":  cfc.NMAP.deck,
+			"src_container": "deck",
 			"filter_state_tutor": [{"filter_properties":
 				{"Name": "Multiple Choices Test Card"}}],
 			"board_position":  Vector2(100,200)}]}}
@@ -244,7 +244,7 @@ func test_subject_index():
 			{"name": "move_card_to_board",
 			"subject": "index",
 			"subject_index": 5,
-			"src_container":  cfc.NMAP.deck,
+			"src_container": "deck",
 			"board_position":  Vector2(1000,200)}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -254,7 +254,7 @@ func test_subject_index():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_board",
 			"subject": "index",
-			"src_container":  cfc.NMAP.deck,
+			"src_container": "deck",
 			"board_position":  Vector2(100,200)}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -371,7 +371,7 @@ func test_subject_previous_with_filters():
 				"hand":[
 					{
 						"name": "move_card_to_container",
-						SP.KEY_DEST_CONTAINER: cfc.NMAP.discard,
+						"dest_container": "discard",
 						"subject": "target",
 						"is_cost": true,
 						"filter_state_subject": [
@@ -430,7 +430,7 @@ func test_subject_next():
 					},
 					{
 						"name": "move_card_to_container",
-						"dest_container": cfc.NMAP.discard,
+						"dest_container": "discard",
 						"subject": "target",
 						"is_cost": true,
 					},

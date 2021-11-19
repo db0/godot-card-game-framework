@@ -48,8 +48,8 @@ func test_per_token_and_modify_token_per():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_count": "per_token",
-			"src_container": deck,
-			"dest_container": hand,
+			"src_container": "deck",
+			"dest_container": "hand",
 			"subject_index": "top",
 			"per_token": {
 				"subject": "self",
@@ -70,8 +70,8 @@ func test_per_property():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_count": "per_property",
-			"src_container": deck,
-			"dest_container": hand,
+			"src_container": "deck",
+			"dest_container": "hand",
 			"subject_index": "top",
 			"per_property": {
 				"subject": "self",
@@ -94,7 +94,7 @@ func test_per_tutor_and_spawn_card_per():
 			"per_tutor": {
 				"subject": "tutor",
 				"subject_count": "all",
-				"src_container":  cfc.NMAP.deck,
+				"src_container": "deck",
 				"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}]
 			}}]}}
 	target.execute_scripts()
@@ -112,8 +112,8 @@ func test_per_boardseek():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_count": "per_boardseek",
-			"src_container": deck,
-			"dest_container": hand,
+			"src_container": "deck",
+			"dest_container": "hand",
 			"subject_index": "top",
 			"per_boardseek": {
 				"subject": "boardseek",
@@ -134,8 +134,8 @@ func test_per_counter():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_count": "per_counter",
-			"src_container": deck,
-			"dest_container": hand,
+			"src_container": "deck",
+			"dest_container": "hand",
 			"subject_index": "top",
 			"per_counter": {
 				"counter_name": "research"}
@@ -193,7 +193,7 @@ func test_filter_per_tutor():
 				"subject": "tutor",
 				"subject_count": "all",
 				"comparison": "lt",
-				"src_container":  cfc.NMAP.deck,
+				"src_container": "deck",
 				"filter_card_count": 5,}}}
 	card.execute_scripts()
 	yield(yield_for(0.3), YIELD)
@@ -209,7 +209,7 @@ func test_filter_per_tutor():
 				"subject": "tutor",
 				"subject_count": "all",
 				"comparison": "gt",
-				"src_container":  cfc.NMAP.deck,
+				"src_container": "deck",
 				"filter_card_count": 5,}}}
 	card.execute_scripts()
 	yield(yield_for(0.3), YIELD)
@@ -226,7 +226,7 @@ func test_filter_per_tutor_in_hand():
 			"filter_per_tutor_count": {
 				"subject": "tutor",
 				"subject_count": "all",
-				"src_container":  cfc.NMAP.hand,
+				"src_container": "hand",
 				"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}],
 				"filter_card_count": 1,}}}
 	card.execute_scripts()
@@ -242,7 +242,7 @@ func test_filter_per_tutor_in_hand():
 			"filter_per_tutor_count": {
 				"subject": "tutor",
 				"subject_count": "all",
-				"src_container":  cfc.NMAP.hand,
+				"src_container": "hand",
 				"comparison": "ge",
 				"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}],
 				"filter_card_count": 2,}}}
@@ -257,7 +257,7 @@ func test_per_previous():
 		"hand": [
 			{
 				"name": "move_card_to_container",
-				"dest_container": cfc.NMAP.discard,
+				"dest_container": "discard",
 				"subject": "target",
 				"filter_state_subject": [{"filter_parent": cfc.NMAP.hand}],
 				"is_cost": true
@@ -312,7 +312,7 @@ func test_filter_per_count_unique():
 				"per_tutor": {
 					"subject": "tutor",
 					"subject_count": "all",
-					"src_container":  deck,
+					"src_container": "deck",
 					"count_unique": true}
 			},
 		]

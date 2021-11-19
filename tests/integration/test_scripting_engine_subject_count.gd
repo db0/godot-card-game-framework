@@ -27,7 +27,7 @@ func test_boardseek_with_subject_count():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_container",
 			"subject": "boardseek",
-			"dest_container":  cfc.NMAP.discard}]}}
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -38,7 +38,7 @@ func test_boardseek_with_subject_count():
 			{"name": "move_card_to_container",
 			"subject": "boardseek",
 			"subject_count": 2,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -49,7 +49,7 @@ func test_boardseek_with_subject_count():
 			{"name": "move_card_to_container",
 			"subject": "boardseek",
 			"subject_count": "all",
-			"dest_container":  cfc.NMAP.discard}]}}
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -61,8 +61,8 @@ func test_tutor_with_subject_count():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_container",
 			"subject": "tutor",
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard,
+			"src_container": "deck",
+			"dest_container": "discard",
 			"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}]}]}}
 	card.execute_scripts()
 	yield(yield_for(0.5), YIELD)
@@ -74,8 +74,8 @@ func test_tutor_with_subject_count():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_container",
 			"subject": "tutor",
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard,
+			"src_container": "deck",
+			"dest_container": "discard",
 			"subject_count": 2,
 			"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}]}]}}
 	card.execute_scripts()
@@ -88,8 +88,8 @@ func test_tutor_with_subject_count():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_container",
 			"subject": "tutor",
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard,
+			"src_container": "deck",
+			"dest_container": "discard",
 			"subject_count": "all",
 			"filter_state_tutor": [{"filter_properties": {"Type": "Blue"}}]}]}}
 	card.execute_scripts()
@@ -104,8 +104,8 @@ func test_index_with_subject_count_from_top():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": "top",
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	target = deck.get_top_card()
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -119,8 +119,8 @@ func test_index_with_subject_count_from_top():
 			"subject": "index",
 			"subject_index": "top",
 			"subject_count": 5,
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	target = deck.get_top_card()
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -134,8 +134,8 @@ func test_index_with_subject_count_from_top():
 			"subject": "index",
 			"subject_index": "top",
 			"subject_count": "all",
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	target = deck.get_top_card()
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -153,8 +153,8 @@ func test_index_with_subject_count_from_bottom():
 			"subject": "index",
 			"subject_index": "bottom",
 			"subject_count": 5,
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	target = deck.get_bottom_card()
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -167,8 +167,8 @@ func test_index_with_subject_count_from_bottom():
 			"subject": "index",
 			"subject_index": "bottom",
 			"subject_count": "all",
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	target = deck.get_bottom_card()
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -183,8 +183,8 @@ func test_index_with_subject_count_from_index():
 			"subject": "index",
 			"subject_index": 5,
 			"subject_count": 5,
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	target = deck.get_card(5)
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
@@ -195,8 +195,8 @@ func test_index_with_subject_count_from_index():
 			"subject": "index",
 			"subject_index": 5,
 			"subject_count": "all",
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	target = deck.get_card(5)
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)

@@ -22,7 +22,7 @@ func before_each():
 func test_shuffle():
 	card.scripts = {"manual": {"hand": [
 			{"name": "shuffle_container",
-			"dest_container": deck,},
+			"dest_container": "deck",},
 			{"name": "mod_counter",
 			"modification": 2,
 			"counter_name": "research"}]}}

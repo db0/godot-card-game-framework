@@ -81,8 +81,8 @@ func test_execute_scripts_with_temp_mod_property():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_count": "per_property",
-			"src_container": deck,
-			"dest_container": hand,
+			"src_container": "deck",
+			"dest_container": "hand",
 			"subject_index": "top",
 			"per_property": {
 				"subject": "self",
@@ -124,8 +124,8 @@ func test_execute_scripts_with_temp_mod_counter():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_count": "per_counter",
-			"src_container": deck,
-			"dest_container": hand,
+			"src_container": "deck",
+			"dest_container": "hand",
 			"subject_index": "top",
 			"per_counter": {
 				"counter_name": "research"}

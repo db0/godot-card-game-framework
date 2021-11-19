@@ -55,8 +55,8 @@ func test_card_moved_to_signal_tags():
 					"tags": ["GUT"],
 					"subject": "index",
 					"subject_index": "top",
-					"src_container": deck,
-					"dest_container": hand}
+					"src_container": "deck",
+					"dest_container": "hand"}
 			]
 		},
 		"card_moved_to_hand": {
@@ -74,8 +74,8 @@ func test_card_moved_to_signal_tags():
 				target,"card_moved_to_hand",
 				[target,"card_moved_to_hand",
 				{
-					"destination": hand, 
-					"source": deck, 
+					"destination": hand,
+					"source": deck,
 					"tags": ["Scripted", "GUT"]}])
 	assert_false(cards[2].is_faceup,
 			"Card turned face-down after signal trigger")

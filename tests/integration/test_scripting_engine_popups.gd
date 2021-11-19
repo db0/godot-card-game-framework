@@ -81,7 +81,7 @@ func test_task_confirm_dialog() -> void:
 			{"name": "move_card_to_container",
 			"subject": "target",
 			"is_optional_task": true,
-			"dest_container":  cfc.NMAP.discard},
+			"dest_container": "discard"},
 			{"name": "flip_card",
 			"subject": "self",
 			"set_faceup": false}]}}
@@ -111,7 +111,7 @@ func test_task_confirm_cost_dialog_cancelled_target() -> void:
 			"set_faceup": false},
 			{"name": "move_card_to_container",
 			"subject": "target",
-			"dest_container":  cfc.NMAP.discard}]}}
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	confirm = board.get_node("OptionalConfirmation")
 	assert_not_null(confirm)
@@ -135,7 +135,7 @@ func test_task_confirm_cost_dialogue_accepted_target() -> void:
 			"set_faceup": false},
 			{"name": "move_card_to_container",
 			"subject": "target",
-			"dest_container":  cfc.NMAP.discard}]}}
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	confirm = board.get_node("OptionalConfirmation")
 	assert_not_null(confirm)
@@ -198,8 +198,8 @@ func test_ask_integer_with_card_moves():
 				},
 				{
 					"name": "move_card_to_container",
-					"src_container": cfc.NMAP.deck,
-					"dest_container": cfc.NMAP.discard,
+					"src_container": "deck",
+					"dest_container": "discard",
 					"subject": "index",
 					"subject_count": "retrieve_integer",
 					"subject_index": "top"
@@ -223,7 +223,7 @@ func test_ask_integer_with_mod_tokens():
 				},
 				{
 					"name": "mod_tokens",
-					"src_container": cfc.NMAP.deck,
+					"src_container": "deck",
 					"modification": 'retrieve_integer',
 					"subject": "self",
 					"token_name":  "bio"

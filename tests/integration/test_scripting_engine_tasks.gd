@@ -82,7 +82,7 @@ func test_view_card():
 	target = cfc.NMAP.deck.get_top_card()
 	card.scripts = {"manual": {"hand": [
 				{"name": "view_card",
-				"src_container":  cfc.NMAP.deck,
+				"src_container": "deck",
 				"subject_index": "top",
 				"subject": "index"}]}}
 	card.execute_scripts()
@@ -94,7 +94,7 @@ func test_move_card_to_container():
 	card.scripts = {"manual": {"hand": [
 			{"name": "move_card_to_container",
 			"subject": "self",
-			"dest_container":  cfc.NMAP.discard}]}}
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(cfc.NMAP.discard,card.get_parent(),
@@ -104,7 +104,7 @@ func test_move_card_to_container():
 			{"name": "move_card_to_container",
 			"subject": "self",
 			"dest_index": 5,
-			"dest_container":  cfc.NMAP.deck}]}}
+			"dest_container": "deck"}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(cfc.NMAP.deck,card.get_parent(),
@@ -132,8 +132,8 @@ func test_move_card_cont_to_cont():
 			{"name": "move_card_to_container",
 			"subject": "index",
 			"subject_index": 5,
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
 	assert_eq(cfc.NMAP.discard,target.get_parent(),
@@ -144,8 +144,8 @@ func test_move_card_cont_to_cont():
 			"subject": "index",
 			"subject_index": 3,
 			"dest_index": 1,
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(cfc.NMAP.discard,target.get_parent(),
@@ -161,7 +161,7 @@ func test_move_card_cont_to_board():
 			{"name": "move_card_to_board",
 			"subject": "index",
 			"subject_index": 5,
-			"src_container":  cfc.NMAP.deck,
+			"src_container": "deck",
 			"board_position":  Vector2(1000,200)}]}}
 	card.execute_scripts()
 	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
@@ -175,7 +175,7 @@ func test_move_card_cont_to_board():
 			"subject": "index",
 			"subject_count": 4,
 			"subject_index": "bottom",
-			"src_container":  cfc.NMAP.deck,
+			"src_container": "deck",
 			"grid_name":  "BoardPlacementGrid"}]}}
 	board.get_node("BoardPlacementGrid").visible = true
 	yield(execute_with_yield(card), "completed")
@@ -253,7 +253,7 @@ func test_spawn_card():
 func test_shuffle_container():
 	card.scripts = {"manual": {"hand": [
 			{"name": "shuffle_container",
-			"dest_container":  cfc.NMAP.hand}]}}
+			"dest_container": "hand"}]}}
 	var rng_threshold: int = 0
 	var prev_index = card.get_my_card_index()
 	card.execute_scripts()
@@ -355,8 +355,8 @@ func test_draw_more_cards_than_pile_max():
 			"subject_index": "top",
 			"subject_count": 50,
 			"is_cost": true,
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(target.get_parent(),deck,
@@ -366,8 +366,8 @@ func test_draw_more_cards_than_pile_max():
 			"subject": "index",
 			"subject_index": "top",
 			"subject_count": 50,
-			"src_container":  cfc.NMAP.deck,
-			"dest_container":  cfc.NMAP.discard}]}}
+			"src_container": "deck",
+			"dest_container": "discard"}]}}
 	card.execute_scripts()
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_eq(target.get_parent(),discard,
