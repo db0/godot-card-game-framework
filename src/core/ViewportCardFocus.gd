@@ -98,6 +98,7 @@ func focus_card(card: Card, show_preview := true) -> void:
 			if dupe_focus.get_node('Control/Back').visible == dupe_focus.is_faceup:
 				dupe_focus.set_is_faceup(!dupe_focus.is_faceup, true)
 			dupe_focus.set_is_faceup(card.is_faceup, true)
+			dupe_focus.is_viewed = card.is_viewed
 		else:
 			dupe_focus = card.duplicate(DUPLICATE_USE_INSTANCING)
 			dupe_focus.remove_from_group("cards")

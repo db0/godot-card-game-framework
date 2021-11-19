@@ -180,7 +180,7 @@ const KEY_SET_FACEUP := "set_faceup"
 # Used when a script is using the modify_properties task.
 # The value is supposed to be a dictionary of `"property name": value` entries
 const KEY_MODIFY_PROPERTIES := "set_properties"
-# Value Type: [Pile].
+# Value Type: String.
 #
 # Used when a script is using one of the following tasks
 # * [move_card_to_board](ScriptingEngine#move_card_to_board)
@@ -192,7 +192,7 @@ const KEY_MODIFY_PROPERTIES := "set_properties"
 #
 # Specifies the source container to pick the card from
 const KEY_SRC_CONTAINER := "src_container"
-# Value Type: [Pile].
+# Value Type: String.
 #
 # Used when a script is using one of the following tasks
 # * [move_card_to_container](ScriptingEngine#move_card_to_container)

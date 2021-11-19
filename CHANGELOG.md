@@ -1,6 +1,10 @@
 # Changelog
 
-## 1.16 (Ongoing)
+## 2.0 (Ongoing)
+
+### Important for Upgrades
+
+* Scripts have now been adjusted to be able to work as constants. You can keep your existing script setup but your MUST change all non-constant references to constants. More specifically, any of use of  [KEY_DEST_CONTAINER](https://github.com/db0/godot-card-game-framework/wiki/ScriptProperties#key_dest_container) or  [KEY_SRC_CONTAINER](https://github.com/db0/godot-card-game-framework/wiki/ScriptProperties#key_src_container) needs to be switched to a String value, instead of a CardContainer class as it was until now. Due to this fairly significant backwards breaking change, we're moving the CGF to version 2.0
 
 ### Tweaks
 
@@ -8,10 +12,11 @@
 
 #### ScriptingEngine
 
+* Significant improved the loading times of scripts during game init. Now scripts are only loaded during game load and not every time the board loads (as we do not need to use dynamic values anymore)
+* Script Loading from files now multithreaded (not in HTML5) to enable faster load times.
 * Added SP.KEY_FAIL_COST_ON_SKIP
 * common_pre_execution_scripts() now also sends the trigger_details, which allows the extending code to inject extra trigger properties.
 * Added KEY_NEEDS_SUBJECT which causes the task to be checked during the cost checks, but will not abort if the task will not change anything. It will only abort if the task ends up with invalid subjects.
-
 
 
 ## 1.15
