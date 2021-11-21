@@ -8,6 +8,10 @@ var card_list_object
 
 onready var preview_popup := $PreviewPopup
 
+
+func _ready() -> void:
+	get_viewport().connect("size_changed", self, '_on_viewport_resized')
+
 func setup(card) -> Card:
 	if typeof(card) == TYPE_STRING:
 		display_card = cfc.instance_card(card)
@@ -31,5 +35,12 @@ func _on_GridCardObject_mouse_entered() -> void:
 func _on_GridCardObject_mouse_exited() -> void:
 	preview_popup.hide_preview_card()
 
+
 func get_class() -> String:
 	return("CVGridCardObject")
+
+
+# Resizes the grid container so that the preview cards fix snuggly.
+func _on_viewport_resized() -> void:
+	rect_min_size = display_card.canonical_size * display_card.thumbnail_scale * cfc.curr_scale
+	rect_size = rect_min_size
