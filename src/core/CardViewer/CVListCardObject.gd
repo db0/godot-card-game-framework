@@ -17,6 +17,7 @@ onready var _card_type:= $Type
 func _ready() -> void:
 	_card_label.preview_popup.focus_info.info_panel_scene = card_viewer.info_panel_scene
 	_card_label.preview_popup.focus_info.setup()
+	_card_label.custom_effects = card_viewer.custom_rich_text_effects
 
 
 # This is used to prepare the values of this object

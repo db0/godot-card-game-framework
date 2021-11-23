@@ -51,6 +51,9 @@ export var info_panel_scene = _INFO_PANEL_SCENE
 export var list_card_object_scene = _LIST_CARD_OBJECT_SCENE
 # We use this variable, so that the scene can be overriden with a custom one
 export var grid_card_object_scene = _GRID_CARD_OBJECT_SCENE
+# These are passed to the rich_text_labels used in the card list
+# To use as part of the card info.
+export(Array, RichTextEffect) var custom_rich_text_effects := []
 
 onready var _available_cards := $VBC/HBC/MC/AvailableCards/ScrollContainer/CardList
 onready var _card_grid := $VBC/HBC/MC/AvailableCards/ScrollContainer/CardGrid
