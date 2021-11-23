@@ -77,6 +77,7 @@ func test_board_tokens():
 	assert_lt(prev_y, card.get_node("Control/Tokens/Drawer").rect_size.y,
 			"When adding more tokens, visible drawer size expands")
 	yield(move_mouse(Vector2(1000,600)), 'completed')
+	yield(yield_for(0.1), YIELD)
 	assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 			"Drawer does not appear without card hover when card has tokens")
 	assert_almost_eq(Vector2(card.get_node("Control").rect_size.x - 35,20),

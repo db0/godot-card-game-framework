@@ -275,7 +275,7 @@ func test_card_moved_to_hand():
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_hand",
 				[target,"card_moved_to_hand",
-				{"destination": hand, "source": deck,
+				{"destination": "Hand", "source": "Deck",
 				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
@@ -294,7 +294,7 @@ func test_card_moved_to_board():
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_board",
 				[target,"card_moved_to_board",
-				{"destination": board, "source": hand,
+				{"destination": "Board", "source": "Hand",
 				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
@@ -314,7 +314,7 @@ func test_card_moved_to_pile():
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_destination": deck,
+			"filter_destination": "Deck",
 			"trigger": "another"}}
 	# This card should stay face-up since limit will be false
 	cards[3].scripts = {"card_moved_to_pile": {
@@ -322,7 +322,7 @@ func test_card_moved_to_pile():
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_source": deck,
+			"filter_source": "Deck",
 			"trigger": "another"}}
 	# This card should turn face-down since both limits will be true
 	cards[4].scripts = {"card_moved_to_pile": {
@@ -330,8 +330,8 @@ func test_card_moved_to_pile():
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_source": hand,
-			"filter_destination": discard,
+			"filter_source": "Hand",
+			"filter_destination": "Discard",
 			"trigger": "another"}}
 	# This card should stay face-up since both limits will be false
 	cards[5].scripts = {"card_moved_to_pile": {
@@ -339,22 +339,22 @@ func test_card_moved_to_pile():
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_source": discard,
-			"filter_destination": deck,
+			"filter_source": "Discard",
+			"filter_destination": "Deck",
 			"trigger": "another"}}
 	cards[6].scripts = {"card_moved_to_pile": {
 			"hand": [
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}],
-			"filter_destination": discard,
+			"filter_destination": "Discard",
 			"trigger": "another"}}
 	target.move_to(discard)
 	yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_pile",
 				[target,"card_moved_to_pile",
-				{"destination": discard, "source": hand,
+				{"destination": "Discard", "source": "Hand",
 				"tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")

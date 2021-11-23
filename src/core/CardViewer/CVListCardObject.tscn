@@ -1,11 +1,7 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://src/dreamscape/GUI/ghost_rtl_effect.gd" type="Script" id=1]
 [ext_resource path="res://src/core/CardViewer/CardLabel.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/core/CardViewer/CVListCardObject.gd" type="Script" id=3]
-
-[sub_resource type="RichTextEffect" id=1]
-script = ExtResource( 1 )
 
 [node name="ListCardObject" type="HBoxContainer"]
 margin_right = 628.0
@@ -19,7 +15,6 @@ __meta__ = {
 margin_left = 0.0
 margin_right = 524.0
 margin_bottom = 20.0
-custom_effects = [ SubResource( 1 ) ]
 
 [node name="Type" type="RichTextLabel" parent="."]
 margin_left = 528.0
