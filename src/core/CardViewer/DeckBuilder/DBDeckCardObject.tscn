@@ -3,7 +3,7 @@
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/core/CardViewer/CardLabel.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.gd" type="Script" id=4]
-[ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://fonts/comfortaa/Comfortaa-Bold.ttf" type="DynamicFontData" id=5]
 
 [sub_resource type="DynamicFont" id=2]
 size = 14

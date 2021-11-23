@@ -1167,8 +1167,8 @@ func move_to(targetHost: Node,
 					self,
 					"card_moved_to_hand",
 					 {
-						"destination": targetHost,
-						"source": parentHost,
+						"destination": targetHost.name,
+						"source": parentHost.name,
 						"tags": tags
 					}
 			)
@@ -1207,8 +1207,8 @@ func move_to(targetHost: Node,
 						self,
 						"card_moved_to_pile",
 						{
-							"destination": targetHost,
-							"source": parentHost,
+							"destination": targetHost.name,
+							"source": parentHost.name,
 							"tags": tags
 						}
 				)
@@ -1251,8 +1251,8 @@ func move_to(targetHost: Node,
 					self,
 					"card_moved_to_board",
 					 {
-						"destination": targetHost,
-						"source": parentHost,
+						"destination": targetHost.name,
+						"source": parentHost.name,
 						"tags": tags
 					}
 			)

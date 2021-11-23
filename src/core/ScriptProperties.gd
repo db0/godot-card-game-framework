@@ -860,12 +860,12 @@ const FILTER_STATE := "filter_state_"
 # In that case it is assumed that the string is a counter name
 # against which to compare the property value
 const FILTER_PROPERTIES := "filter_properties"
-#Value Type: Node.
+#Value Type: String.
 #
 # Filter used for checking against the parent node of a subject.
 # Only used within the [FILTER_STATE](#FILTER_STATE) Dictionary
 #
-# The value should be either the board, or a CardContainer.
+# The value should be the name of a Card Container or "board"
 const FILTER_PARENT := "filter_parent"
 
 # Value Type: int.
@@ -876,15 +876,15 @@ const FILTER_DEGREES := "filter_degrees"
 #
 # Filter for checking against [TRIGGER_FACEUP](#TRIGGER_FACEUP)
 const FILTER_FACEUP := "filter_faceup"
-# Value Type: Dynamic.
-# * [Board]
-# * [CardContainer]
+# Value Type: String.
+#
+# The value should be the name of a CardContainer or "board"
 #
 # Filter for checking against [TRIGGER_SOURCE](#TRIGGER_SOURCE)
 const FILTER_SOURCE := "filter_source"
-# Value Type: Dynamic.
-# * [Board]
-# * [CardContainer]
+# Value Type: String.
+#
+# The value should be the name of a CardContainer or "board"
 #
 # Filter for checking against [TRIGGER_DESTINATION](#TRIGGER_DESTINATION)
 const FILTER_DESTINATION := "filter_destination"
@@ -1295,12 +1295,12 @@ static func filter_trigger(
 
 	# Card move filter checks
 	if is_valid and card_scripts.get(FILTER_SOURCE) \
-			and card_scripts.get(FILTER_SOURCE) != \
-			trigger_details.get(TRIGGER_SOURCE):
+			and card_scripts.get(FILTER_SOURCE).to_lower() != \
+			trigger_details.get(TRIGGER_SOURCE).to_lower():
 		is_valid = false
 	if is_valid and card_scripts.get(FILTER_DESTINATION) \
-			and card_scripts.get(FILTER_DESTINATION) != \
-			trigger_details.get(TRIGGER_DESTINATION):
+			and card_scripts.get(FILTER_DESTINATION).to_lower() != \
+			trigger_details.get(TRIGGER_DESTINATION).to_lower():
 		is_valid = false
 
 	# Card Tokens filter checks
@@ -1546,7 +1546,7 @@ static func check_faceup_filter(card, flip_state: bool) -> bool:
 # or the filter key was not defined. Otherwise returns false.
 static func check_parent_filter(card, parent: Node) -> bool:
 	var card_matches := true
-	if parent != card.get_parent():
+	if parent.name.to_lower() != card.get_parent().name.to_lower():
 		card_matches = false
 	return(card_matches)
 

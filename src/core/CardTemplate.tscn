@@ -15,9 +15,7 @@ corner_radius_bottom_right = 25
 
 [sub_resource type="RectangleShape2D" id=3]
 
-[node name="Card" type="Area2D" groups=[
-"cards",
-]]
+[node name="Card" type="Area2D" groups=["cards"]]
 collision_layer = 3
 collision_mask = 2147483651
 script = ExtResource( 2 )

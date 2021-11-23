@@ -57,7 +57,7 @@ func _ready():
 		"_on_signal_received",
 		[
 			"shuffle_completed",
-			{"source": self}
+			{"source": name}
 		])
 
 

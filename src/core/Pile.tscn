@@ -28,9 +28,7 @@ corner_radius_bottom_left = 15
 [sub_resource type="RectangleShape2D" id=4]
 extents = Vector2( 78, 123 )
 
-[node name="Pile" type="Area2D" groups=[
-"piles",
-]]
+[node name="Pile" type="Area2D" groups=["piles"]]
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_group_": true
@@ -109,9 +107,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="View" type="Button" parent="Control/ManipulationButtons" groups=[
-"manipulation_button",
-]]
+[node name="View" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
 margin_right = 27.0
 margin_bottom = 20.0
 mouse_filter = 1
@@ -120,9 +116,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ViewSorted" type="Button" parent="Control/ManipulationButtons" groups=[
-"manipulation_button",
-]]
+[node name="ViewSorted" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
 margin_top = 24.0
 margin_right = 27.0
 margin_bottom = 44.0
@@ -132,9 +126,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Shuffle" type="Button" parent="Control/ManipulationButtons" groups=[
-"manipulation_button",
-]]
+[node name="Shuffle" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
 margin_top = 48.0
 margin_right = 27.0
 margin_bottom = 68.0

@@ -4,7 +4,7 @@
 [ext_resource path="res://src/core/CardViewer/DeckBuilder/QuantityNumberButton.gd" type="Script" id=2]
 [ext_resource path="res://src/core/IntegerLineEdit.gd" type="Script" id=3]
 [ext_resource path="res://src/core/CardViewer/DeckBuilder/DBListCardObject.gd" type="Script" id=4]
-[ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=5]
+[ext_resource path="res://fonts/comfortaa/Comfortaa-Bold.ttf" type="DynamicFontData" id=5]
 [ext_resource path="res://src/core/CardViewer/CVCardObjectFont.tres" type="DynamicFont" id=6]
 
 [sub_resource type="DynamicFont" id=1]
