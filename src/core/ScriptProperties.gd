@@ -1544,9 +1544,9 @@ static func check_faceup_filter(card, flip_state: bool) -> bool:
 
 # Returns true if the parent container of the card matches the specified filter
 # or the filter key was not defined. Otherwise returns false.
-static func check_parent_filter(card, parent: Node) -> bool:
+static func check_parent_filter(card, parent: String) -> bool:
 	var card_matches := true
-	if parent.name.to_lower() != card.get_parent().name.to_lower():
+	if parent.to_lower() != card.get_parent().name.to_lower():
 		card_matches = false
 	return(card_matches)
 

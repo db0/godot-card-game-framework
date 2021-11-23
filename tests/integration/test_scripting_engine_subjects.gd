@@ -228,7 +228,7 @@ func test_subject_next():
 						"modification": 3,
 						"subject": "previous",
 						"filter_state_subject": [
-							{"filter_parent": cfc.NMAP.hand},
+							{"filter_parent": "hand"},
 						],
 					},
 					{

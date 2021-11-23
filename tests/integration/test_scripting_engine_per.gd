@@ -259,7 +259,7 @@ func test_per_previous():
 				"name": "move_card_to_container",
 				"dest_container": "discard",
 				"subject": "target",
-				"filter_state_subject": [{"filter_parent": cfc.NMAP.hand}],
+				"filter_state_subject": [{"filter_parent": "hand"}],
 				"is_cost": true
 			},
 			{

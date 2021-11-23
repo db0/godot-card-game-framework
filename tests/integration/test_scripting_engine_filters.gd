@@ -360,7 +360,7 @@ func test_state_filter_parent():
 	card.scripts = {"manual": {"hand": [
 			{"name": "flip_card",
 			"subject": "target",
-			"filter_state_subject": [{"filter_parent": board}],
+			"filter_state_subject": [{"filter_parent": "board"}],
 			"set_faceup": false}]}}
 	yield(execute_with_target(card,cards[1]), "completed")
 	yield(execute_with_target(card,cards[2]), "completed")

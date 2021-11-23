@@ -43,7 +43,7 @@ func test_card_moved_to_signal_tags():
 	assert_signal_emitted_with_parameters(
 				target,"card_moved_to_hand",
 				[target,"card_moved_to_hand",
-				{"destination": hand, "source": deck, "tags": ["Manual"]}])
+				{"destination": "Hand", "source": "Deck", "tags": ["Manual"]}])
 	assert_false(card.is_faceup,
 			"Card turned face-down after signal trigger")
 	assert_true(cards[2].is_faceup,
@@ -74,8 +74,8 @@ func test_card_moved_to_signal_tags():
 				target,"card_moved_to_hand",
 				[target,"card_moved_to_hand",
 				{
-					"destination": hand,
-					"source": deck,
+					"destination": "Hand",
+					"source": "Deck",
 					"tags": ["Scripted", "GUT"]}])
 	assert_false(cards[2].is_faceup,
 			"Card turned face-down after signal trigger")
