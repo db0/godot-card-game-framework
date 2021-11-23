@@ -306,15 +306,34 @@ func init_font_cache() -> void:
 # the board loads for the first time. Only works when you're running
 # off of the Main scene.
 func reset_game() -> void:
-	flush_cache()
 	var main = cfc.NMAP.main
+	clear()
+	yield(get_tree().create_timer(0.1), "timeout")
+	main._ready()
+
+
+# This function clears out the usual game nodes
+# and prepares to either quit the game or reset.
+func clear() -> void:
+	flush_cache()
 	are_all_nodes_mapped = false
 	card_drag_ongoing = null
-	cfc.NMAP.board.queue_free()
+	if cfc.NMAP.has("board"):
+		cfc.NMAP.board.queue_free()
 	# We need to give Godot time to deinstance all nodes.
 	yield(get_tree().create_timer(0.1), "timeout")
 	NMAP.clear()
-	main._ready()
+
+
+# This function exits the card-game part of the framework
+# for example as preparation for returning to the main menu.
+func quit_game() -> void:
+	var main = null
+	if cfc.NMAP.has("main"):
+		main = cfc.NMAP.main
+	clear()
+	if main:
+		main.queue_free()
 
 
 # Empties the alterants cache (only thing cached for now) which will cause
