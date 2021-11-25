@@ -450,6 +450,7 @@ func spawn_card(script: ScriptTask) -> void:
 	alteration = _check_for_alterants(script, count)
 	if alteration is GDScriptFunctionState:
 		alteration = yield(alteration, "completed")
+	var spawned_cards := []
 	if grid_name:
 		var grid: BoardPlacementGrid
 		var slot: BoardPlacementSlot
@@ -466,6 +467,7 @@ func spawn_card(script: ScriptTask) -> void:
 					card._placement_slot = slot
 					slot.occupying_card = card
 					card.state = Card.CardState.ON_PLAY_BOARD
+					spawned_cards.append(card)
 	else:
 		for iter in range(count + alteration):
 			card = cfc.instance_card(canonical_name)
@@ -477,7 +479,10 @@ func spawn_card(script: ScriptTask) -> void:
 			card.position.x += \
 					iter * card.canonical_size.x * card.play_area_scale
 			card.state = Card.CardState.ON_PLAY_BOARD
-
+			spawned_cards.append(card)
+	# We set the spawned cards as the subjects, so that they can be
+	# used by other followup scripts
+	script.subjects = spawned_cards
 
 # Task from shuffling a CardContainer
 # * Requires the following keys:
