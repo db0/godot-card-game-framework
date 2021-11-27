@@ -483,6 +483,9 @@ func spawn_card(script: ScriptTask) -> void:
 	# We set the spawned cards as the subjects, so that they can be
 	# used by other followup scripts
 	script.subjects = spawned_cards
+	# Adding a small delay to allow the cards to finish instancing and setting their 
+	# properties
+	yield(script.owner.get_tree().create_timer(0.1), "timeout")
 
 # Task from shuffling a CardContainer
 # * Requires the following keys:
@@ -528,8 +531,8 @@ func modify_properties(script: ScriptTask) -> int:
 	var tags: Array = ["Scripted"] + script.get_property(SP.KEY_TAGS)
 	for card in script.subjects:
 		var properties = script.get_property(SP.KEY_MODIFY_PROPERTIES)
-		var alteration = null
 		for property in properties:
+			var alteration = null
 			# We can only alter numerical properties
 			var modification : int
 			if property in CardConfig.PROPERTIES_NUMBERS:

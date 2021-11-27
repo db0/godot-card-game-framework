@@ -106,3 +106,16 @@ func test_modify_properties_per_property():
 			"Card cost decreased by power amount")
 	assert_eq(card.card_front.card_labels["Cost"].text,"Cost: 5",
 			"Number property label adjusted properly")
+
+
+func test_modify_tag_property():
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Tags": ["GUT Test","CGF"]}}]}}
+	card.execute_scripts()
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
+	assert_eq(card.get_property("Tags"),["GUT Test","CGF"],
+			"Tag properties adjusted")
+	assert_eq(card.card_front.card_labels["Tags"].text, "GUT Test - CGF",
+			"Array label adjusted")

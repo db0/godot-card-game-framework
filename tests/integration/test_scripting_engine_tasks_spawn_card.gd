@@ -71,9 +71,33 @@ func test_spawn_and_modify_card():
 				"degrees": 90
 			}
 		]}}
-	yield(yield_for(0.4), YIELD)
 	target.execute_scripts()
+	yield(yield_for(0.4), YIELD)
 	card = board.get_card(0)
 	assert_eq(card.card_rotation, 90,
-			"Spaned card should be pre-selected to be rotated")
+			"Spawned card should be pre-selected to be rotated")
 
+func test_spawn_and_modify_card_properies():
+	target.scripts = {"manual": {"hand": [
+			{
+				"name": "spawn_card",
+				"card_name": "Spawn Card",
+				"object_count": 1,
+				"board_position":  Vector2(500,200)
+			},
+			{
+				"name": "modify_properties",
+				"subject": "previous",
+				"set_properties": {
+					"Cost": "+5",
+					"Tags": ["Spawn"]
+				},
+			}
+		]}}
+	target.execute_scripts()
+	yield(yield_for(0.4), YIELD)
+	card = board.get_card(0)
+	assert_eq(card.get_property("Cost"), 5,
+			"Spawned card should have modified cost")
+	assert_eq(card.get_property("Tags"), ["Spawn"],
+			"Spawned card should have modified tags")
