@@ -460,7 +460,8 @@ func _on_Card_gui_input(event) -> void:
 					# to prevent from picking 2 cards at the same time.
 					if cfc.card_drag_ongoing == self:
 						if state == CardState.FOCUSED_IN_HAND\
-								and  _has_targeting_cost_hand_script():
+								and  _has_targeting_cost_hand_script()\
+								and check_play_costs() != CFConst.CostsState.IMPOSSIBLE:
 							var _sceng = execute_scripts()
 							cfc.card_drag_ongoing = null
 						elif state == CardState.FOCUSED_IN_HAND\
