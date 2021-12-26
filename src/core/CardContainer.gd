@@ -276,7 +276,7 @@ func translate_card_index_to_node_index(index: int) -> int:
 	# If so, we give back the next available index
 	if index > len(all_cards):
 		node_index = len(all_cards)
-		print("WARNING: Higher card index than hosted cards requested on "
+		print_debug("WARNING: Higher card index than hosted cards requested on "
 				+ name + ". Returning max position:" + str(node_index))
 	else:
 		# If the requester index is not higher than the number of cards

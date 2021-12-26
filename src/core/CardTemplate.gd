@@ -348,7 +348,7 @@ func _process(delta) -> void:
 	if $Tween.is_active() and not cfc.ut: # Debug code for catch potential Tween deadlocks
 		_tween_stuck_time += delta
 		if _tween_stuck_time > 5 and int(fmod(_tween_stuck_time,3)) == 2 :
-			print("Tween Stuck for ",_tween_stuck_time,
+			print_debug("Tween Stuck for ",_tween_stuck_time,
 					"seconds. Reports leftover runtime: ",$Tween.get_runtime ( ))
 			$Tween.remove_all()
 			_tween_stuck_time = 0
@@ -829,7 +829,7 @@ func set_is_faceup(
 		is_faceup = value
 		# When we change faceup state, we reset the is_viewed to false
 		if set_is_viewed(false) == CFConst.ReturnCode.FAILED:
-			print("ERROR: Something went unexpectedly in set_is_faceup")
+			print_debug("ERROR: Something went unexpectedly in set_is_faceup")
 		if value:
 			_flip_card($Control/Back, $Control/Front,instant)
 			# We need this check, as this node might not be ready

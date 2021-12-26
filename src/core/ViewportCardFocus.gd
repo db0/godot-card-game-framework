@@ -96,7 +96,9 @@ func focus_card(card: Card, show_preview := true) -> void:
 			# Not sure why, but sometimes the dupe card will report is_faceup
 			# while having the card back visible. Workaround until I figure it out.
 			if dupe_focus.get_node('Control/Back').visible == dupe_focus.is_faceup:
+				# warning-ignore:return_value_discarded
 				dupe_focus.set_is_faceup(!dupe_focus.is_faceup, true)
+			# warning-ignore:return_value_discarded
 			dupe_focus.set_is_faceup(card.is_faceup, true)
 			dupe_focus.is_viewed = card.is_viewed
 		else:

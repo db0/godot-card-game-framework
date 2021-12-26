@@ -10,6 +10,7 @@ onready var preview_popup := $PreviewPopup
 
 
 func _ready() -> void:
+# warning-ignore:return_value_discarded
 	get_viewport().connect("size_changed", self, '_on_viewport_resized')
 
 func setup(card) -> Card:

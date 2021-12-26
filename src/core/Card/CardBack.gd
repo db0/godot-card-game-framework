@@ -21,7 +21,7 @@ func set_is_viewed_visible(value: bool) -> void:
 	if viewed_node:
 		viewed_node.visible = value
 	else:
-		print("WARNING: viewed_node has not been defined in the card back: " + name)
+		print_debug("WARNING: viewed_node has not been defined in the card back: " + name)
 
 
 # Each class which extends this has to overwrite this function

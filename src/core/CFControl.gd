@@ -271,6 +271,7 @@ func set_font_cache() -> void:
 #	timer.start()
 	if not cache_commit_timer:
 		cache_commit_timer = get_tree().create_timer(1.0)
+		# warning-ignore:return_value_discarded
 		cache_commit_timer.connect("timeout", self, "_commit_font_cache")
 
 
