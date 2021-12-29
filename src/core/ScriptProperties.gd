@@ -1476,7 +1476,7 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 					card_matches = false
 			elif not CFUtils.compare_strings(
 					property_filters[property],
-					card.get_property(property),
+					str(card.get_property(property)),
 					comparison_type):
 				card_matches = false
 		elif property == "Name":
