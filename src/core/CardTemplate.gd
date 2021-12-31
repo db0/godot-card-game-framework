@@ -832,7 +832,7 @@ func set_is_faceup(
 		is_faceup = value
 		# When we change faceup state, we reset the is_viewed to false
 		if set_is_viewed(false) == CFConst.ReturnCode.FAILED:
-			print_debug("ERROR: Something went unexpectedly in set_is_faceup")
+			printerr("ERROR: Something went unexpectedly in set_is_faceup")
 		if value:
 			_flip_card($Control/Back, $Control/Front,instant)
 			# We need this check, as this node might not be ready
@@ -1182,7 +1182,7 @@ func move_to(targetHost: Node,
 					c.interruptTweening()
 					c.reorganize_self()
 			if set_is_faceup(true) == CFConst.ReturnCode.FAILED:
-				print_debug("ERROR: Something went unexpectedly in set_is_faceup")
+				printerr("ERROR: Something went unexpectedly in set_is_faceup")
 		elif targetHost.is_in_group("piles"):
 			# The below checks if the pile we're moving is in a popup
 			# If the card is also in a popup of the same pile
@@ -1220,7 +1220,7 @@ func move_to(targetHost: Node,
 				# set in the card state, because we want to see it while the
 				# card is moving to the CardContainer
 				if set_is_faceup(targetHost.faceup_cards) == CFConst.ReturnCode.FAILED:
-					print_debug("ERROR: Something went unexpectedly in set_is_faceup")
+					printerr("ERROR: Something went unexpectedly in set_is_faceup")
 				# If we have fancy movement, we need to wait for 2 tweens to finish
 				# before we reorganize the stack.
 				# One for the fancy move, and then the move to the final position.
@@ -1933,7 +1933,8 @@ func _start_dragging(drag_offset: Vector2) -> void:
 	# due to godotengine/godot#30215
 	# This is caused because we're using a viewport node and scaling the game
 	# in full-creen.
-	if not cfc.ut:
+	# This is not supported in browsers.
+	if not cfc.ut and not OS.has_feature("web"):
 		Input.set_mouse_mode(Input.MOUSE_MODE_CONFINED)
 #		if ProjectSettings.get("display/window/stretch/mode") != 'disabled':
 #			get_tree().current_scene.get_viewport().warp_mouse(global_position + Vector2(5,5))
