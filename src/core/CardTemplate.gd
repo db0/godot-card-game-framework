@@ -530,14 +530,22 @@ func _on_Card_mouse_exited() -> void:
 # This function handles filling up the card's labels according to its
 # card definition dictionary entry.
 func setup() -> void:
+	# If the card properties have already been populated, we use them
+	# This might happen in case the card is modified outside the game
+	# For example, with legacy elements.
+	var read_properties := properties.duplicate(true)
+	# The name property will almost always exist, due to being set by _init_name()
+	# Therefore we remove this property, to ensure the next check works properly
+	read_properties.erase('Name')
 	# canonical_name needs to be setup before we call this function
 	set_card_name(canonical_name)
-	# The properties of the card should be already stored in cfc
-	var read_properties: Dictionary
 	if state != CardState.VIEWPORT_FOCUS:
-		read_properties = cfc.card_definitions.get(canonical_name, {})
+		if read_properties.empty():
+			read_properties = cfc.card_definitions.get(canonical_name, {})
 	else:
-		read_properties = properties.duplicate()
+		# We set them again here for the viewport focus, in order to ensure
+		# we capture the card_name in them
+		read_properties = properties.duplicate(true)
 	for property in read_properties.keys():
 		# warning-ignore:return_value_discarded
 		modify_property(
@@ -643,14 +651,9 @@ func modify_property(
 										+ ": " + value_for_label)
 							else:
 								card_front.set_label_text(label_node,value_for_label)
-						# We allow setting number properties as strings
-						# but if they're not modifiers to the current value
-						# Then we just put whatever the string is at the card
-						# label.
-						# This allows designers to put custom strings for
-						# nominally numerical properties for other purposes
-						# (For example setting an 'X' as the card cost)
-						else:
+						# We allow setting number properties as strings. 
+						# We assume the designer knows what they're doing
+							properties[property] = value
 							card_front.set_label_text(label_node,value)
 					elif value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
 						card_front.set_label_text(label_node,"")

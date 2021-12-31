@@ -90,9 +90,16 @@ func get_preview_placement() -> Vector2:
 
 # Instances a card object. Populates it with the card details
 # Then displays it in the popup.
-func show_preview_card(card_name) -> void:
+# The variable passed can be a card name, or a card instance.
+# If it's a card instance, it will be added to this node as a child directly.
+func show_preview_card(card) -> void:
 	if not is_instance_valid(preview_card):
-		preview_card = cfc.instance_card(card_name)
+		if typeof(card) == TYPE_STRING:
+			preview_card = cfc.instance_card(card)
+		else:
+			preview_card = card
+			preview_card.position = Vector2(0,0)
+			preview_card.scale = Vector2(1,1)
 		add_child(preview_card)
 		# It's necessary we do this here because if we only we it during
 		# the process, the card will appear to teleport
