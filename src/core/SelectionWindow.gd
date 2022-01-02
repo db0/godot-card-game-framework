@@ -160,7 +160,8 @@ func _extra_dupe_ready(dupe_selection: Card, _card: Card) -> void:
 func on_selection_gui_input(event: InputEvent, dupe_selection: Card, origin_card) -> void:
 	if event is InputEventMouseButton\
 			and event.is_pressed()\
-			and event.get_button_index() == 1:
+			and event.get_button_index() == 1\
+			and selection_type != 'display':
 		# Each time a card is clicked, it's selected/unselected
 		if origin_card in selected_cards:
 			selected_cards.erase(origin_card)

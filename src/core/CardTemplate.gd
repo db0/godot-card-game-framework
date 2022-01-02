@@ -499,6 +499,14 @@ func _on_Card_gui_input(event) -> void:
 						potential_container.highlight.set_highlight(false)
 					move_to(destination)
 					_focus_completed = false
+		else:
+			_process_more_card_inputs(event)
+
+
+# Overridable function to allow games to extend the _on_Card_gui_input() functionality
+# We use this so that we know we caught the correct card based on its index
+func _process_more_card_inputs(_event) -> void:
+	pass
 
 
 # Triggers the focus-out effect on the card
@@ -536,6 +544,7 @@ func setup() -> void:
 	var read_properties := properties.duplicate(true)
 	# The name property will almost always exist, due to being set by _init_name()
 	# Therefore we remove this property, to ensure the next check works properly
+	# warning-ignore:return_value_discarded
 	read_properties.erase('Name')
 	# canonical_name needs to be setup before we call this function
 	set_card_name(canonical_name)
@@ -651,10 +660,12 @@ func modify_property(
 										+ ": " + value_for_label)
 							else:
 								card_front.set_label_text(label_node,value_for_label)
-						# We allow setting number properties as strings. 
+						# We allow setting number properties as strings.
 						# We assume the designer knows what they're doing
 							properties[property] = value
 							card_front.set_label_text(label_node,value)
+						else:
+							card_front.set_label_text(label_node,str(properties[property]))
 					elif value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
 						card_front.set_label_text(label_node,"")
 					elif property in CardConfig.NUMBER_WITH_LABEL:
