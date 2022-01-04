@@ -71,6 +71,14 @@ const KEY_SUBJECT_V_INDEX := "index"
 # If this is the value of the [KEY_SUBJECT](#KEY_SUBJECT) key,
 # then we use the subject specified in the previous task
 const KEY_SUBJECT_V_PREVIOUS := "previous"
+# Value Type: Bool (Default = False)
+#
+# If this is set, the subjects found by this task, will not overwrite the previous
+# subjects found by the previous task
+#
+# This is important in case the current task uses a filter on the subjects, but when the previous
+# subject doesn't march, we went to retain the previous subjects anyway for the next script in the line.
+# Without this flag, the previous subjects will be wiped (set to an empty array) as the filters didn't match.
 const KEY_PROTECT_PREVIOUS := "protect_previous"
 # Value Type: Bool (Default = False)
 #
