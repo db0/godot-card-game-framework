@@ -615,8 +615,8 @@ func modify_property(
 		elif not check:
 			# We do this check because we allow strings specifying
 			# numerical property modifications to be sent
-			# In that case, the set of the property is based on addition op
-			# We do that later on.
+			# In that case, the set of the property is based on calcualtion operations
+			# that we do that later on.
 			if properties.get(property) == null\
 					or typeof(properties.get(property)) == typeof(value):
 				properties[property] = value
@@ -667,12 +667,15 @@ func modify_property(
 										+ ": " + value_for_label)
 							else:
 								card_front.set_label_text(label_node,value_for_label)
-						# We allow setting number properties as strings.
-						# We assume the designer knows what they're doing
-							properties[property] = value
-							card_front.set_label_text(label_node,value)
 						else:
-							card_front.set_label_text(label_node,str(properties[property]))
+							# We allow setting number properties as strings.
+							# We assume the designer knows what they're doing
+							properties[property] = value
+							if property in CardConfig.NUMBER_WITH_LABEL:
+								card_front.set_label_text(label_node,property
+										+ ": " + value)
+							else:
+								card_front.set_label_text(label_node,value)
 					elif value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
 						card_front.set_label_text(label_node,"")
 					elif property in CardConfig.NUMBER_WITH_LABEL:

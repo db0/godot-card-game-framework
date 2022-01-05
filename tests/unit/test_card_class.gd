@@ -142,13 +142,15 @@ func test_number_properties_with_string_value():
 	new_card._determine_idle_state()
 	# We need a yield to allow the richtextlabel setup complete
 	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
-	assert_eq(new_card.card_front.card_labels["Cost"].text,"X",
+	assert_eq(new_card.card_front.card_labels["Cost"].text,"Cost: X",
 			"Numerical array allowed string value")
 	assert_eq(new_card.card_front.card_labels["Power"].text, '1',
 			"String number handled properly")
+	assert_eq(new_card.properties.Power, 1,
+			"Number property changed to integer")
 	new_card.modify_property('Power', 'U')
 	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
-	assert_eq(new_card.card_front.card_labels["Power"].text,"U",
+	assert_eq(new_card.card_front.card_labels["Power"].text,"Power: U",
 			"Numerical array allowed string value")
 
 
