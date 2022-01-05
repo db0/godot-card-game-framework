@@ -60,6 +60,12 @@ faceup_cards = true
 self_modulate = Color( 1, 1, 1, 0.501961 )
 custom_styles/panel = SubResource( 1 )
 
+[node name="Tween" parent="Discard/Control/ManipulationButtons" index="3" groups=["cgf_tween"]]
+
+[node name="Tween" parent="Discard/ViewPopup" index="1" groups=["cgf_tween"]]
+
+[node name="Tween" parent="Discard" index="3" groups=["cgf_tween"]]
+
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 
 [node name="Counters" parent="." instance=ExtResource( 6 )]
@@ -147,9 +153,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="BoardPlacementGrid" type="PanelContainer" parent="." groups=[
-"placement_grid",
-]]
+[node name="BoardPlacementGrid" type="PanelContainer" parent="." groups=["placement_grid"]]
 visible = false
 self_modulate = Color( 1, 1, 1, 0.121569 )
 anchor_left = 1.0

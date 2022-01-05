@@ -137,7 +137,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
+[node name="Tween" type="Tween" parent="Control/ManipulationButtons" groups=["cgf_tween"]]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2( 78, 123 )
@@ -160,9 +160,9 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Tween" type="Tween" parent="ViewPopup"]
+[node name="Tween" type="Tween" parent="ViewPopup" groups=["cgf_tween"]]
 
-[node name="Tween" type="Tween" parent="."]
+[node name="Tween" type="Tween" parent="." groups=["cgf_tween"]]
 
 [node name="Debug" type="VBoxContainer" parent="."]
 margin_left = 15.977
@@ -188,4 +188,4 @@ margin_top = 36.0
 margin_right = 40.0
 margin_bottom = 50.0
 
-[node name="OpacityTween" type="Tween" parent="."]
+[node name="OpacityTween" type="Tween" parent="." groups=["cgf_tween"]]

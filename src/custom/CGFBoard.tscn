@@ -135,11 +135,17 @@ margin_top = 60.0
 margin_right = 26.0
 margin_bottom = 87.0
 
+[node name="Tween" parent="Discard/Control/ManipulationButtons" index="3" groups=["cgf_tween"]]
+
 [node name="CardView" parent="Discard/ViewPopup" index="0"]
 margin_left = 2.0
 margin_top = 2.0
 margin_right = 6.0
 margin_bottom = 6.0
+
+[node name="Tween" parent="Discard/ViewPopup" index="1" groups=["cgf_tween"]]
+
+[node name="Tween" parent="Discard" index="3" groups=["cgf_tween"]]
 
 [node name="Position" parent="Discard/Debug" index="0"]
 margin_bottom = 23.0
@@ -151,6 +157,8 @@ margin_bottom = 49.0
 [node name="Size" parent="Discard/Debug" index="2"]
 margin_top = 52.0
 margin_bottom = 75.0
+
+[node name="OpacityTween" parent="Discard" index="5" groups=["cgf_tween"]]
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )

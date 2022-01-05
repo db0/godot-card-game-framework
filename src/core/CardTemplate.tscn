@@ -79,7 +79,7 @@ collision_mask = 524288
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Control/Tokens/Drawer/Area2D"]
 shape = SubResource( 3 )
 
-[node name="Tween" type="Tween" parent="Control/Tokens"]
+[node name="Tween" type="Tween" parent="Control/Tokens" groups=["cgf_tween"]]
 
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
 modulate = Color( 1, 1, 1, 0 )
@@ -93,11 +93,11 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="Tween" type="Tween" parent="Control/ManipulationButtons"]
+[node name="Tween" type="Tween" parent="Control/ManipulationButtons" groups=["cgf_tween"]]
 
-[node name="FlipTween" type="Tween" parent="Control"]
+[node name="FlipTween" type="Tween" parent="Control" groups=["cgf_tween"]]
 
-[node name="Tween" type="Tween" parent="."]
+[node name="Tween" type="Tween" parent="." groups=["cgf_tween"]]
 
 [node name="Debug" type="VBoxContainer" parent="."]
 visible = false

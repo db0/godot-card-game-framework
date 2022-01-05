@@ -16,7 +16,7 @@ func before_each():
 	if confirm_return is GDScriptFunctionState: # Still working.
 		confirm_return = yield(confirm_return, "completed")
 	confirm = CFUtils._OPTIONAL_CONFIRM_SCENE.instance()
-	
+
 func test_title_and_buttons():
 	confirm.prep("UT Card","UT Execution")
 	assert_eq("Please Confirm...", confirm.window_title)
