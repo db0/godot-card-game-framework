@@ -5,10 +5,21 @@
 ### Important for Upgrades
 
 * Scripts have now been adjusted to be able to work as constants. You can keep your existing script setup but your MUST change all non-constant references to constants. More specifically, any of use of  [KEY_DEST_CONTAINER](https://github.com/db0/godot-card-game-framework/wiki/ScriptProperties#key_dest_container) or  [KEY_SRC_CONTAINER](https://github.com/db0/godot-card-game-framework/wiki/ScriptProperties#key_src_container) needs to be switched to a String value, instead of a CardContainer class as it was until now. Due to this fairly significant backwards breaking change, we're moving the CGF to version 2.0
+* Added `state_changed` signal on Card
+* Added `target_found` signal on Targeting Arrow
+* Added `process_more_card_inputs()` overridable method
+* Targeting Arrow can now be a child of any Control node. Not just cards.
+* Can now pass custom rich text effects to the cardviewer to use. They are inherited by all richtext labels in it.
+* Added `cfc.quit_game()` to allow the cgf-related stuff to be deinstanced (for example when returning to a main screen)
+
 
 ### Tweaks
 
 * Improved CardBacKTexture so that it converts the StreamTexture into ImageTexture
+* Added all CGF tweens to a group cgf_tweens, for easy manipulation
+* Prevents the browser export from setting MOUSE_MODE_CONFINED, to prevent the browser reporting it as an error
+* CardViewer will now correctly scale the grid according to resized card sizes
+
 
 #### ScriptingEngine
 
@@ -17,6 +28,11 @@
 * Added SP.KEY_FAIL_COST_ON_SKIP
 * common_pre_execution_scripts() now also sends the trigger_details, which allows the extending code to inject extra trigger properties.
 * Added KEY_NEEDS_SUBJECT which causes the task to be checked during the cost checks, but will not abort if the task will not change anything. It will only abort if the task ends up with invalid subjects.
+* On-Drag targeting, will not start when costs cannot be paid
+* Can now modify spawned cards while spawning them.
+* Added a "repeat" directive for tasks, which will repeat that task that amount of times. Accepts a per directive as a value as well.
+
+
 
 
 ## 1.15

@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework [1.15](CHANGELOG.md)
+# Godot Card Game Framework [2.0](CHANGELOG.md)
 
 [![GUT](https://github.com/db0/godot-card-game-framework/actions/workflows/main.yml/badge.svg)](https://github.com/db0/godot-card-game-framework/actions/workflows/main.yml)
 

@@ -31,4 +31,3 @@ jobs:
           test-timeout: 900
           # Directory containing Gut tests
           direct-scene: tests/cli/tests.tscn
-          minimum-pass: "0.9"
