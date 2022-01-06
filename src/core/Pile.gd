@@ -9,7 +9,7 @@ signal popup_closed
 
 var is_popup_open := false
 # Used to avoid performance-heavy checks in process
-var _has_cards:= false
+var _has_cards := false
 
 # The pile's name. If this value is changed, it will change the
 # `pile_name_label` text.
@@ -74,9 +74,9 @@ func _process(_delta) -> void:
 		var top_card = get_top_card()
 		if cfc.NMAP.board.mouse_pointer in get_overlapping_areas()\
 				and not cfc.card_drag_ongoing:
-			if top_card.state == Card.CardState.IN_PILE:
+			if top_card and top_card.state == Card.CardState.IN_PILE:
 				top_card.state = Card.CardState.VIEWED_IN_PILE
-		elif top_card.state == Card.CardState.VIEWED_IN_PILE:
+		elif top_card and top_card.state == Card.CardState.VIEWED_IN_PILE:
 			top_card.state = Card.CardState.IN_PILE
 
 
