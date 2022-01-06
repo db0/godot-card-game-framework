@@ -144,7 +144,7 @@ func test_number_properties_with_string_value():
 	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 	assert_eq(new_card.card_front.card_labels["Cost"].text,"Cost: X",
 			"Numerical array allowed string value")
-	assert_eq(new_card.card_front.card_labels["Power"].text, '1',
+	assert_eq(new_card.card_front.card_labels["Power"].text, 'Power: 1',
 			"String number handled properly")
 	assert_eq(new_card.properties.Power, 1,
 			"Number property changed to integer")
@@ -179,3 +179,38 @@ func test_number_properties_adjust():
 			"Number property label adjusted downwards")
 	assert_eq(new_card.properties.Power, 2,
 			"Number property adjusted upwards")
+
+
+
+func test_refresh_card_front():
+	cfc.card_definitions["GUT Card"] = {
+		"Type": "Red",
+		"Tags": ["Tag 1","Tag 2","GUT Tag"],
+		"Requirements": "",
+		"Abilities": "Gut Test",
+		"Cost": '1',
+		"Power": '5',
+	}
+	var new_card = cfc.instance_card("GUT Card")
+	board.add_child(new_card)
+	new_card._determine_idle_state()
+	# We need a yield to allow the richtextlabel setup complete
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
+	new_card.properties = {
+		"Type": "Red",
+		"Tags": ["Tag 3","Tag 4"],
+		"Requirements": "",
+		"Abilities": "Property Refreshed",
+		"Cost": 'U',
+		"Power": "+3",
+	}
+	new_card.refresh_card_front()
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
+	assert_eq(new_card.card_front.card_labels["Cost"].text,"Cost: U",
+			"Number Property refreshed as string")
+	assert_eq(new_card.card_front.card_labels["Power"].text, 'Power: 3',
+			"String refreshed to int")
+	assert_eq(new_card.card_front.card_labels["Tags"].text, "Tag 3 - Tag 4",
+			"Tags refreshed")
+	assert_eq(new_card.card_front.card_labels["Abilities"].text, "Property Refreshed",
+			"Abilities refreshed")

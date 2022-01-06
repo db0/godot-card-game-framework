@@ -626,7 +626,6 @@ func modify_property(
 							" does not have a matching label!")
 				retcode = CFConst.ReturnCode.FAILED
 			else:
-				var label_node = card_front.card_labels[property]
 				if not is_init:
 					emit_signal(
 							"card_properties_modified",
@@ -653,54 +652,57 @@ func modify_property(
 							# We catch the designer by mistake putting a number
 							# as an integer in the card definition
 							if is_init:
-								properties[property] = int(properties[property])
+								properties[property] = int(value)
+							# If this is not during init, then a +/- number in modify_property() args
+							# signifies an operation on the existing number
 							else:
 								properties[property] += int(value)
-							var value_for_label = str(properties[property])
-							# While the actual property can go below 0
-							# We typically do not want to display a -value on a card label
-							# but only keep track of it being below 0
-							if properties[property] < 0:
-								value_for_label = '0'
-							if property in CardConfig.NUMBER_WITH_LABEL and not is_init:
-								card_front.set_label_text(label_node,property
-										+ ": " + value_for_label)
-							else:
-								card_front.set_label_text(label_node,value_for_label)
 						else:
 							# We allow setting number properties as strings.
 							# We assume the designer knows what they're doing
 							properties[property] = value
-							if property in CardConfig.NUMBER_WITH_LABEL:
-								card_front.set_label_text(label_node,property
-										+ ": " + value)
-							else:
-								card_front.set_label_text(label_node,value)
-					elif value == 0 and property in CardConfig.NUMBERS_HIDDEN_ON_0:
-						card_front.set_label_text(label_node,"")
-					elif property in CardConfig.NUMBER_WITH_LABEL:
-						card_front.set_label_text(label_node,property
-								+ ": " + str(properties[property]))
-					else:
-						card_front.set_label_text(label_node,str(properties[property]))
-				# These are arrays of properties which are put in a label
-				# with a simple join character
-				elif property in CardConfig.PROPERTIES_ARRAYS:
-					card_front.set_label_text(label_node,
-							CFUtils.array_join(value,
-							CFConst.ARRAY_PROPERTY_JOIN))
-				# These are standard properties which is simple a String to add to the
-				# label.text field
-				# Normally they should be defined in CardConfig.PROPERTIES_STRINGS
-				# but this is also the fallback we use for
-				# properties undefined in CardConfig
-				elif card_front.card_labels[property] as RichTextLabel:
-					card_front.set_rich_label_text(label_node, _get_formatted_text(properties[property]))
-				else:
-					card_front.set_label_text(label_node, _get_formatted_text(properties[property]))
-					# If we have an empty property, we let the other labels
-					# use the space vertical space it would have taken.
+			refresh_property_label(property)
 	return(retcode)
+
+
+func refresh_property_label(property: String) -> void:
+	if not card_front.card_labels.has(property):
+		return
+	var label_node = card_front.card_labels[property]
+	var value_for_label = str(properties[property])
+	if property in CardConfig.PROPERTIES_NUMBERS:
+		if typeof(properties[property]) == TYPE_INT and properties[property] < 0:
+			value_for_label = '0'
+		elif typeof(properties[property]) == TYPE_STRING and properties[property].is_valid_integer():
+			value_for_label = str(int(properties[property]))
+		if value_for_label =='0' and property in CardConfig.NUMBERS_HIDDEN_ON_0:
+			card_front.set_label_text(label_node,"")
+		elif property in CardConfig.NUMBER_WITH_LABEL:
+			card_front.set_label_text(label_node,property
+					+ ": " + value_for_label)
+		else:
+			card_front.set_label_text(label_node,value_for_label)
+	# These are arrays of properties which are put in a label
+	# with a simple join character
+	elif property in CardConfig.PROPERTIES_ARRAYS:
+		card_front.set_label_text(label_node,
+				CFUtils.array_join(properties[property],
+				CFConst.ARRAY_PROPERTY_JOIN))
+	# These are standard properties which is simple a String to add to the
+	# label.text field
+	# Normally they should be defined in CardConfig.PROPERTIES_STRINGS
+	# but this is also the fallback we use for
+	# properties undefined in CardConfig
+	elif card_front.card_labels[property] as RichTextLabel:
+		card_front.set_rich_label_text(label_node, _get_formatted_text(properties[property]))
+	else:
+		card_front.set_label_text(label_node, _get_formatted_text(properties[property]))
+
+
+func refresh_card_front() -> void:
+	for property in properties:
+		refresh_property_label(property)
+
 
 
 # Retrieves the value of a property. This should always be used instead of
