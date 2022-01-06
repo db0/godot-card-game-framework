@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0 (Ongoing)
+## 2.0
 
 ### Important for Upgrades
 

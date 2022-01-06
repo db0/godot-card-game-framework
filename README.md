@@ -158,3 +158,8 @@ Some initial ideas were taken from this excellent [Godot Card Game Tutorial vide
 ## License
 
 This software is licensed undel AGPL3. However [an addendum](ADDENDUM1) has been added to allow distribution via Steam and integration with Steamworks SDK.
+
+## Games Made with CGF
+
+* [Hypnagonia](https://github.com/db0/hypnagonia)
+* [Fragment Forge](https://github.com/db0/Fragment-Forge)
