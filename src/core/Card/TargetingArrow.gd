@@ -77,6 +77,7 @@ func _on_ArrowHead_area_entered(area: Area2D) -> void:
 		if 'highlight' in owner_object:
 			owner_object.highlight.highlight_potential_card(
 					CFConst.TARGET_HOVER_COLOUR, _potential_targets)
+		emit_signal("potential_target_found", area)
 
 
 # Triggers when a targetting arrow stops hovering over a card

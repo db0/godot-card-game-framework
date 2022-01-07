@@ -80,7 +80,8 @@ func _ready() -> void:
 		var load_start_time = OS.get_ticks_msec()
 		prepare_card_grid()
 		var load_end_time = OS.get_ticks_msec()
-		print_debug("Resource load time = " + str(load_end_time - load_start_time))
+		if OS.has_feature("debug"):
+			print_debug("DEBUG INFO:CardViewer:Card Grid instance time = %sms" % [str(load_end_time - load_start_time)])
 	_show_all_button.icon = CFUtils.convert_texture_to_image(
 			"res://src/core/CardViewer/open-book.png")
 
