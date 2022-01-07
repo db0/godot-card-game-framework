@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.1 (Ongoing)
+
+### Important for Upgrades
+
+* Further improvements in card set and script loading should make game init much faster.
+Now supports for loading scripts and sets through the compiler via preload()
+To upgrade to this version, you **MUST** create a class called `SetPreload` somewhere in your custom folder.
+You can copy over `"res://src/dreamscape/cards/sets/SetPreload.gd"` from CGF to get started.
+* Your SetScript files' `get_scripts()` function needs to be extended to require a second, boolean variable. You can use it to return script results that are otherwise onformated
+and they will be stores permanently in cfc, in case you want to be able to retrieve an individual card's script for permanent modificatio outside of the Card class.
+
 ## 2.0
 
 ### Important for Upgrades

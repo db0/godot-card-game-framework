@@ -4,8 +4,9 @@
 class_name CFControl
 extends Node
 
-signal all_nodes_mapped()
+signal all_nodes_mapped
 signal cache_cleared
+signal scripts_loaded
 
 #-----------------------------------------------------------------------------
 # BEGIN Unit Testing Variables
@@ -41,6 +42,8 @@ var game_rng_seed = "CFC Random Seed" setget set_seed
 var card_definitions := {}
 # This will store all card scripts
 var set_scripts := {}
+# This will store all card scripts, including their format placeholders
+var unmodified_set_scripts := {}
 # A class to propagate script triggers to all cards.
 var signal_propagator = SignalPropagator.new()
 # A dictionary of all our container nodes for easy access
@@ -90,6 +93,7 @@ var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
 var curr_scale: float
 
 var script_load_thread : Thread
+var scripts_loading := true
 
 onready var load_start_time := OS.get_ticks_msec()
 
@@ -125,12 +129,14 @@ func _setup() -> void:
 	# Initialize the game random seed
 	set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
+	# Removed threading since I optimized this loading function
+	load_script_definitions()
 	# We're loading the script definitions in a thread to avoid delaying game load too much
-	if OS.get_name() == "HTML5":
-		load_script_definitions()
-	else:
-		script_load_thread = Thread.new()
-		script_load_thread.start(self, "load_script_definitions")
+#	if OS.get_name() == "HTML5":
+#		load_script_definitions()
+#	else:
+#		script_load_thread = Thread.new()
+#		script_load_thread.start(self, "load_script_definitions")
 
 
 # Run when all necessary nodes (Board, CardContainers etc) for the game
@@ -207,34 +213,50 @@ func instance_card(card_name: String) -> Card:
 
 # Returns a Dictionary with the combined Card definitions of all set files
 func load_card_definitions() -> Dictionary:
-	var set_definitions := CFUtils.list_files_in_directory(
+	var loaded_definitions : Array
+	if "CARD_SETS" in SetPreload and SetPreload.CARD_SETS.size() > 0:
+		loaded_definitions = SetPreload.CARD_SETS
+	else:
+		var set_files = CFUtils.list_files_in_directory(
 				CFConst.PATH_SETS, CFConst.CARD_SET_NAME_PREPEND)
+		for set_file in set_files:
+			loaded_definitions.append(load(CFConst.PATH_SETS + set_file))
 	var combined_sets := {}
-	for set_file in set_definitions:
-		var set_dict = load(CFConst.PATH_SETS + set_file).CARDS
-		for dict_entry in set_dict:
-			combined_sets[dict_entry] = set_dict[dict_entry]
+	for set_def in loaded_definitions:
+		for card_name in set_def.CARDS:
+			combined_sets[card_name] = set_def.CARDS[card_name]
 	return(combined_sets)
 
 
 # Returns a Dictionary with the combined Script definitions of all set files
 func load_script_definitions() -> void:
-	var script_definitions := CFUtils.list_files_in_directory(
-				CFConst.PATH_SETS, CFConst.SCRIPT_SET_NAME_PREPEND)
+	var loaded_script_definitions := []
+	if "CARD_SCRIPTS" in SetPreload and SetPreload.CARD_SCRIPTS.size() > 0:
+		for preload_set_scripts in SetPreload.CARD_SCRIPTS:
+			loaded_script_definitions.append(preload_set_scripts.new())
+	else:
+		var script_definition_files := CFUtils.list_files_in_directory(
+					CFConst.PATH_SETS, CFConst.SCRIPT_SET_NAME_PREPEND)
+		for script_file in script_definition_files:
+			loaded_script_definitions.append(load(CFConst.PATH_SETS + script_file).new())
 	var combined_scripts := {}
 	for card_name in card_definitions.keys():
-		for script_file in script_definitions:
+		for scripts_obj in loaded_script_definitions:
 			if combined_scripts.get(card_name):
 				break
-			var scripts_obj = load(CFConst.PATH_SETS + script_file).new()
 			# scripts are not defined as constants, as we want to be
 			# able to refer specific variables inside them
 			# such as cfc.deck etc. Instead they contain a
 			# method which returns the script for the requested card name
 			var card_script = scripts_obj.get_scripts(card_name)
+			var unmodified_card_script = scripts_obj.get_scripts(card_name, false)
+#			print(unmodified_card_script)
 			if not card_script.empty():
 				combined_scripts[card_name] = card_script
 				set_scripts[card_name] = card_script
+				unmodified_set_scripts[card_name] = unmodified_card_script
+	emit_signal("scripts_loaded")
+	scripts_loading = false
 
 
 # Setter for game_paused
@@ -362,7 +384,8 @@ func _on_viewport_resized() -> void:
 
 
 func _exit_tree():
-	script_load_thread.wait_to_finish()
+	if script_load_thread:
+		script_load_thread.wait_to_finish()
 
 # The SignalPropagator is responsible for collecting all card signals
 # and asking all cards to check if there's any automation they need to perform

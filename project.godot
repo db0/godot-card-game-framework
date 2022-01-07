@@ -274,6 +274,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/SelectionWindow.gd"
 }, {
+"base": "Node",
+"class": "SetPreload",
+"language": "GDScript",
+"path": "res://src/custom/cards/sets/SetPreload.gd"
+}, {
 "base": "Line2D",
 "class": "TargetingArrow",
 "language": "GDScript",
@@ -358,6 +363,7 @@ _global_script_class_icons={
 "ScriptTask": "",
 "ScriptingEngine": "",
 "SelectionWindow": "",
+"SetPreload": "",
 "TargetingArrow": "",
 "Token": "",
 "TokenDrawer": "",
