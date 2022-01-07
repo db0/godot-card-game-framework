@@ -81,6 +81,7 @@ However typically the games don't have only one card, so we need to let our game
 1. Create a new folder `res://src/new_card_game/cards/sets`
 1. In the filesystem tab, navigate to `res://src/custom/cards`.
 1. Move "CardConfig.gd" and "CustomScripts" inside `res://src/new_card_game/cards`
+1. Move `res://src/custom/cards/sets/SetPreload.gd` to `res://src/new_card_game/cards/sets/`
 1. Edit `res://src/new_card_game/CFConst.gd`
 1. Find the line `const PATH_CUSTOM := "res://src/custom/"` and modify it to `const PATH_CUSTOM := "res://src/new_card_game/"`
 
