@@ -22,7 +22,7 @@ func test_array_join():
 func test_list_files_in_directory():
 	var list := CFUtils.list_files_in_directory(
 			"res://src/custom/cards/sets/")
-	assert_eq(4,len(list), "There should be 5 set files")
+	assert_eq(5,len(list), "There should be 5 files")
 	list = CFUtils.list_files_in_directory(
 			"res://src/custom/cards/sets/", "SetScripts_")
 	assert_eq(2,len(list), "There should be 2 set files")
@@ -30,7 +30,7 @@ func test_list_files_in_directory():
 	assert_true(list.has("SetScripts_Demo2.gd"), "Should contain demo2")
 
 func test_load_card_definitions():
-	var defs := cfc.load_card_definitions()
+	var defs = cfc.load_card_definitions()
 	var card_names := [
 			"Rich Text Card",
 			"Shaking Card",
