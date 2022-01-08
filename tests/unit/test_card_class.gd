@@ -14,7 +14,8 @@ func before_each():
 	if confirm_return is GDScriptFunctionState: # Still working.
 		confirm_return = yield(confirm_return, "completed")
 	card = cfc.NMAP.deck.get_top_card()
-
+	
+	
 func test_methods():
 	assert_eq('Card',card.get_class(), 'class name returns correct value')
 

@@ -19,7 +19,6 @@ func before_each():
 	token.setup("tech")
 	board.add_child(token)
 
-
 func test_count_setget():
 	var count_label = token.get_node("CenterContainer/Count")
 	assert_eq(0,token.count,"Initial count should be 0")

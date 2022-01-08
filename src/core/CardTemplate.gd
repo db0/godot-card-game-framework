@@ -666,7 +666,7 @@ func modify_property(
 
 
 func refresh_property_label(property: String) -> void:
-	if not card_front.card_labels.has(property):
+	if not is_instance_valid(card_front) or not card_front.card_labels.has(property):
 		return
 	var label_node = card_front.card_labels[property]
 	var value_for_label = str(properties[property])

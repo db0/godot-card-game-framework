@@ -12,19 +12,29 @@ var comparison: String
 var compare_int_as_str := false
 
 func _init(
-		property: String,
-		value,
-		comparison := 'eq',
-		compare_int_as_str := false) -> void:
-	self.property = property
-	self.filter = value
-	self.comparison = comparison
-	self.compare_int_as_str = compare_int_as_str
+		_property: String,
+		_value,
+		_comparison := 'eq',
+		_compare_int_as_str := false) -> void:
+	property = _property
+	filter = _value
+	comparison = _comparison
+	compare_int_as_str = _compare_int_as_str
 	if compare_int_as_str and not comparison in ['eq', 'ne']:
-		printerr("ERROR: Cannot compare int as strings using comparison: %s. Defaulting to 'eq' instead" % [comparison])
+		printerr("ERROR:CardFilter: Cannot compare int as strings using comparison: %s. Defaulting to 'eq' instead" % [comparison])
 		comparison = 'eq'
-
-
+	if not property in CardConfig.PROPERTIES_NUMBERS and not comparison in ['eq', 'ne']:
+		printerr("ERROR:CardFilter: Cannot use comparisons other than 'eq' and 'ne' on string property: %s. Defaulting to 'eq' instead" % [property])
+		comparison = 'eq'
+	if property in CardConfig.PROPERTIES_STRINGS and typeof(filter) != TYPE_STRING:
+		printerr("WARN:CardFilter: Non-string filter '%s' requested for string property '%s'. This comparison would not be possible. '%s' will be converted to string for comparisons." % [filter, property, filter])
+		filter = str(filter)
+	if property in CardConfig.PROPERTIES_NUMBERS\
+			and typeof(filter) == TYPE_STRING\
+			and filter.is_valid_integer():
+		printerr("WARN:CardFilter: String filter '%s' provided for number property '%s'. This comparison would not be possible. '%s' will be converted to int for comparisons." % [filter, property, filter])
+		filter = int(filter)
+		
 # Takes the properties dictionary
 func check_card(card_properties: Dictionary) -> bool:
 	var card_matches := false
@@ -36,6 +46,12 @@ func check_card(card_properties: Dictionary) -> bool:
 				card_matches = true
 		elif not filter in prop_value and comparison == 'ne':
 				card_matches = true
+	# A dictionary value is treated as an array, based on its keys
+	if typeof(prop_value) == TYPE_DICTIONARY:
+		if prop_value.has(filter) and comparison == 'eq':
+				card_matches = true
+		elif not prop_value.has(filter) and comparison == 'ne':
+				card_matches = true
 	elif typeof(prop_value) == typeof(filter)\
 			and typeof(prop_value) == TYPE_INT\
 			and not compare_int_as_str:
@@ -44,22 +60,49 @@ func check_card(card_properties: Dictionary) -> bool:
 				filter,
 				comparison):
 			card_matches = true
-	elif property in CardConfig.PROPERTIES_NUMBERS and not compare_int_as_str:
-		# We consider values of strings in numbers as 0, for comparisons
-		var temp_prop_value = prop_value
-		var temp_filter = filter
-		if "VALUES_TREATED_AS_ZERO" in CardConfig and str(prop_value) in CardConfig.VALUES_TREATED_AS_ZERO:
-			temp_prop_value = 0
-		if str(filter) == 'X':
-			temp_filter = 0
-		if CFUtils.compare_numbers(
-				temp_prop_value,
-				temp_filter,
+	elif typeof(prop_value) == typeof(filter)\
+			and typeof(prop_value) == TYPE_STRING:
+		if CFUtils.compare_strings(
+				prop_value,
+				filter,
 				comparison):
 			card_matches = true
+	# We would only enter this, if the properties we compare are nominally strings
+	# But one value is an int and the other is a string
+	elif property in CardConfig.PROPERTIES_NUMBERS and not compare_int_as_str:
+		var temp_prop_value = prop_value
+		var temp_filter = filter
+		if "VALUES_TREATED_AS_ZERO" in CardConfig:
+			if typeof(temp_prop_value) == TYPE_STRING and temp_prop_value in CardConfig.VALUES_TREATED_AS_ZERO:
+				temp_prop_value = 0
+			if  typeof(temp_filter) == TYPE_STRING and temp_filter in CardConfig.VALUES_TREATED_AS_ZERO:
+				temp_filter = 0
+		# If temp values are still strings, then we check if they're valid integers to compare them
+		if typeof(temp_prop_value) == TYPE_STRING and temp_prop_value.is_valid_integer():
+			temp_prop_value = int(temp_prop_value)
+		if typeof(temp_filter) == TYPE_STRING and temp_filter.is_valid_integer():
+			temp_filter = int(temp_filter)
+		if typeof(temp_prop_value) == TYPE_INT and  typeof(temp_filter) == TYPE_INT:
+			if CFUtils.compare_numbers(
+					temp_prop_value,
+					temp_filter,
+					comparison):
+				card_matches = true
+		# If one value is an int and the other is a string, and the developer has not configured
+		# them accordingly in CardConfig.VALUES_TREATED_AS_ZERO, then we have to use a fallback
+		# comparison as strings
+		else:
+			# for strings, we only allow 'eq' and 'ne' comparisons
+			if comparison != 'ne':
+				comparison = 'eq'
+			if CFUtils.compare_strings(
+					str(prop_value),
+					str(filter),
+					comparison):
+				card_matches = true
 	elif CFUtils.compare_strings(
 			str(prop_value),
-			str(filter),
+			filter,
 			comparison):
 		card_matches = true
 	return(card_matches)

@@ -119,6 +119,11 @@ _global_script_classes=[ {
 "language": "GDScript",
 "path": "res://src/core/CardContainer.gd"
 }, {
+"base": "Reference",
+"class": "CardFilter",
+"language": "GDScript",
+"path": "res://src/core/Utils/CardFilter.gd"
+}, {
 "base": "Panel",
 "class": "CardFront",
 "language": "GDScript",
@@ -332,6 +337,7 @@ _global_script_class_icons={
 "CardBackTexture": "",
 "CardConfig": "",
 "CardContainer": "",
+"CardFilter": "",
 "CardFront": "",
 "CardLabel": "",
 "CardLibrary": "",

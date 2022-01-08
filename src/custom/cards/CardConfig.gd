@@ -26,6 +26,9 @@ const SCENE_PROPERTY = "Type"
 # These are number carrying properties, which we want to hide their label
 # when they're 0, to allow more space for other labels.
 const NUMBERS_HIDDEN_ON_0 := []
+# If any strings in this array are found in the value of a PROPERTIES_NUMBERS property
+# Then during comparisons, they are treated as if they were 0
+const VALUES_TREATED_AS_ZERO := ['X', 'null', null]
 # The cards where their [SCENE_PROPERTY](#SCENE_PROPERTY) value is in this list
 # will not be shown in the deckbuilder.
 #

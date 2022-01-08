@@ -24,7 +24,7 @@ func before_each():
 	line = ask_integer.get_node("IntegerLineEdit")
 
 func after_each():
-	teardown_board()
+	cfc.quit_game()
 
 
 func test_title_and_highlights():

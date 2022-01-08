@@ -9,15 +9,14 @@ func after_all():
 	cfc.game_settings.fancy_movement = true
 
 func before_each():
-	var confirm_return = setup_board()
-	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = yield(confirm_return, "completed")
+	pass
 
 func test_array_join():
 	var test_arr := ['a','b','c','d']
 	assert_eq("a - b - c - d",
 			CFUtils.array_join(test_arr,' - '),
 			"Array joined into string with separator")
+
 
 func test_list_files_in_directory():
 	var list := CFUtils.list_files_in_directory(
@@ -28,6 +27,7 @@ func test_list_files_in_directory():
 	assert_eq(2,len(list), "There should be 2 set files")
 	assert_true(list.has("SetScripts_Demo1.gd"), "Should contain demo1")
 	assert_true(list.has("SetScripts_Demo2.gd"), "Should contain demo2")
+
 
 func test_load_card_definitions():
 	var defs = cfc.load_card_definitions()
