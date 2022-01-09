@@ -48,7 +48,7 @@ func test_string_eq_comparison() -> void:
 	comparison_dict.Type = 'Blue'
 	assert_true(cf.check_card(comparison_dict),
 			"True when strings equal")
-	
+
 func test_string_ne_comparison() -> void:
 	var cf = CardFilter.new('Type', 'Blue', 'ne')
 	assert_true(cf.check_card(comparison_dict),
@@ -56,7 +56,7 @@ func test_string_ne_comparison() -> void:
 	comparison_dict.Type = 'Blue'
 	assert_false(cf.check_card(comparison_dict),
 			"False when strings equal")
-	
+
 func test_int_eq_comparison() -> void:
 	var cf = CardFilter.new('Cost', 2, 'eq')
 	assert_false(cf.check_card(comparison_dict),
@@ -64,7 +64,7 @@ func test_int_eq_comparison() -> void:
 	comparison_dict.Cost = 2
 	assert_true(cf.check_card(comparison_dict),
 			"True when ints equal")
-	
+
 func test_int_ne_comparison() -> void:
 	var cf = CardFilter.new('Cost', 2, 'ne')
 	assert_true(cf.check_card(comparison_dict),
@@ -72,7 +72,7 @@ func test_int_ne_comparison() -> void:
 	comparison_dict.Cost = 2
 	assert_false(cf.check_card(comparison_dict),
 			"False when ints equal")
-	
+
 func test_int_lt_comparison() -> void:
 	var cf = CardFilter.new('Cost', 2, 'lt')
 	assert_true(cf.check_card(comparison_dict),
@@ -83,7 +83,7 @@ func test_int_lt_comparison() -> void:
 	comparison_dict.Cost = 3
 	assert_false(cf.check_card(comparison_dict),
 			"False when higher than")
-	
+
 func test_int_gt_comparison() -> void:
 	var cf = CardFilter.new('Cost', 2, 'gt')
 	assert_false(cf.check_card(comparison_dict),
@@ -94,7 +94,7 @@ func test_int_gt_comparison() -> void:
 	comparison_dict.Cost = 3
 	assert_true(cf.check_card(comparison_dict),
 			"True when higher than")
-	
+
 func test_int_ge_comparison() -> void:
 	var cf = CardFilter.new('Cost', 2, 'ge')
 	assert_false(cf.check_card(comparison_dict),
@@ -105,7 +105,7 @@ func test_int_ge_comparison() -> void:
 	comparison_dict.Cost = 3
 	assert_true(cf.check_card(comparison_dict),
 			"True when higher than")
-	
+
 func test_int_le_comparison() -> void:
 	var cf = CardFilter.new('Cost', 2, 'le')
 	assert_true(cf.check_card(comparison_dict),
@@ -116,7 +116,7 @@ func test_int_le_comparison() -> void:
 	comparison_dict.Cost = 3
 	assert_false(cf.check_card(comparison_dict),
 			"False when higher than")
-	
+
 func test_str_bad_comparison_fallback() -> void:
 	var cf = CardFilter.new('Abilities', 2, 'gt')
 	assert_eq(cf.comparison, "eq",
@@ -139,7 +139,7 @@ func test_string_number_to_string_eq_comparison_with_string_filter_considered_0(
 	comparison_dict.Power = 'U'
 	assert_false(cf.check_card(comparison_dict),
 			"False when ne string")
-	
+
 func test_string_number_to_string_ne_comparison_with_string_filter_considered_0() -> void:
 	var cf = CardFilter.new('Power', 'X', 'ne')
 	assert_false(cf.check_card(comparison_dict),
@@ -150,7 +150,7 @@ func test_string_number_to_string_ne_comparison_with_string_filter_considered_0(
 	comparison_dict.Power = 'U'
 	assert_true(cf.check_card(comparison_dict),
 			"True when not equal string")
-	
+
 func test_string_number_to_string_eq_comparison_with_string_filter_not_considered_0() -> void:
 	var cf = CardFilter.new('Power', 'U', 'eq')
 	assert_false(cf.check_card(comparison_dict),
@@ -161,7 +161,7 @@ func test_string_number_to_string_eq_comparison_with_string_filter_not_considere
 	comparison_dict.Power = 'U'
 	assert_true(cf.check_card(comparison_dict),
 			"True when eq string")
-	
+
 func test_string_number_to_string_ne_comparison_with_string_filter_not_considered_0() -> void:
 	var cf = CardFilter.new('Power', 'U', 'ne')
 	assert_true(cf.check_card(comparison_dict),
@@ -172,7 +172,7 @@ func test_string_number_to_string_ne_comparison_with_string_filter_not_considere
 	comparison_dict.Power = 'U'
 	assert_false(cf.check_card(comparison_dict),
 			"False when not equal string")
-	
+
 func test_int_to_int_string_comparison() -> void:
 	var cf = CardFilter.new('Power', 2, 'le')
 	comparison_dict.Power = '1'
@@ -184,7 +184,7 @@ func test_int_to_int_string_comparison() -> void:
 	comparison_dict.Power = '3'
 	assert_false(cf.check_card(comparison_dict),
 			"Int-String comparison handled property on le")
-	
+
 func test_null_to_int_comparison() -> void:
 	var cf = CardFilter.new('Power', null, 'le')
 	comparison_dict.Power = 1
@@ -196,4 +196,19 @@ func test_null_to_int_comparison() -> void:
 	comparison_dict.Power = 'X'
 	assert_false(cf.check_card(comparison_dict),
 			"Null-int comparison handled property")
-	
+
+func test_array_eq_comparison() -> void:
+	var cf = CardFilter.new('Tags', 'GUT 3', 'eq')
+	assert_false(cf.check_card(comparison_dict),
+			"False when array element does not exist")
+	comparison_dict.Tags = ["GUT 1", "GUT 3"]
+	assert_true(cf.check_card(comparison_dict),
+			"True when array element exists")
+
+func test_array_ne_comparison() -> void:
+	var cf = CardFilter.new('Tags', 'GUT 3', 'ne')
+	assert_true(cf.check_card(comparison_dict),
+			"True when array element does not exist")
+	comparison_dict.Tags = ["GUT 1", "GUT 3"]
+	assert_false(cf.check_card(comparison_dict),
+			"False when array element exists")

@@ -100,7 +100,7 @@ func check_card(card_properties: Dictionary) -> bool:
 					str(filter),
 					comparison):
 				card_matches = true
-	elif CFUtils.compare_strings(
+	elif not typeof(prop_value) in [TYPE_ARRAY, TYPE_DICTIONARY] and CFUtils.compare_strings(
 			str(prop_value),
 			filter,
 			comparison):
