@@ -135,17 +135,11 @@ margin_top = 60.0
 margin_right = 26.0
 margin_bottom = 87.0
 
-[node name="Tween" parent="Discard/Control/ManipulationButtons" index="3" groups=["cgf_tween"]]
-
 [node name="CardView" parent="Discard/ViewPopup" index="0"]
 margin_left = 2.0
 margin_top = 2.0
 margin_right = 6.0
 margin_bottom = 6.0
-
-[node name="Tween" parent="Discard/ViewPopup" index="1" groups=["cgf_tween"]]
-
-[node name="Tween" parent="Discard" index="3" groups=["cgf_tween"]]
 
 [node name="Position" parent="Discard/Debug" index="0"]
 margin_bottom = 23.0
@@ -157,8 +151,6 @@ margin_bottom = 49.0
 [node name="Size" parent="Discard/Debug" index="2"]
 margin_top = 52.0
 margin_bottom = 75.0
-
-[node name="OpacityTween" parent="Discard" index="5" groups=["cgf_tween"]]
 
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 position = Vector2( 155, 480 )
@@ -240,6 +232,16 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="BackToMain" type="Button" parent="."]
+margin_left = 393.448
+margin_top = 43.7401
+margin_right = 533.448
+margin_bottom = 83.7401
+text = "Back to Main"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Debug" type="CheckButton" parent="."]
 margin_left = 789.192
 margin_top = 3.36737
@@ -286,6 +288,8 @@ margin_top = 2.0
 margin_right = -2.0
 margin_bottom = -2.0
 custom_styles/panel = SubResource( 3 )
+replacements = {
+}
 
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
@@ -294,6 +298,7 @@ custom_styles/panel = SubResource( 3 )
 [connection signal="pressed" from="ReshuffleAllDiscard" to="." method="_on_ReshuffleAllDiscard_pressed"]
 [connection signal="toggled" from="OvalHandToggle" to="." method="_on_OvalHandToggle_toggled"]
 [connection signal="pressed" from="DeckBuilder" to="." method="_on_DeckBuilder_pressed"]
+[connection signal="pressed" from="BackToMain" to="." method="_on_BackToMain_pressed"]
 [connection signal="toggled" from="Debug" to="." method="_on_Debug_toggled"]
 
 [editable path="Deck"]
