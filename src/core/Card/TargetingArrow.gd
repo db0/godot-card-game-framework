@@ -144,4 +144,3 @@ func _draw_targeting_arrow() -> void:
 	$ArrowHead.rotation = get_point_position(
 				get_point_count( ) - 1).direction_to(
 				to_local(position + card_half_size + final_point)).angle()
-

@@ -261,7 +261,8 @@ func load_script_definitions() -> void:
 
 # Setter for game_paused
 func set_game_paused(value: bool) -> void:
-	NMAP.board.mouse_pointer.is_disabled = value
+	if NMAP.has("board") and NMAP.board.mouse_pointer:
+		NMAP.board.mouse_pointer.is_disabled = value
 	game_paused = value
 
 

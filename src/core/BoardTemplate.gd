@@ -4,7 +4,6 @@
 class_name Board
 extends Control
 
-
 # Simulated mouse position for Unit Testing
 var _UT_mouse_position := Vector2(0,0)
 # Simulated mouse position for Unit Testing
@@ -23,14 +22,15 @@ var _t = 0
 # task is to be used.
 var counters : Counters
 
-onready var mouse_pointer = \
-	load(CFConst.PATH_MOUSE_POINTER).instance()
+var mouse_pointer: MousePointer
+	
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	add_to_group("board")
 	if not cfc.are_all_nodes_mapped:
 		yield(cfc, "all_nodes_mapped")
+	mouse_pointer = load(CFConst.PATH_MOUSE_POINTER).instance()
 	add_child(mouse_pointer)
 	for container in get_tree().get_nodes_in_group("piles"):
 		container.re_place()

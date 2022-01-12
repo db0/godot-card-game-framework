@@ -96,7 +96,7 @@ func draw_card(pile : Pile = cfc.NMAP.deck) -> Card:
 	# A basic function to pull a card from out deck into our hand.
 	if card:
 		card.move_to(self)
-	return card
+	return(card)
 
 
 func get_final_placement_node(card: Card) -> Node:
