@@ -262,6 +262,7 @@ var _is_property_being_altered := false
 # And the methods which are used for its potential animation.
 # This will be loaded in `_init_card_back()`
 var card_back : CardBack
+
 # The node which has the design of the card front
 # And the methods which are used for modifying the card labels and sizing.
 # This will be loaded in `_init_card_layout()`
@@ -279,9 +280,13 @@ var is_executing_scripts := false
 # This variable will point to the scene which controls the targeting arrow
 onready var targeting_arrow
 
-onready var _tween = $Tween
-onready var _flip_tween = $Control/FlipTween
-onready var _control = $Control
+onready var _tween := $Tween
+onready var _flip_tween := $Control/FlipTween
+onready var _control := $Control
+# This is the control node we've setup to host the card_front design
+onready var _card_front_container := $Control/Front
+# This is the control node we've setup to host the card_back design
+onready var _card_back_container := $Control/Back
 
 # The node which hosts all manipulation buttons belonging to this card
 # as well as methods to hide/show them, and connect them to this card.
@@ -315,21 +320,21 @@ func _init_card_layout() -> void:
 	# so we only add a CardBack node, if we know it's not a dupe focus
 	if get_parent().name != "Viewport":
 		var card_front_instance = card_front_design.instance()
-		$Control/Front.add_child(card_front_instance)
+		_card_front_container.add_child(card_front_instance)
 		card_front = card_front_instance
 		# We do not need to instance the card_back when card is seen
 		# in a preview card grid
 		if get_parent().get_class() != "CVGridCardObject":
 			var card_back_instance = card_back_design.instance()
-			$Control/Back.add_child(card_back_instance)
+			_card_back_container.add_child(card_back_instance)
 			card_back = card_back_instance
-			$Control/Back.move_child(card_back,0)
+			_card_back_container.move_child(card_back,0)
 	# If it is a viewport focus dupe, we still need to setup the
 	# card_back variable, as the .duplicate() method does not copy
 	# internal variables.
 	else:
-		card_back = $Control/Back.get_child(0)
-		card_front = $Control/Front.get_child(0)
+		card_back = _card_back_container.get_child(0)
+		card_front = _card_front_container.get_child(0)
 
 
 # Ensures that the canonical card name is set in all fields which use it.
@@ -816,8 +821,8 @@ func set_card_size(value: Vector2, ignore_area = false) -> void:
 	_control.rect_min_size = value
 	# We set the card to always pivot from its center.
 	_control.rect_pivot_offset = value/2
-	$Control/Back.rect_min_size = value
-	$Control/Front.rect_min_size = value
+	_card_back_container.rect_min_size = value
+	_card_front_container.rect_min_size = value
 	# We set the card's Highlight to always extend 3 pixels over
 	# Either side of the card. This way its border will appear
 	# correctly when hovering over the card.
@@ -857,13 +862,13 @@ func set_is_faceup(
 		if set_is_viewed(false) == CFConst.ReturnCode.FAILED:
 			printerr("ERROR: Something went unexpectedly in set_is_faceup")
 		if value:
-			_flip_card($Control/Back, $Control/Front,instant)
+			_flip_card(_card_back_container, _card_front_container,instant)
 			# We need this check, as this node might not be ready
 			# Yet when a viewport focus dupe is instancing
 			buttons.set_button_visible("View", false)
 			card_back.stop_card_back_animation()
 		else:
-			_flip_card($Control/Front, $Control/Back,instant)
+			_flip_card(_card_front_container, _card_back_container,instant)
 			buttons.set_button_visible("View", true)
 #			if get_parent() == cfc.NMAP.board:
 			card_back.start_card_back_animation()
@@ -2071,7 +2076,7 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 		pass
 	else:
 		# We clear existing tweens to avoid a deadlocks
-		for n in [$Control/Front, $Control/Back, highlight]:
+		for n in [_card_front_container, _card_back_container, highlight]:
 			_flip_tween.remove(n,'rect_scale')
 			_flip_tween.remove(n,'rect_position')
 		_flip_tween.interpolate_property(to_invisible,'rect_scale',
@@ -2536,7 +2541,7 @@ func _process_card_state() -> void:
 			# we allow the player hovering over it to see it
 			if not is_faceup:
 				if is_viewed:
-					_flip_card($Control/Back,$Control/Front, true)
+					_flip_card(_card_back_container,_card_front_container, true)
 
 		CardState.PREVIEW:
 			$Control.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -2737,6 +2742,6 @@ func _on_Back_resized() -> void:
 	# This looks like a Godot bug. I'm leaving it here in case I can track it later
 	# It only happens if "card.set_is_faceup(false,true)" in CGFBoard.tcsn
 	# At the loop at line 91, is active
-	if $Control/Back.rect_size != canonical_size:
+	if _card_back_container and _card_back_container.rect_size != canonical_size:
 		pass
 #		print_debug($Control/Back.rect_size) # Replace with function body.

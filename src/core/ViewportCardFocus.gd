@@ -112,6 +112,11 @@ func focus_card(card: Card, show_preview := true) -> void:
 			_extra_dupe_ready(dupe_focus, card)
 			dupe_focus.is_faceup = card.is_faceup
 			dupe_focus.is_viewed = card.is_viewed
+			if dupe_focus._card_front_container.rect_scale.x != 1:
+				if dupe_focus.is_viewed:
+					dupe_focus._flip_card(dupe_focus._card_back_container, dupe_focus._card_front_container,true)
+				else:
+					dupe_focus._flip_card(dupe_focus._card_front_container,dupe_focus._card_back_container, true)
 		_current_focus_source = card
 		for c in _previously_focused_cards.values():
 			if not is_instance_valid(c):
