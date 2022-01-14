@@ -189,7 +189,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false,
 		var bbcode_height = node.get_content_height()
 		while bbcode_height == 0 or bbcode_height > 1000:
 			_retries += 1
-#			print_debug("BBcode height:{0} retrying: {1}".format([bbcode_height, _retries]))
+#			print_debug("{0} BBcode height:{1} retrying: {2}".format([card_owner.canonical_name, bbcode_height, _retries]))
 			yield(get_tree(), "idle_frame")
 			bbcode_height = node.get_content_height()
 			if _retries >= 10:
@@ -214,6 +214,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false,
 		# * Wait for the next frame
 		# * grab the new rich text height
 		# Unitl the rich text height is smaller than the labels' rect size.
+		var small_size_retries := 0
 		while bbcode_height > label_size.y:
 			font_adjustment -= 1
 			_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
@@ -238,8 +239,14 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false,
 	#			_assign_bbcode_text(node, value, starting_font_size + font_adjustment)
 	#			yield(get_tree(), "idle_frame")
 	#			bbcode_height = node.get_content_height()
-			if starting_font_size + font_adjustment == 4:
-				break
+			if starting_font_size + font_adjustment == 6:
+				if small_size_retries <= 2:
+					print_debug("WARN:CGF:{0} rich text label reached minimum size (6).\nRestarting font size calulcations retry: {4}\nstarting_font_size {1}\nbbcode_height: {2} > label_size.y: {3}".format(
+							[card_owner.canonical_name, starting_font_size, bbcode_height, label_size.y, small_size_retries]))
+					small_size_retries += 1
+					font_adjustment = _adjust_font_size(label_fonts["normal_font"], node.text, label_size)
+				else:
+					break
 		_cache_font_size(node,value,starting_font_size + font_adjustment, scale)
 	modulate.a = 1
 	resizing_labels.erase(node)
