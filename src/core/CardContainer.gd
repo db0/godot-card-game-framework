@@ -36,6 +36,9 @@ export(CFInt.OverlapShiftDirection) var overlap_shift_direction
 # specifies which container should be displaced more.
 export(CFInt.IndexShiftPriority) var index_shift_priority
 export var card_size := CFConst.CARD_SIZE
+# If set to false, no manipulation buttons will appear when hovering
+# over this container.
+export var show_manipulation_buttons := true
 
 # Used for debugging
 var _debugger_hook := false
@@ -75,6 +78,7 @@ func _ready() -> void:
 		yield(cfc, "all_nodes_mapped")
 	_init_ui()
 	_init_signal()
+	manipulation_buttons.visible = show_manipulation_buttons
 
 
 func _init_control_size() -> void:

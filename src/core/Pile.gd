@@ -125,9 +125,8 @@ func _on_ViewPopup_popup_hide() -> void:
 				card.set_is_faceup(faceup_cards,true)
 			card.state = card.CardState.IN_PILE
 	reorganize_stack()
-	# We prevent the button from being pressed twice while the popup is open
-	# as it will bug-out
-	$Control/ManipulationButtons.visible = true
+	if show_manipulation_buttons:
+		manipulation_buttons.visible = true
 	emit_signal("popup_closed")
 	is_popup_open = false
 
@@ -136,7 +135,7 @@ func _on_ViewPopup_popup_hide() -> void:
 func populate_popup(sorted:= false) -> void:
 	# We prevent the button from being pressed twice while the popup is open
 	# as it will bug-out
-	$Control/ManipulationButtons.visible = false
+	manipulation_buttons.visible = false
 	# We set the size of the grid to hold slightly scaled-down cards
 	var card_array := get_all_cards(false)
 	card_array.invert()
