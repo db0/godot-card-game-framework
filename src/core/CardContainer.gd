@@ -216,6 +216,11 @@ func get_card_index(card: Card) -> int:
 	return get_all_cards().find(card)
 
 
+func has_card(card: Card) -> bool:
+	if card in get_all_cards():
+		return(true)
+	return(false)
+
 # Returns a random card object among the children nodes
 func get_random_card() -> Card:
 	if get_card_count() == 0:

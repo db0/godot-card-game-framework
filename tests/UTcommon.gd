@@ -162,7 +162,6 @@ func execute_with_yield(card: Card) -> void:
 	var sceng = card.execute_scripts()
 	if sceng is GDScriptFunctionState and sceng.is_valid():
 		sceng = yield(yield_to(sceng, "completed", 1), YIELD)
-	return sceng
 
 
 func execute_with_target(card: Card, target: Card) -> void:

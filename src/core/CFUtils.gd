@@ -297,6 +297,7 @@ static func convert_texture_to_image(texture, is_lossless = false) -> ImageTextu
 	if typeof(texture) == TYPE_STRING:
 		tex = load(texture)
 	else:
+#		print_debug(texture)
 		tex = texture
 	var new_texture = ImageTexture.new();
 	if is_lossless:

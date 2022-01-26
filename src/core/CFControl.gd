@@ -54,6 +54,7 @@ var card_drag_ongoing: Card = null
 var _debug := false
 # Game random number generator
 var game_rng := RandomNumberGenerator.new()
+var rng_saved_state = game_rng.state
 # We cannot preload the scripting engine as a const for the same reason
 # We cannot refer to it via class name.
 #
@@ -126,8 +127,9 @@ func _setup() -> void:
 	if get_tree().get_root().has_node('Gut'):
 		ut = true
 		_debug = true
-	# Initialize the game random seed
-	set_seed(game_rng_seed)
+	else:
+		# Initialize the game random seed
+		set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
 	# Removed threading since I optimized this loading function
 	load_script_definitions()
@@ -198,6 +200,9 @@ func set_seed(_seed) -> void:
 	game_rng_seed = str(_seed)
 	game_rng.set_seed(hash(game_rng_seed))
 
+
+func restore_rng_state() -> void:
+	game_rng.state = rng_saved_state
 
 # Instances and returns a Card object, based on its name.
 func instance_card(card_name: String) -> Card:
