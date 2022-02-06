@@ -1476,14 +1476,14 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 				# Then it must be a special value provided by the designer
 				# We obviously cannot compare it as int, so we will compare is as string.
 				comparison_value = property_filters[property]
-			if typeof(comparison_value) == TYPE_INT:
+			if typeof(comparison_value) == TYPE_INT and typeof(card.get_property(property)) == TYPE_INT:
 				if not CFUtils.compare_numbers(
 						card.get_property(property),
 						comparison_value,
 						comparison_type):
 					card_matches = false
 			elif not CFUtils.compare_strings(
-					property_filters[property],
+					str(comparison_value),
 					str(card.get_property(property)),
 					comparison_type):
 				card_matches = false

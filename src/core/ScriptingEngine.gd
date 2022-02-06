@@ -569,7 +569,9 @@ func modify_properties(script: ScriptTask) -> int:
 						else:
 							new_value = modification
 					# if the value is not a per, then it might be a +/- adjustemnt
-					elif properties[property].is_valid_integer():
+					# which we only handle if the current card property is an actual integer
+					elif properties[property].is_valid_integer()\
+							and typeof(card.get_property(property)) == TYPE_INT:
 						modification = int(properties[property])
 						new_value = card.get_property(property) + modification
 					# If the string in the modification is not a valid integer
@@ -580,14 +582,17 @@ func modify_properties(script: ScriptTask) -> int:
 				else:
 					modification = properties[property]
 					new_value = modification
-				alteration = _check_for_property_alterants(
-						script,
-						card.get_property(property),
-						new_value,
-						modification,
-						property)
-				if alteration is GDScriptFunctionState:
-					alteration = yield(alteration, "completed")
+				# We do not check for alterants on card numer properties
+				# which are set as strings (e.g. things like 'X')
+				if typeof(card.get_property(property)) == TYPE_INT:
+					alteration = _check_for_property_alterants(
+							script,
+							card.get_property(property),
+							new_value,
+							modification,
+							property)
+					if alteration is GDScriptFunctionState:
+						alteration = yield(alteration, "completed")
 			# We set the value according to whatever was in the script
 			# which covers string and array values
 			# but integers will need some processing for alterants.

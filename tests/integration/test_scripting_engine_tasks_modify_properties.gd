@@ -119,3 +119,34 @@ func test_modify_tag_property():
 			"Tag properties adjusted")
 	assert_eq(card.card_front.card_labels["Tags"].text, "GUT Test - CGF",
 			"Array label adjusted")
+
+
+func test_modify_string_number_property():
+	card.properties['Cost'] = 'X'
+	card.properties['Power'] = 'X'
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": '2', "Power": "-1"}}]}}
+	card.execute_scripts()
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
+	assert_eq(card.properties.Cost, 2,
+			"Card cost should be changed to to specified value")
+	assert_eq(card.properties.Power, -1,
+			"Card power should be set to int as comparison unexpected")
+
+
+func test_modify_string_number_property2():
+	card.properties['Cost'] = 'X'
+	card.properties['Power'] = '2'
+	card.scripts = {"manual": {"hand": [
+			{"name": "modify_properties",
+			"subject": "self",
+			"set_properties": {"Cost": 'X', "Power": "X"}}]}}
+	card.execute_scripts()
+	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
+	assert_eq(card.properties.Cost, 'X',
+			"Card cost should be changed to to specified value")
+	assert_eq(card.properties.Power, 'X',
+			"Card power should be set to string as comparison unexpected")
+

@@ -656,7 +656,9 @@ func modify_property(
 						if value.is_valid_integer():
 							# We catch the designer by mistake putting a number
 							# as an integer in the card definition
-							if is_init:
+							# We also set directly as the value, if the current value of the card
+							# if a string (.e.g 'X')
+							if is_init or typeof(properties[property]) != TYPE_INT:
 								properties[property] = int(value)
 							# If this is not during init, then a +/- number in modify_property() args
 							# signifies an operation on the existing number
