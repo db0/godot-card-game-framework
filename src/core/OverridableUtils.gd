@@ -55,3 +55,24 @@ func select_card(
 	if parent_node == cfc.NMAP.get("board"):
 		cfc.game_paused = false
 	return(selected_cards)
+
+# Goes through the card pool of the game and checks each card against the provided list of filters
+# Then returns all card names matching the filters.
+func filter_card_pool(filters_list: Array, card_pool := _get_card_pool()) -> Array:
+	var matching_card_defs := []
+	for card_name in card_pool:
+		var matching_def := true
+		# Each filter should be a CardFilter class
+		for filter in filters_list:
+			if not filter.check_card(card_pool[card_name]):
+				matching_def = false
+				break
+		if matching_def:
+			matching_card_defs.append(card_name)
+	return(matching_card_defs)
+
+
+# Overridable function to return the card pool of the game
+# Games might decide to change how this is used for their own purposes.
+func _get_card_pool() -> Dictionary:
+	return(cfc.card_definitions)

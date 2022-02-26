@@ -90,7 +90,7 @@ var alterant_cache: Dictionary
 # This dictionary is not used by default anywhere in the framework.
 # A game need to explicitly make use of it.
 var card_temp_property_modifiers = {}
-var ov_utils  = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
+var ov_utils = load(CFConst.PATH_OVERRIDABLE_UTILS).new()
 var curr_scale: float
 
 var script_load_thread : Thread

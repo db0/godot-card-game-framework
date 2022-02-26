@@ -41,13 +41,20 @@ func check_card(card_properties: Dictionary) -> bool:
 	var prop_value = card_properties.get(property)
 	# If the property is an array, we assume the player is trying to
 	# match an element in it
-	if typeof(prop_value) == TYPE_ARRAY:
+	if typeof(filter) == TYPE_BOOL:
+		# For now, we consider null value as false when comparison booleans
+		# This allows the developer declare boolean properties only when they differ from the defalt.
+		if typeof(prop_value) == TYPE_NIL:
+			prop_value = false
+		if typeof(prop_value) == TYPE_BOOL and prop_value == filter:
+			card_matches = true
+	elif typeof(prop_value) == TYPE_ARRAY:
 		if filter in prop_value and comparison == 'eq':
 				card_matches = true
 		elif not filter in prop_value and comparison == 'ne':
 				card_matches = true
 	# A dictionary value is treated as an array, based on its keys
-	if typeof(prop_value) == TYPE_DICTIONARY:
+	elif typeof(prop_value) == TYPE_DICTIONARY:
 		if prop_value.has(filter) and comparison == 'eq':
 				card_matches = true
 		elif not prop_value.has(filter) and comparison == 'ne':

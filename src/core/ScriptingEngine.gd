@@ -485,9 +485,95 @@ func spawn_card(script: ScriptTask) -> void:
 	# We set the spawned cards as the subjects, so that they can be
 	# used by other followup scripts
 	script.subjects = spawned_cards
-	# Adding a small delay to allow the cards to finish instancing and setting their 
+	# Adding a small delay to allow the cards to finish instancing and setting their
 	# properties
 	yield(script.owner.get_tree().create_timer(0.1), "timeout")
+
+
+# Task from creating a new card instance in a CardContainer
+# * Can be affected by [Alterants](ScriptProperties#KEY_ALTERANTS)
+# * Requires the following keys:
+#	* One of the following:
+#		* [KEY_CARD_NAME](ScriptProperties#KEY_CARD_NAME): name of the Card as per card definitions
+#		* [KEY_CARD_FILTERS](ScriptProperties#KEY_CARD_FILTERS): A dictionary to pass to CardFilter to filter possible cards from the card pool
+#			if KEY_CARD_FILTERS is specified then the following key has to also be specified:
+#			* if [KEY_SELECTION_CHOICES_AMOUNT](ScriptProperties#KEY_SELECTION_CHOICES_AMOUNT): How to select cards based on the specified filters
+#	* [KEY_DEST_CONTAINER](ScriptProperties#KEY_DEST_CONTAINER): The container in which to place the created card
+# * Optionally uses the following keys:
+#	* [KEY_OBJECT_COUNT](ScriptProperties#KEY_OBJECT_COUNT)
+func spawn_card_to_container(script: ScriptTask) -> void:
+	var card: Card
+	var count: int
+	var alteration = 0
+	var canonical_name = script.get_property(SP.KEY_CARD_NAME)
+	var card_filters: Array = script.get_property(SP.KEY_CARD_FILTERS)
+	if card_filters:
+		var selection_amount = script.get_property(SP.KEY_SELECTION_CHOICES_AMOUNT)
+		var compiled_filters := []
+		for filter_props in card_filters:
+			var card_filter := CardFilter.new(
+					filter_props.property,
+					filter_props.value,
+					filter_props.get("comparison", "eq"),
+					filter_props.get("compare_int_as_str", false))
+			compiled_filters.append(card_filter)
+		var filtered_cards : Array = cfc.ov_utils.filter_card_pool(compiled_filters)
+		# If we found less potential cards than the amount to select from, we adjust
+		if filtered_cards.size() < selection_amount:
+			selection_amount == filtered_cards.size()
+		CFUtils.shuffle_array(filtered_cards)
+		if selection_amount < 0:
+			 return
+		if selection_amount == 1:
+			canonical_name = filtered_cards[0]
+		else:
+			filtered_cards = filtered_cards.slice(0,selection_amount - 1)
+			var select_return = cfc.ov_utils.select_card(
+					filtered_cards, 1, 'min', false, cfc.NMAP.board)
+			if select_return is GDScriptFunctionState: # Still working.
+				select_return = yield(select_return, "completed")
+			if typeof(select_return) == TYPE_ARRAY:
+				canonical_name = select_return[0]
+			else:
+				return
+	var dest_container: CardContainer = cfc.NMAP[script.get_property(SP.KEY_DEST_CONTAINER).to_lower()]
+	if str(script.get_property(SP.KEY_OBJECT_COUNT)) == SP.VALUE_RETRIEVE_INTEGER:
+		count = stored_integer
+		if script.get_property(SP.KEY_IS_INVERTED):
+			count *= -1
+		count += script.get_property(SP.KEY_ADJUST_RETRIEVED_INTEGER)
+	elif SP.VALUE_PER in str(script.get_property(SP.KEY_OBJECT_COUNT)):
+		var per_msg = perMessage.new(
+				script.get_property(SP.KEY_OBJECT_COUNT),
+				script.owner,
+				script.get_property(script.get_property(SP.KEY_OBJECT_COUNT)),
+				null,
+				script.subjects,
+				script.prev_subjects)
+		count = per_msg.found_things
+	else:
+		count = script.get_property(SP.KEY_OBJECT_COUNT)
+	alteration = _check_for_alterants(script, count)
+	if alteration is GDScriptFunctionState:
+		alteration = yield(alteration, "completed")
+	var spawned_cards := []
+	for iter in range(count + alteration):
+		card = cfc.instance_card(canonical_name)
+		cfc.NMAP.board.add_child(card)
+		card.scale = Vector2(0.1,0.1)
+		if 'rect_global_position' in script.owner:
+			card.global_position = script.owner.rect_global_position
+		else:
+			card.global_position = script.owner.global_position
+		card.global_position.x += \
+				iter * CFConst.CARD_SIZE.x * 0.2
+		card.spawn_destination = dest_container
+		card.state = Card.CardState.MOVING_TO_SPAWN_DESTINATION
+		# We set the drawn cards as the subjects, so that they can be
+		# used by other followup scripts
+		yield(cfc.get_tree().create_timer(0.2), "timeout")
+		spawned_cards.append(card)
+	script.subjects = spawned_cards
 
 # Task from shuffling a CardContainer
 # * Requires the following keys:

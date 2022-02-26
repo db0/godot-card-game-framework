@@ -30,6 +30,7 @@ enum CardState {
 	VIEWPORT_FOCUS			#13
 	PREVIEW					#14
 	DECKBUILDER_GRID		#15
+	MOVING_TO_SPAWN_DESTINATION		#16
 }
 # Specifies where a card is allowed to drop on the board
 #
@@ -276,6 +277,9 @@ var _original_layouts:= {}
 # This flag to prevent the player from "double-dipping" on a script
 # while animations are playing.
 var is_executing_scripts := false
+# If this card is freshly spawned, this variable will hold the CardContainer
+# which is the final constainer to put it in
+var spawn_destination
 
 # This variable will point to the scene which controls the targeting arrow
 onready var targeting_arrow
@@ -2579,6 +2583,20 @@ func _process_card_state() -> void:
 				resize_recursively(_control, thumbnail_scale * cfc.curr_scale)
 				card_front.scale_to(thumbnail_scale * cfc.curr_scale)
 
+		CardState.MOVING_TO_SPAWN_DESTINATION:
+			z_index = 99
+			set_focus(false)
+			set_control_mouse_filters(false)
+			buttons.set_active(false)
+			if not _tween.is_active()\
+					and not scale.is_equal_approx(Vector2(1,1)):
+				_add_tween_scale(scale, Vector2(1,1),0.75)
+				_add_tween_global_position(global_position, get_viewport().size/2 - CFConst.CARD_SIZE/2)
+				_tween.start()
+				yield(_tween, "tween_all_completed")
+				_tween_stuck_time = 0
+				move_to(spawn_destination)
+				spawn_destination = null
 
 
 # Get the angle on the ellipse

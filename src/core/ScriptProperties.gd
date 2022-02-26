@@ -351,6 +351,24 @@ const KEY_ASK_INTEGER_MIN := "ask_int_min"
 # Used by the [ask_integer](ScriptingEngine#ask_integer) task.
 # Specifies the maximum value the number needs to have
 const KEY_ASK_INTEGER_MAX := "ask_int_max"
+# Value Type: array
+#
+# A list of dictionaries. Each dictionary providing a CardFilter properties which will be used
+# to filter through the card base for finding cards which match. The different filters in the array
+# are used as "AND" conditionals with each other
+# 
+# Used by spawn_card_to_container, when an explicit card name is not wanted.
+# Instead uses the provided filter to go through the card library and find all cards which fit the filters.
+# Then randomly chooses an amount of cards among those fitting the filters, equal to [KEY_CARD_CHOICES_AMOUNT](#KEY_CARD_CHOICE_TYPE)
+# to show to the player.
+const KEY_CARD_FILTERS := "card_filters"
+# Value Type: int (Default: 1)
+#
+# Used by [KEY_CARD_FILTERS](#KEY_CARD_FILTERS) to know how many cards to show to the player.
+# A value of 1 means the player get no choice, but instead gets a random card out of the possible options
+# Any other value, means the player gets a selection among this amount of possible options.
+# values lower than 1 are ignored.
+const KEY_SELECTION_CHOICES_AMOUNT: = "selection_choices_amount"
 # Value Type: Array of Strings
 # All card manipulation Signals will send a list of tags
 # marking the type of effect that triggered them.
@@ -1214,6 +1232,7 @@ static func get_default(property: String):
 				KEY_OBJECT_COUNT,\
 				KEY_MODIFICATION,\
 				KEY_MULTIPLIER,\
+				KEY_SELECTION_CHOICES_AMOUNT,\
 				KEY_DIVIDER:
 			default = 1
 		KEY_GRID_NAME, KEY_SUBJECT:
