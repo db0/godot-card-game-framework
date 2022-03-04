@@ -78,7 +78,7 @@ func prime(_prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
 
 func check_confirm() -> bool:
 	var owner_name = ''
-	if owner:
+	if is_instance_valid(owner):
 		owner_name = owner.canonical_name
 	var confirm_return = CFUtils.confirm(
 			script_definition,

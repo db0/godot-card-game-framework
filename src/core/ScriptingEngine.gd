@@ -150,6 +150,9 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 						or (costs_dry_run() and script.is_cost)):
 				#print(script.is_valid,':',costs_dry_run())
 				for card in script.subjects:
+					if not is_instance_valid(card):
+						script.subjects.erase(card)
+						continue
 					card.temp_properties_modifiers[self] = {
 						"requesting_object": script.owner,
 						"modifier": _retrieve_temp_modifiers(script, "properties")
@@ -506,7 +509,7 @@ func spawn_card_to_container(script: ScriptTask) -> void:
 	var count: int
 	var alteration = 0
 	var canonical_name = script.get_property(SP.KEY_CARD_NAME)
-	var card_filters: Array = script.get_property(SP.KEY_CARD_FILTERS)
+	var card_filters = script.get_property(SP.KEY_CARD_FILTERS)
 	if card_filters:
 		var selection_amount = script.get_property(SP.KEY_SELECTION_CHOICES_AMOUNT)
 		var compiled_filters := []
@@ -559,16 +562,20 @@ func spawn_card_to_container(script: ScriptTask) -> void:
 	var spawned_cards := []
 	for iter in range(count + alteration):
 		card = cfc.instance_card(canonical_name)
-		cfc.NMAP.board.add_child(card)
-		card.scale = Vector2(0.1,0.1)
-		if 'rect_global_position' in script.owner:
-			card.global_position = script.owner.rect_global_position
+		if script.get_property(SP.KEY_IMMEDIATE_PLACEMENT):
+			cfc.NMAP.board.add_child(card)
+			card.scale = Vector2(0.1,0.1)
+			if 'rect_global_position' in script.owner:
+				card.global_position = script.owner.rect_global_position
+			else:
+				card.global_position = script.owner.global_position
+			card.global_position.x += \
+					iter * CFConst.CARD_SIZE.x * 0.2
+			card.spawn_destination = dest_container
+			card.state = Card.CardState.MOVING_TO_SPAWN_DESTINATION
 		else:
-			card.global_position = script.owner.global_position
-		card.global_position.x += \
-				iter * CFConst.CARD_SIZE.x * 0.2
-		card.spawn_destination = dest_container
-		card.state = Card.CardState.MOVING_TO_SPAWN_DESTINATION
+			dest_container.add_child(card)
+			card.set_to_idle()
 		# We set the drawn cards as the subjects, so that they can be
 		# used by other followup scripts
 		yield(cfc.get_tree().create_timer(0.2), "timeout")

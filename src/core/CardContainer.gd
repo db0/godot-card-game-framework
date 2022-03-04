@@ -221,6 +221,14 @@ func has_card(card: Card) -> bool:
 		return(true)
 	return(false)
 
+
+func has_card_name(card_name: String) -> bool:
+	for card in get_all_cards():
+		if card.canonical_name == card_name:
+			return(true)
+	return(false)
+
+
 # Returns a random card object among the children nodes
 func get_random_card() -> Card:
 	if get_card_count() == 0:

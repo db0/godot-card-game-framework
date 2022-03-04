@@ -814,6 +814,11 @@ const KEY_REPEAT := "repeat"
 # task filters fail. (Normally the task is merely skipped).
 # This will cause an [KEY_IS_COST](#LEY_IS_COST] to abort all effects.
 const KEY_FAIL_COST_ON_SKIP = "fail_cost_on_skip"
+# Value Type: Bool.
+#
+# Skips fancy anymation when spawning a new card and simply places it in its final destination 
+# immediately.
+const KEY_IMMEDIATE_PLACEMENT = "immediate_placement"
 #---------------------------------------------------------------------
 # Filter Definition Keys
 #
@@ -1210,6 +1215,7 @@ static func get_default(property: String):
 				KEY_ORIGINAL_PREVIOUS,\
 				KEY_PROTECT_PREVIOUS,\
 				KEY_FAIL_COST_ON_SKIP,\
+				KEY_IMMEDIATE_PLACEMENT,\
 				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:
@@ -1573,7 +1579,7 @@ static func check_faceup_filter(card, flip_state: bool) -> bool:
 # or the filter key was not defined. Otherwise returns false.
 static func check_parent_filter(card, parent: String) -> bool:
 	var card_matches := true
-	if parent.to_lower() != card.get_parent().name.to_lower():
+	if is_instance_valid(card) and parent.to_lower() != card.get_parent().name.to_lower():
 		card_matches = false
 	return(card_matches)
 

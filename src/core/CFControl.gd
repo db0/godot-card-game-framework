@@ -7,6 +7,7 @@ extends Node
 signal all_nodes_mapped
 signal cache_cleared
 signal scripts_loaded
+signal new_card_instanced(card)
 
 #-----------------------------------------------------------------------------
 # BEGIN Unit Testing Variables
@@ -213,6 +214,7 @@ func instance_card(card_name: String) -> Card:
 	var card = template.instance()
 	# We set the card_name variable so that it's able to be used later
 	card.canonical_name = card_name
+	emit_signal("new_card_instanced", card)
 	return(card)
 
 

@@ -141,7 +141,7 @@ The game comes with some sample scripted cards which can be found under `res://s
 
 ## Getting help, talking dev, or general chat
 
-You can join us on Discord with this invite code: https://discord.gg/AjZMFY7jD4
+You can join us on Matrix (https://matrix.to/#/!UdtRNwYEDJcLdQigxS:matrix.org) or Discord (https://discord.gg/AjZMFY7jD4)
 
 ## Contributing
 
