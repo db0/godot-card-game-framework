@@ -390,6 +390,7 @@ func _process(delta) -> void:
 			"VIEWPORT_FOCUS",
 			"PREVIEW",
 			"DECKBUILDER_GRID",
+			"MOVING_TO_SPAWN_DESTINATION",
 		]
 		$Debug.visible = true
 		$Debug/id.text = "ID:  " + str(self)

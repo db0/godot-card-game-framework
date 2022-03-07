@@ -93,7 +93,7 @@ func get_preview_placement() -> Vector2:
 # The variable passed can be a card name, or a card instance.
 # If it's a card instance, it will be added to this node as a child directly.
 func show_preview_card(card) -> void:
-	if not is_instance_valid(preview_card):
+	if not has_preview_card():
 		if typeof(card) == TYPE_STRING:
 			preview_card = cfc.instance_card(card)
 		else:
@@ -113,7 +113,8 @@ func show_preview_card(card) -> void:
 	visible = true
 
 
-# Deinstances the currently shown card.
+# Hides currently shown card.
+# We're modulating to 0 instead of hide() because that messes with the rich text labels formatting
 func hide_preview_card() -> void:
 	modulate.a = 0
 
@@ -122,3 +123,6 @@ func hide_preview_card() -> void:
 func _on_viewport_resized() -> void:
 	if is_instance_valid(preview_card):
 		preview_card.queue_free()
+
+func has_preview_card() -> bool:
+	return(is_instance_valid(preview_card))

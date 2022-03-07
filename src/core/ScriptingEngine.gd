@@ -562,7 +562,7 @@ func spawn_card_to_container(script: ScriptTask) -> void:
 	var spawned_cards := []
 	for iter in range(count + alteration):
 		card = cfc.instance_card(canonical_name)
-		if script.get_property(SP.KEY_IMMEDIATE_PLACEMENT):
+		if not script.get_property(SP.KEY_IMMEDIATE_PLACEMENT):
 			cfc.NMAP.board.add_child(card)
 			card.scale = Vector2(0.1,0.1)
 			if 'rect_global_position' in script.owner:

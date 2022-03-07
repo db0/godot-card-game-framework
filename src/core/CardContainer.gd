@@ -196,7 +196,7 @@ func get_all_cards() -> Array:
 	for obj in get_children():
 		# We want dragged cards to not be taken into account
 		# when reorganizing the hand (so that their gap closes immediately)
-		if obj as Card and obj != cfc.card_drag_ongoing:
+		if obj as Card and is_instance_valid(obj) and obj != cfc.card_drag_ongoing:
 			cardsArray.append(obj)
 	return cardsArray
 
