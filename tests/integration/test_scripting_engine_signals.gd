@@ -44,6 +44,10 @@ class TestSignals:
 
 class TestCardPropertiesFilter:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		initial_card_count = 9
+		target_index = 1
+		
 
 	func test_card_properties_filter():
 		cards += draw_test_cards(1)
@@ -191,6 +195,9 @@ class TestCardRotates:
 
 class TestCardFlipped:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		initial_card_count = 9
+		target_index = 1
 
 	func test_card_flipped():
 		watch_signals(target)
@@ -300,6 +307,8 @@ class TestCardMovedToBoard:
 
 class TestCardMovedToPile:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		initial_card_count = 9
 
 	func test_card_moved_to_pile():
 		watch_signals(target)
@@ -373,6 +382,8 @@ class TestCardMovedToPile:
 
 class TestCardTokenModified:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		initial_card_count = 9
 
 	func test_card_token_modified():
 		# warning-ignore:return_value_discarded
@@ -466,6 +477,8 @@ class TestCardTokenModified:
 
 class TestCounterModified:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		initial_card_count = 9
 
 	func test_counter_modified():
 		# warning-ignore:return_value_discarded
@@ -620,6 +633,9 @@ class TestCardUnattached:
 
 class TestCardPropertiesModified:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		initial_card_count = 9
+		target_index = 1
 
 	func test_card_properties_modified():
 		watch_signals(target)

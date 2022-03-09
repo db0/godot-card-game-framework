@@ -1357,7 +1357,7 @@ func move_to(targetHost: Node,
 				# board_placement variable. So we need to check
 				# where the player is trying to drop the card
 				# and revert the placement if it's invalid
-				if board_position as BoardPlacementSlot:
+				if board_position is BoardPlacementSlot:
 					# This will trigger is the card can only be placed
 					# in specific grids, and the player tried to drag it
 					# Manually to a different grid
