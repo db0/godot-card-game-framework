@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.1 (Ongoing)
+## 2.1
 
 ### Important for Upgrades
 
@@ -10,6 +10,30 @@ To upgrade to this version, you **MUST** create a class called `SetPreload` some
 You can copy over `"res://src/dreamscape/cards/sets/SetPreload.gd"` from CGF to get started.
 * Your SetScript files' `get_scripts()` function needs to be extended to require a second, boolean variable. You can use it to return script results that are otherwise onformated
 and they will be stores permanently in cfc, in case you want to be able to retrieve an individual card's script for permanent modificatio outside of the Card class.
+
+### New Features
+
+* Added new `CardFilter` class which can be fed the properties of any card and return true/false if the card fulfils the filter.
+* Added new method `has_card()` in CardContainer
+* Added new method `has_card_name()` in CardContainer
+* Added new method `has_preview_card()` in CVPreviewPopup
+* Added var to disable manipulation buttons on CardContainers
+
+### Tweaks
+
+* Added failsafes to avoid crashing when cards are being de-instanced during scripting engine runs
+* Made Number properties carrying string values more robust in comparing and setting
+* More attempts to ensure RTL fonts are not set to an improper size
+* Fixed card focus sticking to the wrong x scale when quickly hovering over it.
+* `sort_scriptables_by_name()` can now handle 'card_name'
+* SelectionWindow now pops up exclusive in display mode
+* CardFilter can now handle comparing tags
+* Improved Quickstart (thanks @trillyc)
+
+#### ScriptingEngine
+
+* Added new task `spawn_card_to_container` which allows new cards to be spawned directly to containers.
+  It also allows for the player to be asked to select a card out of selection from the whole card library, using CardFilters
 
 ## 2.0
 
