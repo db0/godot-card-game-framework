@@ -216,30 +216,33 @@ class TestShuffleContainer:
 		card.scripts = {"manual": {"hand": [
 				{"name": "shuffle_container",
 				"dest_container": "hand"}]}}
+		var original_card_order = hand.get_all_cards()
 		var rng_threshold: int = 0
-		var prev_index = card.get_my_card_index()
-		card.execute_scripts()
-		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-		if prev_index == card.get_my_card_index():
+		watch_signals(hand)
+		card.call_deferred("execute_scripts")
+		yield(hand, "shuffle_completed")
+		if original_card_order == hand.get_all_cards():
+			gut.p(original_card_order)
 			rng_threshold += 1
-		prev_index = card.get_my_card_index()
-		card.execute_scripts()
-		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-		if prev_index == card.get_my_card_index():
+		card.call_deferred("execute_scripts")
+		yield(hand, "shuffle_completed")
+		if original_card_order == hand.get_all_cards():
+			gut.p(original_card_order)
 			rng_threshold += 1
-		prev_index = card.get_my_card_index()
-		card.execute_scripts()
-		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-		if prev_index == card.get_my_card_index():
+		card.call_deferred("execute_scripts")
+		yield(hand, "shuffle_completed")
+		if original_card_order == hand.get_all_cards():
+			gut.p(original_card_order)
 			rng_threshold += 1
-		prev_index = card.get_my_card_index()
-		card.execute_scripts()
-		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-		if prev_index == card.get_my_card_index():
+		card.call_deferred("execute_scripts")
+		yield(hand, "shuffle_completed")
+		if original_card_order == hand.get_all_cards():
+			gut.p(original_card_order)
 			rng_threshold += 1
-		prev_index = card.get_my_card_index()
-		assert_gt(3,rng_threshold,
+		# We allow for the random chance that the shuffle ended with the same order once
+		assert_lt(rng_threshold,2,
 			"Card should not fall in he same spot too many times")
+		assert_signal_emit_count(hand, "shuffle_completed", 4)
 
 class TestAttachCard:
 	extends "res://tests/ScEng_common.gd"

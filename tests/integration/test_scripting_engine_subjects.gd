@@ -29,6 +29,8 @@ class TestSubjectTarget:
 
 class TestSubjectBoardseek:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		target_index = 1
 
 	func test_subject_boardseek():
 		var target2: Card = cards[2]

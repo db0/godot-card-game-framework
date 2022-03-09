@@ -86,7 +86,7 @@ func shuffle_cards() -> void:
 		card.interruptTweening()
 		card.reorganize_self()
 	move_child($Control,0)
-
+	emit_signal("shuffle_completed", self)
 
 # Takes the top card from the specified [CardContainer]
 # and adds it to this node

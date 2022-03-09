@@ -1399,7 +1399,6 @@ func execute_scripts(
 	# especially on filters
 	if _debugger_hook:
 		pass
-
 	# We check the trigger against the filter defined
 	# If it does not match, then we don't pass any scripts for this trigger.
 	if not SP.filter_trigger(

@@ -3,6 +3,8 @@
 class_name CardContainer
 extends Area2D
 
+signal shuffle_completed
+
 # The various automatic Anchors possible for a CardContainer
 # NONE means the container will not stay anchored to the screen
 # and will not adjust its position if the viewport changes.

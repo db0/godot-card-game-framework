@@ -3,7 +3,6 @@
 class_name Pile
 extends CardContainer
 
-signal shuffle_completed
 signal popup_closed
 
 
