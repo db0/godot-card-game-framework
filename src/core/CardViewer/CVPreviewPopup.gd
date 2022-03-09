@@ -88,6 +88,7 @@ func get_preview_placement() -> Vector2:
 #	print_debug(ret)
 	return(ret)
 
+
 # Instances a card object. Populates it with the card details
 # Then displays it in the popup.
 # The variable passed can be a card name, or a card instance.
@@ -118,11 +119,15 @@ func show_preview_card(card) -> void:
 func hide_preview_card() -> void:
 	modulate.a = 0
 
+
 # We want to recreate the popup after the viewport size has changed
 # As otherwise its elements may end up messed up
 func _on_viewport_resized() -> void:
 	if is_instance_valid(preview_card):
 		preview_card.queue_free()
 
+
+# Returns true if the preview_card variable has a valid Card instance
+# else returns false
 func has_preview_card() -> bool:
 	return(is_instance_valid(preview_card))

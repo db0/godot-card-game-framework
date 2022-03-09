@@ -4,9 +4,13 @@
 class_name CFControl
 extends Node
 
+# Sent when all CGF nodes have been added to the NMAP dictionary
 signal all_nodes_mapped
+# Sent any time the scripting engine cache is cleared
 signal cache_cleared
+# Sent when all Card scripts have finished loading the memory from file
 signal scripts_loaded
+# Sent when a new Card node is instanced
 signal new_card_instanced(card)
 
 #-----------------------------------------------------------------------------

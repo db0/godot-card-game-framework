@@ -216,12 +216,15 @@ func get_card_index(card: Card) -> int:
 	return get_all_cards().find(card)
 
 
+# Returns true if this card container has a Card object matching the specified one
 func has_card(card: Card) -> bool:
 	if card in get_all_cards():
 		return(true)
 	return(false)
 
 
+# Returns true is any card in this card container has a canonical_name 
+# that matches the provided argument.
 func has_card_name(card_name: String) -> bool:
 	for card in get_all_cards():
 		if card.canonical_name == card_name:
