@@ -128,6 +128,9 @@ class TestCardScripts:
 
 class TestTargetScriptOnDragFromHand:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		target_index = 1
+		initial_wait = 0.5
 
 	func test_target_script_on_drag_from_hand():
 		cfc.NMAP.board.counters.mod_counter("credits", 10, true)

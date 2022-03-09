@@ -1,7 +1,7 @@
 extends "res://tests/UTcommon.gd"
 
 class TestAttachAndSwitch:
-	extends "res://tests/Basic_common.gd"
+	extends "res://tests/Attachment_common.gd"
 
 	func test_attaching_and_switching_parent():
 		var card : Card
@@ -145,7 +145,7 @@ class TestAttachAndSwitch:
 					"Attachment of a host that left play follows it to the same target")
 
 class TestMultiHostHover:
-	extends "res://tests/Basic_common.gd"
+	extends "res://tests/Attachment_common.gd"
 
 	func test_multi_host_hover():
 		var card : Card
@@ -179,7 +179,7 @@ class TestMultiHostHover:
 		yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
 
 class TestAttachmentNodeOrder:
-	extends "res://tests/Basic_common.gd"
+	extends "res://tests/Attachment_common.gd"
 
 	func test_attachment_node_order():
 		var host_card : Card

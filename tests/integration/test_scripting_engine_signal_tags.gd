@@ -67,6 +67,9 @@ class TestCardMovedToSignalTags:
 
 class TestCardRotatedTags:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		initial_card_count = 6
+		target_index = 1
 
 	func test_card_rotated_tags():
 		watch_signals(target)
@@ -111,6 +114,9 @@ class TestCardRotatedTags:
 
 class TestCardFlippedTags:
 	extends "res://tests/ScEng_common.gd"
+	func _init() -> void:
+		initial_card_count = 6
+		target_index = 1
 
 	func test_card_flipped_tags():
 		watch_signals(target)
@@ -155,7 +161,10 @@ class TestCardFlippedTags:
 
 class TestCardTokenModifiedTags:
 	extends "res://tests/ScEng_common.gd"
-
+	func _init() -> void:
+		initial_card_count = 6
+		target_index = 1
+		
 	func test_card_token_modified_tags():
 		yield(table_move(target, Vector2(500,100)), "completed")
 		yield(table_move(cards[5], Vector2(100,100)), "completed")
