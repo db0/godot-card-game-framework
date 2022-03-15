@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2 (Ongoing)
+
+### New Features
+
+* `CardFilter` class can now call `custom_check()`. This allows any game to extend it with extra functionality
+
+
+
 ## 2.1
 
 ### Important for Upgrades

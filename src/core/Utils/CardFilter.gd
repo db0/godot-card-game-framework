@@ -10,6 +10,7 @@ var filter
 var comparison: String
 # If true, will compare integers as strings.
 var compare_int_as_str := false
+var custom_filter = null
 
 func _init(
 		_property: String,
@@ -39,15 +40,17 @@ func _init(
 func check_card(card_properties: Dictionary) -> bool:
 	var card_matches := false
 	var prop_value = card_properties.get(property)
-	# If the property is an array, we assume the player is trying to
-	# match an element in it
-	if typeof(filter) == TYPE_BOOL:
+	if custom_filter:
+		card_matches = custom_check(card_properties)
+	elif typeof(filter) == TYPE_BOOL:
 		# For now, we consider null value as false when comparison booleans
 		# This allows the developer declare boolean properties only when they differ from the defalt.
 		if typeof(prop_value) == TYPE_NIL:
 			prop_value = false
 		if typeof(prop_value) == TYPE_BOOL and prop_value == filter:
 			card_matches = true
+	# If the property is an array, we assume the player is trying to
+	# match an element in it
 	elif typeof(prop_value) == TYPE_ARRAY:
 		if filter in prop_value and comparison == 'eq':
 				card_matches = true
@@ -113,3 +116,10 @@ func check_card(card_properties: Dictionary) -> bool:
 			comparison):
 		card_matches = true
 	return(card_matches)
+
+
+# Extendable function to allow games to extend CardFilter with their own filters
+# To enter this function, the custom_filter property has to be !null
+# The value to put into it and how to use it is up each developer
+func custom_check(card_properties: Dictionary) -> bool:
+	return(false)
