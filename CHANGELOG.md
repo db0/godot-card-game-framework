@@ -5,7 +5,13 @@
 ### New Features
 
 * `CardFilter` class can now call `custom_check()`. This allows any game to extend it with extra functionality
+* `CardFilter` class can now filter against array/dictionary size
 
+#### ScriptingEngine
+
+* Can now set a card state to be "any" and the script will trigger
+  Regardless of where the card is.
+* ScriptingEngine filters can now filter using CardFilter objects
 
 
 ## 2.1

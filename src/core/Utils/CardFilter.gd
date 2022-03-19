@@ -7,6 +7,11 @@ var property: String
 # The value against which to compare the value of the property
 var filter
 # The kind of comparison to perform
+# Allowed values
+# 'eq', 'ne'
+# 'gt', 'ge', 'lt', 'le'
+# Against numbers, will perform standard numerical comparison
+# Against Arrays / Dictionaries, will perform standard numerical comparison against their size
 var comparison: String
 # If true, will compare integers as strings.
 var compare_int_as_str := false
@@ -16,15 +21,17 @@ func _init(
 		_property: String,
 		_value,
 		_comparison := 'eq',
-		_compare_int_as_str := false) -> void:
+		_compare_int_as_str := false,
+		_custom_filter = null) -> void:
 	property = _property
 	filter = _value
 	comparison = _comparison
 	compare_int_as_str = _compare_int_as_str
+	custom_filter = _custom_filter
 	if compare_int_as_str and not comparison in ['eq', 'ne']:
 		printerr("ERROR:CardFilter: Cannot compare int as strings using comparison: %s. Defaulting to 'eq' instead" % [comparison])
 		comparison = 'eq'
-	if not property in CardConfig.PROPERTIES_NUMBERS and not comparison in ['eq', 'ne']:
+	if property in CardConfig.PROPERTIES_STRINGS and not comparison in ['eq', 'ne']:
 		printerr("ERROR:CardFilter: Cannot use comparisons other than 'eq' and 'ne' on string property: %s. Defaulting to 'eq' instead" % [property])
 		comparison = 'eq'
 	if property in CardConfig.PROPERTIES_STRINGS and typeof(filter) != TYPE_STRING:
@@ -37,6 +44,8 @@ func _init(
 		filter = int(filter)
 		
 # Takes the properties dictionary
+# Returns true if the card matches this filter
+# Else returns false
 func check_card(card_properties: Dictionary) -> bool:
 	var card_matches := false
 	var prop_value = card_properties.get(property)
@@ -53,15 +62,25 @@ func check_card(card_properties: Dictionary) -> bool:
 	# match an element in it
 	elif typeof(prop_value) == TYPE_ARRAY:
 		if filter in prop_value and comparison == 'eq':
-				card_matches = true
+			card_matches = true
 		elif not filter in prop_value and comparison == 'ne':
-				card_matches = true
+			card_matches = true
+		elif not comparison in ['eq', 'ne'] and CFUtils.compare_numbers(
+				prop_value.size(),
+				int(filter),
+				comparison):
+			card_matches = true
 	# A dictionary value is treated as an array, based on its keys
 	elif typeof(prop_value) == TYPE_DICTIONARY:
 		if prop_value.has(filter) and comparison == 'eq':
 				card_matches = true
 		elif not prop_value.has(filter) and comparison == 'ne':
 				card_matches = true
+		elif not comparison in ['eq', 'ne'] and CFUtils.compare_numbers(
+				prop_value.size(),
+				int(filter),
+				comparison):
+			card_matches = true
 	elif typeof(prop_value) == typeof(filter)\
 			and typeof(prop_value) == TYPE_INT\
 			and not compare_int_as_str:

@@ -891,6 +891,12 @@ const FILTER_STATE := "filter_state_"
 # In that case it is assumed that the string is a counter name
 # against which to compare the property value
 const FILTER_PROPERTIES := "filter_properties"
+# Value Type: Array
+#
+# Filter used for checking against the Card properties using CardFilter objects
+#
+# Each entry is a dictionary with the payload to pass to a CardFilter object
+const FILTER_CARDFILTERS := "filter_cardfilters"
 #Value Type: String.
 #
 # Filter used for checking against the parent node of a subject.
@@ -1526,6 +1532,31 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 				card_matches = false
 	return(card_matches)
 
+# Returns true if the card matches against the CardFilters specified in
+# the provided card_scripts or if no CardFilters filters were defined.
+# Otherwise returns false.
+static func check_cardfilters(card, card_filters: Array) -> bool:
+	var card_matches := true
+	for f in card_filters:
+		var card_filter: CardFilter
+		# If the entry is a dictionary, we expect it will contain the payload
+		# for a CardFilter object
+		if typeof(f) == TYPE_DICTIONARY:
+			card_filter = CardFilter.new(
+				f.property,
+				f.value,
+				f.get("comparison", "eq"),
+				f.get("compare_int_as_str", false),
+				f.get("custom_filter", null)
+			)
+		elif f is CardFilter:
+			card_filter = f
+		else:
+			continue
+		if not card_filter.check_card(card.properties):
+			card_matches = false
+	return(card_matches)
+
 
 # Returns true if the card tokens match against filters specified in
 # the provided card_scripts, of if no token filters were requested.
@@ -1610,6 +1641,9 @@ static func check_validity(card, card_scripts, type := "trigger") -> bool:
 				# It will treat these two states as an "AND"
 				if FILTER_PROPERTIES in filter\
 						and not check_properties(card, state_filters[filter]):
+					card_matches = false
+				if FILTER_CARDFILTERS in filter\
+						and not check_cardfilters(card, state_filters[filter]):
 					card_matches = false
 				elif FILTER_TOKENS in filter\
 						and not check_token_filter(card, state_filters[filter]):

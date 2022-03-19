@@ -1410,7 +1410,8 @@ func execute_scripts(
 	var state_scripts = []
 	# We select which scripts to run from the card, based on it state
 	var state_exec := get_state_exec()
-	state_scripts = card_scripts.get(state_exec, [])
+	var any_state_scripts = card_scripts.get('all', [])
+	state_scripts = card_scripts.get(state_exec, any_state_scripts)
 	# Here we check for confirmation of optional trigger effects
 	# There should be an SP.KEY_IS_OPTIONAL definition per state
 	# E.g. if board scripts are optional, but hand scripts are not
