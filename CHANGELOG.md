@@ -12,7 +12,7 @@
 * Can now set a card state to be "any" and the script will trigger
   Regardless of where the card is.
 * ScriptingEngine filters can now filter using CardFilter objects
-
+* Added KEY_FILTER_EACH_REVIOUS_SUBJECT to use in tasks utilizing KEY_SUBJECT_V_PREVIOUS.
 
 ## 2.1
 

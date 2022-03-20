@@ -80,6 +80,7 @@ class TestSubjectPrevious:
 				"Target should be pre-selected to be rotated")
 		assert_true(target.is_faceup,
 				"Target should be pre-selected to be flipped")
+		pending("Test:" + SP.KEY_FILTER_EACH_REVIOUS_SUBJECT)
 
 
 	func test_subject_boardseek_previous():

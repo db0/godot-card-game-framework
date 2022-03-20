@@ -73,6 +73,16 @@ const KEY_SUBJECT_V_INDEX := "index"
 const KEY_SUBJECT_V_PREVIOUS := "previous"
 # Value Type: Bool (Default = False)
 #
+# If set to true, in a task using the [KEY_SUBJECT_V_PREVIOUS](#KEY_SUBJECT_V_PREVIOUS) key
+# Then each subject gathered in the previous task, will be evalutated using this tasks filters
+# and removed from the subjects array if it doesn't match.
+# In effect, without this key, all previous subjects need to pass the filter for any subject to
+# be affected
+# With this key, even if some subjects don't pass the filter, the subjects will do, will be affected
+# but in return, the total previous_subjects array will be reduced to only the matching subjects
+const KEY_FILTER_EACH_REVIOUS_SUBJECT := "filter_each_previous_subject"
+# Value Type: Bool (Default = False)
+#
 # If this is set, the subjects found by this task, will not overwrite the previous
 # subjects found by the previous task
 #

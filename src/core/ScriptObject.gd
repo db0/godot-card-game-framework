@@ -85,10 +85,19 @@ func _find_subjects(stored_integer := 0) -> Array:
 		# if the value "previous" is given to the "subjects" key,
 		# it simple reuses the same ones.
 		SP.KEY_SUBJECT_V_PREVIOUS:
-			subjects_array = prev_subjects
-			for c in subjects_array:
-				if not SP.check_validity(c, script_definition, "subject"):
+			if get_property(SP.KEY_FILTER_EACH_REVIOUS_SUBJECT):
+				# We still check all previous subjects to check that they match the filters
+				# If not, we remove them from the subject list
+				for c in prev_subjects:
+					if SP.check_validity(c, script_definition, "subject"):
+						subjects_array.append(c)
+				if subjects_array.size() == 0:
 					is_valid = false
+			else:
+				subjects_array = prev_subjects
+				for c in subjects_array:
+					if not SP.check_validity(c, script_definition, "subject"):
+						is_valid = false
 		SP.KEY_SUBJECT_V_TARGET:
 			var c = _initiate_card_targeting()
 			if c is GDScriptFunctionState: # Still working.
