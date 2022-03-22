@@ -2,7 +2,7 @@
 
 [ext_resource path="res://src/core/SelectionWindow.gd" type="Script" id=1]
 
-[node name="SelectionWindow" type="AcceptDialog"]
+[node name="SelectionWindow" type="AcceptDialog" groups=["selection_windows"]]
 modulate = Color( 1, 1, 1, 0 )
 anchor_right = 1.0
 anchor_bottom = 1.0

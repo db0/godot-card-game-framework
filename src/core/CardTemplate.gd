@@ -873,12 +873,14 @@ func set_is_faceup(
 			# We need this check, as this node might not be ready
 			# Yet when a viewport focus dupe is instancing
 			buttons.set_button_visible("View", false)
-			card_back.stop_card_back_animation()
+			if is_instance_valid(card_back):
+				card_back.stop_card_back_animation()
 		else:
 			_flip_card(_card_front_container, _card_back_container,instant)
 			buttons.set_button_visible("View", true)
 #			if get_parent() == cfc.NMAP.board:
-			card_back.start_card_back_animation()
+			if is_instance_valid(card_back):
+				card_back.start_card_back_animation()
 		# When we flip, we also want to adjust the dupe card
 		# in the focus viewport
 		if state != CardState.VIEWED_IN_PILE\
@@ -1377,6 +1379,10 @@ func move_to(targetHost: Node,
 							_placement_slot.occupying_card = null
 							_placement_slot = null
 				raise()
+		elif parentHost == targetHost and index != get_my_card_index():
+			parentHost.move_child(self,
+					parentHost.translate_card_index_to_node_index(index))
+			print_debug(get_my_card_index())
 		elif "CardPopUpSlot" in parentHost.name:
 			set_state(CardState.IN_POPUP)
 	common_post_move_scripts(targetHost.name, parentHost.name, tags)

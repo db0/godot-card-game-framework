@@ -43,7 +43,7 @@ func select_card(
 	# This way we can override the card select scene with a custom one
 	var selection = card_select_scene.instance()
 	parent_node.add_child(selection)
-	selection.initiate_selection(card_list,selection_count,selection_type,selection_optional)
+	selection.call_deferred("initiate_selection", card_list,selection_count,selection_type,selection_optional)
 	# We have to wait until the player has finished selecting their cards
 	yield(selection,"confirmed")
 	if selection.is_cancelled:

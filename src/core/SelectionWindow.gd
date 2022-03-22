@@ -57,6 +57,8 @@ func initiate_selection(
 		_selection_count := 0, 
 		_selection_type := 'min',
 		_selection_optional := false) -> void:
+	if OS.has_feature("debug") and not get_tree().get_root().has_node('Gut'):
+		print("DEBUG INFO:SelectionWindow: Initiated Selection")
 	# We don't allow the player to close the popup with the close button
 	# as that will not send the mandatory signal to unpause the game
 	get_close_button().visible = false
@@ -85,7 +87,11 @@ func initiate_selection(
 		selected_cards = card_array
 		emit_signal("confirmed")
 		return
-	# We change the window title to be descriptive
+	# When we have 0 cards to select from, we consider the selection cancelled
+	elif card_array.size() == 0:
+		is_cancelled = true
+		emit_signal("confirmed")
+		return
 	match selection_type:
 		"min":
 			window_title = "Select at least " + str(selection_count) + " cards."
@@ -113,7 +119,6 @@ func initiate_selection(
 			dupe_selection.remove_from_group("cards")
 			dupe_selection.canonical_name = card.canonical_name
 			dupe_selection.properties = card.properties.duplicate()
-			dupe_selection.is_faceup = true
 		card_sample = dupe_selection
 		var card_grid_obj = grid_card_object_scene.instance()
 		_card_grid.add_child(card_grid_obj)
@@ -123,6 +128,10 @@ func initiate_selection(
 		card_grid_obj.setup(dupe_selection)
 		_extra_dupe_ready(dupe_selection, card)
 		_card_dupe_map[card] = dupe_selection
+#		yield(dupe_selection, "ready")
+#		yield(get_tree().create_timer(0.3), "timeout")
+		dupe_selection.set_is_faceup(card.is_faceup,true)
+		dupe_selection.set_is_faceup(true,true)
 		# We connect each card grid's gui input into a call which will handle
 		# The selections
 		card_grid_obj.connect("gui_input", self, "on_selection_gui_input", [dupe_selection, card])
@@ -148,6 +157,8 @@ func initiate_selection(
 			0, 1, 0.5,
 			Tween.TRANS_SINE, Tween.EASE_IN)
 	_tween.start()
+	if OS.has_feature("debug") and not get_tree().get_root().has_node('Gut'):
+		print("DEBUG INFO:SelectionWindow: Started Card Display with a %s card selection" % [_card_grid.get_child_count()])
 
 
 # Overridable function for games to extend processing of dupe card
