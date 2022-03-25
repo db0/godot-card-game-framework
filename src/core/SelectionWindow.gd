@@ -1,6 +1,7 @@
 class_name SelectionWindow
 extends AcceptDialog
 
+signal card_choices_ready
 
 # The path to the GridCardObject scene.
 const _GRID_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
@@ -128,10 +129,8 @@ func initiate_selection(
 		card_grid_obj.setup(dupe_selection)
 		_extra_dupe_ready(dupe_selection, card)
 		_card_dupe_map[card] = dupe_selection
-#		yield(dupe_selection, "ready")
-#		yield(get_tree().create_timer(0.3), "timeout")
-		dupe_selection.set_is_faceup(card.is_faceup,true)
 		dupe_selection.set_is_faceup(true,true)
+		dupe_selection.ensure_proper()
 		# We connect each card grid's gui input into a call which will handle
 		# The selections
 		card_grid_obj.connect("gui_input", self, "on_selection_gui_input", [dupe_selection, card])
@@ -157,6 +156,7 @@ func initiate_selection(
 			0, 1, 0.5,
 			Tween.TRANS_SINE, Tween.EASE_IN)
 	_tween.start()
+	emit_signal("card_choices_ready")
 	if OS.has_feature("debug") and not get_tree().get_root().has_node('Gut'):
 		print("DEBUG INFO:SelectionWindow: Started Card Display with a %s card selection" % [_card_grid.get_child_count()])
 
@@ -186,6 +186,22 @@ func on_selection_gui_input(event: InputEvent, dupe_selection: Card, origin_card
 			_card_dupe_map[selected_cards[0]].highlight.set_highlight(false)
 			selected_cards.remove(0)
 
+
+# Manually selects cards based on their index.
+# Typically used for testing
+# Returns an array with the Card object selected
+func select_cards(indexes :Array = []) -> Array:
+	var all_choices = _card_dupe_map.keys()
+	for index in indexes:
+		if index + 1 > all_choices.size(): 
+			continue
+		selected_cards.append(all_choices[index])
+	emit_signal("confirmed")
+	return(selected_cards)
+	
+
+func get_all_card_options() -> Array:
+	return(_card_dupe_map.keys())
 
 # Cancels out of the selection window
 func _on_cancel_pressed() -> void:

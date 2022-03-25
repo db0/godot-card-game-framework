@@ -14,11 +14,13 @@ var _current_focus_source : Card = null
 onready var card_focus := $VBC/Focus
 onready var focus_info := $VBC/FocusInfo
 onready var _focus_viewport := $VBC/Focus/Viewport
+onready var world_environemt : WorldEnvironment = $WorldEnvironment
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	cfc.map_node(self)
+	world_environemt.environment.glow_enabled = cfc.game_settings.get('glow_enabled', true)
 	# We use the below while to wait until all the nodes we need have been mapped
 	# "hand" should be one of them.
 	$ViewportContainer/Viewport.add_child(board_scene.instance())
@@ -214,3 +216,6 @@ func _on_Viewport_size_changed() -> void:
 		$ViewportContainer.rect_size = get_viewport().size
 #		for c in _previously_focused_cards.values().duplicate():
 #			c.queue_free()
+
+func toggle_glow(is_enabled := true) -> void:
+	world_environemt.environment.glow_enabled = is_enabled

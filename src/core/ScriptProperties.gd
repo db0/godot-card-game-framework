@@ -1052,7 +1052,7 @@ const FILTER_TASK = "filter_task"
 const FILTER_CARD_NAME = "filter_card_name"
 # Value Type: Dictionary
 #
-# Requires similar input as [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK)
+# Requires similar input as [KEY_PER_TUTOR](#KEY_PER_TUTOR)
 # But also needs [FILTER_CARD_COUNT](#FILTER_CARD_COUNT) specified
 const FILTER_PER_TUTOR = "filter_per_tutor_count"
 # Value Type: Dictionary
@@ -1284,6 +1284,8 @@ static func filter_trigger(
 	# Checking card properties is its own function as it might be
 	# called from other places as well
 	var is_valid := check_validity(trigger_card, card_scripts, "trigger")
+	if is_valid and not check_validity(owner_card, card_scripts, "self"):
+		is_valid = false
 
 	# Here we check that the trigger matches the _request_ for trigger
 	# A trigger which requires "another" card, should not trigger

@@ -479,8 +479,8 @@ func _on_Card_gui_input(event) -> void:
 						if state == CardState.FOCUSED_IN_HAND\
 								and  _has_targeting_cost_hand_script()\
 								and check_play_costs() != CFConst.CostsState.IMPOSSIBLE:
-							var _sceng = execute_scripts()
 							cfc.card_drag_ongoing = null
+							var _sceng = execute_scripts()
 						elif state == CardState.FOCUSED_IN_HAND\
 								and (disable_dragging_from_hand
 								or check_play_costs() == CFConst.CostsState.IMPOSSIBLE):
@@ -673,6 +673,14 @@ func modify_property(
 							# We allow setting number properties as strings.
 							# We assume the designer knows what they're doing
 							properties[property] = value
+				# If the property is an array, and the value is a string, we assume they want
+				# to add this value to the array
+				# If the value is prepended by -, we assume the want to remove the value.
+				if property in CardConfig.PROPERTIES_ARRAYS and typeof(value) == TYPE_STRING:
+					if value.begins_with('-'):
+						properties[property].erase(value.lstrip('-'))
+					else:
+						properties[property].append(value)
 			refresh_property_label(property)
 	return(retcode)
 
@@ -1382,7 +1390,6 @@ func move_to(targetHost: Node,
 		elif parentHost == targetHost and index != get_my_card_index():
 			parentHost.move_child(self,
 					parentHost.translate_card_index_to_node_index(index))
-			print_debug(get_my_card_index())
 		elif "CardPopUpSlot" in parentHost.name:
 			set_state(CardState.IN_POPUP)
 	common_post_move_scripts(targetHost.name, parentHost.name, tags)
@@ -1878,6 +1885,17 @@ func common_pre_run(_sceng) -> void:
 func common_post_execution_scripts(_trigger: String) -> void:
 	pass
 
+
+# This function when we think the card is turned the right way, to ensure it's not stuck
+# in a weird position
+func ensure_proper() -> void:
+	var to_visible = _card_front_container
+	var to_invisible = _card_back_container
+	if not is_faceup:
+		to_visible = _card_back_container
+		to_invisible = _card_front_container
+	_flip_card(to_invisible, to_visible, true)
+
 # Returns true is the card has hand_drag_starts_targeting set to true
 # is currently in hand, and has a targetting task.
 #
@@ -2082,6 +2100,7 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 		to_invisible.visible = false
 		to_invisible.rect_scale.x = 0
 		to_invisible.rect_position.x = to_visible.rect_size.x/2
+		highlight.rect_scale = Vector2(1,1)
 	# When dupe cards in focus viewport are created, they have parent == null
 	# This causes them to raise an error trying to create a tween
 	# So we skip that.
