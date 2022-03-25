@@ -403,6 +403,8 @@ func _exit_tree():
 # and asking all cards to check if there's any automation they need to perform
 class SignalPropagator:
 
+	# This propagates a signal generally, so everything else knows to pick it up from here.
+	# This means signals caught by the signal propagator can be used by anything else, not just cards.
 	signal signal_received(trigger_card, trigger, details)
 	# The working signals cards might send depending on their status changes
 	# this array can be extended by signals added by other games
