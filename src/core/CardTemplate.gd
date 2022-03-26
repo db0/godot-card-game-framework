@@ -2518,6 +2518,7 @@ func _process_card_state() -> void:
 				if card_front.resizing_labels.size() and not get_parent().faceup_cards:
 					return
 				set_is_faceup(get_parent().faceup_cards, true)
+				ensure_proper()
 
 		CardState.VIEWED_IN_PILE:
 			z_index = 0
