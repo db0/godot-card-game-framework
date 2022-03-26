@@ -105,6 +105,7 @@ signal card_targeted(card,trigger,details)
 signal dragging_started(card)
 # Sent when the card's state changes
 signal state_changed(card, old_state, new_state)
+signal scripts_executed(card, sceng, trigger)
 
 
 # The properties dictionary will be filled in by the setup() code
@@ -1406,6 +1407,10 @@ func execute_scripts(
 		only_cost_check := false):
 	if cfc.game_paused:
 		return
+	# Just in case the card is displayed outside the main game
+	# and somehow its script is triggered.
+	if not cfc.NMAP.has('board'):
+		return
 	common_pre_execution_scripts(trigger, trigger_details)
 	var card_scripts = retrieve_scripts(trigger)
 	# I use this spot to add a breakpoint when testing script behaviour
@@ -1500,6 +1505,7 @@ func execute_scripts(
 			if not sceng.all_tasks_completed:
 				yield(sceng,"tasks_completed")
 		is_executing_scripts = false
+		emit_signal("scripts_executed", self, sceng, trigger)
 	return(sceng)
 
 
