@@ -93,6 +93,9 @@ func _find_subjects(stored_integer := 0) -> Array:
 						subjects_array.append(c)
 				if subjects_array.size() == 0:
 					is_valid = false
+			# With this approach, if any of the previous subjects doesn't
+			# match the filter, the whole task is considered invalid.
+			# But the subjects lists remains intact
 			else:
 				subjects_array = prev_subjects
 				for c in subjects_array:

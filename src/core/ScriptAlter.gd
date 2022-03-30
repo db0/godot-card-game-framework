@@ -16,13 +16,17 @@ func _init(
 		alteration_script: Dictionary,
 		trigger_object: Card,
 		alterant_object,
-		task_details: Dictionary).(
+		task_details: Dictionary,
+		prev_subject = null).(
 			alterant_object,
 			alteration_script,
 			trigger_object) -> void:
 	# The alteration name gets its own var
 	script_name = get_property("filter_task")
 	trigger_details = task_details
+	# For Alterants, we might need to calculate them per subject in a subject list
+	if prev_subject != null:
+		prev_subjects = [prev_subject]
 	if not SP.filter_trigger(
 			alteration_script,
 			trigger_object,
@@ -38,11 +42,13 @@ func _init(
 			confirm_return = yield(confirm_return, "completed")
 		is_valid = confirm_return
 	if is_valid:
-	# The script might require counting other cards.
+		# The alterant might require counting other cards to see if it's valid.
+		# So we just run it through the _find_subjects() to see if it will
+		# set is_valid to false.
 		var ret =_find_subjects(0)
 		if ret is GDScriptFunctionState: # Still working.
 			ret = yield(ret, "completed")
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
-	emit_signal("primed")
 	is_primed = true
+	emit_signal("primed")

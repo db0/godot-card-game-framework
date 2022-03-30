@@ -927,12 +927,13 @@ func null_script(script: ScriptTask) -> int:
 
 # Initiates a seek through the table to see if there's any cards
 # which have scripts which modify the intensity of the current task.
-func _check_for_alterants(script: ScriptTask, value: int) -> int:
+func _check_for_alterants(script: ScriptTask, value: int, subject = null) -> int:
 	var alteration = CFScriptUtils.get_altered_value(
 		script.owner,
 		script.script_name,
 		script.script_definition,
-		value)
+		value,
+		subject)
 	if alteration is GDScriptFunctionState:
 		alteration = yield(alteration, "completed")
 	return(alteration.value_alteration)
