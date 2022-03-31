@@ -37,7 +37,6 @@ func _init(
 		task_details: Dictionary,
 		_subject) -> void:
 	subject = _subject
-	print_debug(subject)
 	for alter_task_def in scripts_queue.duplicate(true):
 		var alter_task := ScriptAlter.new(
 				alter_task_def,

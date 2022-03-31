@@ -77,8 +77,6 @@ static func get_altered_value(
 			"value_alteration": value_alteration,
 			"alterants_details": alterants_details
 		}
-		if value != value + value_alteration:
-			print_debug(return_dict)
 		# If this is the first time we discover this alteration value
 		# we also store it in our alterant cache
 		cfc.alterant_cache[alterant_cache_key] = return_dict
