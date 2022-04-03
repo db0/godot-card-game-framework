@@ -138,6 +138,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			if not script.is_primed:
 				yield(script,"primed")
 		if script.is_primed:
+			_pre_task_exec(script)
 			#print("Scripting Subjects: " + str(script.subjects)) # Debug
 			if script.script_name == "custom_script"\
 					and not script.is_skipped and script.is_valid:
@@ -982,3 +983,9 @@ func _retrieve_temp_modifiers(script: ScriptTask, type: String) -> Dictionary:
 				temp_modifiers[value] *= -1
 			temp_modifiers[value] += script.get_property(SP.KEY_ADJUST_RETRIEVED_INTEGER)
 	return(temp_modifiers)
+
+# Extendable function to perform extra checks on the script
+# according to game logic
+func _pre_task_exec(script: ScriptTask) -> void:
+	pass
+	

@@ -101,6 +101,8 @@ func draw_card(pile : Pile = cfc.NMAP.deck) -> Card:
 
 func get_final_placement_node(card: Card) -> Node:
 	var container : Node = self
+	if card in get_all_cards():
+		return(container)
 	prepare_excess_discard_pile()
 	match excess_cards:
 		ExcessCardsBehaviour.DISALLOW:

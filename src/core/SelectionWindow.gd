@@ -30,7 +30,9 @@ func _ready() -> void:
 	# For the counter signal, we "push" connect it instead from this node.
 	# warning-ignore:return_value_discarded
 	connect("selection_window_opened", cfc.signal_propagator, "_on_signal_received")
+	# warning-ignore:return_value_discarded
 	connect("card_selected", cfc.signal_propagator, "_on_signal_received")
+	# warning-ignore:return_value_discarded
 	connect("confirmed", self, "_on_card_selection_confirmed")
 
 func _process(_delta):
@@ -133,6 +135,7 @@ func initiate_selection(
 		card_grid_obj.setup(dupe_selection)
 		_extra_dupe_ready(dupe_selection, card)
 		_card_dupe_map[card] = dupe_selection
+		# warning-ignore:return_value_discarded
 		dupe_selection.set_is_faceup(true,true)
 		dupe_selection.ensure_proper()
 		# We connect each card grid's gui input into a call which will handle
