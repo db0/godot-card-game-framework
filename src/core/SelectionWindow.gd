@@ -86,6 +86,14 @@ func initiate_selection(
 		is_cancelled = true
 		emit_signal("confirmed")
 		return
+	# If the selection count is 0 (e.g. reduced with an alterant)
+	# And we're looking for max or equal amount of cards, we return cancelled.
+	elif selection_count == 0\
+			and selection_type in ["equal", "max"]:
+		selected_cards = []
+		is_cancelled = true
+		emit_signal("confirmed")
+		return
 	# If the amount of cards available for the choice are exactly the requirements
 	# And we're looking for equal or minimum amount
 	# We immediately return what is there.
