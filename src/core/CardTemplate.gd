@@ -1445,7 +1445,6 @@ func execute_scripts(
 		# We consider the whole cost dry run unsuccesful
 		if not confirm_return:
 			state_scripts = []
-
 	# If the state_scripts return a dictionary entry
 	# it means it's a multiple choice between two scripts
 	if typeof(state_scripts) == TYPE_DICTIONARY:
@@ -1771,11 +1770,17 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	var rot_anim
 	var pos_speed := anim_speed
 	var rot_speed := anim_speed
+	# We create a mini-random generator so that we have a
+	# randf_range function
+	# We don't want to use the cfc rng, because that is only to preserve
+	# the game state, and the below randomness is irrelevant
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
 	if style == CFConst.ShuffleStyle.CORGI:
 		csize = card_size * 0.65
-		random_x = CFUtils.randf_range(- csize.x, csize.x)
-		random_y = CFUtils.randf_range(- csize.y, csize.y)
-		random_rot = CFUtils.randf_range(-20, 20)
+		random_x = rng.randf_range(- csize.x, csize.x)
+		random_y = rng.randf_range(- csize.y, csize.y)
+		random_rot = rng.randf_range(-20, 20)
 		center_card_pop_position = starting_card_position \
 				+ Vector2(random_x, random_y)
 		start_pos_anim = Tween.TRANS_CIRC
@@ -1784,9 +1789,9 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	# 2 is splash
 	elif style == CFConst.ShuffleStyle.SPLASH:
 		csize = card_size * 0.85
-		random_x = CFUtils.randf_range(- csize.x, csize.x)
-		random_y = CFUtils.randf_range(- csize.y, csize.y)
-		random_rot = CFUtils.randf_range(-180, 180)
+		random_x = rng.randf_range(- csize.x, csize.x)
+		random_y = rng.randf_range(- csize.y, csize.y)
+		random_rot = rng.randf_range(-180, 180)
 		center_card_pop_position = starting_card_position \
 				+ Vector2(random_x, random_y)
 		start_pos_anim = Tween.TRANS_ELASTIC
@@ -1803,9 +1808,9 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		pos_speed = pos_speed
 	elif style == CFConst.ShuffleStyle.OVERHAND:
 		csize = card_size * 1.1
-		random_x = CFUtils.randf_range(- csize.x/10, csize.x/10)
-		random_y = CFUtils.randf_range(- csize.y, - csize.y/2)
-		random_rot = CFUtils.randf_range(-10, 10)
+		random_x = rng.randf_range(- csize.x/10, csize.x/10)
+		random_y = rng.randf_range(- csize.y, - csize.y/2)
+		random_rot = rng.randf_range(-10, 10)
 		center_card_pop_position = starting_card_position \
 				+ Vector2(random_x,random_y)
 		start_pos_anim = Tween.TRANS_CIRC

@@ -524,7 +524,7 @@ func spawn_card_to_container(script: ScriptTask) -> void:
 		var filtered_cards : Array = cfc.ov_utils.filter_card_pool(compiled_filters)
 		# If we found less potential cards than the amount to select from, we adjust
 		if filtered_cards.size() < selection_amount:
-			selection_amount == filtered_cards.size()
+			selection_amount = filtered_cards.size()
 		CFUtils.shuffle_array(filtered_cards)
 		if filtered_cards.size() == 0:
 			printerr("WARN: Cannot find any cards to spawn with the selected filter for script:\n" + str(script.script_definition))
@@ -986,6 +986,6 @@ func _retrieve_temp_modifiers(script: ScriptTask, type: String) -> Dictionary:
 
 # Extendable function to perform extra checks on the script
 # according to game logic
-func _pre_task_exec(script: ScriptTask) -> void:
+func _pre_task_exec(_script: ScriptTask) -> void:
 	pass
 	
