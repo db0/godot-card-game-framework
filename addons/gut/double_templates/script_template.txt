@@ -1,11 +1,22 @@
+# ##############################################################################
+# Start Script
+# ##############################################################################
 {extends}
 
+{constants}
+
+{properties}
+# ------------------------------------------------------------------------------
+# GUT Double properties and methods
+# ------------------------------------------------------------------------------
 var __gut_metadata_ = {
 	path = '{path}',
 	subpath = '{subpath}',
 	stubber = __gut_instance_from_id({stubber_id}),
 	spy = __gut_instance_from_id({spy_id}),
 	gut = __gut_instance_from_id({gut_id}),
+	from_singleton = '{singleton_name}',
+	is_partial = {is_partial}
 }
 
 func __gut_instance_from_id(inst_id):
@@ -31,6 +42,13 @@ func __gut_get_stubbed_return(method_name, called_with):
 		return __gut_metadata_.stubber.get_return(self, method_name, called_with)
 	else:
 		return null
+
+func __gut_default_val(method_name, p_index):
+	if(__gut_metadata_.stubber != null):
+		return __gut_metadata_.stubber.get_default_value(self, method_name, p_index)
+	else:
+		return null
+
 
 func  _init():
 	if(__gut_metadata_.gut != null):
