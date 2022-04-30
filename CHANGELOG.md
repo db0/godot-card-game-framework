@@ -26,6 +26,7 @@
 * Added `_pre_task_exec()` in ScriptingEngine
 * Alterant Engine can now take into account script subject
 * Added signal when card scripts finish
+* Fixed per_ in alterant engine not working
 
 ## 2.1
 

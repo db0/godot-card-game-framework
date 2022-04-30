@@ -76,6 +76,6 @@ func calculate_alteration(script: ScriptAlter) -> void:
 				script.owner,
 				script.get_property(script.get_property(SP.KEY_ALTERATION)),
 				script.trigger_object)
-		alteration_requested = per_msg.found_things
+		alteration = per_msg.found_things
 	else:
 		alteration += alteration_requested
