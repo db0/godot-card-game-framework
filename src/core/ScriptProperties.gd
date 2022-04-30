@@ -112,6 +112,16 @@ const KEY_ORIGINAL_PREVIOUS := "original_previous"
 # * [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
 # * [KEY_SUBJECT_V_INDEX](#KEY_SUBJECT_V_INDEX)
 const KEY_SUBJECT_COUNT := "subject_count"
+# Value Type: bool (Default = false).
+#
+# This key is used to mark is the subject count requested is mandatory
+# If true, the specified amount of subjects have to be selected or the whole
+# task will abort
+# If false, the task will proceed even if 1 subjects are found.
+# It will always be considered invalid if 0 subjects are found, but this will not
+# prevent the whole script from continuing, unless the task is marked with 
+# [KEY_IS_COST](#LEY_IS_COST] as true.
+const KEY_UP_TO := "up_to" 
 # When specified as the value of [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT),
 # will retrieve as many cards as match the criteria.
 #
@@ -1232,6 +1242,7 @@ static func get_default(property: String):
 				KEY_PROTECT_PREVIOUS,\
 				KEY_FAIL_COST_ON_SKIP,\
 				KEY_IMMEDIATE_PLACEMENT,\
+				KEY_UP_TO,\
 				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:

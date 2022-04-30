@@ -226,9 +226,13 @@ func _tutor_subjects(stored_integer: int) -> Array:
 			subject_count -= 1
 			if subject_count == 0:
 				break
-	if requested_subjects > 0\
-			and subjects_array.size() < requested_subjects:
-		is_valid = false
+	if requested_subjects > 0:
+		if get_property(SP.KEY_UP_TO):
+			if subjects_array.size() < 1:
+				is_valid = false
+		else:
+			if subjects_array.size() < requested_subjects:
+				is_valid = false
 	return(subjects_array)
 
 

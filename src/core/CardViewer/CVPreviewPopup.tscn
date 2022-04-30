@@ -12,5 +12,5 @@ script = ExtResource( 1 )
 [node name="FocusInfo" type="VBoxContainer" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
-custom_constants/separation = -1
+custom_constants/separation = 10
 script = ExtResource( 2 )
