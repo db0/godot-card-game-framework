@@ -210,7 +210,7 @@ func get_all_cards() -> Array:
 
 # Returns an int with the amount of children nodes which are of Card class
 func get_card_count() -> int:
-	return len(get_all_cards())
+	return(get_all_cards().size())
 
 
 # Returns a card object of the card in the specified index among all cards.

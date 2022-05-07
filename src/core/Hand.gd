@@ -106,14 +106,14 @@ func get_final_placement_node(card: Card) -> Node:
 	prepare_excess_discard_pile()
 	match excess_cards:
 		ExcessCardsBehaviour.DISALLOW:
-			if get_card_count() < hand_size:
+			if _get_modified_card_count() < hand_size:
 				container = self
 			else:
 				container = card.get_parent()
 		ExcessCardsBehaviour.ALLOW:
 			container = self
 		ExcessCardsBehaviour.DISCARD_DRAWN:
-			if get_card_count() < hand_size:
+			if _get_modified_card_count() < hand_size:
 				container = self
 			elif _excess_discard_pile:
 				container = _excess_discard_pile
@@ -121,7 +121,7 @@ func get_final_placement_node(card: Card) -> Node:
 				container = card.get_parent()
 		ExcessCardsBehaviour.DISCARD_OLDEST:
 			container = self
-			if get_card_count() >= hand_size \
+			if _get_modified_card_count() >= hand_size \
 					and _excess_discard_pile:
 				get_card(0).move_to(_excess_discard_pile)
 	return(container)
@@ -221,3 +221,7 @@ func _adjust_collision_area() -> void:
 	$CollisionShape2D.shape.extents = $Control.rect_size / 2
 	$CollisionShape2D.position = $Control.rect_size / 2
 	highlight.rect_size = $Control.rect_size
+
+# Overridable function for counting cards
+func _get_modified_card_count() -> int:
+	return(get_card_count())
