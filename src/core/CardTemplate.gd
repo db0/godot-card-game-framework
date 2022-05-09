@@ -2613,7 +2613,7 @@ func _process_card_state() -> void:
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * thumbnail_scale
+				scale = Vector2(1,1) * thumbnail_scale * cfc.curr_scale
 			# Commenting this out because it is messing with RichTextLabel
 			# Font resizing
 			else:

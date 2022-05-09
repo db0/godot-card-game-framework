@@ -187,11 +187,13 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false,
 		yield(get_tree(), "idle_frame")
 		var _retries := 0
 		var bbcode_height = node.get_content_height()
+#		print_debug([bbcode_height, label_size.y])
 		while bbcode_height == 0 or bbcode_height > 1000:
 			_retries += 1
 #			print_debug("{0} BBcode height:{1} retrying: {2}".format([card_owner.canonical_name, bbcode_height, _retries]))
 			yield(get_tree(), "idle_frame")
 			bbcode_height = node.get_content_height()
+#			print_debug(["Retry", _retries, "Code Height", bbcode_height])
 			if _retries >= 10:
 				break
 		# To save some time, we use the same trick we do in normal labels
@@ -205,6 +207,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false,
 			_set_card_rtl_fonts(node, label_fonts, starting_font_size + font_adjustment)
 			yield(get_tree(), "idle_frame")
 			bbcode_height = node.get_content_height()
+#			print_debug(["Font Adjustment", font_adjustment, "Code Height", bbcode_height])
 	#		print_debug(bbcode_height, ':', font_adjustment, ':', label_size.y)
 		# If the reduction of font sizes when checking against the normal font
 		# was not enough to bring the total rich label height into the rect.y we want
@@ -221,6 +224,7 @@ func set_rich_label_text(node: RichTextLabel, value: String, is_resize := false,
 			_assign_bbcode_text(node, value, starting_font_size + font_adjustment)
 			yield(get_tree(), "idle_frame")
 			bbcode_height = node.get_content_height()
+#			print_debug(["Font Adjustment", font_adjustment, "Code Height", bbcode_height])
 			_retries = 0
 			while bbcode_height == 0 or bbcode_height > 1000:
 				_retries += 1

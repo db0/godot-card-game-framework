@@ -59,6 +59,7 @@ func _process(_delta) -> void:
 			$VBC.rect_position.y = get_global_mouse_position().y - focus_info.rect_size.y / 2
 		if get_global_mouse_position().x + focus_info.rect_size.x + 60 > get_viewport().size.x:
 			$VBC.rect_position.x = get_viewport().size.x - focus_info.rect_size.x
+			$VBC.rect_position.y = get_global_mouse_position().y - 500
 		else:
 			$VBC.rect_position.x = get_global_mouse_position().x + 60
 		
