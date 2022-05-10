@@ -147,7 +147,7 @@ static func sort_index_ascending(c1, c2) -> bool:
 	# Cards with higher index get moved to the back of the Array
 	# When this comparison is true, c2 is moved
 	# further back in the array
-	if not c2.has_method("get_my_card_index") or not c2.has_method("get_my_card_index"):
+	if not c1.has_method("get_my_card_index") or not c2.has_method("get_my_card_index"):
 		return(false)
 	if c1.get_my_card_index() < c2.get_my_card_index():
 		return true
