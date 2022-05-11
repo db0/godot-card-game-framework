@@ -1745,6 +1745,7 @@ func set_control_mouse_filters(value = true) -> void:
 	if $Control.mouse_filter != control_filter:
 		$Control.mouse_filter = control_filter
 	if monitorable != value:
+#		print_debug('monitorable')
 		monitorable = value
 
 

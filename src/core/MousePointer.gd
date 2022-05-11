@@ -52,16 +52,46 @@ func _process(_delta: float) -> void:
 		current_focused_card = cfc.card_drag_ongoing
 	if cfc._debug:
 		$DebugShape/current_focused_card.text = "MOUSE: " + str(current_focused_card)
+#	print([position,get_overlapping_areas()])
 
 
 # Adds the overlapping area to the list of overlaps, and triggers the
 # discover_focus()
 func _on_MousePointer_area_entered(area: Area2D) -> void:
 	if not is_disabled:
+		# We add an extra check in case that the card was not cleared from overlaps 
+		# through the _on_MousePointer_area_exited function 
+		# (sometimes it happens. Haven't figured out what causes it)
+		_check_for_stale_overlaps()
 		overlaps.append(area)
 		#print("enter:",area.name)
 		_discover_focus()
 
+func _check_for_stale_overlaps() -> void:
+#	print_debug([overlaps])
+	var reset_mouse := false
+	for a in overlaps:
+#		print_debug([a,overlaps_area(a),a.monitorable, a.get_parent()])
+		if not a.monitorable:
+			overlaps.erase(a)
+			reset_mouse = true
+	# so, this is a workaround to what seems to be a Godot bug
+	# seems to like #https://github.com/godotengine/godot/issues/35927
+	# but this is apparently fixed. Well I seem to be catching some sort of edge case of it
+	# Sometimes, after playing a card and moving the mouse quickly out of it, the get_overlaping_areas()
+	# will get stuck reporting that that card is still overlapping. 
+	# Not only that, but the mouse will also stop registering enterring/exiting that area.
+	# Nothing we do will fix this except reseting this area's monitoring variable
+	# The below workaround does exactly that. As such cards will go first to a pile and have deactivated monitoring
+	# The below code ensures that we'll notice if a card with deactivated monitoring is still considered 
+	# to be overlaping, and then trigger this workaround
+	if reset_mouse:
+		set_deferred("monitoring", false)
+		yield(get_tree().create_timer(0.1), "timeout")
+		set_deferred("monitoring", true)
+#		call_deferred("set_monitoring", true)
+			
+	
 
 # Removes the overlapping area from the list of overlaps, and triggers the
 # discover_focus()
@@ -121,6 +151,7 @@ func enable() -> void:
 
 func forget_focus() -> void:
 	current_focused_card = null
+
 
 func set_disabled(value) -> void:
 	forget_focus()
