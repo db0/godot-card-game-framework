@@ -64,8 +64,11 @@ func add_info(
 	if existing_details.has(id) and not requires_refresh:
 		existing_details[id].visible = true
 	else:
+			
 		var new_info_panel : Node
-		if info_scene != null:
+		if existing_details.has(id) and requires_refresh:
+			new_info_panel = existing_details.get(id)
+		elif info_scene != null:
 			new_info_panel = info_scene.instance()
 		else:
 			new_info_panel = info_panel_scene.instance()
@@ -76,10 +79,11 @@ func add_info(
 			label.text = text
 		add_child(new_info_panel)
 		existing_details[id] = new_info_panel
-	var child_count := get_child_count()
+	var child_count := 0
+	for info_panel in get_children():
+		if info_panel.visible: 
+			child_count += 1
 	if existing_details.has("illustration"):
-		if not existing_details["illustration"].visible: 
-			child_count -= 1
 		existing_details["illustration"].raise()
 	columns = 1 + floor(child_count / panel_column_threshold)
 
