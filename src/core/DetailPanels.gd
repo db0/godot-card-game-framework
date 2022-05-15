@@ -7,6 +7,8 @@ class_name DetailPanels
 extends GridContainer
 
 export(PackedScene) var info_panel_scene
+# How many panels need to be added before adding an extra column to the grid
+export(int) var panel_column_threshold := 6
 
 # This dictionary holds all detail scenes added to the list
 # Each entry is an id for the detail (typically its tag or keyword)
@@ -79,7 +81,7 @@ func add_info(
 		if not existing_details["illustration"].visible: 
 			child_count -= 1
 		existing_details["illustration"].raise()
-	columns = 1 + floor(child_count / 6)
+	columns = 1 + floor(child_count / panel_column_threshold)
 
 
 # Getter for visible_details
