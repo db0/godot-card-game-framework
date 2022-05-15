@@ -116,10 +116,9 @@ func mod_counter(counter_name: String,
 				cfc.flush_cache()
 				var prev_value = counters[counter_name]
 				if set_to_mod:
-					counters[counter_name] = value
+					_set_counter(counter_name,value)
 				else:
-					counters[counter_name] += value
-				_labels[counter_name].text = str(counters[counter_name])
+					_set_counter(counter_name, counters[counter_name] + value)
 				emit_signal(
 						"counter_modified",
 						requesting_object,
@@ -194,3 +193,8 @@ func get_counter_and_alterants(
 	}
 	return(return_dict)
 
+
+# Overridable function to update the various counters.
+func _set_counter(counter_name: String, value) -> void:
+	counters[counter_name] = value
+	_labels[counter_name].text = str(counters[counter_name])

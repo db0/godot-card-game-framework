@@ -4,9 +4,9 @@
 # After adding this node, adjust the info_panel_scene in its details
 # and have it point to your custom info scene.
 class_name DetailPanels
-extends VBoxContainer
+extends GridContainer
 
-var info_panel_scene
+export(PackedScene) var info_panel_scene
 
 # This dictionary holds all detail scenes added to the list
 # Each entry is an id for the detail (typically its tag or keyword)
@@ -28,12 +28,16 @@ func setup() -> void:
 
 # Hides the illustration detail
 func hide_illustration() -> void:
+	if not existing_details.has("illustration"):
+		return
 	existing_details["illustration"].visible = false
 
 
 # Shows the illustration detail. This is different from the usual
 # details, as we allow the illustration text to change every time.
 func show_illustration(text: String) -> void:
+	if not existing_details.has("illustration"):
+		return
 	existing_details["illustration"].visible = true
 	existing_details["illustration"].get_node("Details").text = text
 
@@ -70,6 +74,12 @@ func add_info(
 			label.text = text
 		add_child(new_info_panel)
 		existing_details[id] = new_info_panel
+	var child_count := get_child_count()
+	if existing_details.has("illustration"):
+		if not existing_details["illustration"].visible: 
+			child_count -= 1
+		existing_details["illustration"].raise()
+	columns = 1 + floor(child_count / 6)
 
 
 # Getter for visible_details
