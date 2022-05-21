@@ -62,7 +62,6 @@ func _process(_delta) -> void:
 			$VBC.rect_position.y = get_global_mouse_position().y - 500
 		else:
 			$VBC.rect_position.x = get_global_mouse_position().x + 60
-		
 
 	elif _current_focus_source\
 			and get_global_mouse_position().x > get_viewport().size.x - _current_focus_source.canonical_size.x*2.5\
@@ -164,6 +163,12 @@ func focus_card(card: Card, show_preview := true) -> void:
 					Tween.TRANS_SINE, Tween.EASE_IN)
 		$VBC/Focus/Tween.start()
 		card_focus.visible = show_preview
+		# Now that the display panels can expand horizontally
+		# we need to set their parent container size to 0 here
+		# To ensure they are shown as expected on the screen
+		# I.e. the card doesn't appear mid-screen for no reason etc
+		card_focus.rect_size = Vector2(0,0)
+		$VBC.rect_size = Vector2(0,0)
 
 
 

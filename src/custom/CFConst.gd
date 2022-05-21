@@ -109,15 +109,15 @@ const PATH_OVERRIDABLE_UTILS := PATH_CORE + "OverridableUtils.gd"
 # This specifies the path to the Scripting Engine. If you wish to extend
 # The scripting engine functionality with your own tasks,
 # Point this to your own script file.
-const PATH_SCRIPTING_ENGINE := PATH_CORE + "ScriptingEngine.gd"
+const PATH_SCRIPTING_ENGINE := PATH_CORE + "ScriptingEngine/ScriptingEngine.gd"
 # This specifies the path to the [ScriptPer] class file.
 # We don't reference is by class name to avoid cyclic dependencies
 # And this also allows other developers to extend its functionality
-const PATH_SCRIPT_PER := PATH_CORE + "ScriptPer.gd"
+const PATH_SCRIPT_PER := PATH_CORE + "ScriptingEngine/ScriptPer.gd"
 # This specifies the path to the Alterant Engine. If you wish to extend
 # The alterant engine functionality with your own tasks,
 # Point this to your own script file.
-const PATH_ALTERANT_ENGINE := PATH_CORE + "AlterantEngine.gd"
+const PATH_ALTERANT_ENGINE := PATH_CORE + "ScriptingEngine/AlterantEngine.gd"
 # This specifies the path to the MousePointer. If you wish to extend
 # The mouse pointer functionality with your own code,
 # Point this to your own scene file with a scrip extending Mouse Pointer.

@@ -49,6 +49,7 @@ func show_illustration(text: String) -> void:
 func hide_all_info() -> void:
 	for known_info in existing_details:
 		existing_details[known_info].visible = false
+	rect_size = Vector2(0,0)
 
 
 # Adds a new info node. It requires an id for that node
@@ -68,6 +69,7 @@ func add_info(
 		var new_info_panel : Node
 		if existing_details.has(id) and requires_refresh:
 			new_info_panel = existing_details.get(id)
+			new_info_panel.visible = true
 		elif info_scene != null:
 			new_info_panel = info_scene.instance()
 		else:
