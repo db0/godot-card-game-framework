@@ -114,7 +114,6 @@ func show_preview_card(card) -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = true
 	_visible = true
-	print(['show',preview_card])
 	if _placement_initialized:
 		modulate.a = 1
 
@@ -123,7 +122,6 @@ func show_preview_card(card) -> void:
 # Hides currently shown card.
 # We're modulating to 0 instead of hide() because that messes with the rich text labels formatting
 func hide_preview_card() -> void:
-	print(['hide',preview_card])	
 	modulate.a = 0
 	
 	_visible = false

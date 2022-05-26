@@ -65,22 +65,22 @@ func add_info(
 	if existing_details.has(id) and not requires_refresh:
 		existing_details[id].visible = true
 	else:
-			
 		var new_info_panel : Node
 		if existing_details.has(id) and requires_refresh:
 			new_info_panel = existing_details.get(id)
 			new_info_panel.visible = true
-		elif info_scene != null:
-			new_info_panel = info_scene.instance()
 		else:
-			new_info_panel = info_panel_scene.instance()
+			if info_scene != null:
+				new_info_panel = info_scene.instance()
+			else:
+				new_info_panel = info_panel_scene.instance()
+			add_child(new_info_panel)
+			existing_details[id] = new_info_panel
 		var label = new_info_panel.get_node("Details")
 		if label as RichTextLabel:
 			label.bbcode_text = text
 		else:
 			label.text = text
-		add_child(new_info_panel)
-		existing_details[id] = new_info_panel
 	var child_count := 0
 	for info_panel in get_children():
 		if info_panel.visible: 

@@ -194,6 +194,17 @@ func get_counter_and_alterants(
 	return(return_dict)
 
 
+func set_temp_counter_modifiers(sceng, task, requesting_object, modifier) -> void:
+	temp_count_modifiers[task] = {
+			"requesting_object": requesting_object,
+			"modifier": modifier,
+		}
+	if not sceng.is_connected("single_task_completed", self, "_on_single_task_completed"):
+		sceng.connect("single_task_completed", self, "_on_single_task_completed")
+
+func _on_single_task_completed(script_task) -> void:
+	temp_count_modifiers.erase(script_task)
+
 # Overridable function to update the various counters.
 func _set_counter(counter_name: String, value) -> void:
 	counters[counter_name] = value

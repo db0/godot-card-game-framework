@@ -64,7 +64,7 @@ func initiate_selection(
 		_selection_count := 0,
 		_selection_type := 'min',
 		_selection_optional := false) -> void:
-	if OS.has_feature("debug") and not get_tree().get_root().has_node('Gut'):
+	if OS.has_feature("debug") and not cfc.is_testing:
 		print("DEBUG INFO:SelectionWindow: Initiated Selection")
 	# We don't allow the player to close the popup with the close button
 	# as that will not send the mandatory signal to unpause the game
@@ -177,7 +177,7 @@ func initiate_selection(
 			"selection_window_opened",
 			{"card_selection_options": _card_dupe_map.keys()}
 	)
-	if OS.has_feature("debug") and not get_tree().get_root().has_node('Gut'):
+	if OS.has_feature("debug") and not cfc.is_testing:
 		print("DEBUG INFO:SelectionWindow: Started Card Display with a %s card selection" % [_card_grid.get_child_count()])
 
 
