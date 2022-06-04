@@ -31,7 +31,7 @@ In order to be able to upgrade this framework in the future without losing your 
 	- `res://src/custom/CGFBoard.gd` >> name the new file `Board.gd`.
 	- `res://src/custom/CGFInfoPanel.tcsn` >> name the new file `InfoPanel.tcsn`.
 3. In the FileSystem tab, drag and drop the following files from `res://src/custom` to `res://src/new_card_game`:
-	- `Board.tcsn` 
+	- `Board.tcsn`
 	- `Board.gd`
 	- `InfoPanel.tcsn`
 	- `SP.gd`
@@ -117,7 +117,7 @@ For this demonstration, let's create a "creature" type card.
 4. On the Inspector find and expand custom styles. Then click on the arrow next to StyleBox and select "Make Unique".
 5. Click on the "StyleBox" label, to expand its properties
 6. Click on the "Bg Color". The colour picker will appear. Select a background colour you want to use for your creature cards.
-7. Save the scene as `res://src/new_card_game/cards/Creature.tcsn`
+7. Save the scene as `res://src/new_card_game/cards/CreatureFront.tcsn`
 8. The basic card template has most of the information a creature would need, but what would a creature be without some Health. Let's add this now.
 	Right click on HB > Add Child Node > search for "Label" and add it. The new label node will appear under the "Power" node.
 9. Double click it to rename it to "Health". You can add text to see how it looks. If you cannot see it against the background colour, you will need to adjust the font. Let's provide a setup which should work with any background colour now:
