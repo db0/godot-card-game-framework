@@ -493,6 +493,7 @@ func spawn_card(script: ScriptTask) -> void:
 			card.position.x += \
 					iter * card.canonical_size.x * card.play_area_scale
 			card.state = Card.CardState.ON_PLAY_BOARD
+			card.set_to_idle()
 			spawned_cards.append(card)
 	# We set the spawned cards as the subjects, so that they can be
 	# used by other followup scripts

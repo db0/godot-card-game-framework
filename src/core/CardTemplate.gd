@@ -317,6 +317,7 @@ func _ready() -> void:
 	setup()
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
+	$Control.connect("tree_exiting", self, "_on_tree_exiting")
 	cfc.signal_propagator.connect_new_card(self)
 
 func _init_card_layout() -> void:
@@ -2804,3 +2805,9 @@ func _on_Back_resized() -> void:
 	if _card_back_container and _card_back_container.rect_size != canonical_size:
 		pass
 #		print_debug($Control/Back.rect_size) # Replace with function body.
+
+
+# Ensures proper cleanup when a card is queue_free() for any reason
+func _on_tree_exiting():
+	if cfc.NMAP.has("main"):
+		cfc.NMAP.main.unfocus(self)

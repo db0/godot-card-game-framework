@@ -50,7 +50,7 @@ func _process(_delta) -> void:
 #		focus_info.rect_size.x = _current_focus_source.canonical_size.x * _current_focus_source.focused_scale * cfc.curr_scale
 	# The below makes sure to display the closeup of the card, only on the side
 	# the player's mouse is not in.
-	if _current_focus_source\
+	if _current_focus_source and is_instance_valid(_current_focus_source)\
 			and _current_focus_source.get_state_exec() != "pile"\
 			and cfc.game_settings.focus_style == CFInt.FocusStyle.BOTH_INFO_PANELS_ONLY:
 		if get_global_mouse_position().y + focus_info.rect_size.y/2 > get_viewport().size.y:
@@ -63,7 +63,7 @@ func _process(_delta) -> void:
 		else:
 			$VBC.rect_position.x = get_global_mouse_position().x + 60
 
-	elif _current_focus_source\
+	elif _current_focus_source and is_instance_valid(_current_focus_source)\
 			and get_global_mouse_position().x > get_viewport().size.x - _current_focus_source.canonical_size.x*2.5\
 			and get_global_mouse_position().y < _current_focus_source.canonical_size.y*2:
 		$VBC.rect_position.x = 0
