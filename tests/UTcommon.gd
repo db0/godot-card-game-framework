@@ -28,6 +28,7 @@ func fake_click(pressed, position, flags=0) -> InputEvent:
 
 
 func setup_main() -> void:
+	cfc.is_testing = true
 	cfc._setup()
 	main = autoqfree(MAIN_SCENE.instance())
 	get_tree().get_root().add_child(main)
@@ -42,6 +43,7 @@ func setup_main() -> void:
 
 
 func setup_board() -> void:
+	cfc.is_testing = true
 	cfc._setup()
 	board = add_child_autofree(BOARD_SCENE.instance())
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
@@ -57,7 +59,7 @@ func teardown_board() -> void:
 	cfc.are_all_nodes_mapped = false
 	cfc.card_drag_ongoing = null
 	cfc.NMAP.clear()
-	
+
 
 func draw_test_cards(count: int, fast := true) -> Array:
 	var cards = []
