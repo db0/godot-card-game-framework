@@ -13,7 +13,7 @@
  "hide_orphans": false,
  "ignore_pause": true,
  "include_subdirs": false,
- "inner_class": "TestCardScripts",
+ "inner_class": "TestModifyProperties",
  "junit_xml_file": "",
  "junit_xml_timestamp": false,
  "log_level": 3,
@@ -21,7 +21,7 @@
  "post_run_script": "",
  "pre_run_script": "",
  "prefix": "test_",
- "selected": "test_scripting_engine_general.gd",
+ "selected": "test_scripting_engine_tasks_modify_properties.gd",
  "should_exit": false,
  "should_exit_on_success": false,
  "should_maximize": true,
@@ -31,7 +31,7 @@
  "tests": [
 
  ],
- "unit_test_name": "test_CardScripts",
+ "unit_test_name": "test_modify_properties",
  "gut_on_top": true,
  "panel_options": {
   "font_name": "CourierPrime",
