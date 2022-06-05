@@ -198,19 +198,26 @@ func get_all_cards() -> Array:
 	for obj in get_children():
 		# We want dragged cards to not be taken into account
 		# when reorganizing the hand (so that their gap closes immediately)
-		if obj as Card and is_instance_valid(obj) and obj != cfc.card_drag_ongoing:
-			cardsArray.append(obj)
+		if not obj is Card:
+			continue
+		if not is_instance_valid(obj):
+			continue
+		if obj == cfc.card_drag_ongoing:
+			continue
+		cardsArray.append(obj)
 	return cardsArray
 
 
 # Returns an int with the amount of children nodes which are of Card class
 func get_card_count() -> int:
-	return len(get_all_cards())
+	return(get_all_cards().size())
 
 
 # Returns a card object of the card in the specified index among all cards.
 func get_card(idx: int) -> Card:
-	return get_all_cards()[idx]
+	if idx < 0:
+		return(null)
+	return(get_all_cards()[idx])
 
 
 # Returns an int of the index of the card object requested

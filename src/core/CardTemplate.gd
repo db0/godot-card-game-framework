@@ -105,6 +105,7 @@ signal card_targeted(card,trigger,details)
 signal dragging_started(card)
 # Sent when the card's state changes
 signal state_changed(card, old_state, new_state)
+signal scripts_executed(card, sceng, trigger)
 
 
 # The properties dictionary will be filled in by the setup() code
@@ -316,6 +317,7 @@ func _ready() -> void:
 	setup()
 	# warning-ignore:return_value_discarded
 	$Control.connect("gui_input", self, "_on_Card_gui_input")
+	$Control.connect("tree_exiting", self, "_on_tree_exiting")
 	cfc.signal_propagator.connect_new_card(self)
 
 func _init_card_layout() -> void:
@@ -479,8 +481,8 @@ func _on_Card_gui_input(event) -> void:
 						if state == CardState.FOCUSED_IN_HAND\
 								and  _has_targeting_cost_hand_script()\
 								and check_play_costs() != CFConst.CostsState.IMPOSSIBLE:
-							var _sceng = execute_scripts()
 							cfc.card_drag_ongoing = null
+							var _sceng = execute_scripts()
 						elif state == CardState.FOCUSED_IN_HAND\
 								and (disable_dragging_from_hand
 								or check_play_costs() == CFConst.CostsState.IMPOSSIBLE):
@@ -673,6 +675,14 @@ func modify_property(
 							# We allow setting number properties as strings.
 							# We assume the designer knows what they're doing
 							properties[property] = value
+				# If the property is an array, and the value is a string, we assume they want
+				# to add this value to the array
+				# If the value is prepended by -, we assume the want to remove the value.
+				if property in CardConfig.PROPERTIES_ARRAYS and typeof(value) == TYPE_STRING:
+					if value.begins_with('-'):
+						properties[property].erase(value.lstrip('-'))
+					else:
+						properties[property].append(value)
 			refresh_property_label(property)
 	return(retcode)
 
@@ -1382,7 +1392,6 @@ func move_to(targetHost: Node,
 		elif parentHost == targetHost and index != get_my_card_index():
 			parentHost.move_child(self,
 					parentHost.translate_card_index_to_node_index(index))
-			print_debug(get_my_card_index())
 		elif "CardPopUpSlot" in parentHost.name:
 			set_state(CardState.IN_POPUP)
 	common_post_move_scripts(targetHost.name, parentHost.name, tags)
@@ -1398,6 +1407,10 @@ func execute_scripts(
 		trigger_details: Dictionary = {},
 		only_cost_check := false):
 	if cfc.game_paused:
+		return
+	# Just in case the card is displayed outside the main game
+	# and somehow its script is triggered.
+	if not cfc.NMAP.has('board'):
 		return
 	common_pre_execution_scripts(trigger, trigger_details)
 	var card_scripts = retrieve_scripts(trigger)
@@ -1433,7 +1446,6 @@ func execute_scripts(
 		# We consider the whole cost dry run unsuccesful
 		if not confirm_return:
 			state_scripts = []
-
 	# If the state_scripts return a dictionary entry
 	# it means it's a multiple choice between two scripts
 	if typeof(state_scripts) == TYPE_DICTIONARY:
@@ -1493,6 +1505,7 @@ func execute_scripts(
 			if not sceng.all_tasks_completed:
 				yield(sceng,"tasks_completed")
 		is_executing_scripts = false
+		emit_signal("scripts_executed", self, sceng, trigger)
 	return(sceng)
 
 
@@ -1733,6 +1746,7 @@ func set_control_mouse_filters(value = true) -> void:
 	if $Control.mouse_filter != control_filter:
 		$Control.mouse_filter = control_filter
 	if monitorable != value:
+#		print_debug('monitorable')
 		monitorable = value
 
 
@@ -1758,11 +1772,17 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	var rot_anim
 	var pos_speed := anim_speed
 	var rot_speed := anim_speed
+	# We create a mini-random generator so that we have a
+	# randf_range function
+	# We don't want to use the cfc rng, because that is only to preserve
+	# the game state, and the below randomness is irrelevant
+	var rng = RandomNumberGenerator.new()
+	rng.randomize()
 	if style == CFConst.ShuffleStyle.CORGI:
 		csize = card_size * 0.65
-		random_x = CFUtils.randf_range(- csize.x, csize.x)
-		random_y = CFUtils.randf_range(- csize.y, csize.y)
-		random_rot = CFUtils.randf_range(-20, 20)
+		random_x = rng.randf_range(- csize.x, csize.x)
+		random_y = rng.randf_range(- csize.y, csize.y)
+		random_rot = rng.randf_range(-20, 20)
 		center_card_pop_position = starting_card_position \
 				+ Vector2(random_x, random_y)
 		start_pos_anim = Tween.TRANS_CIRC
@@ -1771,9 +1791,9 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	# 2 is splash
 	elif style == CFConst.ShuffleStyle.SPLASH:
 		csize = card_size * 0.85
-		random_x = CFUtils.randf_range(- csize.x, csize.x)
-		random_y = CFUtils.randf_range(- csize.y, csize.y)
-		random_rot = CFUtils.randf_range(-180, 180)
+		random_x = rng.randf_range(- csize.x, csize.x)
+		random_y = rng.randf_range(- csize.y, csize.y)
+		random_rot = rng.randf_range(-180, 180)
 		center_card_pop_position = starting_card_position \
 				+ Vector2(random_x, random_y)
 		start_pos_anim = Tween.TRANS_ELASTIC
@@ -1790,9 +1810,9 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		pos_speed = pos_speed
 	elif style == CFConst.ShuffleStyle.OVERHAND:
 		csize = card_size * 1.1
-		random_x = CFUtils.randf_range(- csize.x/10, csize.x/10)
-		random_y = CFUtils.randf_range(- csize.y, - csize.y/2)
-		random_rot = CFUtils.randf_range(-10, 10)
+		random_x = rng.randf_range(- csize.x/10, csize.x/10)
+		random_y = rng.randf_range(- csize.y, - csize.y/2)
+		random_rot = rng.randf_range(-10, 10)
 		center_card_pop_position = starting_card_position \
 				+ Vector2(random_x,random_y)
 		start_pos_anim = Tween.TRANS_CIRC
@@ -1877,6 +1897,17 @@ func common_pre_run(_sceng) -> void:
 # This is useful for example, for discarding one-use cards after playing them
 func common_post_execution_scripts(_trigger: String) -> void:
 	pass
+
+
+# This function when we think the card is turned the right way, to ensure it's not stuck
+# in a weird position
+func ensure_proper() -> void:
+	var to_visible = _card_front_container
+	var to_invisible = _card_back_container
+	if not is_faceup:
+		to_visible = _card_back_container
+		to_invisible = _card_front_container
+	_flip_card(to_invisible, to_visible, true)
 
 # Returns true is the card has hand_drag_starts_targeting set to true
 # is currently in hand, and has a targetting task.
@@ -2082,6 +2113,7 @@ func _flip_card(to_invisible: Control, to_visible: Control, instant := false) ->
 		to_invisible.visible = false
 		to_invisible.rect_scale.x = 0
 		to_invisible.rect_position.x = to_visible.rect_size.x/2
+		highlight.rect_scale = Vector2(1,1)
 	# When dupe cards in focus viewport are created, they have parent == null
 	# This causes them to raise an error trying to create a tween
 	# So we skip that.
@@ -2493,6 +2525,7 @@ func _process_card_state() -> void:
 				if card_front.resizing_labels.size() and not get_parent().faceup_cards:
 					return
 				set_is_faceup(get_parent().faceup_cards, true)
+				ensure_proper()
 
 		CardState.VIEWED_IN_PILE:
 			z_index = 0
@@ -2582,7 +2615,7 @@ func _process_card_state() -> void:
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * thumbnail_scale
+				scale = Vector2(1,1) * thumbnail_scale * cfc.curr_scale
 			# Commenting this out because it is messing with RichTextLabel
 			# Font resizing
 			else:
@@ -2772,3 +2805,9 @@ func _on_Back_resized() -> void:
 	if _card_back_container and _card_back_container.rect_size != canonical_size:
 		pass
 #		print_debug($Control/Back.rect_size) # Replace with function body.
+
+
+# Ensures proper cleanup when a card is queue_free() for any reason
+func _on_tree_exiting():
+	if cfc.NMAP.has("main"):
+		cfc.NMAP.main.unfocus(self)

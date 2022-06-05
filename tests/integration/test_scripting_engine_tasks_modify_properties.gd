@@ -34,7 +34,7 @@ class TestModifyProperties:
 		yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 		assert_eq(card.get_property("Cost"),10,
 				"Card cost increased")
-		assert_eq(card.card_front.card_labels["Cost"].text,"Cost: 10",
+		assert_eq(card.card_front.card_labels["Cost"].text,"10",
 				"Number property label adjusted properly")
 		card.scripts = {"manual": {"hand": [
 				{"name": "modify_properties",
@@ -46,13 +46,13 @@ class TestModifyProperties:
 		yield(yield_for(0.5), YIELD)
 		assert_eq(card.get_property("Cost"),2,
 				"Card cost decreased")
-		assert_eq(card.card_front.card_labels["Cost"].text,"Cost: 2",
+		assert_eq(card.card_front.card_labels["Cost"].text,"2",
 				"Number property label adjusted properly")
 		card.execute_scripts()
 		yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 		assert_eq(card.get_property("Cost"),0,
 				"Card cost not below 0 ")
-		assert_eq(card.card_front.card_labels["Cost"].text,"Cost: 0",
+		assert_eq(card.card_front.card_labels["Cost"].text,"0",
 				"Number property label adjusted properly")
 
 class TestModifyPropertiesPerProperty:
@@ -84,7 +84,7 @@ class TestModifyPropertiesPerProperty:
 		assert_eq(card.get_property("Cost"),7,
 				"Card cost increased by power amount")
 		yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
-		assert_eq(card.card_front.card_labels["Cost"].text,"Cost: 7",
+		assert_eq(card.card_front.card_labels["Cost"].text,"7",
 				"Number property label adjusted properly")
 		card.scripts = {"manual": {"hand": [
 				{"name": "modify_properties",
@@ -100,7 +100,7 @@ class TestModifyPropertiesPerProperty:
 		yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 		assert_eq(card.get_property("Cost"),5,
 				"Card cost decreased by power amount")
-		assert_eq(card.card_front.card_labels["Cost"].text,"Cost: 5",
+		assert_eq(card.card_front.card_labels["Cost"].text,"5",
 				"Number property label adjusted properly")
 
 class TestModifyTagProperty:

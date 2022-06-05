@@ -1,5 +1,5 @@
 
-# Godot Card Game Framework [2.1](CHANGELOG.md)
+# Godot Card Game Framework [2.2](CHANGELOG.md)
 
 [![GUT](https://github.com/db0/godot-card-game-framework/actions/workflows/main.yml/badge.svg)](https://github.com/db0/godot-card-game-framework/actions/workflows/main.yml)
 
@@ -29,7 +29,7 @@ Pull requests are more than welcome ;)
 * Cards can target other cards with a draggable arrow
 * Can flip cards face-down and view them while in that state
 * Can add tokens on cards. Tokens expand in the own drawer for more info.
-* Ability to define cards in standard json
+* Ability to define cards in standard dictionaries
 * Ability to split card definitions into sets
 * Automatically resizing text inside cards to fit the card size.
 * Supports resizing the window, in all stretch modes (including disabled stretch)
@@ -50,7 +50,7 @@ Pull requests are more than welcome ;)
 
 ### Scripting Engine Features
 
-* Can define card scripts in plain text, using simple json.
+* Can define card scripts in plain text, using dictionaries.
 * Can set cards to trigger off of any board manipulation.
 * Can filter the triggers based on card properties, or a special subset.
 * Can define optional abilities.
@@ -61,7 +61,7 @@ Pull requests are more than welcome ;)
 * Can store results from one script to use in another.
 * Can be plugged into by any object, not just cards.
 
-All of the above while being very easily extensible to your own game's special requirements through simple json dictionaries.
+All of the above while being very easily extensible to your own game's special requirements through simple dictionaries.
 
 ## Easy Customization
 

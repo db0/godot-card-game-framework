@@ -18,7 +18,8 @@ static func get_altered_value(
 		_owner,
 		task_name: String,
 		task_properties: Dictionary,
-		value: int) -> Dictionary:
+		value: int,
+		subject = null) -> Dictionary:
 	# The key for the alterant cache is the hash of the
 	# values passed to this function.
 	# This is the only way to compare dicts.
@@ -26,7 +27,8 @@ static func get_altered_value(
 		"_owner_card": _owner,
 		"task_name": task_name,
 		"task_properties": task_properties,
-		"value": value
+		"value": value,
+		"subject": value
 	}.hash()
 	var return_dict: Dictionary
 	# If we've already performed this alterant engine run, we just
@@ -51,7 +53,8 @@ static func get_altered_value(
 						_owner,
 						obj,
 						state_scripts,
-						task_details)
+						task_details,
+						subject)
 				if not alteng.all_alterations_completed:
 					yield(alteng,"alterations_completed")
 				value_alteration += alteng.alteration

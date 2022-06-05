@@ -1,8 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=2]
 
 [ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
 [ext_resource path="res://src/custom/CGFCardFront.gd" type="Script" id=2]
 [ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=3]
+[ext_resource path="res://assets/icons/fist.png" type="Texture" id=4]
+[ext_resource path="res://assets/icons/rupee.png" type="Texture" id=5]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
@@ -17,7 +19,7 @@ corner_radius_top_left = 10
 corner_radius_top_right = 10
 
 [sub_resource type="DynamicFont" id=3]
-size = 10
+size = 15
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 use_filter = true
@@ -33,9 +35,6 @@ mouse_filter = 2
 theme = ExtResource( 3 )
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Margin" type="MarginContainer" parent="."]
 anchor_right = 1.0
@@ -44,15 +43,12 @@ rect_min_size = Vector2( 150, 240 )
 mouse_filter = 2
 custom_constants/margin_right = 2
 custom_constants/margin_left = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="CardText" type="VBoxContainer" parent="Margin"]
 margin_left = 2.0
 margin_right = 148.0
 margin_bottom = 240.0
-rect_min_size = Vector2( 0, 240 )
+rect_min_size = Vector2( 0, 139 )
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
@@ -105,42 +101,67 @@ align = 1
 valign = 1
 autowrap = true
 
-[node name="Abilities" type="Label" parent="Margin/CardText"]
-margin_top = 104.0
+[node name="Abilities" type="RichTextLabel" parent="Margin/CardText"]
+margin_top = 161.0
 margin_right = 146.0
-margin_bottom = 224.0
-rect_min_size = Vector2( 146, 120 )
-size_flags_vertical = 3
+margin_bottom = 161.0
+mouse_filter = 2
+size_flags_vertical = 6
 text = "This is the card ability text.
 "
-align = 1
-valign = 1
-autowrap = true
+scroll_active = false
 
 [node name="HB" type="HBoxContainer" parent="Margin/CardText"]
-margin_top = 227.0
+margin_top = 221.0
 margin_right = 146.0
 margin_bottom = 240.0
 rect_min_size = Vector2( 146, 13 )
 mouse_filter = 2
+custom_constants/separation = -3
+
+[node name="CostIcon" type="TextureRect" parent="Margin/CardText/HB"]
+margin_right = 15.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 15, 15 )
+mouse_filter = 2
+texture = ExtResource( 5 )
+expand = true
+stretch_mode = 6
 
 [node name="Cost" type="Label" parent="Margin/CardText/HB"]
-margin_right = 45.0
-margin_bottom = 13.0
-rect_min_size = Vector2( 40, 13 )
+margin_left = 12.0
+margin_right = 29.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 15, 15 )
 custom_colors/font_color = Color( 0.658824, 0.541176, 0, 1 )
 custom_fonts/font = SubResource( 3 )
-text = "Cost: 0"
+text = "0"
 valign = 1
 
-[node name="Power" type="Label" parent="Margin/CardText/HB"]
-margin_left = 48.0
-margin_right = 146.0
-margin_bottom = 13.0
-rect_min_size = Vector2( 40, 13 )
+[node name="Push" type="Control" parent="Margin/CardText/HB"]
+margin_left = 26.0
+margin_right = 120.0
+margin_bottom = 19.0
+mouse_filter = 2
 size_flags_horizontal = 3
+
+[node name="PowerIcon" type="TextureRect" parent="Margin/CardText/HB"]
+margin_left = 117.0
+margin_right = 132.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 15, 15 )
+mouse_filter = 2
+texture = ExtResource( 4 )
+expand = true
+stretch_mode = 6
+
+[node name="Power" type="Label" parent="Margin/CardText/HB"]
+margin_left = 129.0
+margin_right = 146.0
+margin_bottom = 19.0
+rect_min_size = Vector2( 15, 15 )
 custom_colors/font_color = Color( 0.658824, 0.541176, 0, 1 )
 custom_fonts/font = SubResource( 3 )
-text = "Power: 0"
+text = "0"
 align = 2
 valign = 1

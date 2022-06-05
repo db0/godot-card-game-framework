@@ -6,6 +6,25 @@
 
 * `CardFilter` class can now call `custom_check()`. This allows any game to extend it with extra functionality
 * `CardFilter` class can now filter against array/dictionary size
+* Added option to specify if a pile should have sorted popups
+
+### Tweaks
+
+* Removed unnecessary use of seed rng during visual rng
+* Prevents info panels moving outside viewport
+* SelectionWindow now uses SignalPropagator
+* SelectWindow can select direct cards
+* Selection Window will now properly turn cards face-up
+* Made the rich text card front the default card front
+* Changed the Cost/Power values to use icons and no-text.
+* Preview Popups will now tween their position when changing it
+* Details Panels can now multiple columns, so that they don't grow infinitely long, pushing the card out of the viewport.
+
+### Bugfixes
+
+* Avoids card becoming unplayable randomly.
+* Avoids crash when Scripting Engine is used on non-card objects
+* CardViewer now works with "scale" resizing properly
 
 #### ScriptingEngine
 
@@ -13,6 +32,12 @@
   Regardless of where the card is.
 * ScriptingEngine filters can now filter using CardFilter objects
 * Added KEY_FILTER_EACH_REVIOUS_SUBJECT to use in tasks utilizing KEY_SUBJECT_V_PREVIOUS.
+* Added KEY_UP_TO to use with KEY_SUBJECT_V_TUTOR
+* Added `_pre_task_exec()` in ScriptingEngine
+* Alterant Engine can now take into account script subject
+* Added signal when card scripts finish
+* Fixed per_ in alterant engine not working
+* Prevents crash when card container empty while looking for card index.
 
 ## 2.1
 

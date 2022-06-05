@@ -7,6 +7,7 @@ extends Line2D
 signal initiated_targeting
 # Emitted whenever the object has selected a target.
 signal target_selected(target)
+# Emitted whenever the target arrow hovers over a valid target.
 signal potential_target_found(target)
 # We use this to track multiple potential target objects
 # when our owner_card is about to target them.

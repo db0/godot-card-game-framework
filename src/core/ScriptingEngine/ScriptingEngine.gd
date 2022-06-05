@@ -14,6 +14,8 @@ const _ASK_INTEGER_SCENE = preload(_ASK_INTEGER_SCENE_FILE)
 
 # Emitted when all tasks have been run succesfully
 signal tasks_completed
+# Emited when each task is completed.
+signal single_task_completed(task)
 
 
 var run_type : int = CFInt.RunType.NORMAL
@@ -30,6 +32,11 @@ var all_tasks_completed := false
 # Stores the inputed integer from the ask_integer task
 var stored_integer: int
 var scripts_queue: Array
+# Each ScriptingEngine execution gets an ID.
+# This can be used by games to be able to take a "snapshot" of the changes
+# in the board state as the script would execute and therefore know what the 
+# state of the board would be mid-execution, even during dry-runs
+var snapshot_id : float = 0
 
 
 # Simply initiates the [run_next_script()](#run_next_script) loop
@@ -88,10 +95,13 @@ func costs_dry_run() -> bool:
 # then turns each array element into a [ScriptTask] object and
 # send it to the appropriate tasks.
 func execute(_run_type := CFInt.RunType.NORMAL) -> void:
+	snapshot_id = rand_range(1,10000000)
 	all_tasks_completed = false
 	run_type = _run_type
 	var prev_subjects := []
 	for task in scripts_queue:
+		# Failsafe for GUT tearing down while Sceng is running
+		if not cfc.NMAP.has("board") or not is_instance_valid(cfc.NMAP.board): return
 		# We put it into another variable to allow Static Typing benefits
 		var script: ScriptTask = task
 		if ((run_type == CFInt.RunType.COST_CHECK and not script.is_cost and not script.needs_subject)
@@ -100,10 +110,8 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			continue
 		# We store the temp modifiers to counters, so that things like
 		# info during targetting can take them into account
-		cfc.NMAP.board.counters.temp_count_modifiers[self] = {
-				"requesting_object": script.owner,
-				"modifier": _retrieve_temp_modifiers(script,"counters")
-			}
+		cfc.NMAP.board.counters.set_temp_counter_modifiers(
+			self, task, script.owner, _retrieve_temp_modifiers(script,"counters"))
 		# This is provisionally stored for games which need to use this
 		# information before card subjects have been selected.
 		cfc.card_temp_property_modifiers[self] = {
@@ -138,6 +146,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			if not script.is_primed:
 				yield(script,"primed")
 		if script.is_primed:
+			_pre_task_exec(script)
 			#print("Scripting Subjects: " + str(script.subjects)) # Debug
 			if script.script_name == "custom_script"\
 					and not script.is_skipped and script.is_valid:
@@ -206,7 +215,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 				prev_subjects = script.subjects
 			# At the end of the task run, we loop back to the start, but of course
 			# with one less item in our scripts_queue.
-			cfc.NMAP.board.counters.temp_count_modifiers.erase(self)
+			emit_signal("single_task_completed", task)
 			cfc.card_temp_property_modifiers.erase(self)
 			for card in script.subjects:
 				# Some cards might be removed from the game after their execution
@@ -484,6 +493,7 @@ func spawn_card(script: ScriptTask) -> void:
 			card.position.x += \
 					iter * card.canonical_size.x * card.play_area_scale
 			card.state = Card.CardState.ON_PLAY_BOARD
+			card.set_to_idle()
 			spawned_cards.append(card)
 	# We set the spawned cards as the subjects, so that they can be
 	# used by other followup scripts
@@ -523,7 +533,7 @@ func spawn_card_to_container(script: ScriptTask) -> void:
 		var filtered_cards : Array = cfc.ov_utils.filter_card_pool(compiled_filters)
 		# If we found less potential cards than the amount to select from, we adjust
 		if filtered_cards.size() < selection_amount:
-			selection_amount == filtered_cards.size()
+			selection_amount = filtered_cards.size()
 		CFUtils.shuffle_array(filtered_cards)
 		if filtered_cards.size() == 0:
 			printerr("WARN: Cannot find any cards to spawn with the selected filter for script:\n" + str(script.script_definition))
@@ -927,12 +937,13 @@ func null_script(script: ScriptTask) -> int:
 
 # Initiates a seek through the table to see if there's any cards
 # which have scripts which modify the intensity of the current task.
-func _check_for_alterants(script: ScriptTask, value: int) -> int:
+func _check_for_alterants(script: ScriptTask, value: int, subject = null) -> int:
 	var alteration = CFScriptUtils.get_altered_value(
 		script.owner,
 		script.script_name,
 		script.script_definition,
-		value)
+		value,
+		subject)
 	if alteration is GDScriptFunctionState:
 		alteration = yield(alteration, "completed")
 	return(alteration.value_alteration)
@@ -981,3 +992,9 @@ func _retrieve_temp_modifiers(script: ScriptTask, type: String) -> Dictionary:
 				temp_modifiers[value] *= -1
 			temp_modifiers[value] += script.get_property(SP.KEY_ADJUST_RETRIEVED_INTEGER)
 	return(temp_modifiers)
+
+# Extendable function to perform extra checks on the script
+# according to game logic
+func _pre_task_exec(_script: ScriptTask) -> void:
+	pass
+	

@@ -16,7 +16,7 @@ const PROPERTIES_STRINGS := ["Type", "Requirements", "Abilities"]
 # Properties which are converted into string using a format defined in setup()
 const PROPERTIES_NUMBERS := ["Cost","Power"]
 # The name of these properties will be prepended before their value to their label.
-const NUMBER_WITH_LABEL := ["Cost","Power"]
+const NUMBER_WITH_LABEL := []
 # Properties provided in a list which are converted into a string for the
 # label text, using the array_join() method
 const PROPERTIES_ARRAYS := ["Tags"]

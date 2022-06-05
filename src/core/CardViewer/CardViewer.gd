@@ -72,7 +72,7 @@ func _ready() -> void:
 	_filter_line.connect("filters_changed", self, "_apply_filters")
 	prepate_filter_buttons()
 	cfc.game_settings['deckbuilder_gridstyle'] =\
-			cfc.game_settings.get('deckbuilder_gridstyle', false)
+			cfc.game_settings.get('deckbuilder_gridstyle', true)
 	$VBC/HBC/MC/AvailableCards/Settings/GridViewStyle.pressed =\
 			cfc.game_settings.deckbuilder_gridstyle
 
@@ -80,7 +80,7 @@ func _ready() -> void:
 		var load_start_time = OS.get_ticks_msec()
 		prepare_card_grid()
 		var load_end_time = OS.get_ticks_msec()
-		if OS.has_feature("debug") and not cfc.get_tree().get_root().has_node('Gut'):
+		if OS.has_feature("debug") and not cfc.is_testing:
 			print_debug("DEBUG INFO:CardViewer:Card Grid instance time = %sms" % [str(load_end_time - load_start_time)])
 	_show_all_button.icon = CFUtils.convert_texture_to_image(
 			"res://src/core/CardViewer/open-book.png")

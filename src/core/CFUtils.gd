@@ -11,7 +11,9 @@ const _OPTIONAL_CONFIRM_SCENE = preload(_OPTIONAL_CONFIRM_SCENE_FILE)
 
 
 # Randomize array through our own seed
-static func shuffle_array(array: Array) -> void:
+# If avoid_cfc_rng, it will randomize using godot's internal randomizer
+# use this for randomizations you do not care to repeat
+static func shuffle_array(array: Array, avoid_cfc_rng:= false) -> void:
 	var n = array.size()
 	if n<2:
 		return
@@ -21,7 +23,10 @@ static func shuffle_array(array: Array) -> void:
 		# Because there is a problem with the calling sequence of static classes,
 		# if you call randi directly, you will not call CFUtils.randi
 		# but call math.randi, so we call cfc.game_rng.randi() directly
-		j = cfc.game_rng.randi()%(i+1)
+		if avoid_cfc_rng:
+			j = randi()%(i+1)
+		else:
+			j = cfc.game_rng.randi()%(i+1)
 		tmp = array[j]
 		array[j] = array[i]
 		array[i] = tmp
@@ -142,7 +147,7 @@ static func sort_index_ascending(c1, c2) -> bool:
 	# Cards with higher index get moved to the back of the Array
 	# When this comparison is true, c2 is moved
 	# further back in the array
-	if not c2.has_method("get_my_card_index") or not c2.has_method("get_my_card_index"):
+	if not c1.has_method("get_my_card_index") or not c2.has_method("get_my_card_index"):
 		return(false)
 	if c1.get_my_card_index() < c2.get_my_card_index():
 		return true

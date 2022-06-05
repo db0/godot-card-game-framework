@@ -1,10 +1,12 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=1]
 [ext_resource path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" type="DynamicFontData" id=2]
 [ext_resource path="res://src/custom/MainMenu.gd" type="Script" id=3]
 [ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=4]
 [ext_resource path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.tscn" type="PackedScene" id=5]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.tscn" type="PackedScene" id=6]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.tscn" type="PackedScene" id=7]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
@@ -24,11 +26,19 @@ __meta__ = {
 
 [node name="DeckBuilder" parent="." instance=ExtResource( 4 )]
 custom_styles/panel = SubResource( 1 )
-replacements = {
-}
+random_adverb_miss = 10
+random_adjective_miss = 1.1
+random_append_miss = 2
+second_noun_miss = 3
+max_quantity = 3
+deck_minimum = 52
+deck_maximum = 60
+deck_card_object_scene = ExtResource( 6 )
+deck_summary_scene = ExtResource( 7 )
 
 [node name="CardLibrary" parent="." instance=ExtResource( 5 )]
 custom_styles/panel = SubResource( 1 )
+icon_size = 15
 property_width_exceptions = {
 "Cost": 30,
 "Power": 50

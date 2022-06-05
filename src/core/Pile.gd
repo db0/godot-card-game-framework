@@ -18,6 +18,9 @@ export(CFConst.ShuffleStyle) var shuffle_style = CFConst.ShuffleStyle.AUTO
 # If this is set to true, cards on this stack will be placed face-up.
 # Otherwise they will be placed face-down.
 export var faceup_cards := false
+# When true, when the cards are displayed in a popup, they will be sorted by name
+# and not in their actual order
+export var sorted_popup := false
 
 
 # The popup node
@@ -122,6 +125,8 @@ func _on_ViewPopup_popup_hide() -> void:
 			# whatever is the default for the pile
 			if card.is_faceup != faceup_cards:
 				card.set_is_faceup(faceup_cards,true)
+			else:
+				card.ensure_proper()
 			card.state = card.CardState.IN_PILE
 	reorganize_stack()
 	if show_manipulation_buttons:
@@ -131,7 +136,7 @@ func _on_ViewPopup_popup_hide() -> void:
 
 
 # Populated the popup card viewer with the cards and displays them
-func populate_popup(sorted:= false) -> void:
+func populate_popup(sorted:= sorted_popup) -> void:
 	# We prevent the button from being pressed twice while the popup is open
 	# as it will bug-out
 	manipulation_buttons.visible = false

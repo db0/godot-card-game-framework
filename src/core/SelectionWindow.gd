@@ -1,6 +1,8 @@
 class_name SelectionWindow
 extends AcceptDialog
 
+signal selection_window_opened(selection_window, signal_name, details)
+signal card_selected(selection_window, signal_name, details)
 
 # The path to the GridCardObject scene.
 const _GRID_CARD_OBJECT_SCENE_FILE = CFConst.PATH_CORE\
@@ -23,14 +25,19 @@ var _card_dupe_map := {}
 onready var _card_grid = $GridContainer
 onready var _tween = $Tween
 
-#func _ready():
-#	var c = cfc.instance_card("Test Card 1")
-#	var c2 = cfc.instance_card("Test Card 2")
-#	initiate_selection([c, c2])
+
+func _ready() -> void:
+	# For the counter signal, we "push" connect it instead from this node.
+	# warning-ignore:return_value_discarded
+	connect("selection_window_opened", cfc.signal_propagator, "_on_signal_received")
+	# warning-ignore:return_value_discarded
+	connect("card_selected", cfc.signal_propagator, "_on_signal_received")
+	# warning-ignore:return_value_discarded
+	connect("confirmed", self, "_on_card_selection_confirmed")
 
 func _process(_delta):
 	var current_count = selected_cards.size()
-	# We disable the OK button, if the amount of cards to be 
+	# We disable the OK button, if the amount of cards to be
 	# chosen do not match our expectations
 	match selection_type:
 		"min":
@@ -53,11 +60,11 @@ func _process(_delta):
 # Populates the selection window with duplicates of the possible cards
 # Then displays them in a popup for the player to select them.
 func initiate_selection(
-		card_array: Array, 
-		_selection_count := 0, 
+		card_array: Array,
+		_selection_count := 0,
 		_selection_type := 'min',
 		_selection_optional := false) -> void:
-	if OS.has_feature("debug") and not get_tree().get_root().has_node('Gut'):
+	if OS.has_feature("debug") and not cfc.is_testing:
 		print("DEBUG INFO:SelectionWindow: Initiated Selection")
 	# We don't allow the player to close the popup with the close button
 	# as that will not send the mandatory signal to unpause the game
@@ -75,6 +82,14 @@ func initiate_selection(
 	# We return that the selection was canceled
 	elif card_array.size() < selection_count\
 			and selection_type in ["equal", "min"]:
+		selected_cards = []
+		is_cancelled = true
+		emit_signal("confirmed")
+		return
+	# If the selection count is 0 (e.g. reduced with an alterant)
+	# And we're looking for max or equal amount of cards, we return cancelled.
+	elif selection_count == 0\
+			and selection_type in ["equal", "max"]:
 		selected_cards = []
 		is_cancelled = true
 		emit_signal("confirmed")
@@ -128,10 +143,9 @@ func initiate_selection(
 		card_grid_obj.setup(dupe_selection)
 		_extra_dupe_ready(dupe_selection, card)
 		_card_dupe_map[card] = dupe_selection
-#		yield(dupe_selection, "ready")
-#		yield(get_tree().create_timer(0.3), "timeout")
-		dupe_selection.set_is_faceup(card.is_faceup,true)
+		# warning-ignore:return_value_discarded
 		dupe_selection.set_is_faceup(true,true)
+		dupe_selection.ensure_proper()
 		# We connect each card grid's gui input into a call which will handle
 		# The selections
 		card_grid_obj.connect("gui_input", self, "on_selection_gui_input", [dupe_selection, card])
@@ -157,7 +171,13 @@ func initiate_selection(
 			0, 1, 0.5,
 			Tween.TRANS_SINE, Tween.EASE_IN)
 	_tween.start()
-	if OS.has_feature("debug") and not get_tree().get_root().has_node('Gut'):
+	emit_signal(
+			"selection_window_opened",
+			self,
+			"selection_window_opened",
+			{"card_selection_options": _card_dupe_map.keys()}
+	)
+	if OS.has_feature("debug") and not cfc.is_testing:
 		print("DEBUG INFO:SelectionWindow: Started Card Display with a %s card selection" % [_card_grid.get_child_count()])
 
 
@@ -166,7 +186,8 @@ func initiate_selection(
 func _extra_dupe_ready(dupe_selection: Card, _card: Card) -> void:
 	dupe_selection.targeting_arrow.visible = false
 
-# The player can select the cards using a simple left-click. 
+
+# The player can select the cards using a simple left-click.
 func on_selection_gui_input(event: InputEvent, dupe_selection: Card, origin_card) -> void:
 	if event is InputEventMouseButton\
 			and event.is_pressed()\
@@ -187,6 +208,22 @@ func on_selection_gui_input(event: InputEvent, dupe_selection: Card, origin_card
 			selected_cards.remove(0)
 
 
+# Manually selects cards based on their index.
+# Typically used for testing
+# Returns an array with the Card object selected
+func select_cards(indexes :Array = []) -> Array:
+	var all_choices = _card_dupe_map.keys()
+	for index in indexes:
+		if index + 1 > all_choices.size():
+			continue
+		selected_cards.append(all_choices[index])
+	emit_signal("confirmed")
+	return(selected_cards)
+
+
+func get_all_card_options() -> Array:
+	return(_card_dupe_map.keys())
+
 # Cancels out of the selection window
 func _on_cancel_pressed() -> void:
 	selected_cards.clear()
@@ -195,3 +232,13 @@ func _on_cancel_pressed() -> void:
 	# is_cancelled bool.
 	# This is to be able to yield to only one specific signal.
 	emit_signal("confirmed")
+
+func _on_card_selection_confirmed() -> void:
+	if is_cancelled:
+		return
+	emit_signal(
+			"card_selected",
+			self,
+			"card_selected",
+			{"selected_cards": selected_cards}
+	)

@@ -1,33 +1,67 @@
-name: GUT
+name: Prepare New Release
 
 on:
-  push: {}
-  pull_request: {}
+  push:
+    branches:
+      - main
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  GUT_Tests:
-    # The type of runner that the job will run on
+  GUT:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
+    name: Unit & Integration Tests
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-
+    - name: "✔️ Checkout"
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - name: Check out personal godot-tester repository
+      uses: actions/checkout@v3
+      with:
+        repository: db0/godot-tester
+        path: ./.github/actions/godot-tester
       # Runs a single command using the runners shell
-      - name: Godot Tester
-        uses: croconut/godot-tester@v2.4
-        with:
-          version: 3.4
-          # should be long enough for asset import files to get generated
-          import-time: 10
-          assert-check: true
-          max-fails: 0
-          # How long the test should be run before it's timed out and fails
-          test-timeout: 900
-          # Directory containing Gut tests
-          direct-scene: tests/cli/tests.tscn
+    - name: ⚙ Run Tests
+      uses: ./.github/actions/godot-tester
+      with:
+        version: 3.4.4
+        # should be long enough for asset import files to get generated
+        import-time: 300
+        assert-check: true
+        # Allowing some fails on push, as sometimes randomly some asserts might false negative and I haven't yet located the precice reason for this inconsistency
+        max-fails: 0
+        # How long the test should be run before it's timed out and fails
+        test-timeout: 3600
+        # Directory containing Gut tests
+        direct-scene: tests/cli/tests.tscn
+  version_and_release:
+    runs-on: ubuntu-latest
+    name: Export Game
+    needs: ["GUT"]
+    steps:
+    - name: "✔️ Checkout"
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: "🤖 Export game"
+      uses: firebelley/godot-export@v3.0.0
+      with:
+        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/3.4/Godot_v3.4-stable_linux_headless.64.zip
+        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/3.4/Godot_v3.4-stable_export_templates.tpz
+        relative_project_path: ./
+        base_version: Demo
+        create_release: false
+        archive_export_output: true
+    - name: "🛠 Prepare files for publishing"
+      shell: bash
+      run: |
+          cp -v /home/runner/.local/share/godot/dist/* .
+    - name: "🚀 Upload HTML5 version to itch.io"
+      uses: josephbmanley/butler-publish-itchio-action@master
+      env:
+        BUTLER_CREDENTIALS: "${{ secrets.BUTLER_CREDENTIALS }}"
+        CHANNEL: HTML5
+        ITCH_GAME: card-game-framework
+        ITCH_USER: dbzer0
+        PACKAGE: HTML5.zip
+        VERSION: Demo

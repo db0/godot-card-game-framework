@@ -31,7 +31,7 @@ In order to be able to upgrade this framework in the future without losing your 
 	- `res://src/custom/CGFBoard.gd` >> name the new file `Board.gd`.
 	- `res://src/custom/CGFInfoPanel.tcsn` >> name the new file `InfoPanel.tcsn`.
 3. In the FileSystem tab, drag and drop the following files from `res://src/custom` to `res://src/new_card_game`:
-	- `Board.tcsn` 
+	- `Board.tcsn`
 	- `Board.gd`
 	- `InfoPanel.tcsn`
 	- `SP.gd`
@@ -117,21 +117,18 @@ For this demonstration, let's create a "creature" type card.
 4. On the Inspector find and expand custom styles. Then click on the arrow next to StyleBox and select "Make Unique".
 5. Click on the "StyleBox" label, to expand its properties
 6. Click on the "Bg Color". The colour picker will appear. Select a background colour you want to use for your creature cards.
-7. Save the scene as `res://src/new_card_game/cards/Creature.tcsn`
-8. The basic card template has most of the information a creature would need, but what would a creature be without some Health. Let's add this now.
-	Right click on HB > Add Child Node > search for "Label" and add it. The new label node will appear under the "Power" node.
-9. Double click it to rename it to "Health". You can add text to see how it looks. If you cannot see it against the background colour, you will need to adjust the font. Let's provide a setup which should work with any background colour now:
-10.  With Health selected, in the inspector expand "Custom Fonts". Click on "[empty]" and select "New Dynamic Font".
-11. Under "Font" expand settings. Put "Outline size" to 2 and "Outline color" to black. Check "use filter". White fonts with black outline should be visible against any background.
-12. Click on the "Dynamic Font" dropdown to open its properties. Click on "Font". Click on "[empty]" next to Font Data. Select "load". If you've copied the "fonts" directory into your project, browse into `res://src/fonts` and select xolonium. Otherwise load any other font file you would like.
-13. In the inspector for the "Health" label, find and expand the "rect" properties. Adjust the min_size of y to 13. This defines the maximum amount of vertical space our Health text should take before we start shrinking
-	the label text to compensate
+7. The basic card template has most of the information a creature would need, but what would a creature be without some Health. Let's add this now.
+	1. Right-click on Power > Duplicate. The new label node will appear under the "Power" node called "Power2".
+	1. Double click "Power2" to rename it to "Health". You can add text to see how it looks.
+	2. Right-click on PowerIcon . Duplicate. The new icon node will appear under the "PowerIcon" node called "PowerIcon2"
+	2. Double click "PowerIcon2" to rename it to "HealthIcon". Drag it to move it just above "Health".
+	3. Click on HealthIcon. and then click on the little arrow next to the "Texture" property. Select Quickload and write "hearts". Select the hearts.png option.
 14. Since we're not creating a completely different front, we can just extend the existing default front script we're using for our game. Right click on the root node (should be called "Front") And select "extend script". A new window will popup will the script name to save. save it as `res://src/new_card_game/cards/CreatureFront.gd`.
 	![Extend Card Script](3.extend_creature_front_script.png)
 15. The new script will open. Add the text to the `_ready()` method as below
 ```
 func _ready() -> void:
-	card_labels["Health"] = $Margin/CardText/HB/Health
+	card_labels["Health"] = find_node("Health")
 ```
 We have now mapped the new label node for our new card type, so that it can be found by our code.
 

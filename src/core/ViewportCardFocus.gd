@@ -14,11 +14,13 @@ var _current_focus_source : Card = null
 onready var card_focus := $VBC/Focus
 onready var focus_info := $VBC/FocusInfo
 onready var _focus_viewport := $VBC/Focus/Viewport
+onready var world_environemt : WorldEnvironment = $WorldEnvironment
 
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	cfc.map_node(self)
+	world_environemt.environment.glow_enabled = cfc.game_settings.get('glow_enabled', true)
 	# We use the below while to wait until all the nodes we need have been mapped
 	# "hand" should be one of them.
 	$ViewportContainer/Viewport.add_child(board_scene.instance())
@@ -48,16 +50,20 @@ func _process(_delta) -> void:
 #		focus_info.rect_size.x = _current_focus_source.canonical_size.x * _current_focus_source.focused_scale * cfc.curr_scale
 	# The below makes sure to display the closeup of the card, only on the side
 	# the player's mouse is not in.
-	if _current_focus_source\
+	if _current_focus_source and is_instance_valid(_current_focus_source)\
 			and _current_focus_source.get_state_exec() != "pile"\
 			and cfc.game_settings.focus_style == CFInt.FocusStyle.BOTH_INFO_PANELS_ONLY:
-		if get_global_mouse_position().y + focus_info.rect_size.y / 2 > get_viewport().size.y:
+		if get_global_mouse_position().y + focus_info.rect_size.y/2 > get_viewport().size.y:
 			$VBC.rect_position.y = get_viewport().size.y - focus_info.rect_size.y
 		else:
 			$VBC.rect_position.y = get_global_mouse_position().y - focus_info.rect_size.y / 2
-		$VBC.rect_position.x = get_global_mouse_position().x + 60
+		if get_global_mouse_position().x + focus_info.rect_size.x + 60 > get_viewport().size.x:
+			$VBC.rect_position.x = get_viewport().size.x - focus_info.rect_size.x
+			$VBC.rect_position.y = get_global_mouse_position().y - 500
+		else:
+			$VBC.rect_position.x = get_global_mouse_position().x + 60
 
-	elif _current_focus_source\
+	elif _current_focus_source and is_instance_valid(_current_focus_source)\
 			and get_global_mouse_position().x > get_viewport().size.x - _current_focus_source.canonical_size.x*2.5\
 			and get_global_mouse_position().y < _current_focus_source.canonical_size.y*2:
 		$VBC.rect_position.x = 0
@@ -112,6 +118,8 @@ func focus_card(card: Card, show_preview := true) -> void:
 			_extra_dupe_ready(dupe_focus, card)
 			dupe_focus.is_faceup = card.is_faceup
 			dupe_focus.is_viewed = card.is_viewed
+			# We check that the card front was not left half-visible because it was duplicated
+			# in the middle of the flip animation
 			if dupe_focus._card_front_container.rect_scale.x != 1:
 				if dupe_focus.is_viewed:
 					dupe_focus._flip_card(dupe_focus._card_back_container, dupe_focus._card_front_container,true)
@@ -155,6 +163,12 @@ func focus_card(card: Card, show_preview := true) -> void:
 					Tween.TRANS_SINE, Tween.EASE_IN)
 		$VBC/Focus/Tween.start()
 		card_focus.visible = show_preview
+		# Now that the display panels can expand horizontally
+		# we need to set their parent container size to 0 here
+		# To ensure they are shown as expected on the screen
+		# I.e. the card doesn't appear mid-screen for no reason etc
+		card_focus.rect_size = Vector2(0,0)
+		$VBC.rect_size = Vector2(0,0)
 
 
 
@@ -192,8 +206,11 @@ func _extra_dupe_preparation(dupe_focus: Card, card: Card) -> void:
 # warning-ignore:unused_argument
 # warning-ignore:unused_argument
 func _extra_dupe_ready(dupe_focus: Card, card: Card) -> void:
-	dupe_focus.resize_recursively(dupe_focus._control, dupe_focus.focused_scale * cfc.curr_scale)
-	dupe_focus.card_front.scale_to(dupe_focus.focused_scale * cfc.curr_scale)
+	if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
+		dupe_focus.scale = Vector2(1,1) * dupe_focus.focused_scale * cfc.curr_scale
+	else:
+		dupe_focus.resize_recursively(dupe_focus._control, dupe_focus.focused_scale * cfc.curr_scale)
+		dupe_focus.card_front.scale_to(dupe_focus.focused_scale * cfc.curr_scale)
 
 
 func _input(event):
@@ -214,3 +231,6 @@ func _on_Viewport_size_changed() -> void:
 		$ViewportContainer.rect_size = get_viewport().size
 #		for c in _previously_focused_cards.values().duplicate():
 #			c.queue_free()
+
+func toggle_glow(is_enabled := true) -> void:
+	world_environemt.environment.glow_enabled = is_enabled

@@ -112,6 +112,16 @@ const KEY_ORIGINAL_PREVIOUS := "original_previous"
 # * [KEY_SUBJECT_V_TUTOR](#KEY_SUBJECT_V_TUTOR)
 # * [KEY_SUBJECT_V_INDEX](#KEY_SUBJECT_V_INDEX)
 const KEY_SUBJECT_COUNT := "subject_count"
+# Value Type: bool (Default = false).
+#
+# This key is used to mark is the subject count requested is mandatory
+# If true, the specified amount of subjects have to be selected or the whole
+# task will abort
+# If false, the task will proceed even if 1 subjects are found.
+# It will always be considered invalid if 0 subjects are found, but this will not
+# prevent the whole script from continuing, unless the task is marked with 
+# [KEY_IS_COST](#LEY_IS_COST] as true.
+const KEY_UP_TO := "up_to" 
 # When specified as the value of [KEY_SUBJECT_COUNT](#KEY_SUBJECT_COUNT),
 # will retrieve as many cards as match the criteria.
 #
@@ -1052,7 +1062,7 @@ const FILTER_TASK = "filter_task"
 const FILTER_CARD_NAME = "filter_card_name"
 # Value Type: Dictionary
 #
-# Requires similar input as [KEY_PER_BOARDSEEK](#KEY_PER_BOARDSEEK)
+# Requires similar input as [KEY_PER_TUTOR](#KEY_PER_TUTOR)
 # But also needs [FILTER_CARD_COUNT](#FILTER_CARD_COUNT) specified
 const FILTER_PER_TUTOR = "filter_per_tutor_count"
 # Value Type: Dictionary
@@ -1232,6 +1242,7 @@ static func get_default(property: String):
 				KEY_PROTECT_PREVIOUS,\
 				KEY_FAIL_COST_ON_SKIP,\
 				KEY_IMMEDIATE_PLACEMENT,\
+				KEY_UP_TO,\
 				KEY_STORE_INTEGER:
 			default = false
 		KEY_TRIGGER:
@@ -1284,6 +1295,8 @@ static func filter_trigger(
 	# Checking card properties is its own function as it might be
 	# called from other places as well
 	var is_valid := check_validity(trigger_card, card_scripts, "trigger")
+	if is_valid and not check_validity(owner_card, card_scripts, "self"):
+		is_valid = false
 
 	# Here we check that the trigger matches the _request_ for trigger
 	# A trigger which requires "another" card, should not trigger
@@ -1633,7 +1646,7 @@ static func check_validity(card, card_scripts, type := "trigger") -> bool:
 	# This way a script can be limited on more than one thing according to
 	# state. For example limit on the state of the trigger card
 	# and the state of the subject cards.
-	if card and card_scripts.get(FILTER_STATE + type):
+	if is_instance_valid(card) and card_scripts.get(FILTER_STATE + type):
 		# each "filter_state_" FILTER is an array.
 		# Each element in this array is dictionary of "AND" conditions
 		# The filter will fail, only if ALL the or elements in this array

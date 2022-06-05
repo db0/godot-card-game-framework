@@ -13,6 +13,8 @@ signal scripts_loaded
 # Sent when a new Card node is instanced
 signal new_card_instanced(card)
 
+var load_start_time := OS.get_ticks_msec()
+
 #-----------------------------------------------------------------------------
 # BEGIN Unit Testing Variables
 #-----------------------------------------------------------------------------
@@ -21,6 +23,8 @@ signal new_card_instanced(card)
 var ut := false
 var _ut_tokens_only_on_board := CFConst.TOKENS_ONLY_ON_BOARD
 var _ut_show_token_buttons := CFConst.SHOW_TOKEN_BUTTONS
+# This is set to true when tests are running
+var is_testing := false
 
 #-----------------------------------------------------------------------------
 # END Unit Testing Variables
@@ -101,15 +105,18 @@ var curr_scale: float
 var script_load_thread : Thread
 var scripts_loading := true
 
-onready var load_start_time := OS.get_ticks_msec()
-
 func _ready() -> void:
-# warning-ignore:return_value_discarded
+	var load_end_time = OS.get_ticks_msec()
+	if OS.has_feature("debug") and not cfc.is_testing:
+		print_debug("DEBUG INFO:CFControl: instance time = %sms" % [str(load_end_time - load_start_time)])
+	
+	# warning-ignore:return_value_discarded
 	connect("all_nodes_mapped", self, "_on_all_nodes_mapped")
-# warning-ignore:return_value_discarded
+	# warning-ignore:return_value_discarded
 	get_viewport().connect("size_changed", self, '_on_viewport_resized')
 	_on_viewport_resized()
 	_setup()
+
 
 func _setup() -> void:
 	init_settings_from_file()
@@ -129,23 +136,37 @@ func _setup() -> void:
 	are_all_nodes_mapped = false
 	card_drag_ongoing = null
 	# The below takes care that we adjust some settings when testing via Gut
-	if get_tree().get_root().has_node('Gut'):
+	if is_testing:
 		ut = true
 		_debug = true
 	else:
 		# Initialize the game random seed
 		set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
+	var defs_load_end_time = OS.get_ticks_msec()
+	if OS.has_feature("debug") and not cfc.is_testing:
+		print_debug("DEBUG INFO:CFControl: card definitions load time = %sms" % [str(defs_load_end_time - load_start_time)])	
 	# Removed threading since I optimized this loading function
-	load_script_definitions()
+#	load_script_definitions()
 	# We're loading the script definitions in a thread to avoid delaying game load too much
-#	if OS.get_name() == "HTML5":
-#		load_script_definitions()
-#	else:
-#		script_load_thread = Thread.new()
-#		script_load_thread.start(self, "load_script_definitions")
+	if OS.get_name() == "HTML5":
+		load_script_definitions()
+	else:
+		script_load_thread = Thread.new()
+		script_load_thread.start(self, "load_script_definitions")
+	var scripts_load_end_time = OS.get_ticks_msec()
+	if OS.has_feature("debug") and not cfc.is_testing:
+		print_debug("DEBUG INFO:CFControl: card scripts load time = %sms" % [str(scripts_load_end_time - load_start_time)])	
 
-
+func _setup_testing() -> void:
+	flush_cache()
+	NMAP = {}
+	are_all_nodes_mapped = false
+	card_drag_ongoing = null
+	ut = true
+	_debug = true
+	game_paused = false
+	
 # Run when all necessary nodes (Board, CardContainers etc) for the game
 # have been initialized. Allows them to proceed with their ready() functions.
 func _on_all_nodes_mapped() -> void:
@@ -255,10 +276,6 @@ func load_script_definitions() -> void:
 		for scripts_obj in loaded_script_definitions:
 			if combined_scripts.get(card_name):
 				break
-			# scripts are not defined as constants, as we want to be
-			# able to refer specific variables inside them
-			# such as cfc.deck etc. Instead they contain a
-			# method which returns the script for the requested card name
 			var card_script = scripts_obj.get_scripts(card_name)
 			var unmodified_card_script = scripts_obj.get_scripts(card_name, false)
 #			print(unmodified_card_script)
@@ -385,6 +402,8 @@ func flush_cache() -> void:
 func hide_all_previews() -> void:
 	for card_preview_node in cfc.get_tree().get_nodes_in_group("card_preview"):
 		card_preview_node.hide_preview_card()
+	for card_preview_node in cfc.get_tree().get_nodes_in_group("info_popup"):
+		card_preview_node.hide()
 
 
 func _on_viewport_resized() -> void:
@@ -399,10 +418,13 @@ func _exit_tree():
 	if script_load_thread:
 		script_load_thread.wait_to_finish()
 
+
 # The SignalPropagator is responsible for collecting all card signals
 # and asking all cards to check if there's any automation they need to perform
 class SignalPropagator:
 
+	# This propagates a signal generally, so everything else knows to pick it up from here.
+	# This means signals caught by the signal propagator can be used by anything else, not just cards.
 	signal signal_received(trigger_card, trigger, details)
 	# The working signals cards might send depending on their status changes
 	# this array can be extended by signals added by other games

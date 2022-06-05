@@ -4,6 +4,7 @@ var _utils = load('res://addons/gut/utils.gd').get_instance()
 # name for the types that corosponds with the type constants defined in the
 # engine.
 var types = {}
+var NativeScriptClass = null
 
 func _init_types_dictionary():
 	types[TYPE_NIL] = 'TYPE_NIL'
@@ -45,6 +46,10 @@ var _str_ignore_types = [
 
 func _init():
 	_init_types_dictionary()
+	# NativeScript does not exist when GDNative is not included in the build
+	if(type_exists('NativeScript')):
+		var getter = load('res://addons/gut/get_native_script.gd')
+		NativeScriptClass = getter.get_it()
 
 # ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
@@ -72,7 +77,7 @@ func _get_obj_filename(thing):
 			# If it isn't a packed scene and it doesn't have a script then
 			# we do nothing.  This just read better.
 			pass
-	elif(thing.get_script() is NativeScript):
+	elif(NativeScriptClass != null and thing.get_script() is NativeScriptClass):
 		# Work with GDNative scripts:
 		# inst2dict fails with "Not a script with an instance" on GDNative script instances
 		filename = _get_filename(thing.get_script().resource_path)
@@ -89,7 +94,6 @@ func _get_obj_filename(thing):
 # whatever is passed in when it can/should.
 # ------------------------------------------------------------------------------
 func type2str(thing):
-	var oc = _utils.OrphanCounter.new()
 	var filename = _get_obj_filename(thing)
 	var str_thing = str(thing)
 
@@ -117,8 +121,15 @@ func type2str(thing):
 			var double_path = _get_filename(thing.__gut_metadata_.path)
 			if(thing.__gut_metadata_.subpath != ''):
 				double_path += str('/', thing.__gut_metadata_.subpath)
+			elif(thing.__gut_metadata_.from_singleton != ''):
+				double_path = thing.__gut_metadata_.from_singleton + " Singleton"
 
-			str_thing += '(double of ' + double_path + ')'
+			var double_type = "double"
+			if(thing.__gut_metadata_.is_partial):
+				double_type = "partial-double"
+
+			str_thing += str("(", double_type, " of ", double_path, ")")
+
 			filename = null
 	elif(types.has(typeof(thing))):
 		if(!str_thing.begins_with('(')):

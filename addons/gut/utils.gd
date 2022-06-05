@@ -78,12 +78,16 @@ var DiffTool = load('res://addons/gut/diff_tool.gd')
 var Doubler = load('res://addons/gut/doubler.gd')
 var Gut = load('res://addons/gut/gut.gd')
 var HookScript = load('res://addons/gut/hook_script.gd')
+var InputFactory = load("res://addons/gut/input_factory.gd")
+var InputSender = load("res://addons/gut/input_sender.gd")
+var JunitXmlExport = load('res://addons/gut/junit_xml_export.gd')
 var MethodMaker = load('res://addons/gut/method_maker.gd')
 var OneToMany = load('res://addons/gut/one_to_many.gd')
 var OrphanCounter = load('res://addons/gut/orphan_counter.gd')
 var ParameterFactory = load('res://addons/gut/parameter_factory.gd')
 var ParameterHandler = load('res://addons/gut/parameter_handler.gd')
 var Printers = load('res://addons/gut/printers.gd')
+var ResultExporter = load('res://addons/gut/result_exporter.gd')
 var Spy = load('res://addons/gut/spy.gd')
 var Strutils = load('res://addons/gut/strutils.gd')
 var Stubber = load('res://addons/gut/stubber.gd')
@@ -94,12 +98,56 @@ var TestCollector = load('res://addons/gut/test_collector.gd')
 var ThingCounter = load('res://addons/gut/thing_counter.gd')
 
 # Source of truth for the GUT version
-var version = '7.1.0'
+var version = '7.3.0'
 # The required Godot version as an array.
 var req_godot = [3, 2, 0]
 # Used for doing file manipulation stuff so as to not keep making File instances.
 # could be a bit of overkill but who cares.
 var _file_checker = File.new()
+# Online fetch of the latest version available on github
+var latest_version = null
+var should_display_latest_version = false
+
+
+# These methods all call super implicitly.  Stubbing them to call super causes
+# super to be called twice.
+var non_super_methods = [
+	"_init",
+	"_ready",
+	"_notification",
+	"_enter_world",
+	"_exit_world",
+	"_process",
+	"_physics_process",
+	"_exit_tree",
+	"_gui_input	",
+]
+
+
+func _ready() -> void:
+	_http_request_latest_version()
+
+func _http_request_latest_version() -> void:
+	var http_request = HTTPRequest.new()
+	http_request.name = "http_request"
+	add_child(http_request)
+	http_request.connect("request_completed", self, "_on_http_request_latest_version_completed")
+	# Perform a GET request. The URL below returns JSON as of writing.
+	var error = http_request.request("https://api.github.com/repos/bitwes/Gut/releases/latest")
+
+func _on_http_request_latest_version_completed(result, response_code, headers, body):
+	if not result == HTTPRequest.RESULT_SUCCESS:
+		return
+
+	var response = parse_json(body.get_string_from_utf8())
+	# Will print the user agent string used by the HTTPRequest node (as recognized by httpbin.org).
+	if response:
+		if response.get("html_url"):
+			latest_version = Array(response.html_url.split("/")).pop_back().right(1)
+			if latest_version != version:
+				should_display_latest_version = true
+
+
 
 const GUT_METADATA = '__gut_metadata_'
 
@@ -128,7 +176,7 @@ func get_version_text():
 # Returns a nice string for erroring out when we have a bad Godot version.
 # ------------------------------------------------------------------------------
 func get_bad_version_text():
-	var ver = join_array(req_godot, '.')
+	var ver = PoolStringArray(req_godot).join('.')
 	var info = Engine.get_version_info()
 	var gd_version = str(info.major, '.', info.minor, '.', info.patch)
 	return 'GUT ' + version + ' requires Godot ' + ver + ' or greater.  Godot version is ' + gd_version
@@ -168,32 +216,6 @@ func get_logger():
 			_lgr = Logger.new()
 		return _lgr
 
-
-# ------------------------------------------------------------------------------
-# Returns an array created by splitting the string by the delimiter
-# ------------------------------------------------------------------------------
-func split_string(to_split, delim):
-	var to_return = []
-
-	var loc = to_split.find(delim)
-	while(loc != -1):
-		to_return.append(to_split.substr(0, loc))
-		to_split = to_split.substr(loc + 1, to_split.length() - loc)
-		loc = to_split.find(delim)
-	to_return.append(to_split)
-	return to_return
-
-
-# ------------------------------------------------------------------------------
-# Returns a string containing all the elements in the array separated by delim
-# ------------------------------------------------------------------------------
-func join_array(a, delim):
-	var to_return = ''
-	for i in range(a.size()):
-		to_return += str(a[i])
-		if(i != a.size() -1):
-			to_return += str(delim)
-	return to_return
 
 
 # ------------------------------------------------------------------------------
@@ -241,6 +263,11 @@ func is_double(obj):
 func is_instance(obj):
 	return typeof(obj) == TYPE_OBJECT and !obj.has_method('new') and !obj.has_method('instance')
 
+# ------------------------------------------------------------------------------
+# Checks if the passed in is a GDScript
+# ------------------------------------------------------------------------------
+func is_gdscript(obj):
+	return typeof(obj) == TYPE_OBJECT and str(obj).begins_with('[GDScript:')
 
 # ------------------------------------------------------------------------------
 # Returns an array of values by calling get(property) on each element in source
@@ -269,6 +296,7 @@ func write_file(path, content):
 		f.store_string(content)
 		f.close()
 
+	return result
 
 # ------------------------------------------------------------------------------
 # true if what is passed in is null or an empty string.
@@ -286,7 +314,8 @@ func get_native_class_name(thing):
 	if(is_native_class(thing)):
 		var newone = thing.new()
 		to_return = newone.get_class()
-		newone.free()
+		if(!newone is Reference):
+			newone.free()
 	return to_return
 
 
@@ -342,3 +371,19 @@ func search_array(ar, prop_method, value):
 
 func are_datatypes_same(got, expected):
 	return !(typeof(got) != typeof(expected) and got != null and expected != null)
+
+
+func pretty_print(dict):
+	print(str(JSON.print(dict, ' ')))
+
+
+func get_script_text(obj):
+	return obj.get_script().get_source_code()
+
+
+func get_singleton_by_name(name):
+	var source = str("var singleton = ", name)
+	var script = GDScript.new()
+	script.set_source_code(source)
+	script.reload()
+	return script.new().singleton
