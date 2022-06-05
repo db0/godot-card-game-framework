@@ -34,6 +34,7 @@ jobs:
         test-timeout: 3600
         # Directory containing Gut tests
         direct-scene: tests/cli/tests.tscn
+  version_and_release:
     - name: "🤖 Export game"
       if: ${{ steps.release.outputs.version != '' }}
       uses: firebelley/godot-export@v3.0.0
@@ -56,7 +57,7 @@ jobs:
       env:
         BUTLER_CREDENTIALS: "${{ secrets.BUTLER_CREDENTIALS }}"
         CHANNEL: HTML5
-        ITCH_GAME: hypnagonia
+        ITCH_GAME: card-game-framework
         ITCH_USER: dbzer0
         PACKAGE: HTML5.zip
         VERSION: Demo
