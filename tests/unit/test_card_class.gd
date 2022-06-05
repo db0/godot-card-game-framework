@@ -117,7 +117,7 @@ func test_CardDefinition_properties():
 	yield(yield_to(get_tree(), "idle_frame", 0.1), YIELD)
 	assert_eq(new_card.card_front.card_labels["Tags"].text,"Tag 1 - Tag 2 - GUT Tag",
 			"Array property uses the separator")
-	assert_eq(new_card.card_front.card_labels["Cost"].text, "Cost: 10",
+	assert_eq(new_card.card_front.card_labels["Cost"].text, "10",
 			"Integer properties are converted into strings")
 
 func test_font_size():
