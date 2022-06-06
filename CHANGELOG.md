@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.2 (Ongoing)
+## 2.2
 
 ### New Features
 
