@@ -370,7 +370,7 @@ func clear() -> void:
 	flush_cache()
 	are_all_nodes_mapped = false
 	card_drag_ongoing = null
-	if cfc.NMAP.has("board"):
+	if cfc.NMAP.has("board") and is_instance_valid(cfc.NMAP.get("board")):
 		cfc.NMAP.board.queue_free()
 	# We need to give Godot time to deinstance all nodes.
 	yield(get_tree().create_timer(0.1), "timeout")

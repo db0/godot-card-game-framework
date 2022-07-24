@@ -347,6 +347,12 @@ const KEY_STORE_INTEGER := "store_integer"
 #
 # specified how many of the "thing" done by the task, to perform.
 const KEY_OBJECT_COUNT := "object_count"
+# Value Type: Float (Default = 0.2).
+#
+# Specifies how long some scripts should take between iterations
+#
+# used in spawn_card_to_container
+const KEY_YIELD_TIME:= "yield_time"
 # Value Type: String
 #
 # Used in conjunction with the following tasks
@@ -1093,7 +1099,16 @@ const FILTER_GROUP = "filter_group"
 #
 # Filter used for checking against the value of the get_class() of an object
 const FILTER_CLASS = "filter_class"
-
+#Value Type: Bool.
+#
+# Filter for explicitly excluding the source card.
+# This is useful when we do a boardseek or tutor and we don't want to consider
+# The originator
+# 
+# This is only used in boardseek, and tutor subjects
+#
+# This key should be put in the same level as the main script
+const FILTER_EXCLUDE_SELF := "filter_exclude_self"
 #---------------------------------------------------------------------
 # Trigger Properties
 #
@@ -1278,6 +1293,8 @@ static func get_default(property: String):
 			default = "manual"
 		KEY_SORT_BY:
 			default = "node_index"
+		KEY_YIELD_TIME:
+			default = 0.2
 		_:
 			default = null
 	return(default)

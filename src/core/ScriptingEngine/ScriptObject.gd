@@ -191,6 +191,8 @@ func _boardseek_subjects(stored_integer: int) -> Array:
 	requested_subjects = subject_count
 	var subject_list := sort_subjects(cfc.NMAP.board.get_all_scriptables())
 	for c in subject_list:
+		if get_property(SP.FILTER_EXCLUDE_SELF) and c == owner:
+			continue
 		if SP.check_validity(c, script_definition, "seek"):
 			subjects_array.append(c)
 			subject_count -= 1
@@ -221,6 +223,8 @@ func _tutor_subjects(stored_integer: int) -> Array:
 	var subject_list := sort_subjects(
 			cfc.NMAP[get_property(SP.KEY_SRC_CONTAINER)].get_all_cards())
 	for c in subject_list:
+		if get_property(SP.FILTER_EXCLUDE_SELF) and c == owner:
+			continue
 		if SP.check_validity(c, script_definition, "tutor"):
 			subjects_array.append(c)
 			subject_count -= 1

@@ -14,8 +14,9 @@ onready var focus_info := $FocusInfo
 onready var _tween := $Tween
 
 func _ready() -> void:
-# warning-ignore:return_value_discarded
+	# warning-ignore:return_value_discarded
 	get_viewport().connect("size_changed", self, '_on_viewport_resized')
+	# warning-ignore:return_value_discarded
 	connect("placement_initialized",self, "_on_placement_initialized")
 
 func _process(_delta: float) -> void:

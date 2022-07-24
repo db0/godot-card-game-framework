@@ -72,7 +72,7 @@ func _ready() -> void:
 	_filter_line.connect("filters_changed", self, "_apply_filters")
 	prepate_filter_buttons()
 	cfc.game_settings['deckbuilder_gridstyle'] =\
-			cfc.game_settings.get('deckbuilder_gridstyle', true)
+			cfc.game_settings.get('deckbuilder_gridstyle', false)
 	$VBC/HBC/MC/AvailableCards/Settings/GridViewStyle.pressed =\
 			cfc.game_settings.deckbuilder_gridstyle
 

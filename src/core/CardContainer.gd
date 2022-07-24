@@ -3,6 +3,7 @@
 class_name CardContainer
 extends Area2D
 
+# warning-ignore:unused_signal
 signal shuffle_completed
 
 # The various automatic Anchors possible for a CardContainer

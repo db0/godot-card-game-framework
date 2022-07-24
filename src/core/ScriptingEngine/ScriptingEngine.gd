@@ -306,6 +306,8 @@ func move_card_to_container(script: ScriptTask) -> int:
 			# to try and draw more cards when you're full but just won't draw any)
 			card.move_to(dest_container,dest_index, null, tags)
 			yield(script.owner.get_tree().create_timer(0.05), "timeout")
+	if script.get_property(SP.KEY_STORE_INTEGER):
+		stored_integer = script.subjects.size()
 	return(retcode)
 
 
@@ -591,7 +593,8 @@ func spawn_card_to_container(script: ScriptTask) -> void:
 			card.set_to_idle()
 		# We set the drawn cards as the subjects, so that they can be
 		# used by other followup scripts
-		yield(cfc.get_tree().create_timer(0.2), "timeout")
+		var yield_time = script.get_property(SP.KEY_YIELD_TIME)
+		yield(cfc.get_tree().create_timer(yield_time), "timeout")
 		spawned_cards.append(card)
 	script.subjects = spawned_cards
 

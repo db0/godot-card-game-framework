@@ -102,7 +102,7 @@ static func list_files_in_directory(path: String, prepend_needed := "", full_pat
 # Due to the way Godot exports work, we cannot look for image
 # Files. Instead we have to explicitly look for their .import
 # filenames, and grab the filename from there.
-static func list_imported_in_directory(path: String) -> Array:
+static func list_imported_in_directory(path: String, full_path := false) -> Array:
 	var files := []
 	var dir := Directory.new()
 	# warning-ignore:return_value_discarded
@@ -114,7 +114,10 @@ static func list_imported_in_directory(path: String) -> Array:
 		if file == "":
 			break
 		elif file.ends_with(".import"):
-			files.append(file.rstrip(".import"))
+			if full_path:
+				files.append(path + file.rstrip(".import"))
+			else:
+				files.append(file.rstrip(".import"))
 	dir.list_dir_end()
 	return(files)
 
