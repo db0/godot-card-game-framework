@@ -65,7 +65,7 @@ func add_info(
 	if existing_details.has(id) and not requires_refresh:
 		existing_details[id].visible = true
 	else:
-		var new_info_panel : Node
+		var new_info_panel : Control
 		if existing_details.has(id) and requires_refresh:
 			new_info_panel = existing_details.get(id)
 			new_info_panel.visible = true
@@ -75,6 +75,7 @@ func add_info(
 			else:
 				new_info_panel = info_panel_scene.instance()
 			add_child(new_info_panel)
+			new_info_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 			existing_details[id] = new_info_panel
 		var label = new_info_panel.get_node("Details")
 		if label as RichTextLabel:
