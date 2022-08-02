@@ -7,7 +7,9 @@
 [sub_resource type="StyleBoxEmpty" id=1]
 
 [node name="PlayingCardBack" type="Panel"]
-rect_min_size = Vector2( 150, 240 )
+margin_right = 300.0
+margin_bottom = 240.0
+rect_min_size = Vector2( 300, 480 )
 mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 3 )
@@ -19,7 +21,7 @@ back_texture = ExtResource( 2 )
 [node name="CardTexture" type="TextureRect" parent="."]
 margin_right = 40.0
 margin_bottom = 40.0
-rect_min_size = Vector2( 150, 240 )
+rect_min_size = Vector2( 300, 480 )
 texture = ExtResource( 2 )
 expand = true
 stretch_mode = 6
@@ -33,30 +35,31 @@ __meta__ = {
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
-margin_right = 150.0
-margin_bottom = 95.0
+margin_right = 300.0
+margin_bottom = 195.0
+rect_min_size = Vector2( 0, 195 )
 mouse_filter = 2
 custom_constants/margin_top = 95
 
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
-margin_top = 99.0
-margin_right = 150.0
-margin_bottom = 139.0
+margin_top = 199.0
+margin_right = 300.0
+margin_bottom = 239.0
 rect_min_size = Vector2( 0, 40 )
 mouse_filter = 2
 
 [node name="Viewed" type="TextureRect" parent="VBoxContainer/CenterContainer"]
 visible = false
-margin_left = 55.0
-margin_right = 95.0
-margin_bottom = 40.0
+margin_left = 110.0
+margin_top = -20.0
+margin_right = 190.0
+margin_bottom = 60.0
+rect_min_size = Vector2( 80, 80 )
 mouse_filter = 2
 texture = ExtResource( 1 )
+expand = true
 __meta__ = {
 "_edit_use_anchors_": false
 }

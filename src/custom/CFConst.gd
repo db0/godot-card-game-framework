@@ -38,11 +38,23 @@ enum ShuffleStyle {
 # for other purposes as well.
 # If you never adjust this, the font cache might start growing too large.
 const GAME_VERSION := "1.0.0"
-# The card size you want your  cards to have.
+# The card size you want your cards to have.
 # This will also adjust all CardContainers to match
 # If you modify this property, you **must** adjust
 # the min_rect of the various control nodes inside the card front and back scenes.
-const CARD_SIZE := Vector2(150,240)
+# You should always set this to be at least 450px in height so that the default render 
+# Of the card is large. This will prevent the card font from blurring when the card
+# Is being resized.
+# To make the card have the correct "default" size on the playing board,
+# Adjust the CARD_DEFAULT_SCALE below
+const CARD_SIZE := Vector2(300,480)
+# This will multiple the CARD_SIZE above every time the card is shown. Effectively
+# For example setting this to 0.5 means the "normal" card size is always half of
+# What is set in CARD_SIZE.
+# This allows us to have a very large card size so that the fonts are always
+# only scaled down and avoid blurriness, and still have the card show at the expected
+# size on the board
+const CARD_DEFAULT_SCALE := 0.5
 # This is the resolution the game was developed in. It is used to adjust the card sizes
 # for smaller resolutions. Any lower resoluton will adjust its card sizes for previews/thumbnails
 # based on the percentage of difference between the two resolutions in absolute pixel number.
@@ -64,7 +76,7 @@ const FOCUS_STYLE = CFInt.FocusStyle.BOTH
 # 
 # Generally if the standard card size is large, this can stay as 'scale'
 # If the standard card size is small, then resize tends to work better.
-const VIEWPORT_FOCUS_ZOOM_TYPE = "resize"
+const VIEWPORT_FOCUS_ZOOM_TYPE = "scale"
 # If set to true, the hand will be presented in the form of an oval shape
 # If set to false, the hand will be presented with all cards
 # horizontally aligned

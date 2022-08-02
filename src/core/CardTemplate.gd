@@ -2291,19 +2291,19 @@ func _process_card_state() -> void:
 				_target_position = expected_position \
 						- Vector2(card_size.x \
 						* 0.25,0)
-				# Enough with the fancy calculations. I'm just brute-forcing
-				# The card to stay at the fully within the viewport.
+				# Enough with the fancy calculations which don't work! I'm just brute-forcing
+				# The card to stay fully within the viewport.
 				if get_parent().placement == get_parent().Anchors.CONTROL:
 					while  get_parent().get_parent().rect_global_position.y\
 							+ get_parent().bottom_margin \
 							+ _target_position.y \
-							+ card_size.y * 1.5 > get_viewport().size.y:
+							+ card_size.y * 1.5 * CFConst.CARD_DEFAULT_SCALE > get_viewport().size.y:
 						_target_position.y -= 1
 				else:
 					while get_parent().position.y \
 						+ get_parent().bottom_margin \
 						+ _target_position.y \
-						+ card_size.y > get_viewport().size.y:
+						+ card_size.y * CFConst.CARD_DEFAULT_SCALE > get_viewport().size.y:
 						_target_position.y -= 1
 				# We need to bump up the y postion a bit based on the rotation
 				# We subtract 13 if there is no rotation
@@ -2311,7 +2311,7 @@ func _process_card_state() -> void:
 				# We make sure to remove other tweens of the same type
 				# to avoid a deadlock
 				_add_tween_position(expected_position, _target_position, focus_tween_duration)
-				_add_tween_scale(scale, Vector2(1.5,1.5), focus_tween_duration)
+				_add_tween_scale(scale, Vector2(1.5,1.5) * CFConst.CARD_DEFAULT_SCALE, focus_tween_duration)
 
 				if cfc.game_settings.hand_use_oval_shape:
 					_add_tween_rotation($Control.rect_rotation, 0, focus_tween_duration)
@@ -2336,8 +2336,8 @@ func _process_card_state() -> void:
 			# set_card_rotation(0,false,false)
 			if not $Tween.is_active():
 				var intermediate_position: Vector2
-				if not scale.is_equal_approx(Vector2(1,1)):
-					_add_tween_scale(scale, Vector2(1,1),to_container_tween_duration)
+				if not scale.is_equal_approx(Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE):
+					_add_tween_scale(scale, Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE,to_container_tween_duration)
 				if cfc.game_settings.fancy_movement:
 					# The below calculations figure out
 					# the intermediate position as a spot,
@@ -2349,7 +2349,7 @@ func _process_card_state() -> void:
 					if get_parent() != cfc.NMAP.board:
 						# We determine its center position on the viewport
 						var controlNode_center_position := \
-								Vector2(global_position + card_size/2)
+								Vector2(global_position + (card_size/2 * CFConst.CARD_DEFAULT_SCALE))
 						# We then direct this position towards the viewport center
 						# If we are to the left/top of viewport center,
 						# we offset towards the right/bottom (+offset)
@@ -2412,8 +2412,8 @@ func _process_card_state() -> void:
 			if not $Tween.is_active():
 				$Tween.remove(self,'position') #
 				_add_tween_position(position, _target_position, reorganization_tween_duration)
-				if not scale.is_equal_approx(Vector2(1,1)):
-					_add_tween_scale(scale, Vector2(1,1), reorganization_tween_duration)
+				if not scale.is_equal_approx(Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE):
+					_add_tween_scale(scale, Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE, reorganization_tween_duration)
 				_add_tween_rotation($Control.rect_rotation,_target_rotation,
 					reorganization_tween_duration)
 				$Tween.start()
@@ -2432,8 +2432,8 @@ func _process_card_state() -> void:
 					pushed_aside_tween_duration, Tween.TRANS_QUART, Tween.EASE_IN)
 				_add_tween_rotation($Control.rect_rotation, _target_rotation,
 					pushed_aside_tween_duration)
-				if not scale.is_equal_approx(Vector2(1,1)):
-					_add_tween_scale(scale, Vector2(1,1), pushed_aside_tween_duration,
+				if not scale.is_equal_approx(Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE):
+					_add_tween_scale(scale, Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE, pushed_aside_tween_duration,
 						Tween.TRANS_QUART, Tween.EASE_IN)
 				$Tween.start()
 				# We don't change state yet,
@@ -2445,9 +2445,9 @@ func _process_card_state() -> void:
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
 			if (not $Tween.is_active() and
-				not scale.is_equal_approx(CFConst.CARD_SCALE_WHILE_DRAGGING) and
+				not scale.is_equal_approx(CFConst.CARD_SCALE_WHILE_DRAGGING * CFConst.CARD_DEFAULT_SCALE) and
 				get_parent() != cfc.NMAP.board):
-				_add_tween_scale(scale, CFConst.CARD_SCALE_WHILE_DRAGGING,
+				_add_tween_scale(scale, CFConst.CARD_SCALE_WHILE_DRAGGING * CFConst.CARD_DEFAULT_SCALE,
 					dragged_tween_duration, Tween.TRANS_SINE, Tween.EASE_IN)
 				$Tween.start()
 			# We need to capture the mouse cursos in the window while dragging
@@ -2477,8 +2477,8 @@ func _process_card_state() -> void:
 			set_control_mouse_filters(true)
 			buttons.set_active(false)
 			if not $Tween.is_active() and \
-					not scale.is_equal_approx(Vector2(1,1) * play_area_scale):
-				_add_tween_scale(scale, Vector2(1,1) * play_area_scale,
+					not scale.is_equal_approx(Vector2(1,1) * play_area_scale * CFConst.CARD_DEFAULT_SCALE):
+				_add_tween_scale(scale, Vector2(1,1) * play_area_scale * CFConst.CARD_DEFAULT_SCALE,
 					on_board_tween_duration, Tween.TRANS_SINE, Tween.EASE_OUT)
 				$Tween.start()
 			_organize_attachments()
@@ -2508,8 +2508,8 @@ func _process_card_state() -> void:
 				if not int($Control.rect_rotation) in [0,90,180,270]:
 					_add_tween_rotation($Control.rect_rotation, _target_rotation, to_board_tween_duration)
 				# We want cards on the board to be slightly smaller than in hand.
-				if not scale.is_equal_approx(Vector2(1,1) * play_area_scale):
-					_add_tween_scale(scale, Vector2(1,1) * play_area_scale, to_board_tween_duration,
+				if not scale.is_equal_approx(Vector2(1,1) * play_area_scale * CFConst.CARD_DEFAULT_SCALE):
+					_add_tween_scale(scale, Vector2(1,1) * play_area_scale * CFConst.CARD_DEFAULT_SCALE, to_board_tween_duration,
 							Tween.TRANS_BOUNCE, Tween.EASE_OUT)
 				$Tween.start()
 				set_state(CardState.ON_PLAY_BOARD)
@@ -2532,8 +2532,8 @@ func _process_card_state() -> void:
 			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
-			if scale != Vector2(1,1):
-				scale = Vector2(1,1)
+			if scale != Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE:
+				scale = Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE
 			if get_parent() in get_tree().get_nodes_in_group("piles"):
 				if card_front.resizing_labels.size() and not get_parent().faceup_cards:
 					return
@@ -2552,8 +2552,8 @@ func _process_card_state() -> void:
 			buttons.set_active(false)
 			# warning-ignore:return_value_discarded
 			set_card_rotation(0)
-			if scale != Vector2(1,1):
-				scale = Vector2(1,1)
+			if scale != Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE:
+				scale = Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE
 			if get_parent() in get_tree().get_nodes_in_group("piles"):
 				set_is_faceup(get_parent().faceup_cards, true)
 			if not $Tween.is_active():
@@ -2572,8 +2572,8 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			if modulate[3] != 1:
 				modulate[3] = 1
-			if scale != Vector2(0.75,0.75):
-				scale = Vector2(0.75,0.75)
+			if scale != Vector2(0.75,0.75) * CFConst.CARD_DEFAULT_SCALE:
+				scale = Vector2(0.75,0.75) * CFConst.CARD_DEFAULT_SCALE
 			if position != Vector2(0,0):
 				position = Vector2(0,0)
 			if not $Tween.is_active():
@@ -2600,15 +2600,15 @@ func _process_card_state() -> void:
 			$Control/Tokens.visible = false
 			# We scale the card dupe to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * focused_scale * cfc.curr_scale
+				scale = Vector2(1,1) * focused_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE
 			else:
 				# We need to reset its scale,
 				# in case it was already scaled due to being on the table etc.
 				scale = Vector2(1,1)
-				resize_recursively(_control, focused_scale * cfc.curr_scale)
+				resize_recursively(_control, focused_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE)
 #				set_card_size(CFConst.CARD_SIZE * CFConst.FOCUSED_SCALE, true)
-				card_front.scale_to(focused_scale * cfc.curr_scale)
-				card_back.scale_to(focused_scale * cfc.curr_scale)
+				card_front.scale_to(focused_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE)
+				card_back.scale_to(focused_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE)
 			# If the card has already been been viewed while down,
 			# we allow the player hovering over it to see it
 			if not is_faceup:
@@ -2629,11 +2629,11 @@ func _process_card_state() -> void:
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * preview_scale * cfc.curr_scale
+				scale = Vector2(1,1) * preview_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE
 			else:
 #				set_card_size(CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE)
-				resize_recursively(_control, preview_scale * cfc.curr_scale)
-				card_front.scale_to(preview_scale * cfc.curr_scale)
+				resize_recursively(_control, preview_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE)
+				card_front.scale_to(preview_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE)
 			if not $Tween.is_active():
 				state_finalized = true
 
@@ -2649,13 +2649,13 @@ func _process_card_state() -> void:
 			$Control.rect_rotation = 0
 			# We scale the card to allow the player a better viewing experience
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * thumbnail_scale * cfc.curr_scale
+				scale = Vector2(1,1) * thumbnail_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE
 			# Commenting this out because it is messing with RichTextLabel
 			# Font resizing
 			else:
 #				set_card_size(CFConst.CARD_SIZE * thumbnail_scale)
-				resize_recursively(_control, thumbnail_scale * cfc.curr_scale)
-				card_front.scale_to(thumbnail_scale * cfc.curr_scale)
+				resize_recursively(_control, thumbnail_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE)
+				card_front.scale_to(thumbnail_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE)
 			if not $Tween.is_active():
 				state_finalized = true
 
@@ -2666,7 +2666,7 @@ func _process_card_state() -> void:
 			buttons.set_active(false)
 			if not _tween.is_active()\
 					and not scale.is_equal_approx(Vector2(1,1)):
-				_add_tween_scale(scale, Vector2(1,1),0.75)
+				_add_tween_scale(scale, Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE,0.75)
 				_add_tween_global_position(global_position, get_viewport().size/2 - CFConst.CARD_SIZE/2)
 				_tween.start()
 				yield(_tween, "tween_all_completed")

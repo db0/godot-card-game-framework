@@ -19,16 +19,16 @@ func setup(card) -> Card:
 	else:
 		display_card = card
 		display_card.position = Vector2(0,0)
-		display_card.scale = Vector2(1,1)
+		display_card.scale = Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE
 	add_child(display_card)
 	display_card.set_owner(self)
 	if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-		display_card.scale = Vector2(1,1) * display_card.thumbnail_scale * cfc.curr_scale
+		display_card.scale = Vector2(1,1) * display_card.thumbnail_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE
 	else:
-		display_card.resize_recursively(display_card._control, display_card.thumbnail_scale * cfc.curr_scale)
-		display_card.card_front.scale_to(display_card.thumbnail_scale * cfc.curr_scale)
+		display_card.resize_recursively(display_card._control, display_card.thumbnail_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE)
+		display_card.card_front.scale_to(display_card.thumbnail_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE)
 	display_card.state = Card.CardState.DECKBUILDER_GRID
-	rect_min_size = display_card.canonical_size * display_card.thumbnail_scale * cfc.curr_scale
+	rect_min_size = display_card.canonical_size * display_card.thumbnail_scale * cfc.curr_scale * CFConst.CARD_DEFAULT_SCALE
 	rect_size = rect_min_size
 	return(display_card)
 

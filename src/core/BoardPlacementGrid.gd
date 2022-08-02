@@ -24,7 +24,7 @@ export(Color) var highlight = CFConst.TARGET_HOVER_COLOUR
 export var auto_extend := false
 # Used to adjust the grid according to the card size that will be put into it.
 # This size should match the
-export var card_size := CFConst.CARD_SIZE
+export var card_size := CFConst.CARD_SIZE * CFConst.CARD_DEFAULT_SCALE
 export var card_play_scale := CFConst.PLAY_AREA_SCALE
 
 # Sets a custom label for this grid

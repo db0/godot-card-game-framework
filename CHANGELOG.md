@@ -1,5 +1,23 @@
 # Changelog
 
+## 2.3 (Ongoing)
+
+### Important for Upgrades
+
+* New property `CFConst.CARD_DEFAULT_SCALE` has to exist. Copy it from the sample CFConst. If you want to make no further changes to your game, set it to 1.0
+   If however you want to take advantage of the method which allows the `CFConst.VIEWPORT_FOCUS_ZOOM_TYPE = 'scale'` method to work without having to text blur on resize
+   You should adjust your standard card size so that it's double what it was until now, and then set `CFConst.CARD_DEFAULT_SCALE = 0.5`.
+
+### Tweaks
+
+* Set `CFConst.VIEWPORT_FOCUS_ZOOM_TYPE = 'scale'` as default again, because the CFConst.CARD_DEFAULT_SCALE can fix the text blurriness.
+* Improved performance when too many cards are instanced in the game. (i.e. more than 100)
+
+### Bugfixes
+
+* card popups in CardViewer do not disappear outside viewport on the left anymore if the info panels are too many
+
+
 ## 2.2
 
 ### New Features

@@ -14,13 +14,13 @@ func _ready() -> void:
 
 	# These set te max size of each label. This is used to calculate how much
 	# To shrink the font when it doesn't fit in the rect.
-	card_label_min_sizes["Name"] = Vector2(CFConst.CARD_SIZE.x - 4, 19)
-	card_label_min_sizes["Type"] = Vector2(CFConst.CARD_SIZE.x - 4, 13)
-	card_label_min_sizes["Tags"] = Vector2(CFConst.CARD_SIZE.x - 4, 17)
-	card_label_min_sizes["Requirements"] = Vector2(CFConst.CARD_SIZE.x - 4, 11)
-	card_label_min_sizes["Abilities"] = Vector2(CFConst.CARD_SIZE.x - 4, 120)
-	card_label_min_sizes["Cost"] = Vector2(16,16)
-	card_label_min_sizes["Power"] = Vector2(16,16)
+	card_label_min_sizes["Name"] = Vector2(CFConst.CARD_SIZE.x - 4, 30)
+	card_label_min_sizes["Type"] = Vector2(CFConst.CARD_SIZE.x - 4, 26)
+	card_label_min_sizes["Tags"] = Vector2(CFConst.CARD_SIZE.x - 4, 34)
+	card_label_min_sizes["Requirements"] = Vector2(CFConst.CARD_SIZE.x - 4, 24)
+	card_label_min_sizes["Abilities"] = Vector2(CFConst.CARD_SIZE.x - 4, 240)
+	card_label_min_sizes["Cost"] = Vector2(15,30)
+	card_label_min_sizes["Power"] = Vector2(15,30)
 
 	# This is not strictly necessary, but it allows us to change
 	# the card label sizes without editing the scene
@@ -33,10 +33,11 @@ func _ready() -> void:
 	for label in card_labels:
 		match label:
 			"Cost","Power":
-				original_font_sizes[label] = 15
+				original_font_sizes[label] = 30
 			"Requirements":
-				original_font_sizes[label] = 11
+				original_font_sizes[label] = 22
 			"Abilities":
-				original_font_sizes[label] = 25
+				original_font_sizes[label] = 50
 			_:
-				original_font_sizes[label] = 16
+				original_font_sizes[label] = 32
+				

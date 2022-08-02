@@ -14,43 +14,41 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [sub_resource type="DynamicFont" id=2]
-size = 12
+size = 24
 font_data = ExtResource( 2 )
 
 [node name="CGFCardBack" type="Panel"]
-margin_right = 150.0
-margin_bottom = 240.0
-rect_min_size = Vector2( 150, 240 )
+margin_right = 300.0
+margin_bottom = 480.0
+rect_min_size = Vector2( 300, 480 )
 mouse_filter = 2
 custom_styles/panel = SubResource( 1 )
 script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Pulse" type="Tween" parent="."]
 
 [node name="Viewed" type="TextureRect" parent="."]
 visible = false
 modulate = Color( 1.5, 0.2, 0, 1 )
-margin_left = 55.0
-margin_top = 54.0
-margin_right = 95.0
-margin_bottom = 94.0
-rect_min_size = Vector2( 40, 40 )
+margin_left = 110.0
+margin_top = 108.0
+margin_right = 190.0
+margin_bottom = 188.0
+rect_min_size = Vector2( 80, 80 )
 mouse_filter = 2
 texture = ExtResource( 1 )
+expand = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Label" type="Label" parent="."]
-margin_top = 105.0
-margin_right = 150.0
-margin_bottom = 121.0
-rect_min_size = Vector2( 150, 16 )
-custom_fonts/font = SubResource( 2 )
+margin_top = 210.0
+margin_right = 300.0
+margin_bottom = 242.0
+rect_min_size = Vector2( 300, 32 )
 custom_colors/font_color = Color( 1, 0.2, 0, 1 )
+custom_fonts/font = SubResource( 2 )
 text = "Card Game Framework"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -96,9 +94,6 @@ margin_bottom = 1.52588e-05
 rect_min_size = Vector2( 150, 240 )
 texture = ExtResource( 4 )
 expand = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="TextureRect2" type="TextureRect" parent="."]
 modulate = Color( 2, 1, 1, 1 )
@@ -108,6 +103,3 @@ margin_bottom = 1.52588e-05
 rect_min_size = Vector2( 150, 240 )
 texture = ExtResource( 5 )
 expand = true
-__meta__ = {
-"_edit_use_anchors_": false
-}

@@ -7,6 +7,14 @@
 
 [node name="Card" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
+canonical_size = Vector2( 300, 480 )
+
+[node name="CollisionShape2D" parent="." index="0"]
+position = Vector2( 150, 240 )
+
+[node name="Highlight" parent="Control" index="0"]
+margin_right = 153.0
+margin_bottom = 243.0
 
 [node name="Front" parent="Control" index="2"]
 rect_min_size = Vector2( 150, 240 )

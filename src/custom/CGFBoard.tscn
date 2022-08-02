@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=2]
+[gd_scene load_steps=17 format=2]
 
 [ext_resource path="res://src/custom/CGFDiscard.gd" type="Script" id=1]
 [ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
@@ -10,7 +10,9 @@
 [ext_resource path="res://src/custom/CGFModifiedLabelGrid.tscn" type="PackedScene" id=8]
 [ext_resource path="res://fonts/Comfortaa-Bold.ttf" type="DynamicFontData" id=9]
 [ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=10]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.tscn" type="PackedScene" id=11]
 [ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=12]
+[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.tscn" type="PackedScene" id=13]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0, 0, 0, 1 )
@@ -35,9 +37,6 @@ anchor_bottom = 1.0
 mouse_filter = 2
 theme = ExtResource( 12 )
 script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Deck" parent="." instance=ExtResource( 2 )]
 position = Vector2( 0, 475 )
@@ -288,8 +287,15 @@ margin_top = 2.0
 margin_right = -2.0
 margin_bottom = -2.0
 custom_styles/panel = SubResource( 3 )
-replacements = {
-}
+random_adverb_miss = 10
+random_adjective_miss = 1.1
+random_append_miss = 2
+second_noun_miss = 3
+max_quantity = 3
+deck_minimum = 52
+deck_maximum = 60
+deck_card_object_scene = ExtResource( 11 )
+deck_summary_scene = ExtResource( 13 )
 
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
