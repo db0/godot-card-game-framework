@@ -836,7 +836,8 @@ func resize_recursively(control_node: Node, requested_scale: float) -> void:
 
 # Sets the card size and adjusts all nodes depending on it.
 func set_card_size(value: Vector2, ignore_area = false) -> void:
-	card_size = value
+	scale = Vector2(1,1) * CFConst.CARD_DEFAULT_SCALE
+	card_size = value * CFConst.CARD_DEFAULT_SCALE
 	_control.rect_min_size = value
 	# We set the card to always pivot from its center.
 	_control.rect_pivot_offset = value/2

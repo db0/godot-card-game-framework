@@ -40,6 +40,7 @@ onready var _counter_cards = $Counters/Cards
 
 func _ready() -> void:
 	add_to_group("hands")
+	bottom_margin *= CFConst.CARD_DEFAULT_SCALE
 
 func prepare_excess_discard_pile() -> void:
 	if excess_discard_pile_name\

@@ -38,7 +38,7 @@ export(CFInt.OverlapShiftDirection) var overlap_shift_direction
 # In case of multiple CardContainers using the same anchor placement
 # specifies which container should be displaced more.
 export(CFInt.IndexShiftPriority) var index_shift_priority
-export var card_size := CFConst.CARD_SIZE * CFConst.CARD_DEFAULT_SCALE
+export var card_size := CFConst.CARD_SIZE
 # If set to false, no manipulation buttons will appear when hovering
 # over this container.
 export var show_manipulation_buttons := true
@@ -73,6 +73,7 @@ func _process(_delta: float) -> void:
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	card_size *= CFConst.CARD_DEFAULT_SCALE
 	cfc.map_node(self)
 	# We use the below while to wait until all the nodes we need have been mapped
 	# "hand" should be one of them.
@@ -354,6 +355,7 @@ func re_place():
 			# minus half the height of the container
 			Anchors.RIGHT_MIDDLE, Anchors.LEFT_MIDDLE:
 				place.y = get_viewport().size.y / 2 - (card_size.y / 2 * scale.y)
+
 		# Now we try to discover if more than one CardContainer share
 		# the same anchor and the figure out which to displace.
 		var duplicate_anchors := {}
