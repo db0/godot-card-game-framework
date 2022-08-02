@@ -2463,11 +2463,8 @@ func _process_card_state() -> void:
 			tokens.is_drawer_open = false
 
 		CardState.ON_PLAY_BOARD:
-			if state_finalized:
-				return
 			# Used when the card is idle on the board
 			z_index = 0
-
 			# if this card is an attachment and it's host is being dragged
 			# then we want this card to be above everything like the host
 			if current_host_card and current_host_card.state == CardState.DRAGGED:
