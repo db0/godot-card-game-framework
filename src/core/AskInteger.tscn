@@ -22,9 +22,9 @@ corner_radius_top_left = 3
 corner_radius_bottom_right = 3
 
 [node name="AskInteger" type="AcceptDialog"]
-margin_right = 20.0
-margin_bottom = 20.0
-popup_exclusive = true
+offset_right = 20.0
+offset_bottom = 20.0
+exclusive = true
 window_title = "Please enter number"
 dialog_hide_on_ok = false
 script = ExtResource( 1 )
@@ -33,34 +33,34 @@ __meta__ = {
 }
 
 [node name="VecticalHighlights" type="Panel" parent="."]
-margin_left = 8.0
-margin_top = 8.0
-margin_right = 174.0
-margin_bottom = 32.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 174.0
+offset_bottom = 32.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 1 )
+theme_override_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="HorizontalHighlights" type="Panel" parent="."]
-margin_left = 8.0
-margin_top = 8.0
-margin_right = 174.0
-margin_bottom = 32.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 174.0
+offset_bottom = 32.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 2 )
+theme_override_styles/panel = SubResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="IntegerLineEdit" type="LineEdit" parent="."]
-margin_left = 8.0
-margin_top = 8.0
-margin_right = 174.0
-margin_bottom = 32.0
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 174.0
+offset_bottom = 32.0
 caret_blink = true
-caret_blink_speed = 0.5
+caret_blink_interval = 0.5
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -68,5 +68,5 @@ __meta__ = {
 
 [connection signal="confirmed" from="." to="." method="_on_AskInteger_confirmed"]
 [connection signal="text_changed" from="IntegerLineEdit" to="IntegerLineEdit" method="_on_IntegerLineEdit_text_changed"]
-[connection signal="text_entered" from="IntegerLineEdit" to="." method="_on_LineEdit_text_entered"]
-[connection signal="text_entered" from="IntegerLineEdit" to="IntegerLineEdit" method="_on_IntegerLineEdit_text_entered"]
+[connection signal="text_submitted" from="IntegerLineEdit" to="." method="_on_LineEdit_text_entered"]
+[connection signal="text_submitted" from="IntegerLineEdit" to="IntegerLineEdit" method="_on_IntegerLineEdit_text_entered"]

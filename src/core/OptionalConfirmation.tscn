@@ -21,9 +21,9 @@ corner_radius_top_left = 3
 corner_radius_bottom_right = 3
 
 [node name="OptionalConfirmation" type="ConfirmationDialog"]
-margin_right = 20.0
-margin_bottom = 20.0
-popup_exclusive = true
+offset_right = 20.0
+offset_bottom = 20.0
+exclusive = true
 resizable = true
 script = ExtResource( 1 )
 __meta__ = {
@@ -31,14 +31,14 @@ __meta__ = {
 }
 
 [node name="HorizontalHighlights" type="Panel" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 1 )
+theme_override_styles/panel = SubResource( 1 )
 
 [node name="VecticalHighlights" type="Panel" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 2 )
+theme_override_styles/panel = SubResource( 2 )
 [connection signal="confirmed" from="." to="." method="_on_OptionalConfirmation_confirmed"]

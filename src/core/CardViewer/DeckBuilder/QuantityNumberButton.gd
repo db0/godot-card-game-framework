@@ -12,7 +12,7 @@ var quantity_number: int
 func _ready() -> void:
 	quantity_number = int(name)
 	# warning-ignore:return_value_discarded
-	connect("pressed",self,"_on_button_pressed")
+	connect("pressed", Callable(self, "_on_button_pressed"))
 
 
 func _on_button_pressed() -> void:

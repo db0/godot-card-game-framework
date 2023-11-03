@@ -50,7 +50,7 @@
 static func _to_scancode(which):
 	var key_code = which
 	if(typeof(key_code) == TYPE_STRING):
-		key_code = key_code.to_upper().to_ascii()[0]
+		key_code = key_code.to_upper().to_ascii_buffer()[0]
 	return key_code
 
 
@@ -59,7 +59,7 @@ static func new_mouse_button_event(position, global_position, pressed, button_in
     event.position = position
     if(global_position != null):
         event.global_position = global_position
-    event.pressed = pressed
+    event.button_pressed = pressed
     event.button_index = button_index
 
     return event
@@ -67,15 +67,15 @@ static func new_mouse_button_event(position, global_position, pressed, button_in
 
 static func key_up(which):
 	var event = InputEventKey.new()
-	event.scancode = _to_scancode(which)
-	event.pressed = false
+	event.keycode = _to_scancode(which)
+	event.button_pressed = false
 	return event
 
 
 static func key_down(which):
 	var event = InputEventKey.new()
-	event.scancode = _to_scancode(which)
-	event.pressed = true
+	event.keycode = _to_scancode(which)
+	event.button_pressed = true
 	return event
 
 
@@ -90,33 +90,33 @@ static func action_down(which, strength=1.0):
 	var event  = InputEventAction.new()
 	event.action = which
 	event.strength = strength
-	event.pressed = true
+	event.button_pressed = true
 	return event
 
 
 static func mouse_left_button_down(position, global_position=null):
-	var event = new_mouse_button_event(position, global_position, true, BUTTON_LEFT)
+	var event = new_mouse_button_event(position, global_position, true, MOUSE_BUTTON_LEFT)
 	return event
 
 
 static func mouse_left_button_up(position, global_position=null):
-	var event = new_mouse_button_event(position, global_position, false, BUTTON_LEFT)
+	var event = new_mouse_button_event(position, global_position, false, MOUSE_BUTTON_LEFT)
 	return event
 
 
 static func mouse_double_click(position, global_position=null):
-	var event = new_mouse_button_event(position, global_position, false, BUTTON_LEFT)
+	var event = new_mouse_button_event(position, global_position, false, MOUSE_BUTTON_LEFT)
 	event.doubleclick = true
 	return event
 
 
 static func mouse_right_button_down(position, global_position=null):
-	var event = new_mouse_button_event(position, global_position, true, BUTTON_RIGHT)
+	var event = new_mouse_button_event(position, global_position, true, MOUSE_BUTTON_RIGHT)
 	return event
 
 
 static func mouse_right_button_up(position, global_position=null):
-	var event = new_mouse_button_event(position, global_position, false, BUTTON_RIGHT)
+	var event = new_mouse_button_event(position, global_position, false, MOUSE_BUTTON_RIGHT)
 	return event
 
 

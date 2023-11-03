@@ -1,4 +1,4 @@
-tool
+@tool
 extends Control
 
 const RUNNER_JSON_PATH = 'res://.gut_editor_config.json'
@@ -19,12 +19,12 @@ var _panel_button = null
 var _last_selected_path = null
 
 
-onready var _ctrls = {
+@onready var _ctrls = {
 	output = $layout/RSplit/CResults/Output,
 	run_button = $layout/ControlBar/RunAll,
 	settings = $layout/RSplit/sc/Settings,
 	shortcut_dialog = $BottomPanelShortcuts,
-	light = $layout/RSplit/CResults/ControlBar/Light,
+	light = $layout/RSplit/CResults/ControlBar/Light3D,
 	results = {
 		passing = $layout/RSplit/CResults/ControlBar/Passing/value,
 		failing = $layout/RSplit/CResults/ControlBar/Failing/value,
@@ -70,8 +70,8 @@ func _set_font(rtl, font_name, custom_name):
 	if(font_name == null):
 		rtl.set('custom_fonts/' + custom_name, null)
 	else:
-		var dyn_font = DynamicFont.new()
-		var font_data = DynamicFontData.new()
+		var dyn_font = FontFile.new()
+		var font_data = FontFile.new()
 		font_data.font_path = 'res://addons/gut/fonts/' + font_name + '.ttf'
 		font_data.antialiased = true
 		dyn_font.font_data = font_data
@@ -92,11 +92,11 @@ func _set_all_fonts_in_ftl(ftl, base_name):
 
 
 func _set_font_size_for_rtl(rtl, new_size):
-	if(rtl.get('custom_fonts/normal_font') != null):
-		rtl.get('custom_fonts/bold_italics_font').size = new_size
-		rtl.get('custom_fonts/bold_font').size = new_size
-		rtl.get('custom_fonts/italics_font').size = new_size
-		rtl.get('custom_fonts/normal_font').size = new_size
+	if(rtl.get('theme_override_fonts/normal_font') != null):
+		rtl.get('theme_override_fonts/bold_italics_font').size = new_size
+		rtl.get('theme_override_fonts/bold_font').size = new_size
+		rtl.get('theme_override_fonts/italics_font').size = new_size
+		rtl.get('theme_override_fonts/normal_font').size = new_size
 # -----------------------------------
 
 
@@ -128,7 +128,7 @@ func _show_errors(errs):
 	for e in errs:
 		text += str('*  ', e, "\n")
 	text += "[right]Check your settings here ----->[/right]"
-	_ctrls.output.bbcode_text = text
+	_ctrls.output.text = text
 
 
 func _run_tests():
@@ -212,7 +212,7 @@ func _on_BottomPanelShortcuts_popup_hide():
 
 func _on_Light_draw():
 	var l = _ctrls.light
-	l.draw_circle(Vector2(l.rect_size.x / 2, l.rect_size.y / 2), l.rect_size.x / 2, _light_color)
+	l.draw_circle(Vector2(l.size.x / 2, l.size.y / 2), l.size.x / 2, _light_color)
 
 
 func _on_RunAtCursor_run_tests(what):
@@ -228,12 +228,14 @@ func _on_RunAtCursor_run_tests(what):
 # ---------------
 
 func load_result_output():
-	_ctrls.output.bbcode_text = get_file_as_text(RESULT_FILE)
+	_ctrls.output.text = get_file_as_text(RESULT_FILE)
 	_ctrls.output.grab_focus()
 	_ctrls.output.scroll_to_line(_ctrls.output.get_line_count() -1)
 
 	var summary = get_file_as_text(RESULT_JSON)
-	var results = JSON.parse(summary)
+	var test_json_conv = JSON.new()
+	test_json_conv.parse(summary)
+	var results = test_json_conv.get_data()
 	if(results.error != OK):
 		return
 	var summary_json = results.result['test_scripts']['props']
@@ -277,7 +279,7 @@ func set_current_script(script):
 
 func set_interface(value):
 	_interface = value
-	_interface.get_script_editor().connect("editor_script_changed", self, '_on_editor_script_changed')
+	_interface.get_script_editor().connect("editor_script_changed", Callable(self, '_on_editor_script_changed'))
 	_ctrls.run_at_cursor.set_script_editor(_interface.get_script_editor())
 	set_current_script(_interface.get_script_editor().get_current_script())
 

@@ -6,7 +6,7 @@
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=6]
 
 [sub_resource type="RectangleShape2D" id=1]
-extents = Vector2( 75, 120 )
+size = Vector2( 75, 120 )
 
 [sub_resource type="StyleBoxFlat" id=2]
 bg_color = Color( 0.584314, 0.6, 0.647059, 1 )
@@ -25,15 +25,15 @@ position = Vector2( 75, 120 )
 shape = SubResource( 1 )
 
 [node name="Control" type="Control" parent="."]
-rect_min_size = Vector2( 150, 240 )
+custom_minimum_size = Vector2( 150, 240 )
 __meta__ = {
 "_edit_group_": true,
 "_edit_use_anchors_": false
 }
 
 [node name="Highlight" parent="Control" instance=ExtResource( 6 )]
-margin_right = 3.0
-margin_bottom = 3.00002
+offset_right = 3.0
+offset_bottom = 3.00002
 
 [node name="Back" type="MarginContainer" parent="Control"]
 visible = false
@@ -54,19 +54,19 @@ script = ExtResource( 5 )
 
 [node name="Drawer" type="PanelContainer" parent="Control/Tokens"]
 self_modulate = Color( 1, 1, 1, 0 )
-margin_left = 115.0
-margin_top = 20.0
-margin_right = 165.0
-margin_bottom = 70.0
+offset_left = 115.0
+offset_top = 20.0
+offset_right = 165.0
+offset_bottom = 70.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 2 )
+theme_override_styles/panel = SubResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/Tokens/Drawer"]
-margin_right = 50.0
-margin_bottom = 50.0
+offset_right = 50.0
+offset_bottom = 50.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
@@ -83,10 +83,10 @@ shape = SubResource( 3 )
 
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
 modulate = Color( 1, 1, 1, 0 )
-margin_left = 8.0
-margin_top = 16.0
-margin_right = 37.0
-margin_bottom = 102.0
+offset_left = 8.0
+offset_top = 16.0
+offset_right = 37.0
+offset_bottom = 102.0
 mouse_filter = 2
 script = ExtResource( 1 )
 __meta__ = {
@@ -101,9 +101,9 @@ __meta__ = {
 
 [node name="Debug" type="VBoxContainer" parent="."]
 visible = false
-margin_left = 150.0
-margin_top = -40.0
-margin_right = 190.0
+offset_left = 150.0
+offset_top = -40.0
+offset_right = 190.0
 mouse_filter = 2
 __meta__ = {
 "_edit_group_": true,
@@ -111,31 +111,31 @@ __meta__ = {
 }
 
 [node name="id" type="Label" parent="Debug"]
-margin_right = 40.0
-margin_bottom = 14.0
+offset_right = 40.0
+offset_bottom = 14.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="state" type="Label" parent="Debug"]
-margin_right = 40.0
-margin_bottom = 14.0
+offset_right = 40.0
+offset_bottom = 14.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="index" type="Label" parent="Debug"]
-margin_top = 18.0
-margin_right = 40.0
-margin_bottom = 32.0
+offset_top = 18.0
+offset_right = 40.0
+offset_bottom = 32.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="parent" type="Label" parent="Debug"]
-margin_top = 36.0
-margin_right = 40.0
-margin_bottom = 50.0
+offset_top = 36.0
+offset_right = 40.0
+offset_bottom = 50.0
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -208,7 +208,7 @@ func _print_gutconfigs(values):
 	var header = """Here is a sample of a full .gutconfig.json file.
 You do not need to specify all values in your own file.  The values supplied in
 this sample are what would be used if you ran gut w/o the -gprint_gutconfig_sample
-option (option priority:  command-line, .gutconfig, default)."""
+option (option priority:  command-line, super.gutconfig, default)."""
 	print("\n", header.replace("\n", ' '), "\n\n")
 	var resolved = values
 
@@ -217,13 +217,13 @@ option (option priority:  command-line, .gutconfig, default)."""
 	resolved.erase("show_help")
 
 	print("Here's a config with all the properties set based off of your current command and config.")
-	print(JSON.print(resolved, '  '))
+	print(JSON.stringify(resolved, '  '))
 
 	for key in resolved:
 		resolved[key] = null
 
 	print("\n\nAnd here's an empty config for you fill in what you want.")
-	print(JSON.print(resolved, ' '))
+	print(JSON.stringify(resolved, ' '))
 
 
 # parse options and run Gut
@@ -253,7 +253,7 @@ func _run_gut():
 		elif(o.get_value('-gpo')):
 			print('All command line options and where they are specified.  ' +
 				'The "final" value shows which value will actually be used ' +
-				'based on order of precedence (default < .gutconfig < cmd line).' + "\n")
+				'based on order of precedence (default < super.gutconfig < cmd line).' + "\n")
 			print(opt_resolver.to_s_verbose())
 			quit()
 		elif(o.get_value('-gprint_gutconfig_sample')):
@@ -263,7 +263,7 @@ func _run_gut():
 			_final_opts = opt_resolver.get_resolved_values();
 			_gut_config.options = _final_opts
 
-			var runner = GutRunner.instance()
+			var runner = GutRunner.instantiate()
 			runner.set_cmdln_mode(true)
 			runner.set_gut_config(_gut_config)
 
@@ -280,7 +280,7 @@ func _on_tests_finished(should_exit, should_exit_on_success):
 	if(_final_opts.dirs.size() == 0):
 		if(_tester.get_summary().get_totals().scripts == 0):
 			var lgr = _tester.get_logger()
-			lgr.error('No directories configured.  Add directories with options or a .gutconfig.json file.  Use the -gh option for more information.')
+			lgr.error('No directories configured.  Add directories with options or a super.gutconfig.json file.  Use the -gh option for more information.')
 
 	if(_tester.get_fail_count()):
 		OS.exit_code = 1

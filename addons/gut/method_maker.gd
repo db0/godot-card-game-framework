@@ -81,12 +81,12 @@ func _init():
 	_supported_defaults[TYPE_NIL] = ''
 	_supported_defaults[TYPE_BOOL] = ''
 	_supported_defaults[TYPE_INT] = ''
-	_supported_defaults[TYPE_REAL] = ''
+	_supported_defaults[TYPE_FLOAT] = ''
 	_supported_defaults[TYPE_OBJECT] = ''
 	_supported_defaults[TYPE_ARRAY] = ''
 	_supported_defaults[TYPE_STRING] = ''
 	_supported_defaults[TYPE_DICTIONARY] = ''
-	_supported_defaults[TYPE_VECTOR2_ARRAY] = ''
+	_supported_defaults[TYPE_PACKED_VECTOR2_ARRAY] = ''
 	_supported_defaults[TYPE_RID] = ''
 
 	# These require a prefix for whatever default is provided
@@ -95,9 +95,9 @@ func _init():
 	_supported_defaults[TYPE_VECTOR3] = 'Vector3'
 	_supported_defaults[TYPE_COLOR] = 'Color'
 	_supported_defaults[TYPE_TRANSFORM2D] = 'Transform2D'
-	_supported_defaults[TYPE_TRANSFORM] = 'Transform'
-	_supported_defaults[TYPE_INT_ARRAY] = 'PoolIntArray'
-	_supported_defaults[TYPE_REAL_ARRAY] = 'PoolRealArray'
+	_supported_defaults[TYPE_TRANSFORM3D] = 'Transform3D'
+	_supported_defaults[TYPE_PACKED_INT32_ARRAY] = 'PackedInt32Array'
+	_supported_defaults[TYPE_PACKED_FLOAT32_ARRAY] = 'PackedFloat32Array'
 
 # ###############
 # Private
@@ -138,7 +138,7 @@ func _make_arg_array(method_meta, override_size):
 						dflt_text = str(_supported_defaults[t], 'null')
 					else:
 						dflt_text = str(_supported_defaults[t], str(method_meta.default_args[dflt_idx]).to_lower())
-				elif(t == TYPE_TRANSFORM):
+				elif(t == TYPE_TRANSFORM3D):
 					#value will be 4 Vector3 and look like: 1, 0, 0, 0, 1, 0, 0, 0, 1 - 0, 0, 0
 					var sections = str(method_meta.default_args[dflt_idx]).split("-")
 					var vecs = sections[0].split(",")
@@ -157,7 +157,7 @@ func _make_arg_array(method_meta, override_size):
 					dflt_text = str(_supported_defaults[t], "(", vectors, ")")
 				elif(t == TYPE_RID):
 					dflt_text = str(_supported_defaults[t], 'null')
-				elif(t in [TYPE_REAL_ARRAY, TYPE_INT_ARRAY]):
+				elif(t in [TYPE_PACKED_FLOAT32_ARRAY, TYPE_PACKED_INT32_ARRAY]):
 					dflt_text = str(_supported_defaults[t], "()")
 
 				# Everything else puts the prefix (if one is there) form _supported_defaults

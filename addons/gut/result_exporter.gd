@@ -88,7 +88,7 @@ func get_results_dictionary(gut, include_scripts=true):
 
 func write_json_file(gut, path):
 	var dict = get_results_dictionary(gut)
-	var json = JSON.print(dict, ' ')
+	var json = JSON.stringify(dict, ' ')
 
 	var f_result = _utils.write_file(path, json)
 	if(f_result != OK):
@@ -101,7 +101,7 @@ func write_json_file(gut, path):
 
 func write_summary_file(gut, path):
 	var dict = get_results_dictionary(gut, false)
-	var json = JSON.print(dict, ' ')
+	var json = JSON.stringify(dict, ' ')
 
 	var f_result = _utils.write_file(path, json)
 	if(f_result != OK):

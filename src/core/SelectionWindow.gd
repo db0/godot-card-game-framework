@@ -12,8 +12,8 @@ const _INFO_PANEL_SCENE_FILE = CFConst.PATH_CORE\
 		+ "CardViewer/CVInfoPanel.tscn"
 const _INFO_PANEL_SCENE = preload(_INFO_PANEL_SCENE_FILE)
 
-export(PackedScene) var grid_card_object_scene := _GRID_CARD_OBJECT_SCENE
-export(PackedScene) var info_panel_scene := _INFO_PANEL_SCENE
+@export var grid_card_object_scene := _GRID_CARD_OBJECT_SCENE
+@export var info_panel_scene := _INFO_PANEL_SCENE
 
 var selected_cards := []
 var selection_count : int
@@ -22,18 +22,18 @@ var is_selection_optional: bool
 var is_cancelled := false
 var _card_dupe_map := {}
 
-onready var _card_grid = $GridContainer
-onready var _tween = $Tween
+@onready var _card_grid = $GridContainer
+@onready var _tween = $Tween
 
 
 func _ready() -> void:
 	# For the counter signal, we "push" connect it instead from this node.
 	# warning-ignore:return_value_discarded
-	connect("selection_window_opened", cfc.signal_propagator, "_on_signal_received")
+	connect("selection_window_opened", Callable(cfc.signal_propagator, "_on_signal_received"))
 	# warning-ignore:return_value_discarded
-	connect("card_selected", cfc.signal_propagator, "_on_signal_received")
+	connect("card_selected", Callable(cfc.signal_propagator, "_on_signal_received"))
 	# warning-ignore:return_value_discarded
-	connect("confirmed", self, "_on_card_selection_confirmed")
+	connect("confirmed", Callable(self, "_on_card_selection_confirmed"))
 
 func _process(_delta):
 	var current_count = selected_cards.size()
@@ -42,19 +42,19 @@ func _process(_delta):
 	match selection_type:
 		"min":
 			if current_count < selection_count:
-				get_ok().disabled = true
+				get_ok_button().disabled = true
 			else:
-				get_ok().disabled = false
+				get_ok_button().disabled = false
 		"equal":
 			if current_count != selection_count:
-				get_ok().disabled = true
+				get_ok_button().disabled = true
 			else:
-				get_ok().disabled = false
+				get_ok_button().disabled = false
 		"max":
 			if current_count > selection_count:
-				get_ok().disabled = true
+				get_ok_button().disabled = true
 			else:
-				get_ok().disabled = false
+				get_ok_button().disabled = false
 
 
 # Populates the selection window with duplicates of the possible cards
@@ -75,9 +75,9 @@ func initiate_selection(
 	# If the selection is optional, we allow the player to cancel out
 	# of the popup
 	if is_selection_optional:
-		var cancel_button := add_cancel("Cancel")
+		var cancel_button := add_cancel_button("Cancel")
 		# warning-ignore:return_value_discarded
-		cancel_button.connect("pressed",self, "_on_cancel_pressed")
+		cancel_button.connect("pressed", Callable(self, "_on_cancel_pressed"))
 	# If the amount of cards available for the choice are below the requirements
 	# We return that the selection was canceled
 	elif card_array.size() < selection_count\
@@ -135,7 +135,7 @@ func initiate_selection(
 			dupe_selection.canonical_name = card.canonical_name
 			dupe_selection.properties = card.properties.duplicate()
 		card_sample = dupe_selection
-		var card_grid_obj = grid_card_object_scene.instance()
+		var card_grid_obj = grid_card_object_scene.instantiate()
 		_card_grid.add_child(card_grid_obj)
 		# This is necessary setup for the card grid container
 		card_grid_obj.preview_popup.focus_info.info_panel_scene = info_panel_scene
@@ -148,7 +148,7 @@ func initiate_selection(
 		dupe_selection.ensure_proper()
 		# We connect each card grid's gui input into a call which will handle
 		# The selections
-		card_grid_obj.connect("gui_input", self, "on_selection_gui_input", [dupe_selection, card])
+		card_grid_obj.connect("gui_input", Callable(self, "on_selection_gui_input").bind(dupe_selection, card))
 	# We don't want to show a popup longer than the cards. So the width is based on the lowest
 	# between the grid columns or the amount of cards
 	var shown_columns = min(_card_grid.columns, card_array.size())
@@ -158,13 +158,13 @@ func initiate_selection(
 		card_size = card_sample.canonical_size
 		thumbnail_scale = card_sample.thumbnail_scale
 	var popup_size_x = (card_size.x * thumbnail_scale * shown_columns * cfc.curr_scale)\
-			+ _card_grid.get("custom_constants/vseparation") * shown_columns
+			+ _card_grid.get("theme_override_constants/v_separation") * shown_columns
 	# The height will be automatically adjusted based on the amount of cards
-	rect_size = Vector2(popup_size_x,0)
-	popup_centered_minsize()
+	size = Vector2(popup_size_x,0)
+	popup_centered_clamped()
 	# Spawning all the duplicates is a bit heavy
 	# So we delay showing the tween to avoid having it look choppy
-	yield(get_tree().create_timer(0.2), "timeout")
+	await get_tree().create_timer(0.2).timeout
 	_tween.remove_all()
 	# We do a nice alpha-modulate tween
 	_tween.interpolate_property(self,'modulate:a',

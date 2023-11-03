@@ -183,8 +183,8 @@ func get_line_info():
 		test_method = null
 	}
 
-	var line = editor.cursor_get_line()
-	var done_func = false
+	var line = editor.get_caret_line()
+	var done()_func = false
 	var done_inner = false
 	while(line > 0 and (!done_func or !done_inner)):
 		if(editor.can_fold(line)):

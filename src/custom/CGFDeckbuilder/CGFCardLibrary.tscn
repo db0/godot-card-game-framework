@@ -16,35 +16,35 @@ property_width_exceptions = {
 }
 
 [node name="MC" parent="VBC/HBC" index="0"]
-custom_constants/margin_right = 5
-custom_constants/margin_left = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_left = 5
 
 [node name="AvailableCards" parent="VBC/HBC/MC" index="0"]
-margin_left = 5.0
-margin_right = 1275.0
+offset_left = 5.0
+offset_right = 1275.0
 
 [node name="CardListHeaders" parent="VBC/HBC/MC/AvailableCards" index="2"]
-margin_bottom = 62.0
+offset_bottom = 62.0
 
 [node name="Name" parent="VBC/HBC/MC/AvailableCards/CardListHeaders" index="0"]
-margin_bottom = 0.0
-rect_min_size = Vector2( 0, 0 )
+offset_bottom = 0.0
+custom_minimum_size = Vector2( 0, 0 )
 
 [node name="Type" parent="VBC/HBC/MC/AvailableCards/CardListHeaders" index="1"]
-margin_bottom = 0.0
-rect_min_size = Vector2( 100, 0 )
+offset_bottom = 0.0
+custom_minimum_size = Vector2( 100, 0 )
 
 [node name="LineSeparator" parent="VBC/HBC/MC/AvailableCards" index="3"]
-margin_top = 66.0
-margin_bottom = 66.0
+offset_top = 66.0
+offset_bottom = 66.0
 
 [node name="ScrollContainer" parent="VBC/HBC/MC/AvailableCards" index="4"]
-margin_top = 70.0
+offset_top = 70.0
 
 [node name="Back" type="Button" parent="VBC/HBC/MC/AvailableCards/Settings" index="0"]
-margin_right = 42.0
-margin_bottom = 40.0
+offset_right = 42.0
+offset_bottom = 40.0
 text = "Back"
 
 [node name="Control" parent="VBC/HBC/MC/AvailableCards/Settings" index="1"]
-margin_left = 46.0
+offset_left = 46.0

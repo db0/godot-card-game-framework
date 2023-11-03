@@ -76,7 +76,9 @@ func _load_options_from_config_file(file_path, into):
 	var json = f.get_as_text()
 	f.close()
 
-	var results = JSON.parse(json)
+	var test_json_conv = JSON.new()
+	test_json_conv.parse(json)
+	var results = test_json_conv.get_data()
 	# SHORTCIRCUIT
 	if(results.error != OK):
 		print("\n\n",'!! ERROR parsing file:  ', file_path)
@@ -95,7 +97,7 @@ func _load_options_from_config_file(file_path, into):
 
 
 func write_options(path):
-	var content = JSON.print(options, ' ')
+	var content = JSON.stringify(options, ' ')
 
 	var f = File.new()
 	var result = f.open(path, f.WRITE)

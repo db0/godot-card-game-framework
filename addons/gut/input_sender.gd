@@ -90,7 +90,7 @@ class InputQueueItem:
 		_delay_started = true
 		if(time_delay > 0):
 			var t = _delay_timer(time_delay)
-			t.connect("timeout", self, "_on_time_timeout")
+			t.connect("timeout", Callable(self, "_on_time_timeout"))
 
 # ##############################################################################
 #
@@ -98,7 +98,7 @@ class InputQueueItem:
 var _utils = load('res://addons/gut/utils.gd').get_instance()
 var InputFactory = load("res://addons/gut/input_factory.gd")
 
-const INPUT_WARN = 'If using Input as a reciever it will not respond to *_down events until a *_up event is recieved.  Call the appropriate *_up event or use .hold_for(...) to automatically release after some duration.'
+const INPUT_WARN = 'If using Input as a reciever it will not respond to *_down events until a *_up event is recieved.  Call the appropriate *_up event or use super.hold_for(...) to automatically release after some duration.'
 
 var _lgr = _utils.get_logger()
 var _receivers = []
@@ -126,9 +126,9 @@ func _init(r=null):
 
 func _send_event(event):
 	if(event is InputEventKey):
-		if((event.pressed and !event.echo) and is_key_pressed(event.scancode)):
+		if((event.pressed and !event.echo) and is_key_pressed(event.keycode)):
 			_lgr.warn(str("InputSender:  key_down called for ", event.as_text(), " when that key is already pressed.  ", INPUT_WARN))
-		_pressed_keys[event.scancode] = event.pressed
+		_pressed_keys[event.keycode] = event.pressed
 	elif(event is InputEventAction):
 		if(event.pressed and is_action_pressed(event.action)):
 			_lgr.warn(str("InputSender:  action_down called for ", event.action, " when that action is already pressed.  ", INPUT_WARN))
@@ -175,7 +175,7 @@ func _on_queue_item_ready(item):
 
 
 func _add_queue_item(item):
-	item.connect("event_ready", self, "_on_queue_item_ready", [item])
+	item.connect("event_ready", Callable(self, "_on_queue_item_ready").bind(item))
 	_next_queue_item = item
 	_input_queue.append(item)
 	Engine.get_main_loop().root.add_child(item)
@@ -322,7 +322,7 @@ func release_all():
 	for key in _pressed_mouse_buttons:
 		var event = _pressed_mouse_buttons[key].duplicate()
 		if(event.pressed):
-			event.pressed = false
+			event.button_pressed = false
 			_send_event(event)
 	_pressed_mouse_buttons.clear()
 
@@ -330,7 +330,7 @@ func release_all():
 func hold_for(duration):
 	if(_last_event != null and _last_event.pressed):
 		var next_event = _last_event.duplicate()
-		next_event.pressed = false
+		next_event.button_pressed = false
 		wait(duration)
 		send_event(next_event)
 	return self
@@ -356,7 +356,7 @@ func is_idle():
 
 func is_key_pressed(which):
 	var event = InputFactory.key_up(which)
-	return _pressed_keys.has(event.scancode) and _pressed_keys[event.scancode]
+	return _pressed_keys.has(event.keycode) and _pressed_keys[event.keycode]
 
 func is_action_pressed(which):
 	return _pressed_actions.has(which) and _pressed_actions[which]

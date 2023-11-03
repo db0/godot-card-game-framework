@@ -1,8 +1,8 @@
 extends Panel
 
-onready var _script_list = $ScriptsList
-onready var _nav_container = $VBox/BottomPanel/VBox/HBox/Navigation
-onready var _nav = {
+@onready var _script_list = $ScriptsList
+@onready var _nav_container = $VBox/BottomPanel/VBox/HBox/Navigation
+@onready var _nav = {
 	container = _nav_container,
 	prev = _nav_container.get_node('VBox/HBox/Previous'),
 	next = _nav_container.get_node('VBox/HBox/Next'),
@@ -11,14 +11,14 @@ onready var _nav = {
 	run_single = _nav_container.get_node('VBox/HBox/RunSingleScript')
 }
 
-onready var _progress_container = $VBox/BottomPanel/VBox/HBox/Progress
-onready var _progress = {
+@onready var _progress_container = $VBox/BottomPanel/VBox/HBox/Progress
+@onready var _progress = {
 	script = _progress_container.get_node("ScriptProgress"),
 	script_xy = _progress_container.get_node("ScriptProgress/xy"),
 	test = _progress_container.get_node("TestProgress"),
 	test_xy = _progress_container.get_node("TestProgress/xy")
 }
-onready var _summary = {
+@onready var _summary = {
 	control = $VBox/TitleBar/HBox/Summary,
 	failing = $VBox/TitleBar/HBox/Summary/Failing,
 	passing = $VBox/TitleBar/HBox/Summary/Passing,
@@ -27,23 +27,23 @@ onready var _summary = {
 	pass_count = 0
 }
 
-onready var _extras = $ExtraOptions
-onready var _ignore_pauses = $ExtraOptions/IgnorePause
-onready var _continue_button = $VBox/BottomPanel/VBox/HBox/Continue/Continue
-onready var _text_box = $VBox/TextDisplay/RichTextLabel
-onready var _text_box_container = $VBox/TextDisplay
-onready var _log_level_slider = $VBox/BottomPanel/VBox/HBox2/LogLevelSlider
-onready var _resize_handle = $ResizeHandle
-onready var _current_script = $VBox/BottomPanel/VBox/HBox2/CurrentScriptLabel
-onready var _title_replacement = $VBox/TitleBar/HBox/TitleReplacement
+@onready var _extras = $ExtraOptions
+@onready var _ignore_pauses = $ExtraOptions/IgnorePause
+@onready var _continue_button = $VBox/BottomPanel/VBox/HBox/Continue/Continue
+@onready var _text_box = $VBox/TextDisplay/RichTextLabel
+@onready var _text_box_container = $VBox/TextDisplay
+@onready var _log_level_slider = $VBox/BottomPanel/VBox/HBox2/LogLevelSlider
+@onready var _resize_handle = $ResizeHandle
+@onready var _current_script = $VBox/BottomPanel/VBox/HBox2/CurrentScriptLabel
+@onready var _title_replacement = $VBox/TitleBar/HBox/TitleReplacement
 
-onready var _titlebar = {
+@onready var _titlebar = {
 	bar = $VBox/TitleBar,
 	time = $VBox/TitleBar/HBox/Time,
 	label = $VBox/TitleBar/HBox/Title
 }
 
-onready var _user_files = $UserFileViewer
+@onready var _user_files = $UserFileViewer
 
 var _mouse = {
 	down = false,
@@ -73,7 +73,7 @@ signal run_script
 signal run_single_script
 
 func _ready():
-	if(Engine.editor_hint):
+	if(Engine.is_editor_hint()):
 		return
 
 	_current_script.text = ''
@@ -98,7 +98,7 @@ func elapsed_time_as_str():
 
 func _process(_delta):
 	if(_is_running):
-		_time = OS.get_ticks_msec() - _start_time
+		_time = Time.get_ticks_msec() - _start_time
 		_titlebar.time.set_text(str('t: ', elapsed_time_as_str()))
 
 func _draw(): # needs get_size()
@@ -109,9 +109,9 @@ func _draw(): # needs get_size()
 	var grab_line_color = Color(.4, .4, .4)
 	if(_resize_handle.visible):
 		for i in range(1, 10):
-			var x = rect_size - Vector2(i * line_space, grab_margin)
-			var y = rect_size - Vector2(grab_margin, i * line_space)
-			draw_line(x, y, grab_line_color, 1, true)
+			var x = size - Vector2(i * line_space, grab_margin)
+			var y = size - Vector2(grab_margin, i * line_space)
+			draw_line(x, y, grab_line_color, 1)
 
 func _on_Maximize_draw():
 	# draw the maximize square thing.
@@ -132,7 +132,7 @@ func _on_ShowExtras_draw():
 	var width = 2
 	for i in range(3):
 		var y = start_y + pad * i
-		btn.draw_line(Vector2(start_x, y), Vector2(btn.get_size().x - start_x, y), color, width, true)
+		btn.draw_line(Vector2(start_x, y), Vector2(btn.get_size().x - start_x, y), color, width)
 
 # ####################
 # GUI Events
@@ -200,9 +200,9 @@ func _input(event):
 
 	if(_mouse.in_handle):
 		if(event is InputEventMouseMotion and _mouse.down):
-			var new_size = rect_size + event.position - _mouse.down_pos
+			var new_size = size + event.position - _mouse.down_pos
 			var new_mouse_down_pos = event.position
-			rect_size = new_size
+			size = new_size
 			_mouse.down_pos = new_mouse_down_pos
 			_pre_maximize_rect = get_rect()
 
@@ -229,8 +229,8 @@ func _on_Maximize_pressed():
 		maximize()
 	else:
 		compact_mode(false)
-		rect_size = _pre_maximize_rect.size
-		rect_position = _pre_maximize_rect.position
+		size = _pre_maximize_rect.size
+		position = _pre_maximize_rect.position
 func _on_Minimize_pressed():
 
 	compact_mode(!_compact_mode)
@@ -253,7 +253,7 @@ func _on_UserFiles_pressed():
 # ####################
 func _run_mode(is_running=true):
 	if(is_running):
-		_start_time = OS.get_ticks_msec()
+		_start_time = Time.get_ticks_msec()
 		_time = 0.0
 		clear_summary()
 	_is_running = is_running
@@ -338,7 +338,7 @@ func set_log_level(value):
 	$VBox/BottomPanel/VBox/HBox2/LogLevelSlider.value = new_value
 
 func set_ignore_pause(should):
-	_ignore_pauses.pressed = should
+	_ignore_pauses.button_pressed = should
 
 func get_ignore_pause():
 	return _ignore_pauses.pressed
@@ -405,22 +405,22 @@ func clear_summary():
 func maximize():
 	if(is_inside_tree()):
 		var vp_size_offset = get_tree().root.get_viewport().get_visible_rect().size
-		rect_size = vp_size_offset / get_scale()
+		size = vp_size_offset / get_scale()
 		set_position(Vector2(0, 0))
 
 func clear_text():
-	_text_box.bbcode_text = ''
+	_text_box.text = ''
 
 func scroll_to_bottom():
 	pass
 	#_text_box.cursor_set_line(_gui.get_text_box().get_line_count())
 
 func _set_font_size_for_rtl(rtl, new_size):
-	if(rtl.get('custom_fonts/normal_font') != null):
-		rtl.get('custom_fonts/bold_italics_font').size = new_size
-		rtl.get('custom_fonts/bold_font').size = new_size
-		rtl.get('custom_fonts/italics_font').size = new_size
-		rtl.get('custom_fonts/normal_font').size = new_size
+	if(rtl.get('theme_override_fonts/normal_font') != null):
+		rtl.get('theme_override_fonts/bold_italics_font').size = new_size
+		rtl.get('theme_override_fonts/bold_font').size = new_size
+		rtl.get('theme_override_fonts/italics_font').size = new_size
+		rtl.get('theme_override_fonts/normal_font').size = new_size
 
 
 func _set_fonts_for_rtl(rtl, base_font_name):
@@ -437,8 +437,8 @@ func _set_font(rtl, font_name, custom_name):
 	if(font_name == null):
 		rtl.set('custom_fonts/' + custom_name, null)
 	else:
-		var dyn_font = DynamicFont.new()
-		var font_data = DynamicFontData.new()
+		var dyn_font = FontFile.new()
+		var font_data = FontFile.new()
 		font_data.font_path = 'res://addons/gut/fonts/' + font_name + '.ttf'
 		font_data.antialiased = true
 		dyn_font.font_data = font_data
@@ -462,7 +462,7 @@ func set_font(base_name):
 	_set_all_fonts_in_ftl(_user_files.get_rich_text_label(), base_name)
 
 func set_default_font_color(color):
-	_text_box.set('custom_colors/default_color', color)
+	_text_box.set('theme_override_colors/default_color', color)
 
 func set_background_color(color):
 	_text_box_container.color = color
@@ -485,11 +485,11 @@ func compact_mode(should):
 	_title_replacement.visible = should
 	
 	if(should):
-		rect_min_size = min_sizes.compact
-		rect_size = rect_min_size
+		custom_minimum_size = min_sizes.compact
+		size = custom_minimum_size
 	else:
-		rect_min_size = min_sizes.full
-		rect_size = min_sizes.full
+		custom_minimum_size = min_sizes.full
+		size = min_sizes.full
 		
 	goto_bottom_right_corner()
 
@@ -499,4 +499,4 @@ func set_script_path(text):
 
 
 func goto_bottom_right_corner():
-	rect_position = get_tree().root.get_viewport().get_visible_rect().size - rect_size
+	position = get_tree().root.get_viewport().get_visible_rect().size - size

@@ -17,8 +17,8 @@ func after_all():
 func before_each():
 	var confirm_return = setup_board()
 	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = yield(confirm_return, "completed")
+		confirm_return = await confirm_return.completed
 	cards = draw_test_cards(initial_card_count)
-	yield(yield_for(initial_wait), YIELD)
+	await yield_for(initial_wait).YIELD
 	card = cards[card_index]
 	target = cards[target_index]

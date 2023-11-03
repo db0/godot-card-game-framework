@@ -1,6 +1,6 @@
 # This file contains just card definitions. See also `CardConfig.gd`
 
-extends Reference
+extends RefCounted
 
 const SET = "Demo Set 1"
 const CARDS := {

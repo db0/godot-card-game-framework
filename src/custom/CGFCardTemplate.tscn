@@ -9,7 +9,7 @@
 script = ExtResource( 2 )
 
 [node name="Front" parent="Control" index="2"]
-rect_min_size = Vector2( 150, 240 )
+custom_minimum_size = Vector2( 150, 240 )
 
 [node name="ManipulationButtons" parent="Control" index="4"]
 script = ExtResource( 4 )
