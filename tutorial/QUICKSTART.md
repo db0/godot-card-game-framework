@@ -1,7 +1,7 @@
 # Godot Card Game Framework Quick Start Guide
 
 **Written for v1.9. Needs update**
-** Updated by markp3rry for v3.5.1 stable official **
+** Updated by markp3rry for v3.5.3.stable.official [6c814135b] **
 
 This guide is meant to take you through using the Card Game Framework (CGF from now on) for the first time in a simple step-by-step approach, starting from brand a new project.
 
