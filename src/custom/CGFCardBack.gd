@@ -12,12 +12,12 @@ func _ready() -> void:
 func scale_to(scale_multiplier: float) -> void:	
 	if font_scaled != scale_multiplier:
 		var label : Label = $Label
-		label.rect_min_size *= scale_multiplier
+		label.custom_minimum_size *= scale_multiplier
 		# We need to adjust the Viewed Container
 		# a bit more to make the text land in the middle
 #		$"VBoxContainer/CenterContainer".rect_min_size *= scale_multiplier * 1.5
-		var label_font : Font = label.get("custom_fonts/font").duplicate()
+		var label_font : Font = label.get("theme_override_fonts/font").duplicate()
 		label_font.size *= scale_multiplier
-		label.set("custom_fonts/font", label_font)
+		label.set("theme_override_fonts/font", label_font)
 		font_scaled = scale_multiplier
 	

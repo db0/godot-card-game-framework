@@ -36,7 +36,7 @@ var needed_counters: Dictionary
 var temp_count_modifiers := {}
 
 # Holds the counter scene which has been created by the developer
-export(PackedScene) var counter_scene
+@export var counter_scene: PackedScene
 
 # This variable should hold the path to the Control container
 # Which will hold the counter objects.
@@ -53,7 +53,7 @@ var value_node: String
 func _ready() -> void:
 	# For the counter signal, we "push" connect it instead from this node.
 	# warning-ignore:return_value_discarded
-	self.connect("counter_modified", cfc.signal_propagator, "_on_signal_received")
+	self.connect("counter_modified", Callable(cfc.signal_propagator, "_on_signal_received"))
 
 
 # This function should be called by the _ready() function of the script which
@@ -63,7 +63,7 @@ func _ready() -> void:
 func spawn_needed_counters() -> Array:
 	var all_counters := []
 	for counter_name in needed_counters:
-		var counter = counter_scene.instance()
+		var counter = counter_scene.instantiate()
 		counters_container.add_child(counter)
 		all_counters.append(counter)
 		counter.name = counter_name
@@ -167,7 +167,7 @@ func get_counter_and_alterants(
 			{SP.KEY_COUNTER_NAME: counter_name,},
 			counters[counter_name])
 		if alteration is GDScriptFunctionState:
-			alteration = yield(alteration, "completed")
+			alteration = await alteration.completed
 	# The first element is always the total modifier from all alterants
 	count += alteration.value_alteration
 	var temp_modifiers = {
@@ -199,8 +199,8 @@ func set_temp_counter_modifiers(sceng, task, requesting_object, modifier) -> voi
 			"requesting_object": requesting_object,
 			"modifier": modifier,
 		}
-	if not sceng.is_connected("single_task_completed", self, "_on_single_task_completed"):
-		sceng.connect("single_task_completed", self, "_on_single_task_completed")
+	if not sceng.is_connected("single_task_completed", Callable(self, "_on_single_task_completed")):
+		sceng.connect("single_task_completed", Callable(self, "_on_single_task_completed"))
 
 func _on_single_task_completed(script_task) -> void:
 	temp_count_modifiers.erase(script_task)

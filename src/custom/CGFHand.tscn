@@ -1,10 +1,10 @@
 [gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://src/core/Hand.tscn" type="PackedScene" id=1]
-[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="FontFile" id=2]
 [ext_resource path="res://src/custom/CGFHand.gd" type="Script" id=3]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="FontFile" id=1]
 font_data = ExtResource( 2 )
 
 [node name="Hand" instance=ExtResource( 1 )]
@@ -16,9 +16,9 @@ excess_cards = 2
 [node name="DiscardRandom" type="Button" parent="Control/ManipulationButtons" index="2" groups=[
 "manipulation_button",
 ]]
-margin_left = 28.0
-margin_right = 52.0
-margin_bottom = 26.0
+offset_left = 28.0
+offset_right = 52.0
+offset_bottom = 26.0
 mouse_filter = 1
-custom_fonts/font = SubResource( 1 )
+theme_override_fonts/font = SubResource( 1 )
 text = "R"

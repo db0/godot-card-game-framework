@@ -13,7 +13,7 @@ signal scripts_loaded
 # Sent when a new Card node is instanced
 signal new_card_instanced(card)
 
-var load_start_time := OS.get_ticks_msec()
+var load_start_time := Time.get_ticks_msec()
 
 #-----------------------------------------------------------------------------
 # BEGIN Unit Testing Variables
@@ -40,13 +40,13 @@ var game_settings := {}
 var font_size_cache := {}
 var cache_commit_timer: SceneTreeTimer
 # If set to true, the player will be prevented from interacting with the game
-var game_paused := false setget set_game_paused
+var game_paused := false: set = set_game_paused
 # If this is false, all CardContainers will pause in their ready() scene
 # until all other CardContainers have been mapped.
 var are_all_nodes_mapped := false
 # The games initial Random Number Generator seed.
 # When this stays the same, the game randomness will always play the predictable.
-var game_rng_seed = "CFC Random Seed" setget set_seed
+var game_rng_seed = "CFC Random Seed": set = set_seed
 # This will store all card properties which are placed in the card labels
 var card_definitions := {}
 # This will store all card scripts
@@ -106,14 +106,14 @@ var script_load_thread : Thread
 var scripts_loading := true
 
 func _ready() -> void:
-	var load_end_time = OS.get_ticks_msec()
+	var load_end_time = Time.get_ticks_msec()
 	if OS.has_feature("debug") and not cfc.is_testing:
 		print_debug("DEBUG INFO:CFControl: instance time = %sms" % [str(load_end_time - load_start_time)])
 	
 	# warning-ignore:return_value_discarded
-	connect("all_nodes_mapped", self, "_on_all_nodes_mapped")
+	connect("all_nodes_mapped", Callable(self, "_on_all_nodes_mapped"))
 	# warning-ignore:return_value_discarded
-	get_viewport().connect("size_changed", self, '_on_viewport_resized')
+	get_viewport().connect("size_changed", Callable(self, '_on_viewport_resized'))
 	_on_viewport_resized()
 	_setup()
 
@@ -143,7 +143,7 @@ func _setup() -> void:
 		# Initialize the game random seed
 		set_seed(game_rng_seed)
 	card_definitions = load_card_definitions()
-	var defs_load_end_time = OS.get_ticks_msec()
+	var defs_load_end_time = Time.get_ticks_msec()
 	if OS.has_feature("debug") and not cfc.is_testing:
 		print_debug("DEBUG INFO:CFControl: card definitions load time = %sms" % [str(defs_load_end_time - load_start_time)])	
 	# Removed threading since I optimized this loading function
@@ -153,8 +153,8 @@ func _setup() -> void:
 		load_script_definitions()
 	else:
 		script_load_thread = Thread.new()
-		script_load_thread.start(self, "load_script_definitions")
-	var scripts_load_end_time = OS.get_ticks_msec()
+		script_load_thread.start(Callable(self, "load_script_definitions"))
+	var scripts_load_end_time = Time.get_ticks_msec()
 	if OS.has_feature("debug") and not cfc.is_testing:
 		print_debug("DEBUG INFO:CFControl: card scripts load time = %sms" % [str(scripts_load_end_time - load_start_time)])	
 
@@ -236,7 +236,7 @@ func instance_card(card_name: String) -> Card:
 	# in each card. Any property can be used
 	var template = load(CFConst.PATH_CARDS
 			+ card_definitions[card_name][CardConfig.SCENE_PROPERTY] + ".tscn")
-	var card = template.instance()
+	var card = template.instantiate()
 	# We set the card_name variable so that it's able to be used later
 	card.canonical_name = card_name
 	emit_signal("new_card_instanced", card)
@@ -279,7 +279,7 @@ func load_script_definitions() -> void:
 			var card_script = scripts_obj.get_scripts(card_name)
 			var unmodified_card_script = scripts_obj.get_scripts(card_name, false)
 #			print(unmodified_card_script)
-			if not card_script.empty():
+			if not card_script.is_empty():
 				combined_scripts[card_name] = card_script
 				set_scripts[card_name] = card_script
 				unmodified_set_scripts[card_name] = unmodified_card_script
@@ -300,7 +300,7 @@ func set_setting(setting_name: String, value) -> void:
 	game_settings[setting_name] = value
 	var file = File.new()
 	file.open(CFConst.SETTINGS_FILENAME, File.WRITE)
-	file.store_string(JSON.print(game_settings, '\t'))
+	file.store_string(JSON.stringify(game_settings, '\t'))
 	file.close()
 
 
@@ -309,7 +309,9 @@ func init_settings_from_file() -> void:
 	var file = File.new()
 	if file.file_exists(CFConst.SETTINGS_FILENAME):
 		file.open(CFConst.SETTINGS_FILENAME, File.READ)
-		var data = parse_json(file.get_as_text())
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(file.get_as_text())
+		var data = test_json_conv.get_data()
 		file.close()
 		if typeof(data) == TYPE_DICTIONARY:
 			game_settings = data.duplicate()
@@ -323,7 +325,7 @@ func set_font_cache() -> void:
 	if not cache_commit_timer:
 		cache_commit_timer = get_tree().create_timer(1.0)
 		# warning-ignore:return_value_discarded
-		cache_commit_timer.connect("timeout", self, "_commit_font_cache")
+		cache_commit_timer.connect("timeout", Callable(self, "_commit_font_cache"))
 
 
 # Whenever a setting is changed via this function, it also stores it
@@ -333,7 +335,7 @@ func _commit_font_cache() -> void:
 #	timer.queue_free()
 	var file = File.new()
 	file.open(CFConst.FONT_SIZE_CACHE, File.WRITE)
-	file.store_string(JSON.print(font_size_cache, '\t'))
+	file.store_string(JSON.stringify(font_size_cache, '\t'))
 	file.close()
 	cache_commit_timer = null
 
@@ -343,7 +345,9 @@ func init_font_cache() -> void:
 	var file = File.new()
 	if file.file_exists(CFConst.FONT_SIZE_CACHE):
 		file.open(CFConst.FONT_SIZE_CACHE, File.READ)
-		var data = parse_json(file.get_as_text())
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(file.get_as_text())
+		var data = test_json_conv.get_data()
 		file.close()
 		if typeof(data) == TYPE_DICTIONARY:
 			if font_size_cache.get('version') == CFConst.GAME_VERSION:
@@ -360,7 +364,7 @@ func init_font_cache() -> void:
 func reset_game() -> void:
 	var main = cfc.NMAP.main
 	clear()
-	yield(get_tree().create_timer(0.1), "timeout")
+	await get_tree().create_timer(0.1).timeout
 	main._ready()
 
 
@@ -373,7 +377,7 @@ func clear() -> void:
 	if cfc.NMAP.has("board") and is_instance_valid(cfc.NMAP.get("board")):
 		cfc.NMAP.board.queue_free()
 	# We need to give Godot time to deinstance all nodes.
-	yield(get_tree().create_timer(0.1), "timeout")
+	await get_tree().create_timer(0.1).timeout
 	NMAP.clear()
 
 
@@ -446,7 +450,7 @@ class SignalPropagator:
 	# to the SignalPropagator
 	func connect_new_card(card):
 		for sgn in known_card_signals:
-			card.connect(sgn, self, "_on_signal_received")
+			card.connect(sgn, Callable(self, "_on_signal_received"))
 
 
 	# When a known signal is received, it asks all existing cards to check

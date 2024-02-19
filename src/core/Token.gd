@@ -4,11 +4,11 @@ class_name Token
 extends HBoxContainer
 
 
-export var count := 0 setget set_count, get_count
+@export var count := 0: get = get_count, set = set_count
 
 var token_drawer
 
-onready var count_label = $CenterContainer/Count
+@onready var count_label = $CenterContainer/Count
 
 # Called when the node enters the scene tree for the first time.
 func _ready():
@@ -79,7 +79,7 @@ func get_count_and_alterants() -> Dictionary:
 			{SP.KEY_TOKEN_NAME: name,},
 			count)
 		if alteration is GDScriptFunctionState:
-			alteration = yield(alteration, "completed")
+			alteration = await alteration.completed
 	var return_dict := {
 		"count": count + alteration.value_alteration,
 		"alteration": alteration

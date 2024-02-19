@@ -11,9 +11,9 @@ var _load_decks_list := []
 
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
-	get_popup().connect("index_pressed", self, "_on_deck_load")
+	get_popup().connect("index_pressed", Callable(self, "_on_deck_load"))
 	# warning-ignore:return_value_discarded
-	connect("about_to_show", self, "_on_about_to_show")
+	connect("about_to_popup", Callable(self, "_on_about_to_show"))
 
 
 # Returns an Array of Dictionaries, where each dictionary is the details
@@ -24,7 +24,9 @@ static func load_all_decks() -> Array:
 	var loaded_decks_list := []
 	for deck in available_decks:
 		file.open(CFConst.DECKS_PATH + deck, File.READ)
-		var data = JSON.parse(file.get_as_text())
+		var test_json_conv = JSON.new()
+		test_json_conv.parse(file.get_as_text())
+		var data = test_json_conv.get_data()
 		file.close()
 		# We expect decks in JSON Dictionary format
 		# In the future we might support plaintext as well.

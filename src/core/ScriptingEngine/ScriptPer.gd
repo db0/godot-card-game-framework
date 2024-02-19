@@ -17,7 +17,7 @@ func _init(per_msg: perMessage).(
 		prev_subjects = per_msg.subjects
 	var ret = _find_subjects()
 	if ret is GDScriptFunctionState: # Still working.
-		ret = yield(ret, "completed")
+		ret = await ret.completed
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
 	emit_signal("primed")

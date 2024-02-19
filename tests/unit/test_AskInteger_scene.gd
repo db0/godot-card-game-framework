@@ -17,8 +17,8 @@ func after_all():
 func before_each():
 	var confirm_return = setup_board()
 	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = yield(confirm_return, "completed")
-	ask_integer = ScriptingEngine._ASK_INTEGER_SCENE.instance()
+		confirm_return = await confirm_return.completed
+	ask_integer = ScriptingEngine._ASK_INTEGER_SCENE.instantiate()
 	hh = ask_integer.get_node("HorizontalHighlights")
 	vh = ask_integer.get_node("VecticalHighlights")
 	line = ask_integer.get_node("IntegerLineEdit")
@@ -30,7 +30,7 @@ func after_each():
 func test_title_and_highlights():
 	ask_integer.prep("UT Card",1,5)
 	assert_eq("Please enter number for the effect of UT Card", ask_integer.window_title)
-	assert_eq("Submit", ask_integer.get_ok().text)
+	assert_eq("Submit", ask_integer.get_ok_button().text)
 	assert_eq(Color(1.4,0,0), hh.modulate)
 	assert_eq(Color(1.2,0,0), vh.modulate)
 
@@ -82,25 +82,25 @@ func test_submit():
 	watch_signals(ask_integer)
 	ask_integer.prep("UT Card",1,5)
 	ask_integer._on_AskInteger_confirmed()
-	yield(yield_for(0.1), YIELD)
+	await yield_for(0.1).YIELD
 	assert_eq(0,ask_integer.number)
 	assert_signal_not_emitted(ask_integer,"popup_hide")
 	line.text = "11"
 	line._on_IntegerLineEdit_text_changed("11")
 	ask_integer._on_AskInteger_confirmed()
-	yield(yield_for(0.1), YIELD)
+	await yield_for(0.1).YIELD
 	assert_eq(0,ask_integer.number)
 	assert_signal_not_emitted(ask_integer,"popup_hide")
 	line.text = "abd"
 	line._on_IntegerLineEdit_text_changed("abd")
 	ask_integer._on_AskInteger_confirmed()
-	yield(yield_for(0.1), YIELD)
+	await yield_for(0.1).YIELD
 	assert_eq(0,ask_integer.number)
 	assert_signal_not_emitted(ask_integer,"popup_hide")
 	line.text = "2"
 	line._on_IntegerLineEdit_text_changed("2")
 	ask_integer._on_AskInteger_confirmed()
-	yield(yield_for(0.1), YIELD)
+	await yield_for(0.1).YIELD
 	assert_signal_emitted(ask_integer,"popup_hide")
 	assert_eq(2,ask_integer.number)
 

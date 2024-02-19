@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://assets/icons/view.svg" type="Texture" id=1]
-[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://assets/icons/view.svg" type="Texture2D" id=1]
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="FontFile" id=2]
 [ext_resource path="res://src/custom/CGFCardBack.gd" type="Script" id=3]
-[ext_resource path="res://assets/card_backs/CGFBackLines.png" type="Texture" id=4]
-[ext_resource path="res://assets/card_backs/CGFBackDots.png" type="Texture" id=5]
+[ext_resource path="res://assets/card_backs/CGFBackLines.png" type="Texture2D" id=4]
+[ext_resource path="res://assets/card_backs/CGFBackDots.png" type="Texture2D" id=5]
 
 [sub_resource type="StyleBoxFlat" id=1]
 bg_color = Color( 0.164706, 0.203922, 0.223529, 1 )
@@ -13,16 +13,16 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="FontFile" id=2]
 size = 12
 font_data = ExtResource( 2 )
 
 [node name="CGFCardBack" type="Panel"]
-margin_right = 150.0
-margin_bottom = 240.0
-rect_min_size = Vector2( 150, 240 )
+offset_right = 150.0
+offset_bottom = 240.0
+custom_minimum_size = Vector2( 150, 240 )
 mouse_filter = 2
-custom_styles/panel = SubResource( 1 )
+theme_override_styles/panel = SubResource( 1 )
 script = ExtResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
@@ -33,11 +33,11 @@ __meta__ = {
 [node name="Viewed" type="TextureRect" parent="."]
 visible = false
 modulate = Color( 1.5, 0.2, 0, 1 )
-margin_left = 55.0
-margin_top = 54.0
-margin_right = 95.0
-margin_bottom = 94.0
-rect_min_size = Vector2( 40, 40 )
+offset_left = 55.0
+offset_top = 54.0
+offset_right = 95.0
+offset_bottom = 94.0
+custom_minimum_size = Vector2( 40, 40 )
 mouse_filter = 2
 texture = ExtResource( 1 )
 __meta__ = {
@@ -45,12 +45,12 @@ __meta__ = {
 }
 
 [node name="Label" type="Label" parent="."]
-margin_top = 105.0
-margin_right = 150.0
-margin_bottom = 121.0
-rect_min_size = Vector2( 150, 16 )
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 1, 0.2, 0, 1 )
+offset_top = 105.0
+offset_right = 150.0
+offset_bottom = 121.0
+custom_minimum_size = Vector2( 150, 16 )
+theme_override_fonts/font = SubResource( 2 )
+theme_override_colors/font_color = Color( 1, 0.2, 0, 1 )
 text = "Card Game Framework"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -60,40 +60,40 @@ __meta__ = {
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-rect_min_size = Vector2( 150, 240 )
+custom_minimum_size = Vector2( 150, 240 )
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
-margin_right = 150.0
-margin_bottom = 50.0
-rect_min_size = Vector2( 0, 50 )
+offset_right = 150.0
+offset_bottom = 50.0
+custom_minimum_size = Vector2( 0, 50 )
 mouse_filter = 2
-custom_constants/margin_top = 50
+theme_override_constants/margin_top = 50
 
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
-margin_top = 54.0
-margin_right = 150.0
-margin_bottom = 94.0
-rect_min_size = Vector2( 150, 40 )
+offset_top = 54.0
+offset_right = 150.0
+offset_bottom = 94.0
+custom_minimum_size = Vector2( 150, 40 )
 mouse_filter = 2
 
 [node name="MarginContainer2" type="MarginContainer" parent="VBoxContainer"]
-margin_top = 98.0
-margin_right = 150.0
-margin_bottom = 101.0
-rect_min_size = Vector2( 150, 3 )
+offset_top = 98.0
+offset_right = 150.0
+offset_bottom = 101.0
+custom_minimum_size = Vector2( 150, 3 )
 mouse_filter = 2
-custom_constants/margin_top = 3
+theme_override_constants/margin_top = 3
 
 [node name="TextureRect" type="TextureRect" parent="."]
 modulate = Color( 1.7, 1, 1, 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_bottom = 1.52588e-05
-rect_min_size = Vector2( 150, 240 )
+offset_bottom = 1.52588e-05
+custom_minimum_size = Vector2( 150, 240 )
 texture = ExtResource( 4 )
 expand = true
 __meta__ = {
@@ -104,8 +104,8 @@ __meta__ = {
 modulate = Color( 2, 1, 1, 1 )
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_bottom = 1.52588e-05
-rect_min_size = Vector2( 150, 240 )
+offset_bottom = 1.52588e-05
+custom_minimum_size = Vector2( 150, 240 )
 texture = ExtResource( 5 )
 expand = true
 __meta__ = {

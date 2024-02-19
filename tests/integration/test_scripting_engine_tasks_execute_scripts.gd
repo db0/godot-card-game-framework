@@ -14,8 +14,8 @@ class TestExecuteScripts:
 				"subject": "self",
 				"board_position":  Vector2(100,100)}]}}
 		card.execute_scripts()
-		yield(target_card(card,target), "completed")
-		yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+		await target_card(card,target).completed
+		await yield_to(card._tween, "tween_all_completed", 1).YIELD
 		assert_eq(target.get_parent(),cfc.NMAP.board,
 				"Card should have moved to board")
 		target.scripts = {"manual": {"board": [
@@ -24,7 +24,7 @@ class TestExecuteScripts:
 				"modification": 1,
 				"token_name":  "industry"}]}}
 		card.execute_scripts()
-		yield(target_card(card,target), "completed")
+		await target_card(card,target).completed
 		var industry_token: Token = target.tokens.get_token("industry")
 		assert_null(industry_token,
 				"scripts not executed because exec state does not match")
@@ -33,8 +33,8 @@ class TestExecuteScripts:
 				"subject": "target",
 				"exec_trigger":  "manual",}]}}
 		card.execute_scripts()
-		yield(target_card(card,target), "completed")
-		yield(yield_for(0.1), YIELD)
+		await target_card(card,target).completed
+		await yield_for(0.1).YIELD
 		industry_token = target.tokens.get_token("industry")
 		assert_not_null(industry_token,
 				"scripts executed because exec state not defined")
@@ -43,8 +43,8 @@ class TestExecuteScripts:
 				"subject": "target",
 				"exec_trigger":  "false",}]}}
 		card.execute_scripts()
-		yield(target_card(card,target), "completed")
-		yield(yield_for(0.1), YIELD)
+		await target_card(card,target).completed
+		await yield_for(0.1).YIELD
 		industry_token = target.tokens.get_token("industry")
 		assert_not_null(industry_token)
 		if industry_token:
@@ -78,8 +78,8 @@ class TestExecuteScriptsWithTempModProp:
 			]}
 		}
 		card.execute_scripts()
-		yield(target_card(card,target, "slow"), "completed")
-		yield(yield_for(0.5), YIELD)
+		await target_card(card,target, "slow").completed
+		await yield_for(0.5).YIELD
 		assert_eq(hand.get_card_count(), 7,
 			"Draw the temp modified amount of cards")
 		card.scripts = {"manual": {"hand": [
@@ -89,12 +89,12 @@ class TestExecuteScriptsWithTempModProp:
 				"temp_mod_properties": {"Cost": -5},
 				"require_exec_state": "hand"}]}}
 		card.execute_scripts()
-		yield(target_card(card,target, "slow"), "completed")
-		yield(yield_for(0.5), YIELD)
+		await target_card(card,target, "slow").completed
+		await yield_for(0.5).YIELD
 		assert_eq(hand.get_card_count(), 7,
 			"Ensure the property does not go negative")
 		target.execute_scripts()
-		yield(yield_for(0.1), YIELD)
+		await yield_for(0.1).YIELD
 		assert_eq(hand.get_card_count(), 8,
 			"Ensure temp property modifiers don't remain")
 
@@ -123,8 +123,8 @@ class TestExecuteScriptsWithTempModCounter:
 			]}
 		}
 		card.execute_scripts()
-		yield(target_card(card,target, "slow"), "completed")
-		yield(yield_for(0.5), YIELD)
+		await target_card(card,target, "slow").completed
+		await yield_for(0.5).YIELD
 		assert_eq(hand.get_card_count(), 7,
 			"Draw the temp modified amount of cards")
 		card.scripts = {"manual": {"hand": [
@@ -134,12 +134,12 @@ class TestExecuteScriptsWithTempModCounter:
 				"temp_mod_counters": {"research": -5},
 				"require_exec_state": "hand"}]}}
 		card.execute_scripts()
-		yield(target_card(card,target, "slow"), "completed")
-		yield(yield_for(0.5), YIELD)
+		await target_card(card,target, "slow").completed
+		await yield_for(0.5).YIELD
 		assert_eq(hand.get_card_count(), 7,
 			"Ensure the counter does not go negative")
 		target.execute_scripts()
-		yield(yield_for(0.1), YIELD)
+		await yield_for(0.1).YIELD
 		assert_eq(hand.get_card_count(), 8,
 			"Ensure temp property modifiers don't remain")
 

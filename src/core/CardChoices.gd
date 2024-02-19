@@ -21,8 +21,8 @@ func prep(title_reference: String, script_with_choices: Dictionary) -> void:
 		popup_centered()
 		# One again we need two different Panels due to 
 		# https://github.com/godotengine/godot/issues/32030
-		$HorizontalHighlights.rect_size = rect_size
-		$VecticalHighlights.rect_size = rect_size
+		$HorizontalHighlights.size = size
+		$VecticalHighlights.size = size
 		# We spawn the dialogue at the middle of the screen.
 
 func _on_CardChoices_id_pressed(id: int) -> void:

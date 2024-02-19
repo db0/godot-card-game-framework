@@ -34,10 +34,10 @@ corner_radius_bottom_left = 15
 visible = false
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = -3.0
-margin_top = -3.0
-margin_right = -1258.0
-margin_bottom = -623.0
+offset_left = -3.0
+offset_top = -3.0
+offset_right = -1258.0
+offset_bottom = -623.0
 mouse_filter = 2
 script = ExtResource( 1 )
 __meta__ = {
@@ -48,10 +48,10 @@ __meta__ = {
 [node name="LeftRight" type="Panel" parent="."]
 modulate = Color( 3.2, 3.2, 3.2, 1 )
 use_parent_material = true
-margin_right = 200.0
-margin_bottom = 280.0
+offset_right = 200.0
+offset_bottom = 280.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 1 )
+theme_override_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -59,10 +59,10 @@ __meta__ = {
 [node name="TopBottom" type="Panel" parent="."]
 modulate = Color( 2.8, 2.8, 2.8, 1 )
 use_parent_material = true
-margin_right = 200.0
-margin_bottom = 280.0
+offset_right = 200.0
+offset_bottom = 280.0
 mouse_filter = 2
-custom_styles/panel = SubResource( 2 )
+theme_override_styles/panel = SubResource( 2 )
 __meta__ = {
 "_edit_use_anchors_": false
 }

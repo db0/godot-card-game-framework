@@ -1,16 +1,16 @@
 extends CardFront
 
 func _ready() -> void:
-	_card_text = find_node("CardText")
+	_card_text = find_child("CardText")
 	# Map your card text label layout here. We use this when scaling
 	# The card or filling up its text
-	card_labels["Name"] = find_node("Name")
-	card_labels["Type"] = find_node("Type")
-	card_labels["Tags"] = find_node("Tags")
-	card_labels["Requirements"] = find_node("Requirements")
-	card_labels["Abilities"] = find_node("Abilities")
-	card_labels["Cost"] = find_node("Cost")
-	card_labels["Power"] = find_node("Power")
+	card_labels["Name"] = find_child("Name")
+	card_labels["Type"] = find_child("Type")
+	card_labels["Tags"] = find_child("Tags")
+	card_labels["Requirements"] = find_child("Requirements")
+	card_labels["Abilities"] = find_child("Abilities")
+	card_labels["Cost"] = find_child("Cost")
+	card_labels["Power"] = find_child("Power")
 
 	# These set te max size of each label. This is used to calculate how much
 	# To shrink the font when it doesn't fit in the rect.
@@ -25,7 +25,7 @@ func _ready() -> void:
 	# This is not strictly necessary, but it allows us to change
 	# the card label sizes without editing the scene
 	for l in card_label_min_sizes:
-		card_labels[l].rect_min_size = card_label_min_sizes[l]
+		card_labels[l].custom_minimum_size = card_label_min_sizes[l]
 
 	# This stores the maximum size for each label, when the card is at its
 	# standard size.

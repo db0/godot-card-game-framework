@@ -6,7 +6,7 @@
 [ext_resource path="res://src/custom/CGFDeck.gd" type="Script" id=4]
 [ext_resource path="res://src/custom/CGFBoard.gd" type="Script" id=5]
 [ext_resource path="res://src/custom/CGFCounters.tscn" type="PackedScene" id=6]
-[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=7]
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="FontFile" id=7]
 [ext_resource path="res://src/core/BoardPlacementSlot.tscn" type="PackedScene" id=8]
 [ext_resource path="res://src/core/BoardPlacementGrid.gd" type="Script" id=9]
 
@@ -29,7 +29,7 @@ corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="DynamicFont" id=3]
+[sub_resource type="FontFile" id=3]
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
 font_data = ExtResource( 7 )
@@ -58,7 +58,7 @@ faceup_cards = true
 
 [node name="Control" parent="Discard" index="0"]
 self_modulate = Color( 1, 1, 1, 0.501961 )
-custom_styles/panel = SubResource( 1 )
+theme_override_styles/panel = SubResource( 1 )
 
 [node name="Tween" parent="Discard/Control/ManipulationButtons" index="3" groups=["cgf_tween"]]
 
@@ -69,13 +69,13 @@ custom_styles/panel = SubResource( 1 )
 [node name="Hand" parent="." instance=ExtResource( 3 )]
 
 [node name="Counters" parent="." instance=ExtResource( 6 )]
-margin_top = 259.0
-margin_bottom = 273.0
+offset_top = 259.0
+offset_bottom = 273.0
 
 [node name="FancyMovementToggle" type="CheckButton" parent="."]
 visible = false
-margin_right = 12.0
-margin_bottom = 20.0
+offset_right = 12.0
+offset_bottom = 20.0
 pressed = true
 text = "Fancy Movement"
 __meta__ = {
@@ -84,10 +84,10 @@ __meta__ = {
 
 [node name="EnableAttach" type="CheckButton" parent="."]
 visible = false
-margin_left = 194.978
-margin_top = 1.33486
-margin_right = 395.978
-margin_bottom = 41.3349
+offset_left = 194.978
+offset_top = 1.33486
+offset_right = 395.978
+offset_bottom = 41.3349
 text = "Enable Attachment"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -95,13 +95,13 @@ __meta__ = {
 
 [node name="ScalingFocusOptions" type="OptionButton" parent="."]
 visible = false
-margin_left = -1.33484
-margin_top = 44.0497
-margin_right = 187.665
-margin_bottom = 84.0497
+offset_left = -1.33484
+offset_top = 44.0497
+offset_right = 187.665
+offset_bottom = 84.0497
 pressed = true
-text = "Scaling + Viewport Focus"
-items = [ "Scaling Focus", null, false, 0, null, "Viewport Focus", null, false, 1, null, "Scaling + Viewport Focus", null, false, 2, null ]
+text = "Scaling + SubViewport Focus"
+items = [ "Scaling Focus", null, false, 0, null, "SubViewport Focus", null, false, 1, null, "Scaling + SubViewport Focus", null, false, 2, null ]
 selected = 2
 __meta__ = {
 "_edit_use_anchors_": false
@@ -109,10 +109,10 @@ __meta__ = {
 
 [node name="ReshuffleAllDeck" type="Button" parent="."]
 visible = false
-margin_left = 9.89948
-margin_top = 116.762
-margin_right = 200.899
-margin_bottom = 136.762
+offset_left = 9.89948
+offset_top = 116.762
+offset_right = 200.899
+offset_bottom = 136.762
 text = "Reshuffle all cards into deck"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -120,10 +120,10 @@ __meta__ = {
 
 [node name="ReshuffleAllDiscard" type="Button" parent="."]
 visible = false
-margin_left = 9.89948
-margin_top = 140.334
-margin_right = 200.899
-margin_bottom = 160.334
+offset_left = 9.89948
+offset_top = 140.334
+offset_right = 200.899
+offset_bottom = 160.334
 text = "Reshuffle all cards into discard"
 __meta__ = {
 "_edit_use_anchors_": false
@@ -131,22 +131,22 @@ __meta__ = {
 
 [node name="OvalHandToggle" type="CheckButton" parent="."]
 visible = false
-margin_left = 405.31
-margin_top = 1.12245
-margin_right = 594.31
-margin_bottom = 41.1225
+offset_left = 405.31
+offset_top = 1.12245
+offset_right = 594.31
+offset_bottom = 41.1225
 pressed = true
-text = "Oval Hand Shape"
+text = "Oval Hand Shape3D"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Debug" type="CheckButton" parent="."]
 visible = false
-margin_left = 789.192
-margin_top = 3.36737
-margin_right = 978.192
-margin_bottom = 43.3674
+offset_left = 789.192
+offset_top = 3.36737
+offset_right = 978.192
+offset_bottom = 43.3674
 pressed = true
 text = "Debug"
 __meta__ = {
@@ -158,11 +158,11 @@ visible = false
 self_modulate = Color( 1, 1, 1, 0.121569 )
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -504.238
-margin_top = 14.8477
-margin_right = -5.23779
-margin_bottom = 210.848
-custom_styles/panel = SubResource( 2 )
+offset_left = -504.238
+offset_top = 14.8477
+offset_right = -5.23779
+offset_bottom = 210.848
+theme_override_styles/panel = SubResource( 2 )
 script = ExtResource( 9 )
 __meta__ = {
 "_edit_group_": true,
@@ -171,12 +171,12 @@ __meta__ = {
 highlight = Color( 1.3, 0, 0.457031, 1.3 )
 
 [node name="GridContainer" type="GridContainer" parent="BoardPlacementGrid"]
-margin_left = 2.0
-margin_top = 2.0
-margin_right = 497.0
-margin_bottom = 194.0
-custom_constants/vseparation = 5
-custom_constants/hseparation = 5
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 497.0
+offset_bottom = 194.0
+theme_override_constants/v_separation = 5
+theme_override_constants/h_separation = 5
 columns = 4
 __meta__ = {
 "_edit_group_": true,
@@ -186,40 +186,40 @@ __meta__ = {
 [node name="BoardPlacementSlot" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
 
 [node name="BoardPlacementSlot2" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
-margin_left = 125.0
-margin_right = 245.0
+offset_left = 125.0
+offset_right = 245.0
 
 [node name="BoardPlacementSlot3" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
-margin_left = 250.0
-margin_right = 370.0
+offset_left = 250.0
+offset_right = 370.0
 
 [node name="BoardPlacementSlot4" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
-margin_left = 375.0
-margin_right = 495.0
+offset_left = 375.0
+offset_right = 495.0
 
 [node name="Control" type="Control" parent="BoardPlacementGrid"]
-margin_left = 2.0
-margin_top = 2.0
-margin_right = 497.0
-margin_bottom = 194.0
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 497.0
+offset_bottom = 194.0
 
 [node name="Label" type="Label" parent="BoardPlacementGrid/Control"]
 modulate = Color( 1, 1, 1, 0.627451 )
-margin_left = -20.0
-margin_top = -20.0
-margin_right = 475.0
-custom_fonts/font = SubResource( 3 )
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 475.0
+theme_override_fonts/font = SubResource( 3 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="DeckBuilderPopup" type="Popup" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
+offset_right = 40.0
+offset_bottom = 40.0
 
 [node name="SeedLabel" type="Label" parent="."]
-margin_right = 40.0
-margin_bottom = 14.0
+offset_right = 40.0
+offset_bottom = 14.0
 
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]

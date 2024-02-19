@@ -3,9 +3,9 @@
 class_name CardBackTexture
 extends CardBack
 
-export(StreamTexture) var back_texture: StreamTexture
+@export var back_texture: CompressedTexture2D
 
-onready var card_texture := $CardTexture
+@onready var card_texture := $CardTexture
 
 
 func _ready() -> void:

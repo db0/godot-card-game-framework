@@ -71,7 +71,7 @@ class InputQueueItem:
 			if(_waited_frames >= frame_delay):
 				emit_signal("event_ready")
 
-	func _init(t_delay, f_delay):
+	func _init(t_delay,f_delay):
 		time_delay = t_delay
 		frame_delay = f_delay
 		_is_ready = time_delay == 0 and frame_delay == 0
@@ -90,7 +90,8 @@ class InputQueueItem:
 		_delay_started = true
 		if(time_delay > 0):
 			var t = _delay_timer(time_delay)
-			t.connect("timeout", self, "_on_time_timeout")
+			t.connect("timeout",Callable(self,"_on_time_timeout"))
+
 
 # ##############################################################################
 #
@@ -98,7 +99,7 @@ class InputQueueItem:
 var _utils = load('res://addons/gut/utils.gd').get_instance()
 var InputFactory = load("res://addons/gut/input_factory.gd")
 
-const INPUT_WARN = 'If using Input as a reciever it will not respond to *_down events until a *_up event is recieved.  Call the appropriate *_up event or use .hold_for(...) to automatically release after some duration.'
+const INPUT_WARN = 'If using Input as a reciever it will not respond to *_down events until a *_up event is recieved.  Call the appropriate *_up event or use hold_for(...) to automatically release after some duration.'
 
 var _lgr = _utils.get_logger()
 var _receivers = []
@@ -110,11 +111,13 @@ var _last_mouse_motion = null
 # used by hold_for and echo.
 var _last_event = null
 
-# indexed by scancode, each entry contains a boolean value indicating the
-# last emitted "pressed" value for that scancode.
+# indexed by keycode, each entry contains a boolean value indicating the
+# last emitted "pressed" value for that keycode.
 var _pressed_keys = {}
 var _pressed_actions = {}
 var _pressed_mouse_buttons = {}
+
+var _auto_flush_input = false
 
 signal idle
 
@@ -126,9 +129,9 @@ func _init(r=null):
 
 func _send_event(event):
 	if(event is InputEventKey):
-		if((event.pressed and !event.echo) and is_key_pressed(event.scancode)):
+		if((event.pressed and !event.echo) and is_key_pressed(event.keycode)):
 			_lgr.warn(str("InputSender:  key_down called for ", event.as_text(), " when that key is already pressed.  ", INPUT_WARN))
-		_pressed_keys[event.scancode] = event.pressed
+		_pressed_keys[event.keycode] = event.pressed
 	elif(event is InputEventAction):
 		if(event.pressed and is_action_pressed(event.action)):
 			_lgr.warn(str("InputSender:  action_down called for ", event.action, " when that action is already pressed.  ", INPUT_WARN))
@@ -141,6 +144,8 @@ func _send_event(event):
 	for r in _receivers:
 		if(r == Input):
 			Input.parse_input_event(event)
+			if(_auto_flush_input):
+				Input.flush_buffered_events()
 		else:
 			if(r.has_method("_input")):
 				r._input(event)
@@ -175,7 +180,7 @@ func _on_queue_item_ready(item):
 
 
 func _add_queue_item(item):
-	item.connect("event_ready", self, "_on_queue_item_ready", [item])
+	item.connect("event_ready", _on_queue_item_ready.bind(item))
 	_next_queue_item = item
 	_input_queue.append(item)
 	Engine.get_main_loop().root.add_child(item)
@@ -194,7 +199,7 @@ func get_receivers():
 func wait(t):
 	if(typeof(t) == TYPE_STRING):
 		var suffix = t.substr(t.length() -1, 1)
-		var val = float(t.rstrip('s').rstrip('f'))
+		var val = t.rstrip('s').rstrip('f').to_float()
 
 		if(suffix.to_lower() == 's'):
 			wait_secs(val)
@@ -267,7 +272,7 @@ func mouse_left_button_up(position, global_position=null):
 
 func mouse_double_click(position, global_position=null):
 	var event = InputFactory.mouse_double_click(position, global_position)
-	event.doubleclick = true
+	event.double_click = true
 	_send_or_record_event(event)
 	return self
 
@@ -356,10 +361,18 @@ func is_idle():
 
 func is_key_pressed(which):
 	var event = InputFactory.key_up(which)
-	return _pressed_keys.has(event.scancode) and _pressed_keys[event.scancode]
+	return _pressed_keys.has(event.keycode) and _pressed_keys[event.keycode]
 
 func is_action_pressed(which):
 	return _pressed_actions.has(which) and _pressed_actions[which]
 
 func is_mouse_button_pressed(which):
 	return _pressed_mouse_buttons.has(which) and _pressed_mouse_buttons[which]
+
+
+func get_auto_flush_input():
+	return _auto_flush_input
+
+
+func set_auto_flush_input(val):
+	_auto_flush_input = val

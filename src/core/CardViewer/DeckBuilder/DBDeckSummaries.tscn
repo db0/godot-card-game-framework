@@ -1,23 +1,23 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.gd" type="Script" id=1]
-[ext_resource path="res://fonts/comfortaa/Comfortaa-Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource path="res://fonts/comfortaa/Comfortaa-Bold.ttf" type="FontFile" id=2]
 
-[sub_resource type="DynamicFont" id=1]
+[sub_resource type="FontFile" id=1]
 size = 15
 use_filter = true
 font_data = ExtResource( 2 )
 
 [node name="Summaries" type="HBoxContainer"]
-margin_right = 633.0
-margin_bottom = 18.0
+offset_right = 633.0
+offset_bottom = 18.0
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="CardCount" type="Label" parent="."]
-margin_right = 124.0
-margin_bottom = 18.0
-custom_fonts/font = SubResource( 1 )
+offset_right = 124.0
+offset_bottom = 18.0
+theme_override_fonts/font = SubResource( 1 )
 text = "0 Cards (min 52)"

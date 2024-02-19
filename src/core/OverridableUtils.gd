@@ -4,7 +4,7 @@
 # and then replacing the path in CFConst.PATH_OVERRIDABLE_UTILS 
 # with the location of their extended script.
 class_name OVUtils
-extends Reference
+extends RefCounted
 
 const _CARD_SELECT_SCENE_FILE = CFConst.PATH_CORE + "SelectionWindow.tscn"
 const _CARD_SELECT_SCENE = preload(_CARD_SELECT_SCENE_FILE)
@@ -41,11 +41,11 @@ func select_card(
 		cfc.game_paused = true
 	var selected_cards
 	# This way we can override the card select scene with a custom one
-	var selection = card_select_scene.instance()
+	var selection = card_select_scene.instantiate()
 	parent_node.add_child(selection)
 	selection.call_deferred("initiate_selection", card_list,selection_count,selection_type,selection_optional)
 	# We have to wait until the player has finished selecting their cards
-	yield(selection,"confirmed")
+	await selection.confirmed
 	if selection.is_cancelled:
 		selected_cards = false
 	else:

@@ -9,18 +9,18 @@ var previous_text: String
 var minimum: int
 var maximum: int
 var leading_zeroes_regex := RegEx.new()
-export var prevent_invalid_text: bool
+@export var prevent_invalid_text: bool
 
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	leading_zeroes_regex.compile("^0+([1-9]+)")
 	# warning-ignore:return_value_discarded
-	connect("text_changed", self, "_on_IntegerLineEdit_text_changed")
+	connect("text_changed", Callable(self, "_on_IntegerLineEdit_text_changed"))
 	# warning-ignore:return_value_discarded
-	connect("text_entered", self, "_on_IntegerLineEdit_text_entered")
+	connect("text_submitted", Callable(self, "_on_IntegerLineEdit_text_entered"))
 
 func _on_IntegerLineEdit_text_entered(new_text: String) -> void:
-	if new_text.is_valid_integer() and \
+	if new_text.is_valid_int() and \
 			int(new_text) >= minimum \
 			and int(new_text) <= maximum:
 		emit_signal("int_entered", int(new_text))
@@ -30,7 +30,7 @@ func _on_IntegerLineEdit_text_changed(new_text: String) -> void:
 	var leading_zeroes = leading_zeroes_regex.search(new_text)
 	if leading_zeroes:
 		text = leading_zeroes.get_string(1)
-	if not new_text.is_valid_integer() or \
+	if not new_text.is_valid_int() or \
 			int(new_text) < minimum \
 			or int(new_text) > maximum:
 		emit_signal("int_changed_nok")

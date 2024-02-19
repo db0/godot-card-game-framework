@@ -4,9 +4,9 @@
 [ext_resource path="res://src/core/CardViewer/CardLabel.gd" type="Script" id=2]
 
 [node name="CardLabel" type="RichTextLabel"]
-margin_left = 18.0
-margin_right = 105.0
-margin_bottom = 18.0
+offset_left = 18.0
+offset_right = 105.0
+offset_bottom = 18.0
 mouse_filter = 1
 size_flags_horizontal = 3
 bbcode_enabled = true

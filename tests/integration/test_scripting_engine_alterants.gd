@@ -19,7 +19,7 @@ class TestCostsWithAlterants:
 				{"name": "rotate_card",
 				"subject": "self",
 				"degrees": 90}]}}
-		yield(table_move(card, Vector2(200,200)), "completed")
+		await table_move(card, Vector2(200,200)).completed
 		card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),5,
 				"Counter not modifed because it brought cost too high")
@@ -32,7 +32,7 @@ class TestCostsWithAlterants:
 				"alteration": 4}]}}
 		cfc.flush_cache()
 		card.execute_scripts()
-		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(card._tween, "tween_all_completed", 0.5).YIELD
 		assert_eq(board.counters.get_counter("research"),4,
 				"Counter modified to modification + alterant")
 		assert_eq(card.card_rotation,90,
@@ -160,7 +160,7 @@ class TestAlterantsRespectMultipleTags:
 				"tags": ["GUT", "CGF"],
 				"counter_name":  "research",
 				"modification": 3}]}}
-		yield(yield_for(0.5), YIELD)
+		await yield_for(0.5).YIELD
 		card.execute_scripts()
 		assert_eq(board.counters.get_counter("research"),15,
 				"Counter altered because tag matches one of the tags defined in task")
@@ -305,7 +305,7 @@ class TestTokenAlterants:
 				"subject": "self",
 				"modification": 3,
 				"token_name":  "industry"}]}}
-		yield(table_move(card, Vector2(200,200)), "completed")
+		await table_move(card, Vector2(200,200)).completed
 		card.execute_scripts()
 		var industry_token: Token = card.tokens.get_token("industry")
 		var blood_token: Token = card.tokens.get_token("blood")
@@ -376,7 +376,7 @@ class TestGetTokenAlterants:
 	extends "res://tests/ScEng_common.gd"
 
 	func test_get_token_alterants():
-		yield(table_move(target, Vector2(200,200)), "completed")
+		await table_move(target, Vector2(200,200)).completed
 	# warning-ignore:return_value_discarded
 		target.tokens.mod_token("blood")
 	# warning-ignore:return_value_discarded
