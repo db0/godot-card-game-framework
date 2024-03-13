@@ -1,78 +1,58 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=4 format=3 uid="uid://dm4pry2qodp81"]
 
-[ext_resource path="res://src/core/ViewportCardFocus.gd" type="Script" id=1]
-[ext_resource path="res://src/core/DetailPanels.gd" type="Script" id=2]
-[ext_resource path="res://src/core/MainWorld.tres" type="Environment" id=3]
-
-[sub_resource type="World" id=1]
+[ext_resource type="Script" path="res://src/core/ViewportCardFocus.gd" id="1"]
+[ext_resource type="Script" path="res://src/core/DetailPanels.gd" id="2"]
+[ext_resource type="Environment" path="res://src/core/MainWorld.tres" id="3"]
 
 [node name="Main" type="Node2D"]
-self_modulate = Color( 1, 1, 1, 0 )
-script = ExtResource( 1 )
+self_modulate = Color(1, 1, 1, 0)
+script = ExtResource("1")
 
-[node name="ViewportContainer" type="ViewportContainer" parent="."]
-margin_left = 1.5874
-margin_top = 4.76221
-margin_right = 1281.59
-margin_bottom = 724.762
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+offset_left = 1.5874
+offset_top = 4.76221
+offset_right = 1281.59
+offset_bottom = 724.762
 stretch = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="Viewport" type="Viewport" parent="ViewportContainer"]
-size = Vector2( 1280, 720 )
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
 handle_input_locally = false
-render_target_update_mode = 3
+size = Vector2i(1280, 719)
+render_target_update_mode = 4
 
-[node name="Camera2D" type="Camera2D" parent="ViewportContainer/Viewport"]
+[node name="Camera2D" type="Camera2D" parent="SubViewportContainer/SubViewport"]
 anchor_mode = 0
-current = true
 
 [node name="VBC" type="VBoxContainer" parent="."]
-margin_right = 300.0
-margin_bottom = 454.0
+offset_right = 300.0
+offset_bottom = 454.0
 mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="Focus" type="ViewportContainer" parent="VBC"]
-margin_right = 300.0
-margin_bottom = 450.0
-rect_min_size = Vector2( 300, 450 )
+[node name="Focus" type="SubViewportContainer" parent="VBC"]
+custom_minimum_size = Vector2(300, 450)
+layout_mode = 2
 mouse_filter = 2
 stretch = true
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
-[node name="Viewport" type="Viewport" parent="VBC/Focus"]
-size = Vector2( 300, 450 )
-world = SubResource( 1 )
+[node name="SubViewport" type="SubViewport" parent="VBC/Focus"]
+disable_3d = true
 transparent_bg = true
 handle_input_locally = false
-disable_3d = true
-usage = 0
-render_target_update_mode = 3
 gui_disable_input = true
+size = Vector2i(300, 450)
+render_target_update_mode = 4
 
-[node name="Camera2D" type="Camera2D" parent="VBC/Focus/Viewport"]
+[node name="Camera2D" type="Camera2D" parent="VBC/Focus/SubViewport"]
 anchor_mode = 0
-current = true
-zoom = Vector2( 0.75, 0.8 )
-
-[node name="Tween" type="Tween" parent="VBC/Focus"]
+zoom = Vector2(0.75, 0.8)
 
 [node name="FocusInfo" type="GridContainer" parent="VBC"]
-margin_top = 454.0
-margin_right = 300.0
-margin_bottom = 454.0
-custom_constants/vseparation = 10
-custom_constants/hseparation = 10
-script = ExtResource( 2 )
+layout_mode = 2
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+script = ExtResource("2")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = ExtResource( 3 )
+environment = ExtResource("3")
 
-[connection signal="size_changed" from="ViewportContainer/Viewport" to="." method="_on_Viewport_size_changed"]
+[connection signal="size_changed" from="SubViewportContainer/SubViewport" to="." method="_on_Viewport_size_changed"]

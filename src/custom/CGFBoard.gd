@@ -3,6 +3,7 @@ extends Board
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
+	super._ready()
 	counters = $Counters
 	cfc.map_node(self)
 	# We use the below while to wait until all the nodes we need have been mapped
@@ -11,18 +12,19 @@ func _ready() -> void:
 	# instead of defining them on the scene.
 	# This way any they will work with any size of viewport in a game.
 	# Discard pile goes bottom right
-	$FancyMovementToggle.pressed = cfc.game_settings.fancy_movement
-	$OvalHandToggle.pressed = cfc.game_settings.hand_use_oval_shape
+	$FancyMovementToggle.button_pressed = cfc.game_settings.fancy_movement
+	$OvalHandToggle.button_pressed = cfc.game_settings.hand_use_oval_shape
 	$ScalingFocusOptions.selected = cfc.game_settings.focus_style
-	$Debug.pressed = cfc._debug
+	$Debug.button_pressed = cfc._debug
 	# Fill up the deck for demo purposes
 	if not cfc.ut:
 		cfc.game_rng_seed = CFUtils.generate_random_seed()
 		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
+	await cfc.all_nodes_mapped
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards(false)
 	# warning-ignore:return_value_discarded
-	$DeckBuilderPopup.connect('popup_hide', self, '_on_DeckBuilder_hide')
+	$DeckBuilderPopup.connect('popup_hide', Callable(self, '_on_DeckBuilder_hide'))
 
 
 
@@ -32,11 +34,11 @@ func _ready() -> void:
 # without issues
 func _on_FancyMovementToggle_toggled(_button_pressed) -> void:
 #	cfc.game_settings.fancy_movement = $FancyMovementToggle.pressed
-	cfc.set_setting('fancy_movement', $FancyMovementToggle.pressed)
+	cfc.set_setting('fancy_movement', $FancyMovementToggle.button_pressed)
 
 
 func _on_OvalHandToggle_toggled(_button_pressed: bool) -> void:
-	cfc.set_setting("hand_use_oval_shape", $OvalHandToggle.pressed)
+	cfc.set_setting("hand_use_oval_shape", $OvalHandToggle.button_pressed)
 	for c in cfc.NMAP.hand.get_all_cards():
 		c.reorganize_self()
 
@@ -53,12 +55,12 @@ func reshuffle_all_in_pile(pile = cfc.NMAP.deck):
 	for c in get_tree().get_nodes_in_group("cards"):
 		if c.get_parent() != pile and c.state != Card.CardState.DECKBUILDER_GRID:
 			c.move_to(pile)
-			yield(get_tree().create_timer(0.1), "timeout")
+			await get_tree().create_timer(0.1).timeout
 	# Last card in, is the top card of the pile
 	var last_card : Card = pile.get_top_card()
-	if last_card._tween.is_active():
-		yield(last_card._tween, "tween_all_completed")
-	yield(get_tree().create_timer(0.2), "timeout")
+	if last_card._tween.is_running():
+		await last_card._tween.finished
+	await get_tree().create_timer(0.2).timeout
 	pile.shuffle_cards()
 
 
@@ -113,7 +115,7 @@ func load_test_cards(gut := true) -> void:
 			if ckey != "Spawn Card":
 				test_cards.append(ckey)
 		for _i in range(extras):
-			if not test_cards.empty():
+			if not test_cards.is_empty():
 				var random_card_name = \
 						test_cards[CFUtils.randi() % len(test_cards)]
 				test_card_array.append(cfc.instance_card(random_card_name))
@@ -129,7 +131,7 @@ func load_test_cards(gut := true) -> void:
 
 func _on_DeckBuilder_pressed() -> void:
 	cfc.game_paused = true
-	$DeckBuilderPopup.popup_centered_minsize()
+	$DeckBuilderPopup.popup_centered_clamped()
 
 func _on_DeckBuilder_hide() -> void:
 	cfc.game_paused = false
@@ -137,4 +139,4 @@ func _on_DeckBuilder_hide() -> void:
 
 func _on_BackToMain_pressed() -> void:
 	cfc.quit_game()
-	get_tree().change_scene("res://src/custom/MainMenu.tscn")
+	get_tree().change_scene_to_file("res://src/custom/MainMenu.tscn")

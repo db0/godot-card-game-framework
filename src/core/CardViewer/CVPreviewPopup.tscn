@@ -1,19 +1,15 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://dwr0fc7df6o4b"]
 
-[ext_resource path="res://src/core/CardViewer/CVPreviewPopup.gd" type="Script" id=1]
-[ext_resource path="res://src/core/DetailPanels.gd" type="Script" id=2]
+[ext_resource type="Script" path="res://src/core/CardViewer/CVPreviewPopup.gd" id="1"]
+[ext_resource type="Script" path="res://src/core/DetailPanels.gd" id="2"]
 
 [node name="PreviewPopup" type="Popup" groups=["card_preview"]]
-modulate = Color( 1, 1, 1, 0 )
-margin_right = 40.0
-margin_bottom = 40.0
-script = ExtResource( 1 )
+visible = true
+script = ExtResource("1")
 
 [node name="FocusInfo" type="GridContainer" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-custom_constants/vseparation = 10
-custom_constants/hseparation = 10
-script = ExtResource( 2 )
-
-[node name="Tween" type="Tween" parent="."]
+offset_right = 40.0
+offset_bottom = 40.0
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+script = ExtResource("2")

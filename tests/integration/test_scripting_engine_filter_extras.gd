@@ -19,9 +19,9 @@ class TestFailCostOnSkip:
 				"counter_name":  "research"}
 				]}}
 		card.execute_scripts()
-		assert_eq(board.counters.get_counter("credits"),100,
+		assert_eq(await board.counters.get_counter("credits"),100,
 				"Counter set to the specified amount")
-		assert_eq(board.counters.get_counter("research"),5,
+		assert_eq(await board.counters.get_counter("research"),5,
 				"Counter set to the specified amount")
 
 	func test_fail_cost_on_skip_true():
@@ -41,9 +41,9 @@ class TestFailCostOnSkip:
 				"counter_name":  "research"}
 				]}}
 		card.execute_scripts()
-		assert_eq(board.counters.get_counter("credits"),100,
+		assert_eq(await board.counters.get_counter("credits"),100,
 				"Counter set to the specified amount")
-		assert_eq(board.counters.get_counter("research"),0,
+		assert_eq(await board.counters.get_counter("research"),0,
 				"Counter not modified because filter skipped")
 
 class TestFilterStringNumberProperty:

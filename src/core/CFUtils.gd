@@ -2,7 +2,7 @@
 #
 # This is a library of static functions.
 class_name CFUtils
-extends Reference
+extends RefCounted
 
 # The path to the optional confirm scene. This has to be defined explicitly
 # here, in order to use it in its preload, otherwise the parser gives an error
@@ -75,11 +75,10 @@ static func array_join(arr: Array, separator = "") -> String:
 # use list_imported_in_directory() instead
 static func list_files_in_directory(path: String, prepend_needed := "", full_path := false) -> Array:
 	var files := []
-	var dir := Directory.new()
 	# warning-ignore:return_value_discarded
-	dir.open(path)
+	var dir := DirAccess.open(path)
 	# warning-ignore:return_value_discarded
-	dir.list_dir_begin()
+	dir.list_dir_begin() # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	while true:
 		var file := dir.get_next()
 		if file == "":
@@ -104,11 +103,9 @@ static func list_files_in_directory(path: String, prepend_needed := "", full_pat
 # filenames, and grab the filename from there.
 static func list_imported_in_directory(path: String, full_path := false) -> Array:
 	var files := []
-	var dir := Directory.new()
+	var dir := DirAccess.open(path)
 	# warning-ignore:return_value_discarded
-	dir.open(path)
-	# warning-ignore:return_value_discarded
-	dir.list_dir_begin()
+	dir.list_dir_begin() # TODOConverter3To4 fill missing arguments https://github.com/godotengine/godot/pull/40547
 	while true:
 		var file := dir.get_next()
 		if file == "":
@@ -133,10 +130,10 @@ static func confirm(
 	# We do not use SP.KEY_IS_OPTIONAL here to avoid causing cyclical
 	# references when calling CFUtils from SP
 	if script.get("is_optional_" + type):
-		var confirm = _OPTIONAL_CONFIRM_SCENE.instance()
+		var confirm = _OPTIONAL_CONFIRM_SCENE.instantiate()
 		confirm.prep(card_name,task_name)
 		# We have to wait until the player has finished selecting an option
-		yield(confirm,"selected")
+		await confirm.selected
 		# If the player selected "No", we don't execute anything
 		if not confirm.is_accepted:
 			is_accepted = false
@@ -226,7 +223,7 @@ static func generate_random_seed() -> String:
 	randomize()
 	var rnd_seed : String = ""
 	for _iter in range(10):
-		rnd_seed +=  char(int(rand_range(40,127)))
+		rnd_seed +=  char(int(randf_range(40,127)))
 	return(rnd_seed)
 
 
@@ -300,16 +297,15 @@ static func get_unique_values(property: String) -> Array:
 # Converts a resource path to a texture, or a StreamTexture object
 # (which you get with `preload()`)
 # into an ImageTexture you can assign to a node's texture property.
-static func convert_texture_to_image(texture, is_lossless = false) -> ImageTexture:
-	var tex: StreamTexture
+static func convert_texture_to_image(texture, _is_lossless = false) -> ImageTexture:
+	var tex: CompressedTexture2D
 	if typeof(texture) == TYPE_STRING:
 		tex = load(texture)
 	else:
 #		print_debug(texture)
 		tex = texture
-	var new_texture = ImageTexture.new();
-	if is_lossless:
-		new_texture.storage = ImageTexture.STORAGE_COMPRESS_LOSSLESS
-	var image = tex.get_data()
-	new_texture.create_from_image(image)
+	#if is_lossless:
+	#	new_texture.storage = ImageTexture.STORAGE_COMPRESS_LOSSLESS
+	var image = tex.get_image()
+	var new_texture = ImageTexture.create_from_image(image)
 	return(new_texture)

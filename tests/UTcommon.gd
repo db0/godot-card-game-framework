@@ -20,20 +20,20 @@ var discard: Pile
 
 func fake_click(pressed, position, flags=0) -> InputEvent:
 	var ev := InputEventMouseButton.new()
-	ev.button_index=BUTTON_LEFT
+	ev.button_index=MOUSE_BUTTON_LEFT
 	ev.pressed = pressed
 	ev.position = position
-	ev.meta = flags
+	#ev.meta = flags
 	return ev
 
 
 func setup_main() -> void:
 	cfc.is_testing = true
 	cfc._setup()
-	main = autoqfree(MAIN_SCENE.instance())
+	main = autoqfree(MAIN_SCENE.instantiate())
 	get_tree().get_root().add_child(main)
 	if not cfc.are_all_nodes_mapped:
-		yield(cfc, "all_nodes_mapped")
+		await cfc.all_nodes_mapped
 	board = cfc.NMAP.board
 	board.load_test_cards()
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
@@ -45,10 +45,10 @@ func setup_main() -> void:
 func setup_board() -> void:
 	cfc.is_testing = true
 	cfc._setup()
-	board = add_child_autofree(BOARD_SCENE.instance())
+	board = add_child_autofree(BOARD_SCENE.instantiate())
 	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE) # Always reveal the mouseon unclick
 	if not cfc.are_all_nodes_mapped:
-		yield(cfc, "all_nodes_mapped")
+		await cfc.all_nodes_mapped
 	board.load_test_cards()
 	hand = cfc.NMAP.hand
 	deck = cfc.NMAP.deck
@@ -99,27 +99,27 @@ func drag_card(card: Card, target_position: Vector2, interpolation_speed := "fas
 		extra_offset = Vector2(10,60)
 	board._UT_interpolate_mouse_move(card.global_position + extra_offset,
 			board._UT_mouse_position,mouse_speed)
-	yield(yield_for(mouse_yield_wait), YIELD)
+	await yield_for(mouse_yield_wait)
 	click_card(card)
 	if interpolation_speed == "debug":
-		yield(yield_for(4), YIELD) # Allow for review
+		await yield_for(4) # Allow for review
 	else:
-		yield(yield_for(0.3), YIELD) # Wait to allow dragging to start
+		await yield_for(0.3) # Wait to allow dragging to start
 	board._UT_interpolate_mouse_move(target_position,board._UT_mouse_position,mouse_speed)
-	yield(yield_for(mouse_yield_wait), YIELD)
+	await yield_for(mouse_yield_wait)
 
 
 func drop_card(card: Card, drop_location: Vector2) -> void:
 	var fc:= fake_click(false, drop_location)
 	card._on_Card_gui_input(fc)
-	yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+	await yield_to(card._tween, "finished", 1)
 
 
 # Takes care of simple drag&drop requests
 func drag_drop(card: Card, target_position: Vector2, interpolation_speed := "fast") -> void:
-	yield(drag_card(card,target_position,interpolation_speed), 'completed')
-	yield(drop_card(card,board._UT_mouse_position), 'completed')
-	yield(yield_for(0.1), YIELD) # Wait to allow dragging to start
+	await drag_card(card,target_position,interpolation_speed)
+	await drop_card(card,board._UT_mouse_position)
+	await yield_for(0.1) # Wait to allow dragging to start
 	card._on_Card_mouse_exited()
 
 # Interpolates the virtual mouse so that it correctly targets a card
@@ -130,7 +130,7 @@ func target_card(source: Card,
 	if source == target:
 		# If the target is the same as the source, we need to wait a bit
 		# because otherwise the _is_targeted might not be set yet.
-		yield(yield_for(0.6), YIELD)
+		await yield_for(0.6).YIELD
 	# We need to offset a bit towards the card rect, to ensure the arrow
 	# Area2D collides
 	var extra_offset = Vector2(10,10)
@@ -138,35 +138,34 @@ func target_card(source: Card,
 		extra_offset = Vector2(10,100)
 	board._UT_interpolate_mouse_move(target.global_position + extra_offset,
 			source.global_position,mouse_speed)
-	yield(yield_for(mouse_yield_wait), YIELD)
+	await yield_for(mouse_yield_wait)
 	var repeat := 0
 	while not target.highlight.visible and repeat <= 3:
 		board._UT_interpolate_mouse_move(target.global_position + extra_offset,
 				board._UT_mouse_position,mouse_speed)
-		yield(yield_for(mouse_yield_wait), YIELD)
+		await yield_for(mouse_yield_wait)
 		repeat += 1
 	unclick_card_anywhere(source)
 
 
 func table_move(card: Card, pos: Vector2) -> void:
 	card.move_to(board, -1, pos)
-	yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
-#	if cfc.game_settings.fancy_movement:
-#		yield(yield_to(card._tween, "tween_all_completed", 0.5), YIELD)
+	if card._tween:
+		await yield_to(card._tween, "finished", 0.5)
+	if cfc.game_settings.fancy_movement and card._tween:
+		await yield_to(card._tween, "finished", 0.5)
 
 func move_mouse(target_position: Vector2, interpolation_speed := "fast") -> void:
 	var mouse_speed = MOUSE_SPEED[interpolation_speed][0]
 	var mouse_yield_wait = MOUSE_SPEED[interpolation_speed][1]
 	board._UT_interpolate_mouse_move(target_position,board._UT_mouse_position,mouse_speed)
-	yield(yield_for(mouse_yield_wait), YIELD)
+	await yield_for(mouse_yield_wait)
 
 func execute_with_yield(card: Card) -> void:
-	var sceng = card.execute_scripts()
-	if sceng is GDScriptFunctionState and sceng.is_valid():
-		sceng = yield(yield_to(sceng, "completed", 1), YIELD)
+	await card.execute_scripts()
 
 
 func execute_with_target(card: Card, target: Card) -> void:
-	var sceng = card.execute_scripts()
+	var sceng = await card.execute_scripts()
 	target_card(card,target,"slow")
-	sceng = yield(sceng, "completed")
+	sceng = await sceng.completed

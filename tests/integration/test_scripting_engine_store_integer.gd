@@ -26,7 +26,7 @@ class TestStoreIntegetInverted:
 						"subject_index": "top"
 					}]}}
 		card.execute_scripts()
-		yield(yield_for(0.5), YIELD)
+		await yield_for(0.5).YIELD
 		assert_eq(discard.get_card_count(),3, "3 cards should have been discarded")
 
 class TestStoreIntegerWithCounters:
@@ -53,13 +53,13 @@ class TestStoreIntegerWithCounters:
 						"modification": "retrieve_integer",
 					}]}}
 		card.execute_scripts()
-		yield(yield_for(0.5), YIELD)
-		assert_eq(board.counters.get_counter("credits"),7,
+		await yield_for(0.5).YIELD
+		assert_eq(await board.counters.get_counter("credits"),7,
 			"2 Credits added")
 
 	func test_store_integer_with_tokens():
-		yield(table_move(cards[1], Vector2(800,200)), "completed")
-		yield(table_move(cards[2], Vector2(100,200)), "completed")
+		await table_move(cards[1], Vector2(800,200))
+		await table_move(cards[2], Vector2(100,200))
 		cards[1].tokens.mod_token("void",7)
 		cards[2].tokens.mod_token("void",1)
 		# Set all cards on the board to 2 void tokens.
@@ -85,7 +85,7 @@ class TestStoreIntegerWithCounters:
 					"subject_index": "top"
 				}]}}
 		card.execute_scripts()
-		yield(yield_for(0.5), YIELD)
+		await yield_for(0.5).YIELD
 		assert_eq(discard.get_card_count(),2, "2 cards should have been discarded")
 
 class TestRetrieveIntegerTempModProperties:
@@ -128,8 +128,8 @@ class TestRetrieveIntegerTempModProperties:
 			]}
 		}
 		card.execute_scripts()
-		yield(target_card(card,target, "slow"), "completed")
-		yield(yield_for(0.5), YIELD)
+		await target_card(card,target, "slow")
+		await yield_for(0.5).YIELD
 		assert_eq(hand.get_card_count(), 8,
 			"Draw the temp modified amount of cards")
 
@@ -168,8 +168,8 @@ class TestRetrieveIntegerTempModCounter:
 			]}
 		}
 		card.execute_scripts()
-		yield(target_card(card,target, "slow"), "completed")
-		yield(yield_for(0.5), YIELD)
+		await target_card(card,target, "slow")
+		await yield_for(0.5).YIELD
 		assert_eq(hand.get_card_count(), 8,
 			"Draw the temp modified amount of cards")
 
@@ -198,8 +198,8 @@ class TestAdjustRetrievedInteger:
 						"adjust_retrieved_integer": 2,
 					}]}}
 		card.execute_scripts()
-		yield(yield_for(0.5), YIELD)
-		assert_eq(board.counters.get_counter("credits"),9,
+		await yield_for(0.5).YIELD
+		assert_eq(await board.counters.get_counter("credits"),9,
 			"4 Credits added")
 
 	func test_adjust_retrieved_integer_inverted():
@@ -225,7 +225,7 @@ class TestAdjustRetrievedInteger:
 						"is_inverted": true
 					}]}}
 		card.execute_scripts()
-		yield(yield_for(0.5), YIELD)
-		assert_eq(board.counters.get_counter("credits"),3,
+		await yield_for(0.5).YIELD
+		assert_eq(await board.counters.get_counter("credits"),3,
 			"2 Credits Removed")
 

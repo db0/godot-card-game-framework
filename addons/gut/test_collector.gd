@@ -1,130 +1,22 @@
 # ------------------------------------------------------------------------------
-# Used to keep track of info about each test ran.
-# ------------------------------------------------------------------------------
-class Test:
-	# indicator if it passed or not.  defaults to true since it takes only
-	# one failure to make it not pass.  _fail in gut will set this.
-	var passed = true
-	# the name of the function
-	var name = ""
-	# flag to know if the name has been printed yet.
-	var has_printed_name = false
-	# the number of arguments the method has
-	var arg_count = 0
-	# The number of asserts in the test
-	var assert_count = 0
-	# if the test has been marked pending at anypont during
-	# execution.
-	var pending = false
-
-
-# ------------------------------------------------------------------------------
-# This holds all the meta information for a test script.  It contains the
-# name of the inner class and an array of Test "structs".
+# This class handles calling out to the test parser and maintaining an array of
+# collected_script.gd.  This is used for both calling the tests and tracking
+# the results of each script and test's execution.
 #
-# This class also facilitates all the exporting and importing of tests.
+# This also handles exporting and importing tests.
 # ------------------------------------------------------------------------------
-class TestScript:
-	var inner_class_name = null
-	var tests = []
-	var path = null
-	var _utils = null
-	var _lgr = null
+var CollectedScript = load('res://addons/gut/collected_script.gd')
+var CollectedTest = load('res://addons/gut/collected_test.gd')
 
-	func _init(utils=null, logger=null):
-		_utils = utils
-		_lgr = logger
-
-	func to_s():
-		var to_return = path
-		if(inner_class_name != null):
-			to_return += str('.', inner_class_name)
-		to_return += "\n"
-		for i in range(tests.size()):
-			to_return += str('  ', tests[i].name, "\n")
-		return to_return
-
-	func get_new():
-		return load_script().new()
-
-	func load_script():
-		#print('loading:  ', get_full_name())
-		var to_return = load(path)
-		if(inner_class_name != null):
-			# If we wanted to do inner classes in inner classses
-			# then this would have to become some kind of loop or recursive
-			# call to go all the way down the chain or this class would
-			# have to change to hold onto the loaded class instead of
-			# just path information.
-			to_return = to_return.get(inner_class_name)
-		return to_return
-
-	func get_filename_and_inner():
-		var to_return = get_filename()
-		if(inner_class_name != null):
-			to_return += '.' + inner_class_name
-		return to_return
-
-	func get_full_name():
-		var to_return = path
-		if(inner_class_name != null):
-			to_return += '.' + inner_class_name
-		return to_return
-
-	func get_filename():
-		return path.get_file()
-
-	func has_inner_class():
-		return inner_class_name != null
-
-	# Note:  although this no longer needs to export the inner_class names since
-	#        they are pulled from metadata now, it is easier to leave that in
-	#        so we don't have to cut the export down to unique script names.
-	func export_to(config_file, section):
-		config_file.set_value(section, 'path', path)
-		config_file.set_value(section, 'inner_class', inner_class_name)
-		var names = []
-		for i in range(tests.size()):
-			names.append(tests[i].name)
-		config_file.set_value(section, 'tests', names)
-
-	func _remap_path(source_path):
-		var to_return = source_path
-		if(!_utils.file_exists(source_path)):
-			_lgr.debug('Checking for remap for:  ' + source_path)
-			var remap_path = source_path.get_basename() + '.gd.remap'
-			if(_utils.file_exists(remap_path)):
-				var cf = ConfigFile.new()
-				cf.load(remap_path)
-				to_return = cf.get_value('remap', 'path')
-			else:
-				_lgr.warn('Could not find remap file ' + remap_path)
-		return to_return
-
-	func import_from(config_file, section):
-		path = config_file.get_value(section, 'path')
-		path = _remap_path(path)
-		# Null is an acceptable value, but you can't pass null as a default to
-		# get_value since it thinks you didn't send a default...then it spits
-		# out red text.  This works around that.
-		var inner_name = config_file.get_value(section, 'inner_class', 'Placeholder')
-		if(inner_name != 'Placeholder'):
-			inner_class_name = inner_name
-		else: # just being explicit
-			inner_class_name = null
-
-	func get_test_named(name):
-		return _utils.search_array(tests, 'name', name)
-
-# ------------------------------------------------------------------------------
-# start test_collector, I don't think I like the name.
-# ------------------------------------------------------------------------------
-var scripts = []
 var _test_prefix = 'test_'
 var _test_class_prefix = 'Test'
-
 var _utils = load('res://addons/gut/utils.gd').get_instance()
 var _lgr = _utils.get_logger()
+
+
+# Array of CollectedScripts.
+var scripts = []
+
 
 func _does_inherit_from_test(thing):
 	var base_script = thing.get_base_script()
@@ -137,15 +29,23 @@ func _does_inherit_from_test(thing):
 			to_return = _does_inherit_from_test(base_script)
 	return to_return
 
+
 func _populate_tests(test_script):
-	var methods = test_script.load_script().get_script_method_list()
+	var script =  test_script.load_script()
+	if(script == null):
+		print('  !!! ', test_script.path, ' could not be loaded')
+		return false
+
+	test_script.is_loaded = true
+	var methods = script.get_script_method_list()
 	for i in range(methods.size()):
 		var name = methods[i]['name']
 		if(name.begins_with(_test_prefix)):
-			var t = Test.new()
+			var t = CollectedTest.new()
 			t.name = name
 			t.arg_count = methods[i]['args'].size()
 			test_script.tests.append(t)
+
 
 func _get_inner_test_class_names(loaded):
 	var inner_classes = []
@@ -158,7 +58,7 @@ func _get_inner_test_class_names(loaded):
 					inner_classes.append(key)
 				else:
 					_lgr.warn(str('Ignoring Inner Class ', key,
-						' because it does not extend res://addons/gut/test.gd'))
+						' because it does not extend GutTest'))
 
 			# This could go deeper and find inner classes within inner classes
 			# but requires more experimentation.  Right now I'm keeping it at
@@ -166,6 +66,7 @@ func _get_inner_test_class_names(loaded):
 			# has been no demand for deeper nesting.
 			# _populate_inner_test_classes(thing)
 	return inner_classes
+
 
 func _parse_script(test_script):
 	var inner_classes = []
@@ -176,11 +77,13 @@ func _parse_script(test_script):
 		_populate_tests(test_script)
 		scripts_found.append(test_script.path)
 		inner_classes = _get_inner_test_class_names(loaded)
+	else:
+		return []
 
 	for i in range(inner_classes.size()):
 		var loaded_inner = loaded.get(inner_classes[i])
 		if(_does_inherit_from_test(loaded_inner)):
-			var ts = TestScript.new(_utils, _lgr)
+			var ts = CollectedScript.new(_utils, _lgr)
 			ts.path = test_script.path
 			ts.inner_class_name = inner_classes[i]
 			_populate_tests(ts)
@@ -188,6 +91,7 @@ func _parse_script(test_script):
 			scripts_found.append(test_script.path + '[' + inner_classes[i] +']')
 
 	return scripts_found
+
 
 # -----------------
 # Public
@@ -197,19 +101,31 @@ func add_script(path):
 	if(has_script(path)):
 		return []
 
-	var f = File.new()
 	# SHORTCIRCUIT
-	if(!f.file_exists(path)):
+	if(!FileAccess.file_exists(path)):
 		_lgr.error('Could not find script:  ' + path)
 		return
 
-	var ts = TestScript.new(_utils, _lgr)
+	var ts = CollectedScript.new(_utils, _lgr)
 	ts.path = path
+	# Append right away because if we don't test_doubler.gd.TestInitParameters
+	# will HARD crash.  I couldn't figure out what was causing the issue but
+	# appending right away, and then removing if it's not valid seems to fix
+	# things.  It might have to do with the ordering of the test classes in
+	# the test collecter.  I'm not really sure.
 	scripts.append(ts)
-	return _parse_script(ts)
+	var parse_results = _parse_script(ts)
+
+	if(parse_results.find(path) == -1):
+		_lgr.warn(str('Ignoring script ', path, ' because it does not extend GutTest'))
+		scripts.remove_at(scripts.find(ts))
+
+	return parse_results
+
 
 func clear():
 	scripts.clear()
+
 
 func has_script(path):
 	var found = false
@@ -221,16 +137,18 @@ func has_script(path):
 			idx += 1
 	return found
 
+
 func export_tests(path):
 	var success = true
 	var f = ConfigFile.new()
 	for i in range(scripts.size()):
-		scripts[i].export_to(f, str('TestScript-', i))
+		scripts[i].export_to(f, str('CollectedScript-', i))
 	var result = f.save(path)
 	if(result != OK):
 		_lgr.error(str('Could not save exported tests to [', path, '].  Error code:  ', result))
 		success = false
 	return success
+
 
 func import_tests(path):
 	var success = false
@@ -241,15 +159,17 @@ func import_tests(path):
 	else:
 		var sections = f.get_sections()
 		for key in sections:
-			var ts = TestScript.new(_utils, _lgr)
+			var ts = CollectedScript.new(_utils, _lgr)
 			ts.import_from(f, key)
 			_populate_tests(ts)
 			scripts.append(ts)
 		success = true
 	return success
 
+
 func get_script_named(name):
 	return _utils.search_array(scripts, 'get_filename_and_inner', name)
+
 
 func get_test_named(script_name, test_name):
 	var s = get_script_named(script_name)
@@ -257,6 +177,7 @@ func get_test_named(script_name, test_name):
 		return s.get_test_named(test_name)
 	else:
 		return null
+
 
 func to_s():
 	var to_return = ''
@@ -270,17 +191,76 @@ func to_s():
 func get_logger():
 	return _lgr
 
+
 func set_logger(logger):
 	_lgr = logger
+
 
 func get_test_prefix():
 	return _test_prefix
 
+
 func set_test_prefix(test_prefix):
 	_test_prefix = test_prefix
+
 
 func get_test_class_prefix():
 	return _test_class_prefix
 
+
 func set_test_class_prefix(test_class_prefix):
 	_test_class_prefix = test_class_prefix
+
+
+func get_scripts():
+	return scripts
+
+
+func get_ran_test_count():
+	var count = 0
+	for s in scripts:
+		count += s.get_ran_test_count()
+	return count
+
+
+func get_ran_script_count():
+	var count = 0
+	for s in scripts:
+		if(s.was_run):
+			count += 1
+	return count
+
+func get_test_count():
+	var count = 0
+	for s in scripts:
+		count += s.tests.size()
+	return count
+
+
+func get_assert_count():
+	var count = 0
+	for s in scripts:
+		count += s.get_assert_count()
+	return count
+
+
+func get_pass_count():
+	var count = 0
+	for s in scripts:
+		count += s.get_pass_count()
+	return count
+
+
+func get_fail_count():
+	var count = 0
+	for s in scripts:
+		count += s.get_fail_count()
+	return count
+
+
+func get_pending_count():
+	var count = 0
+	for s in scripts:
+		count += s.get_pending_count()
+	return count
+

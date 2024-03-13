@@ -10,7 +10,7 @@ class TestRepeat:
 				"repeat": 3,
 				"counter_name":  "research"}]}}
 		card.execute_scripts()
-		assert_eq(9,board.counters.get_counter("research"),
+		assert_eq(9,await board.counters.get_counter("research"),
 				"Counter increased by specified amount")
 		card.scripts = {"manual": {"hand": [
 				{"name": "mod_counter",
@@ -19,7 +19,7 @@ class TestRepeat:
 				"set_to_mod": true,
 				"counter_name": "credits"}]}}
 		card.execute_scripts()
-		assert_eq(2,board.counters.get_counter("credits"),
+		assert_eq(2,await board.counters.get_counter("credits"),
 				"Counter set to the specified amount")
 
 class TestRepeatWithTarget:
@@ -33,8 +33,8 @@ class TestRepeatWithTarget:
 				"repeat": 3,
 				"token_name":  "industry"}]}}
 		card.execute_scripts()
-		yield(target_card(card,target), "completed")
+		await target_card(card,target)
 		# My scripts are slower now
-		yield(yield_for(0.2), YIELD)
+		await yield_for(0.2).YIELD
 		var industry_token: Token = target.tokens.get_token("industry")
 		assert_eq(6,industry_token.count,"Token set to specified amount")

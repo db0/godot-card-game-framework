@@ -2,7 +2,7 @@
 #
 # The definition happens via object name
 class_name CustomScripts
-extends Reference
+extends RefCounted
 
 var costs_dry_run := false
 
@@ -37,7 +37,7 @@ func custom_script(script: ScriptTask) -> void:
 					subjects[0].queue_free()
 					print("Destroying: " + subjects[0].canonical_name)
 
-# warning-ignore:unused_argument
+@warning_ignore("unused_parameter")
 func custom_alterants(script: ScriptAlter) -> int:
 	var alteration := 0
 	return(alteration)

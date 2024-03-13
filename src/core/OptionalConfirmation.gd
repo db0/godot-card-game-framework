@@ -7,10 +7,10 @@ signal selected
 var is_accepted := false
 
 func _ready() -> void:
-	get_cancel().text = "No"
-	get_ok().text = "Yes"
+	get_cancel_button().text = "No"
+	get_ok_button().text = "Yes"
 	# warning-ignore:return_value_discarded
-	get_cancel().connect("pressed", self, "_on_OptionalConfirmation_cancelled")
+	get_cancel_button().connect("pressed", Callable(self, "_on_OptionalConfirmation_cancelled"))
 
 
 func prep(card_name: String, task_name: String) -> void:
@@ -20,10 +20,10 @@ func prep(card_name: String, task_name: String) -> void:
 		popup_centered()
 		# One again we need two different Panels due to 
 		# https://github.com/godotengine/godot/issues/32030
-		$HorizontalHighlights.rect_size = rect_size
-		$HorizontalHighlights.rect_position = Vector2(0,0)
-		$VecticalHighlights.rect_size = rect_size
-		$VecticalHighlights.rect_position = Vector2(0,0)
+		$HorizontalHighlights.size = size
+		$HorizontalHighlights.position = Vector2(0,0)
+		$VecticalHighlights.size = size
+		$VecticalHighlights.position = Vector2(0,0)
 
 
 func _on_OptionalConfirmation_confirmed() -> void:

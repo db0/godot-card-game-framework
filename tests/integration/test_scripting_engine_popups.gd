@@ -25,20 +25,20 @@ class TestFilteredMultipleChoice:
 					},
 				},
 		}
-		yield(table_move(card, Vector2(100,200)), "completed")
+		await table_move(card, Vector2(100,200))
 		target.is_faceup = false
-		yield(yield_for(0.1), YIELD)
+		await yield_for(0.1).YIELD
 		var menu = board.get_node("CardChoices")
 		assert_true(menu.visible)
 		menu._on_CardChoices_id_pressed(3)
 		assert_eq("Rotate This Card",menu.selected_key)
-		yield(yield_for(0.1), YIELD)
+		await yield_for(0.1).YIELD
 		menu.hide()
 		assert_eq(card.card_rotation, 90,
 				"Card should be rotated 90 degrees")
-		yield(yield_for(0.1), YIELD)
+		await yield_for(0.1).YIELD
 		cards[3].is_faceup = false
-		yield(yield_for(0.1), YIELD)
+		await yield_for(0.1).YIELD
 		menu = board.get_node("CardChoices")
 		assert_null(menu, "menu should not appear when filter does not match")
 	#
@@ -56,7 +56,7 @@ class TestFilteredMultipleChoice:
 			confirm._on_OptionalConfirmation_confirmed()
 			assert_true(confirm.is_accepted, "Confirmation dialog accepted")
 			confirm.hide()
-		yield(yield_to(card._flip_tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(card._flip_tween, "finished", 0.5).YIELD
 		assert_false(card.is_faceup,
 				"Card should be face-down after accepted dialog")
 
@@ -77,11 +77,11 @@ class TestFilteredMultipleChoice:
 			confirm._on_OptionalConfirmation_cancelled()
 			assert_false(confirm.is_accepted, "Confirmation dialog not accepted")
 			confirm.hide()
-		yield(yield_to(target._flip_tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(target._flip_tween, "finished", 0.5).YIELD
 		assert_false(target.is_faceup,
-				"Card should be face-down after even afer other optional task cancelled")
+				"Card should be face-down after even afer other optional task canceled")
 		assert_false(target.targeting_arrow.is_targeting,
-				"Card did not start targeting since dialogue cancelled")
+				"Card did not start targeting since dialogue canceled")
 
 class TestTaskConfimDialogueTarget:
 	extends "res://tests/ScEng_common.gd"
@@ -103,11 +103,11 @@ class TestTaskConfimDialogueTarget:
 		if confirm:
 			confirm._on_OptionalConfirmation_cancelled()
 			confirm.hide()
-		yield(yield_to(card._flip_tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(card._flip_tween, "finished", 0.5).YIELD
 		assert_true(card.is_faceup,
-				"Card should not be face-down with a cancelled cost dialog")
+				"Card should not be face-down with a canceled cost dialog")
 		assert_false(card.targeting_arrow.is_targeting,
-				"Card should not start targeting once cost dialogue cancelled")
+				"Card should not start targeting once cost dialogue canceled")
 
 
 	func test_task_confirm_cost_dialogue_accepted_target() -> void:
@@ -127,11 +127,11 @@ class TestTaskConfimDialogueTarget:
 		if confirm:
 			confirm._on_OptionalConfirmation_confirmed()
 			confirm.hide()
-		yield(yield_for(0.5), YIELD)
+		await yield_for(0.5).YIELD
 		assert_true(card.targeting_arrow.is_targeting,
 				"Card started targeting once dialogue accepted")
-		yield(target_card(card,target), "completed")
-		yield(yield_to(card._flip_tween, "tween_all_completed", 0.5), YIELD)
+		await target_card(card,target)
+		await yield_to(card._flip_tween, "finished", 0.5).YIELD
 		assert_false(card.is_faceup,
 				"Card should be face-down once the cost dialogue is accepted")
 
@@ -150,25 +150,25 @@ class TestScriptConfirmDialog:
 					{"name": "rotate_card",
 					"subject": "self",
 					"degrees":  180}]}}
-		yield(table_move(card, Vector2(500,200)), "completed")
+		await table_move(card, Vector2(500,200))
 		card.execute_scripts()
 		confirm = board.get_node("OptionalConfirmation")
 		assert_not_null(confirm)
 		if confirm:
 			confirm._on_OptionalConfirmation_cancelled()
 			confirm.hide()
-		yield(yield_to(card._flip_tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(card._flip_tween, "finished", 0.5).YIELD
 		assert_true(card.is_faceup,
-				"Card has not have executed any tasks with cancelled script dialog")
+				"Card has not have executed any tasks with canceled script dialog")
 		assert_eq(0, card.card_rotation,
-				"Card has not have executed any tasks with cancelled script dialog")
+				"Card has not have executed any tasks with canceled script dialog")
 		card.execute_scripts()
 		confirm = board.get_node("OptionalConfirmation")
 		assert_not_null(confirm)
 		if confirm:
 			confirm._on_OptionalConfirmation_confirmed()
 			confirm.hide()
-		yield(yield_to(card._flip_tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(card._flip_tween, "finished", 0.5).YIELD
 		assert_false(card.is_faceup,
 				"Card execute all tasks properly after script confirm")
 		assert_eq(180, card.card_rotation,
@@ -199,8 +199,8 @@ class TestAskIntegerWithCardMoves:
 		var ask_integer = board.get_node("AskInteger")
 		ask_integer.number = 2
 		ask_integer.hide()
-		yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
-		yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(target._tween, "finished", 0.5).YIELD
+		await yield_to(target._tween, "finished", 0.5).YIELD
 		assert_eq(2,discard.get_card_count(), "2 cards should have been discarded")
 
 class TestAskIntegerWithModTokens:
@@ -226,6 +226,6 @@ class TestAskIntegerWithModTokens:
 		var ask_integer = board.get_node("AskInteger")
 		ask_integer.number = 3
 		ask_integer.hide()
-		yield(yield_for(0.2), YIELD)
+		await yield_for(0.2).YIELD
 		var bio_token: Token = card.tokens.get_token("bio")
 		assert_eq(3,bio_token.count,"Token increased by specified amount")
