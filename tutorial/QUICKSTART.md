@@ -1,6 +1,7 @@
 # Godot Card Game Framework Quick Start Guide
 
 **Written for v1.9. Needs update**
+** Updated by markp3rry for v3.5.3.stable.official [6c814135b] **
 
 This guide is meant to take you through using the Card Game Framework (CGF from now on) for the first time in a simple step-by-step approach, starting from brand a new project.
 
@@ -14,7 +15,7 @@ Think of this as the "Hello World" instructions for this Framework.
 In this part, we'll create a new project which is going to use the existing CGF demonstration scenes as its baseline.
 
 1. Use Godot to create a new project.
-2. Download the latest version of the CGF and extract all directories into your project's root folder.
+2. Download the latest version of the CGF and extract all directories into your project's root folder. You can leave Godot open while you do this, when you change focus back to Godot you should see it automatically import all the new files into the project.
 3. Go to Project > Project Setting > Autoload. Press the browse button and search for `res://src/core/CFControl`. Type "cfc" in the "Node name:" field.
 4. Go to Project > Project Settings > General > Application > Run and next to the Main Scene type `res://src/custom/CGFMain.tscn`
 5. Close Project Settings and press F5 to play the new project. A basic demo setup will appear and you'll be able to draw cards, move them around etc.
@@ -30,24 +31,25 @@ In order to be able to upgrade this framework in the future without losing your 
 	- `res://src/custom/CGFBoard.tscn` >> name the new file `Board.tcsn`.
 	- `res://src/custom/CGFBoard.gd` >> name the new file `Board.gd`.
 	- `res://src/custom/CGFInfoPanel.tcsn` >> name the new file `InfoPanel.tcsn`.
-3. In the FileSystem tab, drag and drop the following files from `res://src/custom` to `res://src/new_card_game`:
+3. In the FileSystem tab, drag and drop the following files, or do a multi select with CTRL, right click and use the "Move To" option in Godot, from `res://src/custom` to `res://src/new_card_game`:
 	- `Board.tcsn`
 	- `Board.gd`
 	- `InfoPanel.tcsn`
 	- `SP.gd`
 4. Double-click `res://src/new_card_game/Board.tcsn` to open it. Right-click on the root node and "Attach Script". Navigate to or type the filepath `res://src/new_card_game/Board.gd`
-5. In the FileSystem tab, right-click on `res://src/core/Main.tscn` and select "New Inherited Scene". A new unsaved scene will open.
-6. In the Inspector, under "Script Variables", click on "[empty]" next to Board Scene, then "Load", then navigate to `res://src/new_card_game/Board.tcsn`
-7. In the Inspector, under "Script Variables", click on "[empty]" next to "Info Panel Scene", then "Load", then navigate to `res://src/new_card_game/InfoPanel.tcsn`
-8. Save the unsaved scene as `res://src/new_card_game/Main.tcsn`
-9. Press play scene (F6). If you did everything above right, an identicaly demo should run off of your `res://src/new_card_game/` scenes.
+5. Now save the Board.tscn scene, and close Godot, then re-open and re-load the project in or the next bit won't work.
+6. In the FileSystem tab, right-click on `res://src/core/Main.tscn` and select "New Inherited Scene". A new unsaved scene will open.
+7. In the Inspector, under "Script Variables", click on "[empty]" next to Board Scene, then "Load", then navigate to `res://src/new_card_game/Board.tcsn`
+8. In the Inspector, under "Script Variables", click on "[empty]" next to "Info Panel Scene", then "Load", then navigate to `res://src/new_card_game/InfoPanel.tcsn`
+9. Save the unsaved scene as `res://src/new_card_game/Main.tcsn`
+10. Press play scene (F6). If you did everything above right, an identicaly demo should run off of your `res://src/new_card_game/` scenes. We can test this by adding a line to the end of the _ready func in the newly created Main.tcsn file, print("something"), you should see the word "something" appear in the Output window.
 
 We're halfway there, we have now created an inherited Main.tcsn scene which we can customize and we have our own Board.tcsn to modify.
 
 The board is still using a lot of the demo code inside `res://src/custom/` which we need to be able to customize for our own game.
 
 1. In the FileSystem tab, Right-click and select "Duplicate..." on `res://src/custom/CGFDeck.gd`. Name the new file `Deck.gd`.
-2. Drag and drop `Deck.gd` inside `res://src/new_card_game`
+2. Drag and drop / right click & "Move To" `Deck.gd` inside `res://src/new_card_game`
 3. In the Scene View, open `Board.tcsn`. Right-click on the "Deck" node, select "Attach Script", then either navigate to or type `res://src/new_card_game/Deck.gd`
 4. Click on the "Deck" node. In the Inspector, select the "Placement" that suits your game.
 
@@ -65,16 +67,17 @@ Now let's make sure we have a card template dedicated to our own game on which w
 	- `res://src/custom/CGFCardManipulationButton.tscn` >> name the new file `CardManipulationButton.tscn`.
 	- `res://src/custom/CGFManipulationButtons.gd` >> name the new file `ManipulationButtons.gd`.
 2. Drag and drop `CardManipulationButton.tscn` and `ManipulationButtons.gd` inside `res://src/new_card_game`.
-3. In the Scene tab, right-click on the "ManipulationButton" node, then "Attach Script" then either nagivate to or type the filepath `res://src/new_card_game/ManipulationButtons.gd`
-4. In the Scene tab, click on the "ManipulationButton" node, then in the Inspector click on "[empty]" next to Manipulation Button, then "Load", then navigate to `res://src/new_card_game/CardManipulationButton.tscn`
-5. In the FileSystem tab, right-click and "Duplicate..." the following files:
+3. Opn the CardManipulationButton.tscn scene.
+4. In the Scene tab, right-click on the "ManipulationButton" node, then "Attach Script" then either nagivate to or type the filepath `res://src/new_card_game/ManipulationButtons.gd`
+5. In the Scene tab, click on the "ManipulationButton" node, then in the Inspector click on "[empty]" next to Manipulation Button, then "Load", then navigate to `res://src/new_card_game/CardManipulationButton.tscn`
+6. In the FileSystem tab, right-click and "Duplicate..." the following files:
 	- `res://src/custom/CGFCardBack.tscn` >> name the new file `CardBack.tscn`.
 	- `res://src/custom/CGFCardFront.tscn` >> name the new file `CardFront.tscn`.
 	- `res://src/custom/CGFCardFront.gd`  >> name the new file `CardFront.gd`.
-6. Drag and drop `CardBack.tscn`, `CardFront.tscn`  and `CardFront.gd` inside `res://src/new_card_game`.
-7. Double-click `res://src/new_card_game/CardFront.tcsn` to open it. Right-click on the root node and "Attach Script", then either navigate to or type the filepath `res://src/new_card_game/CardFront.gd`
-8. Right-click on `res://src/core/CardTemplate.tscn` and select "New Inherited Scene". A new unsaved scene will open.
-9. Click on the root node in `CardTemplate.tcsn`.
+7. Drag and drop `CardBack.tscn`, `CardFront.tscn`  and `CardFront.gd` inside `res://src/new_card_game`.
+8. Double-click `res://src/new_card_game/CardFront.tcsn` to open it. Right-click on the root node and "Attach Script", then either navigate to or type the filepath `res://src/new_card_game/CardFront.gd`
+9. Right-click on `res://src/core/CardTemplate.tscn` and select "New Inherited Scene". A new unsaved scene will open.
+10. Click on the root node in `CardTemplate.tcsn`.
 
 **NOTE:** If you cannot follow the next two steps because you cannot find the "Card Back Design" and "Card Front Design" fields, then select Project > Reload Current Project in the Godot menu.
 
@@ -114,14 +117,14 @@ For this demonstration, let's create a "creature" type card.
 1. In the Godot Filesystem view, navigate to `res://src/new_card_game/`
 2. Right-click on `CardFront.tcsn` and select "New Inherited Scene". A new tab will open on the top called "[unsaved]". Press "F1" to ensure you're on the 2D view. You should see a grey card. This is the card front baseline coming from the CGF. We're now going to modify that to fit our purposes.
 3. In the Godot Scene tab, double-click on "Front" to rename the scene root. Let's rename it to "CreatureFront" to remind ourselves what this is when working on our scenes. It's not otherwise important.
-4. On the Inspector find and expand custom styles. Then click on the arrow next to StyleBox and select "Make Unique".
-5. Click on the "StyleBox" label, to expand its properties
+4. On the Inspector find and expand Theme Overrides -> Styles. Then click on the arrow next to StyleBoxFlat and select "Make Unique".
+5. Find the Panel tab, this should be ticked by default directly under the Styles item.
 6. Click on the "Bg Color". The colour picker will appear. Select a background colour you want to use for your creature cards.
-7. The basic card template has most of the information a creature would need, but what would a creature be without some Health. Let's add this now.
+7. The basic card template has most of the information a creature would need, but what would a creature be without some Health. Let's add this now. Before proceeding, save the Scene as `res://src/new_card_game/cards/CreatureFront.tcsn`, then right click on the root node in the Scene tab (newly changed to CreatureFront) and click "Remove Inheritance", this will change all the sub - nodes from grey to white. Now:
 	1. Right-click on Power > Duplicate. The new label node will appear under the "Power" node called "Power2".
 	1. Double click "Power2" to rename it to "Health". You can add text to see how it looks.
 	2. Right-click on PowerIcon . Duplicate. The new icon node will appear under the "PowerIcon" node called "PowerIcon2"
-	2. Double click "PowerIcon2" to rename it to "HealthIcon". Drag it to move it just above "Health".
+	2. Double click "PowerIcon2" to rename it to "HealthIcon". Drag it to move it just above "Health". If you can't drag, manually change the x and y values inside Control -> Rect -> Position in the Inspector menu, 131 and -18 look about right.
 	3. Click on HealthIcon. and then click on the little arrow next to the "Texture" property. Select Quickload and write "hearts". Select the hearts.png option.
 14. Since we're not creating a completely different front, we can just extend the existing default front script we're using for our game. Right click on the root node (should be called "Front") And select "extend script". A new window will popup will the script name to save. save it as `res://src/new_card_game/cards/CreatureFront.gd`.
 	![Extend Card Script](3.extend_creature_front_script.png)
@@ -137,7 +140,7 @@ We have now mapped the new label node for our new card type, so that it can be f
 3. In the Godot Scene tab, double-click on "Card" to rename the scene root. Let's rename it to "Creature" to remind ourselves what this is when working on our scenes. It's not otherwise important.
 4. In the root node inspector, click on the arrow next to Card Front Design > Load, then navigate and select `res://src/new_card_game/cards/CreatureFront.tcsn`
 5. Press Ctrl+S to save our new scene as `res://src/new_card_game/cards/Creature.tcsn`. We now have our new card type scene template, but our game is not configuration to populate it just yet.
-6. Open `res://new_card_game/card/CardConfig.gd`. This is where we specify what kind of information each label adds. Since the health of each creature is just a number, we'll add it as a number.
+6. Open `res://new_card_game/cards/CardConfig.gd`. This is where we specify what kind of information each label adds. Since the health of each creature is just a number, we'll add it as a number.
 7. Edit `PROPERTIES_NUMBERS` and modify the array definition look like this
 
 ```
