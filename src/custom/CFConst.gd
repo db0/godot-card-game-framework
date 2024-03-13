@@ -4,7 +4,7 @@
 #
 # Tweak the values to match your game requirements.
 class_name CFConst
-extends Reference
+extends RefCounted
 
 # The possible return codes a function can return
 #

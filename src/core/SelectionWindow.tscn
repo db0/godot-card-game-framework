@@ -1,28 +1,18 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://dogw3g4p70p1n"]
 
-[ext_resource path="res://src/core/SelectionWindow.gd" type="Script" id=1]
+[ext_resource type="Script" path="res://src/core/SelectionWindow.gd" id="1"]
 
 [node name="SelectionWindow" type="AcceptDialog" groups=["selection_windows"]]
-modulate = Color( 1, 1, 1, 0 )
-anchor_right = 1.0
-anchor_bottom = 1.0
-margin_right = -1178.0
-margin_bottom = -662.0
-popup_exclusive = true
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+script = ExtResource("1")
 
 [node name="GridContainer" type="GridContainer" parent="."]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-margin_left = 8.0
-margin_top = 8.0
-margin_right = -8.0
-margin_bottom = -36.0
-custom_constants/vseparation = 5
-custom_constants/hseparation = 5
+offset_left = 8.0
+offset_top = 8.0
+offset_right = -8.0
+offset_bottom = -36.0
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
 columns = 8
-
-[node name="Tween" type="Tween" parent="."]

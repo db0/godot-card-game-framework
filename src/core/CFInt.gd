@@ -6,7 +6,7 @@
 # These constants are not expected to be tweaked by developers who need
 # to be able to upgrade the CGF.
 class_name CFInt
-extends Reference
+extends RefCounted
 
 # The types of ScriptingEngine executions we can have
 #
@@ -17,8 +17,8 @@ extends Reference
 # Takes place when a COST_CHECK run discovers it cannot fulfil
 # a task marked as such.
 enum RunType{
-	NORMAL
-	COST_CHECK
+	NORMAL,
+	COST_CHECK,
 	ELSE
 }
 # The focus style used by the engine
@@ -26,9 +26,9 @@ enum RunType{
 # * VIEWPORT means that a larger version of the card appears when mousing over it
 # * BOTH means SCALED + VIEWPORT
 enum FocusStyle {
-	SCALED
-	VIEWPORT
-	BOTH
+	SCALED,
+	VIEWPORT,
+	BOTH,
 	BOTH_INFO_PANELS_ONLY
 }
 # Options for displacing choosing which of the [CardContainer]s
@@ -38,7 +38,7 @@ enum FocusStyle {
 # Do not mix containers using both of these settings, unless the conflicting
 # container's OverlapShiftDirection is set to "NONE"
 enum IndexShiftPriority{
-	LOWER
+	LOWER,
 	HIGHER
 }
 # Options for displacing [CardContainer]s sharing the same anchor
@@ -52,9 +52,9 @@ enum IndexShiftPriority{
 # * RIGHT: This CardContainer will be displaced rightwards.Typically used when
 #	this container is using one of the left anchors.
 enum OverlapShiftDirection{
-	NONE
-	UP
-	DOWN
-	LEFT
+	NONE,
+	UP,
+	DOWN,
+	LEFT,
 	RIGHT
 }

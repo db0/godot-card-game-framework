@@ -1,16 +1,19 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://b6fj0ebclat8o"]
 
-[ext_resource path="res://src/core/CardTemplate.tscn" type="PackedScene" id=1]
-[ext_resource path="res://src/custom/CGFCardTemplate.gd" type="Script" id=2]
-[ext_resource path="res://src/custom/CGFManipulationButtons.gd" type="Script" id=4]
-[ext_resource path="res://src/custom/CGFCardManipulationButton.tscn" type="PackedScene" id=5]
+[ext_resource type="PackedScene" uid="uid://dlx3tb6rnlovk" path="res://src/core/CardTemplate.tscn" id="1"]
+[ext_resource type="Script" path="res://src/custom/CGFCardTemplate.gd" id="2"]
+[ext_resource type="Script" path="res://src/custom/CGFManipulationButtons.gd" id="4"]
+[ext_resource type="PackedScene" uid="uid://dfj81umgk7kok" path="res://src/custom/CGFCardManipulationButton.tscn" id="5"]
 
-[node name="Card" instance=ExtResource( 1 )]
-script = ExtResource( 2 )
+[node name="Card" instance=ExtResource("1")]
+script = ExtResource("2")
+
+[node name="Highlight" parent="Control" index="0"]
+anchors_preset = 0
 
 [node name="Front" parent="Control" index="2"]
-rect_min_size = Vector2( 150, 240 )
+custom_minimum_size = Vector2(150, 240)
 
 [node name="ManipulationButtons" parent="Control" index="4"]
-script = ExtResource( 4 )
-manipulation_button = ExtResource( 5 )
+script = ExtResource("4")
+manipulation_button = ExtResource("5")

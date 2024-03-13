@@ -12,15 +12,21 @@ var is_accepted := true
 
 # Prepares the script_definition needed by the alteration to function and
 # checks the ongoing task and its owner_card against defined filters.
+#func _init(
+		#alteration_script: Dictionary,
+		#trigger_object: Card,
+		#alterant_object,
+		#task_details: Dictionary,
+		#prev_subject = null).(
+			#alterant_object,
+			#alteration_script,
+			#trigger_object) -> void:
 func _init(
 		alteration_script: Dictionary,
 		trigger_object: Card,
 		alterant_object,
 		task_details: Dictionary,
-		prev_subject = null).(
-			alterant_object,
-			alteration_script,
-			trigger_object) -> void:
+		prev_subject = null) -> void:
 	# The alteration name gets its own var
 	script_name = get_property("filter_task")
 	trigger_details = task_details
@@ -34,20 +40,18 @@ func _init(
 			trigger_details):
 		is_valid = false
 	if is_valid:
-		var confirm_return = CFUtils.confirm(
+		var confirm_return = await CFUtils.confirm(
 				script_definition,
 				owner.canonical_name,
 				script_name)
-		if confirm_return is GDScriptFunctionState: # Still working.
-			confirm_return = yield(confirm_return, "completed")
+		await confirm_return.completed
 		is_valid = confirm_return
 	if is_valid:
 		# The alterant might require counting other cards to see if it's valid.
 		# So we just run it through the _find_subjects() to see if it will
 		# set is_valid to false.
-		var ret =_find_subjects(0)
-		if ret is GDScriptFunctionState: # Still working.
-			ret = yield(ret, "completed")
+		var ret = await _find_subjects(0)
+		ret = await ret.completed
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
 	is_primed = true

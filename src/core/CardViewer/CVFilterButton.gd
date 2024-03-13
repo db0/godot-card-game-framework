@@ -19,5 +19,5 @@ func _on_CVFilterButton_gui_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton\
 			and event.is_pressed()\
 			and event.get_button_index() == 2:
-		pressed = true
+		set_pressed(true)
 		emit_signal("right_pressed")

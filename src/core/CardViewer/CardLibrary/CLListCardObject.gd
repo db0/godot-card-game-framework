@@ -7,11 +7,11 @@ extends CVListCardObject
 # The display of the card's Name and Type, also all the other card properties.
 # If the card text is rich text, it will also be formatted as bbcode.
 func setup(_card_name: String) -> void:
-	.setup(_card_name)
+	super.setup(_card_name)
 	if card_viewer.property_width_exceptions.has(CardConfig.SCENE_PROPERTY):
-		_card_type.rect_min_size.x = card_viewer.property_width_exceptions[CardConfig.SCENE_PROPERTY]
+		_card_type.custom_minimum_size.x = card_viewer.property_width_exceptions[CardConfig.SCENE_PROPERTY]
 	else:
-		_card_type.rect_min_size.x = card_viewer.default_property_width
+		_card_type.custom_minimum_size.x = card_viewer.default_property_width
 	for p in card_properties:
 		var property: String = p
 		if not property.begins_with('_')\
@@ -19,9 +19,9 @@ func setup(_card_name: String) -> void:
 			var new_label := RichTextLabel.new()
 			new_label.name = property
 			if card_viewer.property_width_exceptions.has(property):
-				new_label.rect_min_size.x = card_viewer.property_width_exceptions[property]
+				new_label.custom_minimum_size.x = card_viewer.property_width_exceptions[property]
 			else:
-				new_label.rect_min_size.x = card_viewer.default_property_width
+				new_label.custom_minimum_size.x = card_viewer.default_property_width
 			new_label.bbcode_enabled = true
 			new_label.scroll_active = false
 			new_label.fit_content_height = true
@@ -34,12 +34,12 @@ func setup(_card_name: String) -> void:
 			for key in format:
 				format[key] = format[key].format(bbcode_format)
 			if property in CardConfig.PROPERTIES_ARRAYS:
-				new_label.bbcode_text = CFUtils.array_join(card_properties[property],
+				new_label.text = CFUtils.array_join(card_properties[property],
 							CFConst.ARRAY_PROPERTY_JOIN)
 			elif card_viewer.replacements.has(property) and card_viewer.replacements[property].has(card_properties[property]):
-				new_label.bbcode_text = card_viewer.replacements[property][card_properties[property]]
+				new_label.text = card_viewer.replacements[property][card_properties[property]]
 			else:
-				new_label.bbcode_text = str(card_properties[property]).format(format)
+				new_label.text = str(card_properties[property]).format(format)
 			add_child(new_label)
 
 

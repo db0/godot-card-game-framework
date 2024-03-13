@@ -1,62 +1,45 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://7k4gmqihsvyt"]
 
-[ext_resource path="res://assets/icons/view.svg" type="Texture" id=1]
-[ext_resource path="res://assets/card_backs/godot_back.png" type="Texture" id=2]
-[ext_resource path="res://src/core/Card/CardBackTexture.gd" type="Script" id=3]
+[ext_resource type="Texture2D" uid="uid://deo83c43e0yoy" path="res://assets/icons/view.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://bkdr1ejbgv4qa" path="res://assets/card_backs/godot_back.png" id="2"]
+[ext_resource type="Script" path="res://src/core/Card/CardBackTexture.gd" id="3"]
 
-[sub_resource type="StyleBoxEmpty" id=1]
+[sub_resource type="StyleBoxEmpty" id="1"]
 
 [node name="PlayingCardBack" type="Panel"]
-rect_min_size = Vector2( 150, 240 )
+custom_minimum_size = Vector2(150, 240)
 mouse_filter = 2
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
-back_texture = ExtResource( 2 )
+theme_override_styles/panel = SubResource("1")
+script = ExtResource("3")
+back_texture = ExtResource("2")
 
 [node name="CardTexture" type="TextureRect" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
-rect_min_size = Vector2( 150, 240 )
-texture = ExtResource( 2 )
-expand = true
+custom_minimum_size = Vector2(150, 240)
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+texture = ExtResource("2")
+expand_mode = 1
 stretch_mode = 6
-__meta__ = {
-"_edit_use_anchors_": false
-}
-
-[node name="Pulse" type="Tween" parent="."]
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="MarginContainer" type="MarginContainer" parent="VBoxContainer"]
-margin_right = 150.0
-margin_bottom = 95.0
+layout_mode = 2
 mouse_filter = 2
-custom_constants/margin_top = 95
+theme_override_constants/margin_top = 95
 
 [node name="CenterContainer" type="CenterContainer" parent="VBoxContainer"]
-margin_top = 99.0
-margin_right = 150.0
-margin_bottom = 139.0
-rect_min_size = Vector2( 0, 40 )
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
 mouse_filter = 2
 
 [node name="Viewed" type="TextureRect" parent="VBoxContainer/CenterContainer"]
 visible = false
-margin_left = 55.0
-margin_right = 95.0
-margin_bottom = 40.0
+layout_mode = 2
 mouse_filter = 2
-texture = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+texture = ExtResource("1")

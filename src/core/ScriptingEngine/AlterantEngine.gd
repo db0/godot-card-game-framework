@@ -7,7 +7,7 @@
 # which allow it, are going through all the cards, looking for valid Alterants
 # definitions. 
 class_name AlterantEngine
-extends Reference
+extends RefCounted
 
 const _ASK_INTEGER_SCENE_FILE = CFConst.PATH_CORE + "AskInteger.tscn"
 const _ASK_INTEGER_SCENE = preload(_ASK_INTEGER_SCENE_FILE)
@@ -38,7 +38,7 @@ func _init(
 		_subject) -> void:
 	subject = _subject
 	for alter_task_def in scripts_queue.duplicate(true):
-		var alter_task := ScriptAlter.new(
+		var alter_task := await ScriptAlter.new(
 				alter_task_def,
 				trigger_object,
 				alterant_object,
@@ -56,7 +56,7 @@ func _init(
 func execute() -> void:
 	for alter_task in alterants_queue:
 		if not alter_task.is_primed:
-			yield(alter_task,"primed")
+			await alter_task.primed
 		if alter_task.is_valid:
 			calculate_alteration(alter_task)
 	all_alterations_completed = true

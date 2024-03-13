@@ -3,9 +3,9 @@ class_name Highlight
 extends Control
 
 # Stores a reference to the Card that is hosting this node
-onready var owner_node = get_parent().get_parent()
-onready var _left_right := $LeftRight
-onready var _top_bottom := $TopBottom
+@onready var owner_node = get_parent().get_parent()
+@onready var _left_right := $LeftRight
+@onready var _top_bottom := $TopBottom
 
 func _ready() -> void:
 	pass
@@ -32,7 +32,7 @@ func set_highlight(requestedFocus: bool,
 static func highlight_potential_card(colour : Color,
 		potential_cards: Array,
 		potential_slots := []) -> Card:
-	potential_cards.sort_custom(CFUtils,"sort_index_ascending")
+	potential_cards.sort_custom(Callable(CFUtils, "sort_index_ascending"))
 	for idx in range(0,len(potential_cards)):
 			# The last card in the sorted array is always the highest index
 		if idx == len(potential_cards) - 1:
@@ -56,7 +56,7 @@ static func highlight_potential_container(colour : Color,
 		potential_containers: Array,
 		potential_cards := [],
 		potential_slots := []) -> CardContainer:
-	potential_containers.sort_custom(CFUtils,"sort_card_containers")
+	potential_containers.sort_custom(Callable(CFUtils, "sort_card_containers"))
 	for idx in range(0,len(potential_containers)):
 		if idx == len(potential_containers) - 1:
 			potential_containers[idx].highlight.set_highlight(true,colour)

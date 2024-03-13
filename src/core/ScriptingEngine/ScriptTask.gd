@@ -16,11 +16,19 @@ var is_cost := false
 var is_else := false
 var needs_subject := false
 
+var _owner
+var _script
+var _calling_trigger_object
+
 # prepares the script_definition needed by the task to function.
+#TODO: did this break anything? .(owner, script, _trigger_object)
 func _init(owner,
 		script: Dictionary,
 		_trigger_object,
-		_trigger_details).(owner, script, _trigger_object) -> void:
+		_trigger_details) -> void:
+	self.owner = owner
+	self.script = script
+	self.trigger_object = _trigger_object
 	# The function name to be called gets its own var
 	script_name = get_property("name")
 	trigger_details = _trigger_details
@@ -56,9 +64,7 @@ func prime(_prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
 		# We check if the player confirms it, before looking for targets
 		# We check for optional confirmations only during
 		# The normal run (i.e. not in a cost dry-run)
-		var confirm_return = check_confirm()
-		if confirm_return is GDScriptFunctionState: # Still working.
-			yield(confirm_return, "completed")
+		await check_confirm()
 	# If any confirmation is accepted, then we only draw a target
 	# if either the card is a cost and we're doing a cost-dry run,
 	# or the card is not a cost and we're in the normal run
@@ -66,9 +72,7 @@ func prime(_prev_subjects: Array, run_type: int, sceng_stored_int: int) -> void:
 			or (run_type == CFInt.RunType.COST_CHECK
 			and (is_cost or needs_subject))):
 		# We discover which other card this task will affect, if any
-		var ret =_find_subjects(sceng_stored_int)
-		if ret is GDScriptFunctionState: # Still working.
-			ret = yield(ret, "completed")
+		await _find_subjects(sceng_stored_int)
 	#print_debug(str(subjects), str(cost_dry_run))
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
@@ -80,10 +84,8 @@ func check_confirm() -> bool:
 	var owner_name = ''
 	if is_instance_valid(owner):
 		owner_name = owner.canonical_name
-	var confirm_return = CFUtils.confirm(
+	await CFUtils.confirm(
 			script_definition,
 			owner_name,
 			script_name)
-	if confirm_return is GDScriptFunctionState: # Still working.
-		is_accepted = yield(confirm_return, "completed")
 	return(is_accepted)

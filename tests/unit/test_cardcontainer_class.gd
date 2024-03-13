@@ -3,9 +3,7 @@ extends "res://tests/UTcommon.gd"
 var cards := []
 
 func before_each():
-	var confirm_return = setup_board()
-	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = yield(confirm_return, "completed")
+	await setup_board()
 
 
 func test_methods():
@@ -41,12 +39,12 @@ func test_manipulation_buttons():
 		assert_eq(0.0,button.modulate.a,
 				"Buttons should start invisible")
 	deck.show_buttons()
-	yield(yield_to(deck.manipulation_buttons_tween, "tween_all_completed", 1), YIELD)
+	await yield_to(deck._tween, "finished", 1)
 	for button in deck.get_all_manipulation_buttons():
 		assert_eq(1.0,button.modulate.a,
 				"Buttons are visible after shown")
 	deck.hide_buttons()
-	yield(yield_to(deck.manipulation_buttons_tween, "tween_all_completed", 1), YIELD)
+	await yield_to(deck._tween, "finished", 1)
 	for button in deck.get_all_manipulation_buttons():
 		assert_eq(0.0,button.modulate.a,
 				"Buttons are invisible after hide")

@@ -1,6 +1,6 @@
 # Class to compare card properties against a specified filter
 class_name CardFilter
-extends Reference
+extends RefCounted
 
 # The property key for which to look in the provided card properties dict
 var property: String
@@ -39,7 +39,7 @@ func _init(
 		filter = str(filter)
 	if property in CardConfig.PROPERTIES_NUMBERS\
 			and typeof(filter) == TYPE_STRING\
-			and filter.is_valid_integer():
+			and filter.is_valid_int():
 		printerr("WARN:CardFilter: String filter '%s' provided for number property '%s'. This comparison would not be possible. '%s' will be converted to int for comparisons." % [filter, property, filter])
 		filter = int(filter)
 		
@@ -107,9 +107,9 @@ func check_card(card_properties: Dictionary) -> bool:
 			if  typeof(temp_filter) == TYPE_STRING and temp_filter in CardConfig.VALUES_TREATED_AS_ZERO:
 				temp_filter = 0
 		# If temp values are still strings, then we check if they're valid integers to compare them
-		if typeof(temp_prop_value) == TYPE_STRING and temp_prop_value.is_valid_integer():
+		if typeof(temp_prop_value) == TYPE_STRING and temp_prop_value.is_valid_int():
 			temp_prop_value = int(temp_prop_value)
-		if typeof(temp_filter) == TYPE_STRING and temp_filter.is_valid_integer():
+		if typeof(temp_filter) == TYPE_STRING and temp_filter.is_valid_int():
 			temp_filter = int(temp_filter)
 		if typeof(temp_prop_value) == TYPE_INT and  typeof(temp_filter) == TYPE_INT:
 			if CFUtils.compare_numbers(
@@ -140,6 +140,6 @@ func check_card(card_properties: Dictionary) -> bool:
 # Extendable function to allow games to extend CardFilter with their own filters
 # To enter this function, the custom_filter property has to be !null
 # The value to put into it and how to use it is up each developer
-# warning-ignore:unused_argument
+@warning_ignore("unused_parameter")
 func custom_check(card_properties: Dictionary) -> bool:
 	return(false)

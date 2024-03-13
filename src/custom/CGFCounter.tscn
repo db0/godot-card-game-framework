@@ -1,32 +1,28 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://bimlrm1saxf6a"]
 
-[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="1"]
 
-[sub_resource type="DynamicFont" id=1]
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 1 )
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("1")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
 [node name="Counter" type="HBoxContainer"]
-margin_right = 139.0
-margin_bottom = 20.0
+offset_right = 139.0
+offset_bottom = 20.0
 mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="CounterTitle" type="Label" parent="."]
-margin_right = 112.0
-margin_bottom = 20.0
-custom_fonts/font = SubResource( 1 )
+layout_mode = 2
+theme_override_fonts/font = SubResource("1")
 text = "Counter Title:"
 
 [node name="Value" type="Label" parent="."]
-margin_left = 116.0
-margin_right = 139.0
-margin_bottom = 20.0
+layout_mode = 2
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 1 )
+theme_override_fonts/font = SubResource("1")
 text = "0"
-align = 2

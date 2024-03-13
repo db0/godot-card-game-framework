@@ -1,12 +1,12 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=2 format=3 uid="uid://cngkim6ex04j1"]
 
-[ext_resource path="res://src/core/DetailPanels.gd" type="Script" id=2]
+[ext_resource type="Script" path="res://src/core/DetailPanels.gd" id="2"]
 
 [node name="DetailPanels" type="GridContainer"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 257.0
-margin_bottom = 21.0
-custom_constants/vseparation = 10
-custom_constants/hseparation = 10
-script = ExtResource( 2 )
+offset_left = 7.0
+offset_top = 7.0
+offset_right = 257.0
+offset_bottom = 21.0
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+script = ExtResource("2")

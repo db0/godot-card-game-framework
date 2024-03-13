@@ -11,8 +11,8 @@ var card_properties: Dictionary
 # The canonical card name of this card
 var card_name: String
 
-onready var _card_label:= $CardLabel
-onready var _card_type:= $Type
+@onready var _card_label:= $CardLabel
+@onready var _card_type:= $Type
 
 func _ready() -> void:
 	_card_label.preview_popup.focus_info.info_panel_scene = card_viewer.info_panel_scene
@@ -39,7 +39,7 @@ func setup(_card_name: String) -> void:
 
 func setup_grid_card_object() -> void:
 	if not grid_card_object:
-		grid_card_object = card_viewer.grid_card_object_scene.instance()
+		grid_card_object = card_viewer.grid_card_object_scene.instantiate()
 		card_viewer._card_grid.add_child(grid_card_object)
 		# warning-ignore:return_value_discarded
 		grid_card_object.setup(card_name)

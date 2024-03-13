@@ -1,24 +1,17 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=3 format=3 uid="uid://q7t83hc6iuav"]
 
-[ext_resource path="res://src/core/CardViewer/CVGridCardObject.gd" type="Script" id=1]
-[ext_resource path="res://src/core/CardViewer/CVPreviewPopup.tscn" type="PackedScene" id=2]
+[ext_resource type="Script" path="res://src/core/CardViewer/CVGridCardObject.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://dwr0fc7df6o4b" path="res://src/core/CardViewer/CVPreviewPopup.tscn" id="2"]
 
 [node name="GridCardObject" type="CenterContainer"]
-margin_right = 150.0
-margin_bottom = 240.0
-rect_min_size = Vector2( 150, 240 )
+custom_minimum_size = Vector2(150, 240)
+offset_right = 150.0
+offset_bottom = 240.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
-script = ExtResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+script = ExtResource("1")
 
-[node name="PreviewPopup" parent="." instance=ExtResource( 2 )]
-margin_left = 75.0
-margin_top = 120.0
-margin_right = 75.0
-margin_bottom = 120.0
+[node name="PreviewPopup" parent="." instance=ExtResource("2")]
 
 [connection signal="mouse_entered" from="." to="." method="_on_GridCardObject_mouse_entered"]
 [connection signal="mouse_exited" from="." to="." method="_on_GridCardObject_mouse_exited"]

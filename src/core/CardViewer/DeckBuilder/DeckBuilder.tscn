@@ -1,71 +1,100 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=9 format=3 uid="uid://irp5hud4poju"]
 
-[ext_resource path="res://src/core/CardViewer/CardViewer.tscn" type="PackedScene" id=1]
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckScene.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DeckBuilder.gd" type="Script" id=3]
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBGridCardObject.tscn" type="PackedScene" id=4]
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBListCardObject.tscn" type="PackedScene" id=5]
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DeckNameRandomizer.gd" type="Script" id=6]
+[ext_resource type="PackedScene" path="res://src/core/CardViewer/CardViewer.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://ccqepx5u7j5eu" path="res://src/core/CardViewer/DeckBuilder/DBDeckScene.tscn" id="2"]
+[ext_resource type="Script" path="res://src/core/CardViewer/DeckBuilder/DeckBuilder.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://b2wln5olcatyd" path="res://src/core/CardViewer/DeckBuilder/DBGridCardObject.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://btii472avyov8" path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.tscn" id="4_c36hx"]
+[ext_resource type="PackedScene" uid="uid://cdkmxw5o8cgrj" path="res://src/core/CardViewer/DeckBuilder/DBListCardObject.tscn" id="5"]
+[ext_resource type="PackedScene" uid="uid://dfm4rponrut82" path="res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.tscn" id="5_fx32b"]
+[ext_resource type="Script" path="res://src/core/CardViewer/DeckBuilder/DeckNameRandomizer.gd" id="6"]
 
-[node name="DeckBuilder" instance=ExtResource( 1 )]
-script = ExtResource( 3 )
-list_card_object_scene = ExtResource( 5 )
-grid_card_object_scene = ExtResource( 4 )
-deck_name_randomizer = ExtResource( 6 )
+[node name="DeckBuilder" instance=ExtResource("1")]
+anchors_preset = 15
+script = ExtResource("3")
+deck_name_randomizer = ExtResource("6")
+random_adverb_miss = 10
+random_adjective_miss = 1.1
+random_append_miss = 2
+second_noun_miss = 3
+max_quantity = 3
+deck_minimum = 52
+deck_maximum = 60
+deck_card_object_scene = ExtResource("4_c36hx")
+deck_summary_scene = ExtResource("5_fx32b")
+list_card_object_scene = ExtResource("5")
+grid_card_object_scene = ExtResource("4")
+
+[node name="VBC" parent="." index="0"]
+layout_mode = 2
 
 [node name="Title" parent="VBC" index="0"]
+layout_mode = 2
 text = "Deck Builder"
 
-[node name="DeckMC" parent="VBC/HBC" index="0" instance=ExtResource( 2 )]
+[node name="HBC" parent="VBC" index="1"]
+layout_mode = 2
+
+[node name="DeckMC" parent="VBC/HBC" index="0" instance=ExtResource("2")]
+layout_mode = 2
 
 [node name="MC" parent="VBC/HBC" index="1"]
-margin_left = 642.0
+layout_mode = 2
 
 [node name="AvailableCards" parent="VBC/HBC/MC" index="0"]
-margin_right = 628.0
+layout_mode = 2
 
 [node name="HBC" parent="VBC/HBC/MC/AvailableCards" index="0"]
-margin_right = 628.0
+layout_mode = 2
+
+[node name="ClearFilters" parent="VBC/HBC/MC/AvailableCards/HBC" index="0"]
+layout_mode = 2
 
 [node name="FilterLine" parent="VBC/HBC/MC/AvailableCards/HBC" index="1"]
-margin_right = 524.0
+layout_mode = 2
+
+[node name="Label" parent="VBC/HBC/MC/AvailableCards/HBC/FilterLine/Syntax" index="1"]
+offset_right = 96.0
+offset_bottom = 96.0
 
 [node name="CardCount" parent="VBC/HBC/MC/AvailableCards/HBC" index="2"]
-margin_left = 528.0
-margin_right = 628.0
+layout_mode = 2
 
 [node name="CC" parent="VBC/HBC/MC/AvailableCards" index="1"]
-margin_right = 628.0
+layout_mode = 2
 
 [node name="ButtonFilters" parent="VBC/HBC/MC/AvailableCards/CC" index="0"]
-margin_left = 299.0
-margin_right = 329.0
+layout_mode = 2
+
+[node name="ShowAll" parent="VBC/HBC/MC/AvailableCards/CC/ButtonFilters" index="0"]
+layout_mode = 2
 
 [node name="CardListHeaders" parent="VBC/HBC/MC/AvailableCards" index="2"]
-margin_right = 628.0
+layout_mode = 2
 
 [node name="Name" parent="VBC/HBC/MC/AvailableCards/CardListHeaders" index="0"]
-margin_right = 524.0
+layout_mode = 2
 
 [node name="Type" parent="VBC/HBC/MC/AvailableCards/CardListHeaders" index="1"]
-margin_left = 528.0
-margin_right = 628.0
+layout_mode = 2
 
 [node name="LineSeparator" parent="VBC/HBC/MC/AvailableCards" index="3"]
-margin_right = 628.0
+layout_mode = 2
 
 [node name="ScrollContainer" parent="VBC/HBC/MC/AvailableCards" index="4"]
-margin_right = 628.0
+layout_mode = 2
 
 [node name="CardList" parent="VBC/HBC/MC/AvailableCards/ScrollContainer" index="0"]
-margin_right = 628.0
+layout_mode = 2
+
+[node name="CardGrid" parent="VBC/HBC/MC/AvailableCards/ScrollContainer" index="1"]
+layout_mode = 2
 
 [node name="Settings" parent="VBC/HBC/MC/AvailableCards" index="5"]
-margin_right = 628.0
+layout_mode = 2
 
 [node name="Control" parent="VBC/HBC/MC/AvailableCards/Settings" index="0"]
-margin_right = 483.0
+layout_mode = 2
 
 [node name="GridViewStyle" parent="VBC/HBC/MC/AvailableCards/Settings" index="1"]
-margin_left = 487.0
-margin_right = 628.0
+layout_mode = 2

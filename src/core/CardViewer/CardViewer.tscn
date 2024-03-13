@@ -1,171 +1,128 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://8qrwugb6apcx"]
 
-[ext_resource path="res://src/core/CardViewer/CVFilterLine.gd" type="Script" id=1]
-[ext_resource path="res://src/core/CardViewer/open-book.png" type="Texture" id=2]
-[ext_resource path="res://src/core/CardViewer/CardViewer.gd" type="Script" id=3]
+[ext_resource type="Script" path="res://src/core/CardViewer/CVFilterLine.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://cvgthprj2rm6e" path="res://src/core/CardViewer/open-book.png" id="2"]
+[ext_resource type="Script" path="res://src/core/CardViewer/CardViewer.gd" id="3"]
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0.145098, 0.145098, 0.145098, 1)
 
-[sub_resource type="StyleBoxLine" id=2]
-color = Color( 1, 0.4, 0, 1 )
+[sub_resource type="StyleBoxLine" id="2"]
+color = Color(1, 0.4, 0, 1)
 thickness = 2
 
 [node name="CardViewer" type="PanelContainer"]
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-custom_styles/panel = SubResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme_override_styles/panel = SubResource("1")
+script = ExtResource("3")
 
 [node name="VBC" type="VBoxContainer" parent="."]
-margin_right = 1455.0
-margin_bottom = 900.0
+layout_mode = 2
 
 [node name="Title" type="Label" parent="VBC"]
-margin_right = 1455.0
-margin_bottom = 14.0
+layout_mode = 2
 text = "Card Viewer"
-align = 1
 
 [node name="HBC" type="HBoxContainer" parent="VBC"]
-margin_top = 18.0
-margin_right = 1455.0
-margin_bottom = 900.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="MC" type="MarginContainer" parent="VBC/HBC"]
-margin_right = 1455.0
-margin_bottom = 882.0
+layout_mode = 2
 size_flags_horizontal = 3
-custom_constants/margin_right = 10
-custom_constants/margin_bottom = 5
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 5
 
 [node name="AvailableCards" type="VBoxContainer" parent="VBC/HBC/MC"]
-margin_right = 1445.0
-margin_bottom = 877.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="HBC" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_right = 1445.0
-margin_bottom = 24.0
+layout_mode = 2
 
 [node name="ClearFilters" type="Button" parent="VBC/HBC/MC/AvailableCards/HBC"]
-margin_right = 20.0
-margin_bottom = 24.0
+layout_mode = 2
 text = "X"
 
 [node name="FilterLine" type="LineEdit" parent="VBC/HBC/MC/AvailableCards/HBC"]
-margin_left = 24.0
-margin_right = 1341.0
-margin_bottom = 24.0
+layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Filter the list"
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="Syntax" type="PopupPanel" parent="VBC/HBC/MC/AvailableCards/HBC/FilterLine"]
-margin_right = 8.0
-margin_bottom = 8.0
 
 [node name="Label" type="Label" parent="VBC/HBC/MC/AvailableCards/HBC/FilterLine/Syntax"]
-margin_left = 4.0
-margin_top = 4.0
-margin_right = 45.0
-margin_bottom = 18.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 96.0
+offset_bottom = 96.0
 text = "Syntax"
 
 [node name="CardCount" type="Label" parent="VBC/HBC/MC/AvailableCards/HBC"]
-margin_left = 1345.0
-margin_top = 5.0
-margin_right = 1445.0
-margin_bottom = 19.0
-rect_min_size = Vector2( 100, 0 )
+custom_minimum_size = Vector2(100, 0)
+layout_mode = 2
 text = "Total:"
 
 [node name="CC" type="CenterContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 28.0
-margin_right = 1445.0
-margin_bottom = 58.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="ButtonFilters" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards/CC"]
-margin_left = 707.0
-margin_right = 737.0
-margin_bottom = 30.0
+layout_mode = 2
 
 [node name="ShowAll" type="Button" parent="VBC/HBC/MC/AvailableCards/CC/ButtonFilters"]
-margin_right = 30.0
-margin_bottom = 30.0
-rect_min_size = Vector2( 30, 30 )
+custom_minimum_size = Vector2(30, 30)
+layout_mode = 2
 shortcut_in_tooltip = false
-icon = ExtResource( 2 )
+icon = ExtResource("2")
 expand_icon = true
 
 [node name="CardListHeaders" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 62.0
-margin_right = 1445.0
-margin_bottom = 82.0
+layout_mode = 2
 
 [node name="Name" type="RichTextLabel" parent="VBC/HBC/MC/AvailableCards/CardListHeaders"]
-margin_right = 1341.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 0, 20 )
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
 size_flags_horizontal = 3
 text = "Name"
 scroll_active = false
 
 [node name="Type" type="RichTextLabel" parent="VBC/HBC/MC/AvailableCards/CardListHeaders"]
-margin_left = 1345.0
-margin_right = 1445.0
-margin_bottom = 20.0
-rect_min_size = Vector2( 100, 20 )
+custom_minimum_size = Vector2(100, 20)
+layout_mode = 2
 text = "Type"
 scroll_active = false
 
 [node name="LineSeparator" type="Panel" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 86.0
-margin_right = 1445.0
-margin_bottom = 86.0
-custom_styles/panel = SubResource( 2 )
+layout_mode = 2
+theme_override_styles/panel = SubResource("2")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 90.0
-margin_right = 1445.0
-margin_bottom = 833.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="CardList" type="VBoxContainer" parent="VBC/HBC/MC/AvailableCards/ScrollContainer"]
 visible = false
-margin_right = 1445.0
+layout_mode = 2
 size_flags_horizontal = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="CardGrid" type="GridContainer" parent="VBC/HBC/MC/AvailableCards/ScrollContainer"]
+layout_mode = 2
 columns = 4
 
 [node name="Settings" type="HBoxContainer" parent="VBC/HBC/MC/AvailableCards"]
-margin_top = 837.0
-margin_right = 1445.0
-margin_bottom = 877.0
+layout_mode = 2
 
 [node name="Control" type="Control" parent="VBC/HBC/MC/AvailableCards/Settings"]
-margin_right = 1300.0
-margin_bottom = 40.0
+layout_mode = 2
 size_flags_horizontal = 3
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="GridViewStyle" type="CheckButton" parent="VBC/HBC/MC/AvailableCards/Settings"]
-margin_left = 1304.0
-margin_right = 1445.0
-margin_bottom = 40.0
-pressed = true
+layout_mode = 2
 text = "Grid View"
 
 [connection signal="pressed" from="VBC/HBC/MC/AvailableCards/HBC/ClearFilters" to="." method="_on_ClearFilters_pressed"]

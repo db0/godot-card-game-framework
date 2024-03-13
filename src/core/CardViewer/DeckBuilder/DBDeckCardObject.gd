@@ -12,7 +12,7 @@ var quantity: int
 # The card name which is displayed in the summary
 var card_name: String
 
-onready var _card_label:= $CardLabel
+@onready var _card_label:= $CardLabel
 
 func _ready() -> void:
 	pass
@@ -22,10 +22,10 @@ func _ready() -> void:
 func setup(_card_name: String, count: int) -> void:
 	card_name = _card_name
 	set_quantity(count)
-	_card_label.bbcode_text = _card_name
+	_card_label.text = _card_name
 	# Because with rich Text labels, somehow it's not respecting the fill property.
-	_card_label.rect_min_size = get_parent().rect_size
-	yield(get_tree(), "idle_frame")
+	_card_label.custom_minimum_size = get_parent().size
+	await get_tree().process_frame
 
 
 # Updates the Quantity label and variable

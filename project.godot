@@ -6,419 +6,47 @@
 ;   [section] ; section goes between []
 ;   param=value ; assign values to parameters
 
-config_version=4
-
-_global_script_classes=[ {
-"base": "Reference",
-"class": "AlterantEngine",
-"language": "GDScript",
-"path": "res://src/core/ScriptingEngine/AlterantEngine.gd"
-}, {
-"base": "Control",
-"class": "Board",
-"language": "GDScript",
-"path": "res://src/core/BoardTemplate.gd"
-}, {
-"base": "Control",
-"class": "BoardPlacementGrid",
-"language": "GDScript",
-"path": "res://src/core/BoardPlacementGrid.gd"
-}, {
-"base": "Control",
-"class": "BoardPlacementSlot",
-"language": "GDScript",
-"path": "res://src/core/BoardPlacementSlot.gd"
-}, {
-"base": "Reference",
-"class": "CFConst",
-"language": "GDScript",
-"path": "res://src/custom/CFConst.gd"
-}, {
-"base": "Node",
-"class": "CFControl",
-"language": "GDScript",
-"path": "res://src/core/CFControl.gd"
-}, {
-"base": "Reference",
-"class": "CFInt",
-"language": "GDScript",
-"path": "res://src/core/CFInt.gd"
-}, {
-"base": "Reference",
-"class": "CFScriptUtils",
-"language": "GDScript",
-"path": "res://src/core/ScriptingEngine/CFScriptUtils.gd"
-}, {
-"base": "Reference",
-"class": "CFUtils",
-"language": "GDScript",
-"path": "res://src/core/CFUtils.gd"
-}, {
-"base": "CVListCardObject",
-"class": "CLListCardObject",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CardLibrary/CLListCardObject.gd"
-}, {
-"base": "Reference",
-"class": "CVFilter",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CVFilter.gd"
-}, {
-"base": "Button",
-"class": "CVFilterButton",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CVFilterButton.gd"
-}, {
-"base": "LineEdit",
-"class": "CVFilterLine",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CVFilterLine.gd"
-}, {
-"base": "CenterContainer",
-"class": "CVGridCardObject",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CVGridCardObject.gd"
-}, {
-"base": "HBoxContainer",
-"class": "CVListCardObject",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CVListCardObject.gd"
-}, {
-"base": "Popup",
-"class": "CVPreviewPopup",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CVPreviewPopup.gd"
-}, {
-"base": "Area2D",
-"class": "Card",
-"language": "GDScript",
-"path": "res://src/core/CardTemplate.gd"
-}, {
-"base": "Panel",
-"class": "CardBack",
-"language": "GDScript",
-"path": "res://src/core/Card/CardBack.gd"
-}, {
-"base": "CardBack",
-"class": "CardBackGlow",
-"language": "GDScript",
-"path": "res://src/core/Card/CardBackGlow.gd"
-}, {
-"base": "CardBack",
-"class": "CardBackTexture",
-"language": "GDScript",
-"path": "res://src/core/Card/CardBackTexture.gd"
-}, {
-"base": "Reference",
-"class": "CardConfig",
-"language": "GDScript",
-"path": "res://src/custom/cards/CardConfig.gd"
-}, {
-"base": "Area2D",
-"class": "CardContainer",
-"language": "GDScript",
-"path": "res://src/core/CardContainer.gd"
-}, {
-"base": "Reference",
-"class": "CardFilter",
-"language": "GDScript",
-"path": "res://src/core/Utils/CardFilter.gd"
-}, {
-"base": "Panel",
-"class": "CardFront",
-"language": "GDScript",
-"path": "res://src/core/Card/CardFront.gd"
-}, {
-"base": "RichTextLabel",
-"class": "CardLabel",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CardLabel.gd"
-}, {
-"base": "CardViewer",
-"class": "CardLibrary",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CardLibrary/CardLibrary.gd"
-}, {
-"base": "PanelContainer",
-"class": "CardViewer",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/CardViewer.gd"
-}, {
-"base": "Control",
-"class": "Counters",
-"language": "GDScript",
-"path": "res://src/core/Counters.gd"
-}, {
-"base": "Reference",
-"class": "CustomScripts",
-"language": "GDScript",
-"path": "res://src/custom/cards/CustomScripts.gd"
-}, {
-"base": "HBoxContainer",
-"class": "DBDeckCardObject",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.gd"
-}, {
-"base": "HBoxContainer",
-"class": "DBDeckSummaries",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.gd"
-}, {
-"base": "CVGridCardObject",
-"class": "DBGridCardObject",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/DeckBuilder/DBGridCardObject.gd"
-}, {
-"base": "CVListCardObject",
-"class": "DBListCardObject",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/DeckBuilder/DBListCardObject.gd"
-}, {
-"base": "CardViewer",
-"class": "DeckBuilder",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/DeckBuilder/DeckBuilder.gd"
-}, {
-"base": "MenuButton",
-"class": "DeckLoader",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/DeckBuilder/DeckLoader.gd"
-}, {
-"base": "Reference",
-"class": "DeckNameRandomizer",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/DeckBuilder/DeckNameRandomizer.gd"
-}, {
-"base": "GridContainer",
-"class": "DetailPanels",
-"language": "GDScript",
-"path": "res://src/core/DetailPanels.gd"
-}, {
-"base": "Reference",
-"class": "GameStats",
-"language": "GDScript",
-"path": "res://src/core/GameStats.gd"
-}, {
-"base": "Reference",
-"class": "GutHookScript",
-"language": "GDScript",
-"path": "res://addons/gut/hook_script.gd"
-}, {
-"base": "CardContainer",
-"class": "Hand",
-"language": "GDScript",
-"path": "res://src/core/Hand.gd"
-}, {
-"base": "Control",
-"class": "Highlight",
-"language": "GDScript",
-"path": "res://src/core/Highlight.gd"
-}, {
-"base": "LineEdit",
-"class": "IntegerLineEdit",
-"language": "GDScript",
-"path": "res://src/core/IntegerLineEdit.gd"
-}, {
-"base": "VBoxContainer",
-"class": "ManipulationButtons",
-"language": "GDScript",
-"path": "res://src/core/Card/ManipulationButtons.gd"
-}, {
-"base": "Area2D",
-"class": "MousePointer",
-"language": "GDScript",
-"path": "res://src/core/MousePointer.gd"
-}, {
-"base": "Reference",
-"class": "OVUtils",
-"language": "GDScript",
-"path": "res://src/core/OverridableUtils.gd"
-}, {
-"base": "CardContainer",
-"class": "Pile",
-"language": "GDScript",
-"path": "res://src/core/Pile.gd"
-}, {
-"base": "Button",
-"class": "QuantityNumberButton",
-"language": "GDScript",
-"path": "res://src/core/CardViewer/DeckBuilder/QuantityNumberButton.gd"
-}, {
-"base": "ScriptProperties",
-"class": "SP",
-"language": "GDScript",
-"path": "res://src/custom/SP.gd"
-}, {
-"base": "ScriptObject",
-"class": "ScriptAlter",
-"language": "GDScript",
-"path": "res://src/core/ScriptingEngine/ScriptAlter.gd"
-}, {
-"base": "Reference",
-"class": "ScriptObject",
-"language": "GDScript",
-"path": "res://src/core/ScriptingEngine/ScriptObject.gd"
-}, {
-"base": "ScriptObject",
-"class": "ScriptPer",
-"language": "GDScript",
-"path": "res://src/core/ScriptingEngine/ScriptPer.gd"
-}, {
-"base": "Reference",
-"class": "ScriptProperties",
-"language": "GDScript",
-"path": "res://src/core/ScriptingEngine/ScriptProperties.gd"
-}, {
-"base": "ScriptObject",
-"class": "ScriptTask",
-"language": "GDScript",
-"path": "res://src/core/ScriptingEngine/ScriptTask.gd"
-}, {
-"base": "Reference",
-"class": "ScriptingEngine",
-"language": "GDScript",
-"path": "res://src/core/ScriptingEngine/ScriptingEngine.gd"
-}, {
-"base": "AcceptDialog",
-"class": "SelectionWindow",
-"language": "GDScript",
-"path": "res://src/core/SelectionWindow.gd"
-}, {
-"base": "Node",
-"class": "SetPreload",
-"language": "GDScript",
-"path": "res://src/custom/cards/sets/SetPreload.gd"
-}, {
-"base": "Line2D",
-"class": "TargetingArrow",
-"language": "GDScript",
-"path": "res://src/core/Card/TargetingArrow.gd"
-}, {
-"base": "HBoxContainer",
-"class": "Token",
-"language": "GDScript",
-"path": "res://src/core/Token.gd"
-}, {
-"base": "Node2D",
-"class": "TokenDrawer",
-"language": "GDScript",
-"path": "res://src/core/Card/TokenDrawer.gd"
-}, {
-"base": "Node",
-"class": "UTCommon",
-"language": "GDScript",
-"path": "res://tests/UTcommon.gd"
-}, {
-"base": "Node2D",
-"class": "ViewportCardFocus",
-"language": "GDScript",
-"path": "res://src/core/ViewportCardFocus.gd"
-}, {
-"base": "Reference",
-"class": "perMessage",
-"language": "GDScript",
-"path": "res://src/core/ScriptingEngine/perMessage.gd"
-} ]
-_global_script_class_icons={
-"AlterantEngine": "",
-"Board": "",
-"BoardPlacementGrid": "",
-"BoardPlacementSlot": "",
-"CFConst": "",
-"CFControl": "",
-"CFInt": "",
-"CFScriptUtils": "",
-"CFUtils": "",
-"CLListCardObject": "",
-"CVFilter": "",
-"CVFilterButton": "",
-"CVFilterLine": "",
-"CVGridCardObject": "",
-"CVListCardObject": "",
-"CVPreviewPopup": "",
-"Card": "",
-"CardBack": "",
-"CardBackGlow": "",
-"CardBackTexture": "",
-"CardConfig": "",
-"CardContainer": "",
-"CardFilter": "",
-"CardFront": "",
-"CardLabel": "",
-"CardLibrary": "",
-"CardViewer": "",
-"Counters": "",
-"CustomScripts": "",
-"DBDeckCardObject": "",
-"DBDeckSummaries": "",
-"DBGridCardObject": "",
-"DBListCardObject": "",
-"DeckBuilder": "",
-"DeckLoader": "",
-"DeckNameRandomizer": "",
-"DetailPanels": "",
-"GameStats": "",
-"GutHookScript": "",
-"Hand": "",
-"Highlight": "",
-"IntegerLineEdit": "",
-"ManipulationButtons": "",
-"MousePointer": "",
-"OVUtils": "",
-"Pile": "",
-"QuantityNumberButton": "",
-"SP": "",
-"ScriptAlter": "",
-"ScriptObject": "",
-"ScriptPer": "",
-"ScriptProperties": "",
-"ScriptTask": "",
-"ScriptingEngine": "",
-"SelectionWindow": "",
-"SetPreload": "",
-"TargetingArrow": "",
-"Token": "",
-"TokenDrawer": "",
-"UTCommon": "",
-"ViewportCardFocus": "",
-"perMessage": ""
-}
+config_version=5
 
 [application]
 
-config/name="Card Game Framework"
+config/name="(new)Card Game Framework"
 run/main_scene="res://src/custom/MainMenu.tscn"
+config/features=PackedStringArray("4.2")
 config/icon="res://icon.png"
 
 [autoload]
 
 cfc="*res://src/core/CFControl.gd"
 
+[debug]
+
+gdscript/warnings/native_method_override=1
+
 [display]
 
-window/size/width=1280
-window/size/height=720
-window/stretch/aspect="keep"
+window/size/viewport_width=1280
+window/size/viewport_height=720
 
 [editor_plugins]
 
-enabled=PoolStringArray( "gut" )
+enabled=PackedStringArray("res://addons/gut/plugin.cfg")
 
 [input]
 
 ui_select={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"pressed":false,"scancode":32,"physical_scancode":0,"unicode":0,"echo":false,"script":null)
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":32,"physical_keycode":0,"key_label":0,"unicode":0,"echo":false,"script":null)
 , Object(InputEventJoypadButton,"resource_local_to_scene":false,"resource_name":"","device":0,"button_index":3,"pressure":0.0,"pressed":false,"script":null)
-, Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":false,"control":false,"meta":false,"command":false,"button_mask":0,"position":Vector2( 0, 0 ),"global_position":Vector2( 0, 0 ),"factor":1.0,"button_index":1,"pressed":false,"doubleclick":false,"script":null)
- ]
+, Object(InputEventMouseButton,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"button_mask":0,"position":Vector2(0, 0),"global_position":Vector2(0, 0),"factor":1.0,"button_index":1,"canceled":false,"pressed":false,"double_click":false,"script":null)
+]
 }
 screenshot_card={
 "deadzone": 0.5,
-"events": [ Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"alt":false,"shift":true,"control":true,"meta":false,"command":true,"pressed":false,"scancode":0,"physical_scancode":76,"unicode":0,"echo":false,"script":null)
- ]
+"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":0,"window_id":0,"alt_pressed":false,"shift_pressed":true,"ctrl_pressed":true,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":76,"key_label":0,"unicode":0,"echo":false,"script":null)
+]
 }
 
 [rendering]
 
-environment/default_environment="res://default_env.tres"
+environment/defaults/default_environment="res://default_env.tres"

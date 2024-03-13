@@ -1,131 +1,95 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=7 format=3 uid="uid://cbsklevordoo0"]
 
-[ext_resource path="res://themes/darktheme/darktheme.theme" type="Theme" id=1]
-[ext_resource path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://src/custom/MainMenu.gd" type="Script" id=3]
-[ext_resource path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" type="PackedScene" id=4]
-[ext_resource path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.tscn" type="PackedScene" id=5]
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.tscn" type="PackedScene" id=6]
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.tscn" type="PackedScene" id=7]
+[ext_resource type="Theme" uid="uid://b50sjum3qm447" path="res://themes/darktheme/darktheme.theme" id="1"]
+[ext_resource type="FontFile" uid="uid://c0o4sba6h4a1d" path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" id="2"]
+[ext_resource type="Script" path="res://src/custom/MainMenu.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://b11xuhluxj23k" path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" id="5"]
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0.145098, 0.145098, 0.145098, 1 )
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0.145098, 0.145098, 0.145098, 1)
 
-[sub_resource type="DynamicFont" id=2]
-size = 107
-font_data = ExtResource( 2 )
+[sub_resource type="FontFile" id="2"]
+fallbacks = Array[Font]([ExtResource("2")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
 [node name="Menu" type="Panel"]
-margin_right = 1280.0
-margin_bottom = 720.0
-theme = ExtResource( 1 )
-script = ExtResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_right = 1280.0
+offset_bottom = 720.0
+theme = ExtResource("1")
+script = ExtResource("3")
 
-[node name="DeckBuilder" parent="." instance=ExtResource( 4 )]
-custom_styles/panel = SubResource( 1 )
-random_adverb_miss = 10
-random_adjective_miss = 1.1
-random_append_miss = 2
-second_noun_miss = 3
-max_quantity = 3
-deck_minimum = 52
-deck_maximum = 60
-deck_card_object_scene = ExtResource( 6 )
-deck_summary_scene = ExtResource( 7 )
+[node name="DeckBuilder" parent="." instance=ExtResource("5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+theme_override_styles/panel = SubResource("1")
 
-[node name="CardLibrary" parent="." instance=ExtResource( 5 )]
-custom_styles/panel = SubResource( 1 )
-icon_size = 15
-property_width_exceptions = {
-"Cost": 30,
-"Power": 50
-}
+[node name="CardLibrary" parent="." instance=ExtResource("5")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+theme_override_styles/panel = SubResource("1")
 
 [node name="MainMenu" type="MarginContainer" parent="."]
+layout_mode = 0
 anchor_right = 1.0
 anchor_bottom = 1.0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="ColorRect" type="ColorRect" parent="MainMenu"]
-margin_right = 1280.0
-margin_bottom = 720.0
-color = Color( 0.0705882, 0.0705882, 0.0705882, 1 )
+layout_mode = 2
+color = Color(0.0705882, 0.0705882, 0.0705882, 1)
 
 [node name="VBox" type="VBoxContainer" parent="MainMenu"]
-margin_right = 1280.0
-margin_bottom = 720.0
+layout_mode = 2
 
 [node name="Margin" type="MarginContainer" parent="MainMenu/VBox"]
-margin_right = 1280.0
-margin_bottom = 358.0
+layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_constants/margin_top = 90
+theme_override_constants/margin_top = 90
 
 [node name="Label" type="Label" parent="MainMenu/VBox/Margin"]
-margin_top = 108.0
-margin_right = 1280.0
-margin_bottom = 340.0
-custom_fonts/font = SubResource( 2 )
+layout_mode = 2
+theme_override_fonts/font = SubResource("2")
 text = "Godot 
 Card Game Framework"
-align = 1
 
 [node name="Center" type="CenterContainer" parent="MainMenu/VBox"]
-margin_top = 361.0
-margin_right = 1280.0
-margin_bottom = 720.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="VButtons" type="VBoxContainer" parent="MainMenu/VBox/Center"]
-margin_left = 544.0
-margin_top = 73.0
-margin_right = 736.0
-margin_bottom = 285.0
-rect_min_size = Vector2( 192, 0 )
-custom_constants/separation = 10
+custom_minimum_size = Vector2(192, 0)
+layout_mode = 2
+theme_override_constants/separation = 10
 
 [node name="SinglePlayerDemo" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_right = 192.0
-margin_bottom = 27.0
+layout_mode = 2
 text = "Single Player Demo"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Multiplayer" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_top = 37.0
-margin_right = 192.0
-margin_bottom = 64.0
+layout_mode = 2
 text = "Multiplayer Demo"
 
 [node name="Deckbuilder" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_top = 74.0
-margin_right = 192.0
-margin_bottom = 101.0
+layout_mode = 2
 text = "Deck Builder"
 
 [node name="CardLibrary" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_top = 111.0
-margin_right = 192.0
-margin_bottom = 138.0
+layout_mode = 2
 text = "Card Library"
 
 [node name="GUT" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_top = 148.0
-margin_right = 192.0
-margin_bottom = 175.0
+layout_mode = 2
 text = "Tests"
 
 [node name="Exit" type="Button" parent="MainMenu/VBox/Center/VButtons"]
-margin_top = 185.0
-margin_right = 192.0
-margin_bottom = 212.0
+layout_mode = 2
 text = "Exit"
-
-[node name="MenuTween" type="Tween" parent="."]

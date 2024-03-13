@@ -15,62 +15,63 @@ const _DECK_SUMMARIES_SCENE_FILE = CFConst.PATH_CORE\
 const _DECK_SUMMARIES_SCENE = preload(_DECK_SUMMARIES_SCENE_FILE)
 
 # Contains a link to the random deck name generator reference
-export(Script) var deck_name_randomizer
+@export var deck_name_randomizer: Script
 # Controls how often an random adverb will
 # not appear in front of the adjective. The higher the number, the less likely
 # to get an adverb
 # Adverbs will not appear if adjectives did not.
-export var random_adverb_miss := 10
+@export var random_adverb_miss := 10
 # Controls how often an random adjective will
 # not appear in front of the noun. The higher the number, the less likely
 # to get an adjective
-export var random_adjective_miss := 1.1
+@export var random_adjective_miss := 1.1
 # Controls how often an random append will
 # not appear in front of the deck name.
 # The higher the number, the less likely to get an append
-export var random_append_miss := 2
+@export var random_append_miss := 2
 # Controls how often a second noun will appear in the name.
 # The higher the number, the less likely a second nount to appear
-export var second_noun_miss := 3
+@export var second_noun_miss := 3
 # The maximum amount of each card allowed in a deck.
 # Individual cards can modify  this
-export var max_quantity: int = 3
+@export var max_quantity: int = 3
 # The minimum amount cards required in a deck
-export var deck_minimum: int = 52
+@export var deck_minimum: int = 52
 # The maximum amount cards required in a deck
-export var deck_maximum: int = 60
+@export var deck_maximum: int = 60
 # We use this variable, so that the scene can be overriden with a custom one
-export var deck_card_object_scene = _DECK_CARD_OBJECT_SCENE
+@export var deck_card_object_scene = _DECK_CARD_OBJECT_SCENE
 # We use this variable, so that the scene can be overriden with a custom one
-export var deck_summary_scene = _DECK_SUMMARIES_SCENE
+@export var deck_summary_scene = _DECK_SUMMARIES_SCENE
 
 # This var will hold a pointer to the deck summaries scene.
 var deck_summaries
 
-onready var _deck_cards := $VBC/HBC/DeckMC/CurrentDeck/ScrollContainer/CardsInDeck
-onready var _deck_name := $VBC/HBC/DeckMC/CurrentDeck/DeckNameEdit
-onready var _load_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Load
-onready var _notice := $VBC/HBC/DeckMC/CurrentDeck/HBoxContainer/NoticeLabel
-onready var _save_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Save
-onready var _reset_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Reset
-onready var _delete_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Delete
-onready var _randomize_name_button := $VBC/HBC/DeckMC/CurrentDeck/HBoxContainer/RandomizeName
+@onready var _deck_cards := $VBC/HBC/DeckMC/CurrentDeck/ScrollContainer/CardsInDeck
+@onready var _deck_name := $VBC/HBC/DeckMC/CurrentDeck/DeckNameEdit
+@onready var _load_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Load
+@onready var _notice := $VBC/HBC/DeckMC/CurrentDeck/HBoxContainer/NoticeLabel
+@onready var _save_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Save
+@onready var _reset_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Reset
+@onready var _delete_button := $VBC/HBC/DeckMC/CurrentDeck/Buttons/Delete
+@onready var _randomize_name_button := $VBC/HBC/DeckMC/CurrentDeck/HBoxContainer/RandomizeName
 
 func _ready() -> void:
-	deck_summaries = deck_summary_scene.instance()
+	super._ready()
+	deck_summaries = deck_summary_scene.instantiate()
 	$VBC/HBC/DeckMC/CurrentDeck/DeckDetails.add_child(deck_summaries)
 	deck_summaries.setup()
 	# warning-ignore:return_value_discarded
-	_load_button.connect("deck_loaded", self,"_on_deck_loaded")
+	_load_button.connect("deck_loaded", Callable(self, "_on_deck_loaded"))
 	_deck_name.text = generate_random_deck_name()
 	# warning-ignore:return_value_discarded
-	_save_button.connect("pressed",self,"_on_Save_pressed")
+	_save_button.connect("pressed", Callable(self, "_on_Save_pressed"))
 	# warning-ignore:return_value_discarded
-	_reset_button.connect("pressed",self,"_on_Reset_pressed")
+	_reset_button.connect("pressed", Callable(self, "_on_Reset_pressed"))
 	# warning-ignore:return_value_discarded
-	_delete_button.connect("pressed",self,"_on_Delete_pressed")
+	_delete_button.connect("pressed", Callable(self, "_on_Delete_pressed"))
 	# warning-ignore:return_value_discarded
-	_randomize_name_button.connect("pressed",self,"_on_RandomizeName_pressed")
+	_randomize_name_button.connect("pressed", Callable(self, "_on_RandomizeName_pressed"))
 
 
 func _process(_delta: float) -> void:
@@ -96,7 +97,7 @@ func _process(_delta: float) -> void:
 
 # Populates the list of available cards, with all defined cards in the game
 func populate_available_cards() -> void:
-	.populate_available_cards()
+	super.populate_available_cards()
 	for list_card_object in _available_cards.get_children():
 		list_card_object.max_allowed = max_quantity
 		list_card_object.setup_max_quantity()
@@ -110,14 +111,14 @@ func add_new_card(card_name, category, value) -> DBDeckCardObject:
 	# If the category does not exist, we have to instance it.
 	# Categories are using the same card field as the card templates.
 	if not _deck_cards.has_node(category):
-		category_container = _DECK_CATEGORY_SCENE.instance()
+		category_container = _DECK_CATEGORY_SCENE.instantiate()
 		category_container.name = category
 		_deck_cards.add_child(category_container)
 		category_container.get_node("CategoryLabel").text = category
 	else:
 		category_container = _deck_cards.get_node(category)
 	var category_cards_node = category_container.get_node("CategoryCards")
-	var deck_card_object = deck_card_object_scene.instance()
+	var deck_card_object = deck_card_object_scene.instantiate()
 	category_cards_node.add_child(deck_card_object)
 	deck_card_object.setup(card_name, value)
 	return(deck_card_object)
@@ -154,12 +155,11 @@ func _on_Save_pressed() -> void:
 			deck_dictionary.cards[card_object.card_name] = card_object.quantity
 			cards_count += card_object.quantity
 	deck_dictionary["total"] = cards_count
-	var dir = Directory.new()
-	if not dir.dir_exists(CFConst.DECKS_PATH):
-		dir.make_dir(CFConst.DECKS_PATH)
-	var file = File.new()
-	file.open(CFConst.DECKS_PATH + _deck_name.text + '.json', File.WRITE)
-	file.store_string(JSON.print(deck_dictionary, '\t'))
+	DirAccess.open(CFConst.DECKS_PATH)
+	if DirAccess.get_open_error():
+		DirAccess.make_dir_absolute(CFConst.DECKS_PATH)
+	var file = FileAccess.open(CFConst.DECKS_PATH + _deck_name.text + '.json', FileAccess.WRITE)
+	file.store_string(JSON.stringify(deck_dictionary, '\t'))
 	file.close()
 	_set_notice("Deck saved")
 
@@ -167,8 +167,8 @@ func _on_Save_pressed() -> void:
 # Deletes the currently named deck, but doesn't clear the list
 # This way the user can re-save the deck, if they deleted by mistake
 func _on_Delete_pressed() -> void:
-	var dir = Directory.new()
-	if dir.dir_exists(CFConst.DECKS_PATH):
+	var dir = DirAccess.open(CFConst.DECKS_PATH)
+	if DirAccess.dir_exists_absolute(CFConst.DECKS_PATH):
 		var op_result = dir.remove(CFConst.DECKS_PATH + _deck_name.text + '.json')
 		if op_result == OK:
 			_set_notice("Deck deleted from disk. Current list not cleared")
@@ -176,6 +176,7 @@ func _on_Delete_pressed() -> void:
 			_set_notice("Deck not found on disk", Color(1,1,0))
 		elif op_result == ERR_FILE_NO_PERMISSION:
 			_set_notice("Permission Denied", Color(1,0,0))
+	
 
 
 # Generates a random deck name using on the deck_name_randomizer
@@ -201,11 +202,12 @@ func generate_random_deck_name() -> String:
 	rng = CFUtils.randi_range(0,name_randomizer.appends.size() * random_append_miss)
 	if rng < name_randomizer.appends.size():
 		deck_name["append"] = name_randomizer.appends[rng]
-	var compiled_deck_name: PoolStringArray = []
+	var compiled_deck_name: PackedStringArray = []
 	for part in ["adverb", "adjective", "noun", "second_noun", "append"]:
 		if deck_name.get(part):
 			compiled_deck_name.append(deck_name.get(part))
-	return(compiled_deck_name.join(' ').strip_edges())
+	var _ret = ' '.join(compiled_deck_name)
+	return _ret.strip_edges()
 
 # Clears deck list
 func _on_Reset_pressed() -> void:
@@ -221,14 +223,14 @@ func _on_RandomizeName_pressed() -> void:
 
 # Shows a fading text to the user notifying them of recent action results.
 func _set_notice(text: String, colour := Color(0,1,0)) -> void:
-	var tween: Tween = _notice.get_node("Tween")
+	var tween: Tween = create_tween()
 	_notice.text = text
 	_notice.modulate.a = 1
-	_notice.set("custom_colors/font_color",colour)
+	_notice.set("theme_override_colors/font_color",colour)
 	# warning-ignore:return_value_discarded
-	tween.remove_all()
+	tween.stop()
 	# warning-ignore:return_value_discarded
-	tween.interpolate_property(_notice,'modulate:a',
-			1, 0, 2, Tween.TRANS_SINE, Tween.EASE_IN)
+	tween.tween_property(_notice,'modulate:a',0, 2).from(1)\
+		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	# warning-ignore:return_value_discarded
-	tween.start()
+	tween.play()

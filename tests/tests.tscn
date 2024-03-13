@@ -1,12 +1,10 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://addons/gut/plugin_control.gd" type="Script" id=1]
-
 [node name="Gut" type="Control"]
-margin_top = -1.0
-margin_right = 908.0
-margin_bottom = 717.0
-rect_min_size = Vector2( 740, 250 )
+offset_top = -1.0
+offset_right = 908.0
+offset_bottom = 717.0
+custom_minimum_size = Vector2( 740, 250 )
 script = ExtResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false

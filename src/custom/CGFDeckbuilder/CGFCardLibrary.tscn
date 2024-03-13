@@ -1,50 +1,30 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://caaf25j8jf2kd"]
 
-[ext_resource path="res://src/core/CardViewer/CardLibrary/CardLibrary.tscn" type="PackedScene" id=1]
-[ext_resource path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.gd" type="Script" id=2]
-[ext_resource path="res://src/custom/CGFInfoPanel.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/custom/CGFDeckbuilder/CGFListCardObject.tscn" type="PackedScene" id=4]
+[ext_resource type="PackedScene" uid="uid://bgk25ncoc46an" path="res://src/core/CardViewer/CardLibrary/CardLibrary.tscn" id="1"]
+[ext_resource type="Script" path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://tsh5bu1buul3" path="res://src/custom/CGFInfoPanel.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://src/custom/CGFDeckbuilder/CGFListCardObject.tscn" id="4"]
 
-[node name="CardLibrary" instance=ExtResource( 1 )]
-script = ExtResource( 2 )
-info_panel_scene = ExtResource( 3 )
-list_card_object_scene = ExtResource( 4 )
+[node name="CardLibrary" instance=ExtResource("1")]
+script = ExtResource("2")
 default_property_width = 120
 property_width_exceptions = {
 "Cost": 30,
 "Power": 30
 }
+info_panel_scene = ExtResource("3")
+list_card_object_scene = ExtResource("4")
 
 [node name="MC" parent="VBC/HBC" index="0"]
-custom_constants/margin_right = 5
-custom_constants/margin_left = 5
-
-[node name="AvailableCards" parent="VBC/HBC/MC" index="0"]
-margin_left = 5.0
-margin_right = 1275.0
-
-[node name="CardListHeaders" parent="VBC/HBC/MC/AvailableCards" index="2"]
-margin_bottom = 62.0
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_right = 5
 
 [node name="Name" parent="VBC/HBC/MC/AvailableCards/CardListHeaders" index="0"]
-margin_bottom = 0.0
-rect_min_size = Vector2( 0, 0 )
+custom_minimum_size = Vector2(0, 0)
 
 [node name="Type" parent="VBC/HBC/MC/AvailableCards/CardListHeaders" index="1"]
-margin_bottom = 0.0
-rect_min_size = Vector2( 100, 0 )
-
-[node name="LineSeparator" parent="VBC/HBC/MC/AvailableCards" index="3"]
-margin_top = 66.0
-margin_bottom = 66.0
-
-[node name="ScrollContainer" parent="VBC/HBC/MC/AvailableCards" index="4"]
-margin_top = 70.0
+custom_minimum_size = Vector2(100, 0)
 
 [node name="Back" type="Button" parent="VBC/HBC/MC/AvailableCards/Settings" index="0"]
-margin_right = 42.0
-margin_bottom = 40.0
+layout_mode = 2
 text = "Back"
-
-[node name="Control" parent="VBC/HBC/MC/AvailableCards/Settings" index="1"]
-margin_left = 46.0

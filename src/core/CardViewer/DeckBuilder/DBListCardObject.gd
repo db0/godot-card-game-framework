@@ -10,18 +10,18 @@ var deck_card_object: DBDeckCardObject
 var max_allowed: int
 
 # The amount of this card selected to be added to the deck.
-var quantity: int setget set_quantity
+var quantity: int: set = set_quantity
 # We will look for this card property to determine how many possible
 # copies of the card are allowed in the deck. A value of 0 (or undefined)
 # Will allow as many copies as the max_quantity
-export var quantity_property: String = "_max_allowed"
+@export var quantity_property: String = "_max_allowed"
 
 
-onready var _plus_button := $Quantity/Plus
-onready var _minus_button := $Quantity/Minus
-onready var _quantity_edit := $Quantity/IntegerLineEdit
+@onready var _plus_button := $Quantity/Plus
+@onready var _minus_button := $Quantity/Minus
+@onready var _quantity_edit := $Quantity/IntegerLineEdit
 # Links to the various quantity buttons in a way that can be easily iterated.
-onready var _qbuttons = {
+@onready var _qbuttons = {
 	0: $'Quantity/0',
 	1: $'Quantity/1',
 	2: $'Quantity/2',
@@ -32,10 +32,10 @@ onready var _qbuttons = {
 
 func _ready() -> void:
 	for quantity_button in _qbuttons:
-		_qbuttons[quantity_button].connect("quantity_set", self, "_on_quantity_set")
+		_qbuttons[quantity_button].connect("quantity_set", Callable(self, "_on_quantity_set"))
 	_quantity_edit.minimum = 0
 	# warning-ignore:return_value_discarded
-	_quantity_edit.connect("int_entered", self, "set_quantity")
+	_quantity_edit.connect("int_entered", Callable(self, "set_quantity"))
 
 
 # Setter for quantity
@@ -50,9 +50,9 @@ func set_quantity(value) -> void:
 		return
 	for button in _qbuttons:
 		if button == value:
-			_qbuttons[button].pressed = true
+			_qbuttons[button].button_pressed = true
 		else:
-			_qbuttons[button].pressed = false
+			_qbuttons[button].button_pressed = false
 	if value:
 		_quantity_edit.text = str(value)
 	else:
@@ -70,7 +70,7 @@ func set_quantity(value) -> void:
 			deck_card_object._card_label.preview_popup.focus_info.info_panel_scene\
 					= card_viewer.info_panel_scene
 			deck_card_object._card_label.preview_popup.focus_info.setup()
-			deck_card_object.connect("quantity_changed",self,"_on_quantity_set")
+			deck_card_object.connect("quantity_changed", Callable(self, "_on_quantity_set"))
 		else:
 			deck_card_object.set_quantity(value)
 	elif value == 0:
@@ -94,9 +94,9 @@ func set_quantity(value) -> void:
 # the users with +/- buttons and a freeform integer line editor.
 func setup_max_quantity(force := 0) -> void:
 	if force:
-		 max_allowed = force
+		max_allowed = force
 	elif card_properties.get("_max_allowed",0):
-		 max_allowed = card_properties.get("_max_allowed")
+		max_allowed = card_properties.get("_max_allowed")
 	_quantity_edit.maximum = max_allowed
 	_quantity_edit.placeholder_text = \
 			"Max " + str(max_allowed)

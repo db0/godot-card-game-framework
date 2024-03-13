@@ -20,7 +20,7 @@ static func filter_trigger(
 		trigger_card,
 		owner_card,
 		trigger_details) -> bool:
-	var is_valid := .filter_trigger(card_scripts,
+	var is_valid := super.filter_trigger(card_scripts,
 		trigger_card,
 		owner_card,
 		trigger_details)

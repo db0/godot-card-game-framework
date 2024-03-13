@@ -15,10 +15,8 @@ func after_all():
 	cfc.game_settings.fancy_movement = true
 
 func before_each():
-	var confirm_return = setup_board()
-	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = yield(confirm_return, "completed")
+	await setup_board()
 	cards = draw_test_cards(initial_card_count)
-	yield(yield_for(initial_wait), YIELD)
+	await yield_for(initial_wait).YIELD
 	card = cards[card_index]
 	target = cards[target_index]

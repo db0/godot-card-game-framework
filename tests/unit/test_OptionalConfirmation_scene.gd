@@ -12,17 +12,15 @@ func after_all():
 	cfc.game_settings.fancy_movement = true
 
 func before_each():
-	var confirm_return = setup_board()
-	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = yield(confirm_return, "completed")
-	confirm = CFUtils._OPTIONAL_CONFIRM_SCENE.instance()
+	await setup_board()
+	confirm = CFUtils._OPTIONAL_CONFIRM_SCENE.instantiate()
 
 func test_title_and_buttons():
 	confirm.prep("UT Card","UT Execution")
-	assert_eq("Please Confirm...", confirm.window_title)
+	assert_eq("Please Confirm...", confirm.get_window().title)
 	assert_eq("UT Card: Do you want to activate UT Execution?", confirm.dialog_text)
-	assert_eq("No", confirm.get_cancel().text)
-	assert_eq("Yes", confirm.get_ok().text)
+	assert_eq("No", confirm.get_cancel_button().text)
+	assert_eq("Yes", confirm.get_ok_button().text)
 
 func test_no():
 	watch_signals(confirm)

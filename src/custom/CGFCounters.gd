@@ -13,6 +13,7 @@ extends Counters
 # * spawn_needed_counters() has to be called at the end, to actually
 #	add the specified counters to your counters scene.
 func _ready() -> void:
+	super._ready()
 	counters_container = $VBC
 	value_node = "Value"
 	needed_counters = {

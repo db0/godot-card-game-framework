@@ -1,18 +1,11 @@
-[gd_scene format=2]
+[gd_scene format=3 uid="uid://dohk6isueuqd2"]
 
 [node name="InfoPanel" type="PanelContainer"]
-margin_right = 264.0
-margin_bottom = 28.0
+offset_right = 264.0
+offset_bottom = 28.0
 mouse_filter = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Details" type="Label" parent="."]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 257.0
-margin_bottom = 21.0
-rect_min_size = Vector2( 250, 13 )
+custom_minimum_size = Vector2(250, 13)
+layout_mode = 2
 text = "Illustration by: "
-autowrap = true

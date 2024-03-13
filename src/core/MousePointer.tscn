@@ -1,54 +1,52 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=6 format=3 uid="uid://lvve1i2mayjs"]
 
-[ext_resource path="res://src/core/MousePointer.gd" type="Script" id=1]
-[ext_resource path="res://fonts/comfortaa/Comfortaa-Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource type="Script" path="res://src/core/MousePointer.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://cs8oiklalqlc7" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="2"]
 
-[sub_resource type="CircleShape2D" id=1]
+[sub_resource type="CircleShape2D" id="1"]
 radius = 2.0
 
-[sub_resource type="StyleBoxFlat" id=2]
-bg_color = Color( 1, 1, 1, 1 )
+[sub_resource type="StyleBoxFlat" id="2"]
+bg_color = Color(1, 1, 1, 1)
 draw_center = false
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color( 1, 1, 1, 1 )
+border_color = Color(1, 1, 1, 1)
 corner_radius_top_left = 5
 corner_radius_top_right = 5
 corner_radius_bottom_right = 5
 corner_radius_bottom_left = 5
 
-[sub_resource type="DynamicFont" id=3]
-size = 20
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 2 )
+[sub_resource type="FontFile" id="3"]
+fallbacks = Array[Font]([ExtResource("2")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
 [node name="MousePointer" type="Area2D"]
 z_index = 100
 collision_layer = 524801
 collision_mask = 524801
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource( 1 )
+shape = SubResource("1")
 
 [node name="DebugShape" type="Panel" parent="."]
 visible = false
-margin_right = 10.0
-margin_bottom = 10.0
-custom_styles/panel = SubResource( 2 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+offset_right = 10.0
+offset_bottom = 10.0
+theme_override_styles/panel = SubResource("2")
 
 [node name="current_focused_card" type="Label" parent="DebugShape"]
-margin_left = -90.0
-margin_top = -45.0
-margin_right = -50.0
-margin_bottom = -31.0
-custom_fonts/font = SubResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 0
+offset_left = -90.0
+offset_top = -45.0
+offset_right = -50.0
+offset_bottom = -31.0
+theme_override_fonts/font = SubResource("3")

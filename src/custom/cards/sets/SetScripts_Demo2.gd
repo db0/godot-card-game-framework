@@ -1,5 +1,5 @@
 # See README.md
-extends Reference
+extends RefCounted
 
 var scripts := {
 	"Test Card 3": {

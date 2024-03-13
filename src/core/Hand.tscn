@@ -1,102 +1,95 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=9 format=3 uid="uid://l4j3vem6tlok"]
 
-[ext_resource path="res://src/core/Hand.gd" type="Script" id=1]
-[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=3]
+[ext_resource type="Script" path="res://src/core/Hand.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="2"]
+[ext_resource type="PackedScene" uid="uid://d1rsjrmjo6acw" path="res://src/core/Highlight.tscn" id="3"]
 
-[sub_resource type="StyleBoxEmpty" id=1]
+[sub_resource type="StyleBoxEmpty" id="1"]
 
-[sub_resource type="DynamicFont" id=2]
-font_data = ExtResource( 2 )
+[sub_resource type="FontFile" id="2"]
+fallbacks = Array[Font]([ExtResource("2")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
-[sub_resource type="RectangleShape2D" id=3]
-extents = Vector2( 490, 120 )
+[sub_resource type="RectangleShape2D" id="3"]
+size = Vector2(980, 240)
 
-[sub_resource type="StyleBoxFlat" id=4]
-bg_color = Color( 0.392157, 0.364706, 0.364706, 1 )
+[sub_resource type="StyleBoxFlat" id="4"]
+bg_color = Color(0.392157, 0.364706, 0.364706, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="DynamicFont" id=5]
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-use_filter = true
-font_data = ExtResource( 2 )
+[sub_resource type="FontFile" id="5"]
+fallbacks = Array[Font]([ExtResource("2")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
 [node name="Hand" type="Area2D" groups=["hands"]]
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="Control" type="Panel" parent="."]
+anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
 mouse_filter = 1
-custom_styles/panel = SubResource( 1 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme_override_styles/panel = SubResource("1")
 
-[node name="Highlight" parent="Control" instance=ExtResource( 3 )]
+[node name="Highlight" parent="Control" instance=ExtResource("3")]
+layout_mode = 0
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_left = 0.0
+offset_top = 0.0
+offset_right = 0.0
+offset_bottom = 0.0
 
 [node name="ManipulationButtons" type="HBoxContainer" parent="Control"]
+layout_mode = 0
 mouse_filter = 0
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="Shuffle" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
-margin_right = 24.0
-margin_bottom = 26.0
+layout_mode = 2
 mouse_filter = 1
-custom_fonts/font = SubResource( 2 )
+theme_override_fonts/font = SubResource("2")
 text = "S"
 
-[node name="Tween" type="Tween" parent="Control/ManipulationButtons" groups=["cgf_tween"]]
-
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2( 490, 120 )
-shape = SubResource( 3 )
+position = Vector2(490, 120)
+shape = SubResource("3")
 
 [node name="Debug" type="VBoxContainer" parent="."]
-margin_left = 473.045
-margin_top = -58.7338
-margin_right = 513.045
-margin_bottom = -18.7338
-__meta__ = {
-"_edit_group_": true,
-"_edit_use_anchors_": false
-}
+offset_left = 473.045
+offset_top = -58.7338
+offset_right = 513.045
+offset_bottom = -18.7338
 
 [node name="Position" type="Label" parent="Debug"]
-margin_right = 39.0
-margin_bottom = 14.0
+layout_mode = 2
 
 [node name="AreaPos" type="Label" parent="Debug"]
-margin_top = 18.0
-margin_right = 39.0
-margin_bottom = 32.0
+layout_mode = 2
 
 [node name="Size" type="Label" parent="Debug"]
-margin_top = 36.0
-margin_right = 39.0
-margin_bottom = 50.0
+layout_mode = 2
 
 [node name="Counters" type="PanelContainer" parent="."]
-margin_left = -0.392883
-margin_top = -46.4221
-margin_right = 19.6071
-margin_bottom = -16.4221
-custom_styles/panel = SubResource( 4 )
-__meta__ = {
-"_edit_group_": true,
-"_edit_use_anchors_": false
-}
+offset_left = -0.392883
+offset_top = -46.4221
+offset_right = 19.6071
+offset_bottom = -16.4221
+theme_override_styles/panel = SubResource("4")
 
 [node name="Cards" type="Label" parent="Counters"]
-margin_top = 5.0
-margin_right = 20.0
-margin_bottom = 25.0
-custom_fonts/font = SubResource( 5 )
-align = 1
-valign = 1
+layout_mode = 2
+theme_override_fonts/font = SubResource("5")

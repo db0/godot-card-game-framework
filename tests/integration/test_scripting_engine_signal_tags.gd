@@ -21,7 +21,7 @@ class TestCardMovedToSignalTags:
 				"filter_tags": "Scripted",
 				"trigger": "another"}}
 		target.move_to(hand)
-		yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
+		await yield_to(target._tween, "finished", 1).YIELD
 		assert_signal_emitted_with_parameters(
 					target,"card_moved_to_hand",
 					[target,"card_moved_to_hand",
@@ -51,7 +51,7 @@ class TestCardMovedToSignalTags:
 		target = cfc.NMAP.deck.get_top_card()
 		watch_signals(target)
 		cards[4].execute_scripts()
-		yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
+		await yield_to(target._tween, "finished", 1).YIELD
 		assert_signal_emitted_with_parameters(
 					target,"card_moved_to_hand",
 					[target,"card_moved_to_hand",
@@ -92,9 +92,9 @@ class TestCardRotatedTags:
 				"subject": "self",
 				"tags": ["GUT"],
 				"degrees": 180}]}}
-		yield(table_move(target, Vector2(500,100)), "completed")
+		await table_move(target, Vector2(500,100))
 		target.card_rotation = 90
-		yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+		await yield_to(card._tween, "finished", 1).YIELD
 		assert_signal_emitted_with_parameters(
 					target,"card_rotated",
 					[target,"card_rotated",
@@ -104,7 +104,7 @@ class TestCardRotatedTags:
 		assert_true(cards[2].is_faceup,
 				"Card stayed face-up since filter_tags didn't match")
 		target.execute_scripts()
-		yield(yield_to(card._tween, "tween_all_completed", 1), YIELD)
+		await yield_to(card._tween, "finished", 1).YIELD
 		assert_signal_emitted_with_parameters(
 					target,"card_rotated",
 					[target,"card_rotated",
@@ -141,7 +141,7 @@ class TestCardFlippedTags:
 					"tags": ["GUT"],
 					"set_faceup": false}]}}
 		target.is_faceup = false
-		yield(yield_to(target._flip_tween, "tween_all_completed", 1), YIELD)
+		await yield_to(target._flip_tween, "finished", 1).YIELD
 		assert_signal_emitted_with_parameters(
 					target,"card_flipped",
 					[target,"card_flipped",
@@ -151,7 +151,7 @@ class TestCardFlippedTags:
 		assert_true(cards[2].is_faceup,
 				"Card stayed face-up since filter_tags didn't match")
 		cards[4].execute_scripts()
-		yield(yield_to(cards[4]._flip_tween, "tween_all_completed", 1), YIELD)
+		await yield_to(cards[4]._flip_tween, "finished", 1).YIELD
 		assert_signal_emitted_with_parameters(
 					cards[4],"card_flipped",
 					[cards[4],"card_flipped",
@@ -166,8 +166,8 @@ class TestCardTokenModifiedTags:
 		target_index = 1
 		
 	func test_card_token_modified_tags():
-		yield(table_move(target, Vector2(500,100)), "completed")
-		yield(table_move(cards[5], Vector2(100,100)), "completed")
+		await table_move(target, Vector2(500,100))
+		await table_move(cards[5], Vector2(100,100))
 		# warning-ignore:return_value_discarded
 		watch_signals(target)
 		watch_signals(cards[5])
@@ -200,7 +200,7 @@ class TestCardTokenModifiedTags:
 				"filter_tags": ["GUT", "Manual"],
 				"trigger": "another"}}
 		target.tokens.mod_token("void",5)
-		yield(yield_for(0.1), YIELD)
+		await yield_for(0.1).YIELD
 		assert_signal_emitted_with_parameters(
 					target,"card_token_modified",
 					[target,"card_token_modified",
@@ -223,7 +223,7 @@ class TestCardTokenModifiedTags:
 				"tags": ["GUT"],
 				"token_name":  "industry"}]}}
 		cards[5].execute_scripts()
-		yield(yield_for(0.1), YIELD)
+		await yield_for(0.1).YIELD
 		assert_signal_emitted_with_parameters(
 					cards[5],"card_token_modified",
 					[cards[5],"card_token_modified",
@@ -266,7 +266,7 @@ class TestCounterModifiedTags:
 				"counter_name":  "research"}]}}
 		# warning-ignore:return_value_discarded
 		board.counters.mod_counter("research",-4)
-		yield(yield_for(0.1), YIELD)
+		await yield_for(0.1).YIELD
 		assert_signal_emitted_with_parameters(
 					board.counters,"counter_modified",
 					[null,"counter_modified",

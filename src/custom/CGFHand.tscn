@@ -1,24 +1,29 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://ns61wd4x7pmt"]
 
-[ext_resource path="res://src/core/Hand.tscn" type="PackedScene" id=1]
-[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=2]
-[ext_resource path="res://src/custom/CGFHand.gd" type="Script" id=3]
+[ext_resource type="PackedScene" uid="uid://l4j3vem6tlok" path="res://src/core/Hand.tscn" id="1"]
+[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="2"]
+[ext_resource type="Script" path="res://src/custom/CGFHand.gd" id="3"]
 
-[sub_resource type="DynamicFont" id=1]
-font_data = ExtResource( 2 )
+[sub_resource type="FontFile" id="1"]
+fallbacks = Array[Font]([ExtResource("2")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
-[node name="Hand" instance=ExtResource( 1 )]
-script = ExtResource( 3 )
-placement = 7
+[node name="Hand" instance=ExtResource("1")]
+script = ExtResource("3")
 excess_discard_pile_name = "discard"
 excess_cards = 2
+placement = 7
 
-[node name="DiscardRandom" type="Button" parent="Control/ManipulationButtons" index="2" groups=[
-"manipulation_button",
-]]
-margin_left = 28.0
-margin_right = 52.0
-margin_bottom = 26.0
+[node name="Highlight" parent="Control" index="0"]
+anchors_preset = 0
+
+[node name="DiscardRandom" type="Button" parent="Control/ManipulationButtons" index="1" groups=["manipulation_button"]]
+layout_mode = 2
 mouse_filter = 1
-custom_fonts/font = SubResource( 1 )
+theme_override_fonts/font = SubResource("1")
 text = "R"

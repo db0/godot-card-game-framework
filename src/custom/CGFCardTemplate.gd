@@ -2,6 +2,7 @@ extends Card
 
 
 func _ready() -> void:
+	super._ready()
 	pass
 
 # Sample code on how to ensure costs are paid when a card
@@ -23,7 +24,7 @@ func pay_play_costs() -> void:
 
 # A signal for whenever the player clicks on a card
 func _on_Card_gui_input(event) -> void:
-	._on_Card_gui_input(event)
+	super._on_Card_gui_input(event)
 	if event is InputEventMouseButton:
 		if event.is_pressed() and event.get_button_index() == 2:
 			targeting_arrow.initiate_targeting()

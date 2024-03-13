@@ -12,10 +12,8 @@ func after_all():
 	cfc.game_settings.fancy_movement = true
 
 func before_each():
-	var confirm_return = setup_board()
-	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = yield(confirm_return, "completed")
-	token = token_scene.instance()
+	await setup_board()
+	token = token_scene.instantiate()
 	token.setup("tech")
 	board.add_child(token)
 
@@ -63,11 +61,11 @@ func test_buttons():
 	token._on_Remove_pressed()
 	assert_eq(1,token.count,"count should be 1")
 	token._on_Remove_pressed()
-	yield(yield_for(0.01), YIELD) # Wait for queue free
+	await yield_for(0.01) # Wait for queue free
 	assert_freed(token, "Token")
 
 func test_get_token_name():
-	var token2 = token_scene.instance()
+	var token2 = token_scene.instantiate()
 	token2.setup("tech")
 	board.add_child(token2)
 	assert_eq("tech",token2.get_token_name(),
