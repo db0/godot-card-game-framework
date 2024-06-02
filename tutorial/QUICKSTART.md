@@ -132,6 +132,7 @@ For this demonstration, let's create a "creature" type card.
 ```
 func _ready() -> void:
 	card_labels["Health"] = find_node("Health")
+	original_font_sizes["Health"] = 16
 ```
 We have now mapped the new label node for our new card type, so that it can be found by our code.
 
