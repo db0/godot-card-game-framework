@@ -19,5 +19,5 @@ jobs:
       uses: ceceppa/godot-gut-ci@main
       with:
         # required
-        godot_version: "4.2.2"
-        gut_params: -gdir=res://tests/unit,res://tests/integration
+        godot_version: "4.2"
+        gut_params: -gdir=res://tests/
