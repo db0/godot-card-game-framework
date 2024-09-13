@@ -2,37 +2,37 @@ name: GUT
 
 on:
   push:
-    branches-ignore:
-      - main
+    branches:
+      - conversion
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  GUT_Tests:
-    # The type of runner that the job will run on
+  build:
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
-      - name: Check out personal godot-tester repository
-        uses: actions/checkout@v4
-        with:
-          repository: db0/godot-tester
-          path: ./.github/actions/godot-tester
-      # Runs a single command using the runners shell
-      - name: Godot Tester
-        uses: ./.github/actions/godot-tester
-        with:
-          version: 4.2.1
-          # should be long enough for asset import files to get generated
-          import-time: 10
-          assert-check: true
-          max-fails: 0
-          # How long the test should be run before it's timed out and fails
-          test-timeout: 900
-          # Directory containing Gut tests
-          direct-scene: tests/cli/tests.tscn
+    - uses: actions/checkout@v4
+    - uses: croconut/godot-tester@v5
+      with:
+        # required
+        version: "4.2.2"
+        # the type of release of godot that the tests should be run with
+        release_type: "rc2"
+        # how long to spend importing assets before tests are run
+        import-time: "10"
+        # default is false, set true to count asserts instead of tests
+        assert-check: "true" 
+        # how long tests can run in seconds
+        test-timeout: "900"
+        # the ratio of tests that must pass for this action to pass
+        # e.g. 0.6 means 60% of your tests must pass
+        minimum-pass: "0.70"
+        # the directory containing Gut tests
+        test-dir: "res://tests"
+        # Directory containing Gut tests
+        direct-scene: "tests/cli/tests.tscn"
+        # relative path to the xml file to read / write GUT's results from, recommended
+        # for direct-scene users to check this file if you have issues
+        result-output-file: "test_results.xml"
+
