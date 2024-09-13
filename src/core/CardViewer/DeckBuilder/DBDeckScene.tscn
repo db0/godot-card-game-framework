@@ -1,115 +1,89 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=5 format=3 uid="uid://ccqepx5u7j5eu"]
 
-[ext_resource path="res://src/core/CardViewer/DeckBuilder/DeckLoader.gd" type="Script" id=1]
-[ext_resource path="res://fonts/comfortaa/Comfortaa-Bold.ttf" type="DynamicFontData" id=2]
+[ext_resource type="Script" path="res://src/core/CardViewer/DeckBuilder/DeckLoader.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://cs8oiklalqlc7" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="2"]
 
-[sub_resource type="StyleBoxLine" id=1]
-color = Color( 1, 0.4, 0, 1 )
+[sub_resource type="StyleBoxLine" id="1"]
+color = Color(1, 0.4, 0, 1)
 thickness = 2
 
-[sub_resource type="DynamicFont" id=2]
-use_filter = true
-font_data = ExtResource( 2 )
+[sub_resource type="FontFile" id="2"]
+fallbacks = Array[Font]([ExtResource("2")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
 [node name="DeckMC" type="MarginContainer"]
-margin_right = 638.0
-margin_bottom = 702.0
+offset_right = 638.0
+offset_bottom = 702.0
 size_flags_horizontal = 3
-custom_constants/margin_left = 5
-custom_constants/margin_bottom = 5
-__meta__ = {
-"_edit_use_anchors_": false
-}
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_bottom = 5
 
 [node name="CurrentDeck" type="VBoxContainer" parent="."]
-margin_left = 5.0
-margin_right = 638.0
-margin_bottom = 697.0
+layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="DeckDetails" type="VBoxContainer" parent="CurrentDeck"]
-margin_right = 633.0
+layout_mode = 2
 
 [node name="LineSeparator2" type="Panel" parent="CurrentDeck"]
-margin_top = 4.0
-margin_right = 633.0
-margin_bottom = 4.0
-custom_styles/panel = SubResource( 1 )
+layout_mode = 2
+theme_override_styles/panel = SubResource("1")
 
 [node name="ScrollContainer" type="ScrollContainer" parent="CurrentDeck"]
-margin_top = 8.0
-margin_right = 633.0
-margin_bottom = 621.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="CardsInDeck" type="VBoxContainer" parent="CurrentDeck/ScrollContainer"]
-margin_bottom = 613.0
+layout_mode = 2
 size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="CurrentDeck"]
-margin_top = 625.0
-margin_right = 633.0
-margin_bottom = 645.0
+layout_mode = 2
 
 [node name="DeckNameEditLabel" type="Label" parent="CurrentDeck/HBoxContainer"]
-margin_top = 3.0
-margin_right = 38.0
-margin_bottom = 17.0
+layout_mode = 2
 text = "Name"
 
 [node name="RandomizeName" type="Button" parent="CurrentDeck/HBoxContainer"]
-margin_left = 42.0
-margin_right = 62.0
-margin_bottom = 20.0
+layout_mode = 2
 text = "R"
 
 [node name="NoticeLabel" type="Label" parent="CurrentDeck/HBoxContainer"]
-modulate = Color( 1, 1, 1, 0 )
-margin_left = 66.0
-margin_right = 633.0
-margin_bottom = 19.0
+modulate = Color(1, 1, 1, 0)
+layout_mode = 2
 size_flags_horizontal = 3
-custom_fonts/font = SubResource( 2 )
-custom_colors/font_color = Color( 1, 0.992157, 0, 1 )
+theme_override_colors/font_color = Color(1, 0.992157, 0, 1)
+theme_override_fonts/font = SubResource("2")
 text = "Deck deleted but current list not cleared"
-align = 2
-
-[node name="Tween" type="Tween" parent="CurrentDeck/HBoxContainer/NoticeLabel"]
 
 [node name="DeckNameEdit" type="LineEdit" parent="CurrentDeck"]
-margin_top = 649.0
-margin_right = 633.0
-margin_bottom = 673.0
+layout_mode = 2
 text = "New Deck"
 max_length = 128
 
 [node name="Buttons" type="HBoxContainer" parent="CurrentDeck"]
-margin_top = 677.0
-margin_right = 633.0
-margin_bottom = 697.0
+layout_mode = 2
 
 [node name="Save" type="Button" parent="CurrentDeck/Buttons"]
-margin_right = 41.0
-margin_bottom = 20.0
+layout_mode = 2
 text = "Save"
 
 [node name="Load" type="MenuButton" parent="CurrentDeck/Buttons"]
-margin_left = 45.0
-margin_right = 87.0
-margin_bottom = 20.0
+layout_mode = 2
 focus_mode = 2
 text = "Load"
 flat = false
-script = ExtResource( 1 )
+script = ExtResource("1")
 
 [node name="Reset" type="Button" parent="CurrentDeck/Buttons"]
-margin_left = 91.0
-margin_right = 139.0
-margin_bottom = 20.0
+layout_mode = 2
 text = "Reset"
 
 [node name="Delete" type="Button" parent="CurrentDeck/Buttons"]
-margin_left = 143.0
-margin_right = 198.0
-margin_bottom = 20.0
+layout_mode = 2
 text = "Delete"

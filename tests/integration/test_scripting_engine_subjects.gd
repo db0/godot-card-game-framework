@@ -4,7 +4,7 @@ class TestSubjectTarget:
 	extends "res://tests/ScEng_common.gd"
 
 	func test_subject_target():
-		yield(table_move(card, Vector2(100,200)), "completed")
+		await table_move(card, Vector2(100,200))
 		card.scripts = {"manual": {"board": [
 				{"name": "rotate_card",
 				"subject": "target",
@@ -13,17 +13,16 @@ class TestSubjectTarget:
 				"subject": "target",
 				"degrees": 90}
 				]}}
-		var scripting_engine = card.execute_scripts()
-		if scripting_engine is GDScriptFunctionState: # Still seeking...
-			yield(yield_to(card.targeting_arrow, "initiated_targeting", 0.2), YIELD)
+		var scripting_engine = await card.execute_scripts()
+		await yield_to(card.targeting_arrow, "initiated_targeting", 0.2) 
 		#watch_signals(scripting_engine)
-		yield(yield_to(target_card(card,card), "completed", 0.1), YIELD)
+		await yield_to(await target_card(card,card), "completed", 0.1) 
 	#	yield(target_card(card,card), "completed")
-		yield(yield_to(card._tween, "tween_all_completed", 0.4), YIELD)
+		await yield_to(card._tween, "finished", 0.4) 
 		assert_eq(card.card_rotation, 270,
 				"First rotation should happen before targetting second time")
-		yield(yield_to(target_card(card,card), "completed", 0.1), YIELD)
-		yield(yield_to(card._tween, "tween_all_completed", 0.4), YIELD)
+		await yield_to(await target_card(card,card), "completed", 0.1) 
+		await yield_to(card._tween, "finished", 0.4) 
 		assert_eq(card.card_rotation, 90,
 				"Second rotation should also happen")
 
@@ -36,8 +35,8 @@ class TestSubjectBoardseek:
 		var target2: Card = cards[2]
 		var ttype : String = target.properties["Type"]
 		var ttype2 : String = target2.properties["Type"]
-		yield(table_move(target, Vector2(500,200)), "completed")
-		yield(table_move(cards[2], Vector2(800,200)), "completed")
+		await table_move(target, Vector2(500,200))
+		await table_move(cards[2], Vector2(800,200))
 		card.scripts = {"manual": {"hand": [
 				{"name": "rotate_card",
 				"subject": "boardseek",
@@ -50,8 +49,8 @@ class TestSubjectBoardseek:
 				"filter_state_seek": [{"filter_properties": {"Type": ttype2}}],
 				"degrees": 90}]}}
 	# warning-ignore:unused_variable
-		var scripting_engine = card.execute_scripts()
-		yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
+		await card.execute_scripts()
+		await yield_to(target._tween, "finished", 1) 
 		assert_eq(target.card_rotation, 180,
 				"Card on board matching property should be rotated 90 degrees")
 		assert_eq(target2.card_rotation, 90,
@@ -75,7 +74,7 @@ class TestSubjectPrevious:
 				"subject": "previous",
 				"degrees": 90}]}}
 		card.execute_scripts()
-		yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(target._tween, "finished", 0.5) 
 		assert_eq(target.card_rotation, 90,
 				"Target should be pre-selected to be rotated")
 		assert_true(target.is_faceup,
@@ -85,10 +84,10 @@ class TestSubjectPrevious:
 
 	func test_subject_boardseek_previous():
 		var target2: Card = cards[2]
-	# warning-ignore:unused_variable
+		@warning_ignore("unused_variable")
 		var ttype : String = target.properties["Type"]
-		yield(table_move(target, Vector2(500,200)), "completed")
-		yield(table_move(cards[2], Vector2(800,200)), "completed")
+		await table_move(target, Vector2(500,200))
+		await table_move(cards[2], Vector2(800,200))
 		card.scripts = {"manual": {"hand": [
 				{"name": "rotate_card",
 				"subject": "boardseek",
@@ -99,8 +98,8 @@ class TestSubjectPrevious:
 				"subject": "previous",
 				"set_faceup": false}]}}
 	# warning-ignore:unused_variable
-		var scripting_engine = card.execute_scripts()
-		yield(yield_to(target._tween, "tween_all_completed", 1), YIELD)
+		await card.execute_scripts()
+		await yield_to(target._tween, "finished", 1) 
 		assert_false(target.is_faceup,
 				"Target should be pre-selected to be flipped")
 		assert_false(target2.is_faceup,
@@ -118,7 +117,7 @@ class TestSubjectTutor:
 				"board_position":  Vector2(1000,200)}]}}
 		card.execute_scripts()
 		target = cfc.NMAP.board.get_card(0)
-		yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(target._tween, "finished", 0.5) 
 		assert_eq("Red",target.properties["Type"],
 				"Card of the correct type should be placed on the board")
 		card.scripts = {"manual": {"hand": [
@@ -130,7 +129,7 @@ class TestSubjectTutor:
 				"board_position":  Vector2(100,200)}]}}
 		card.execute_scripts()
 		target = cfc.NMAP.board.get_card(1)
-		yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(target._tween, "finished", 0.5) 
 		assert_eq("Multiple Choices Test Card",target.canonical_name,
 				"Card of the correct name should be placed on the board")
 
@@ -146,7 +145,7 @@ class TestSubjectIndex:
 				"src_container": "deck",
 				"board_position":  Vector2(1000,200)}]}}
 		card.execute_scripts()
-		yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(target._tween, "finished", 0.5) 
 		assert_eq(cfc.NMAP.board,target.get_parent(),
 				"Card should have moved to board")
 		target = cfc.NMAP.deck.get_card(0)
@@ -156,7 +155,7 @@ class TestSubjectIndex:
 				"src_container": "deck",
 				"board_position":  Vector2(100,200)}]}}
 		card.execute_scripts()
-		yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
+		await yield_to(target._tween, "finished", 0.5) 
 		assert_eq(cfc.NMAP.board,target.get_parent(),
 				"When index is not specified, top card should have moved to the board")
 
@@ -201,13 +200,13 @@ class TestSubjectPreviousWithFilters:
 				},
 			}
 		card._debugger_hook = true
-		yield(execute_with_target(card,cards[2]), "completed")
-		yield(yield_for(0.3), YIELD)
-		assert_eq(board.counters.get_counter("research"),2,
+		await execute_with_target(card,cards[2])
+		await yield_for(0.3) 
+		assert_eq(await board.counters.get_counter("research"),2,
 				"Counter increased by specified amount")
-		yield(execute_with_target(card,cards[4]), "completed")
-		yield(yield_for(0.3), YIELD)
-		assert_eq(board.counters.get_counter("research"),3,
+		await execute_with_target(card,cards[4])
+		await yield_for(0.3) 
+		assert_eq(await board.counters.get_counter("research"),3,
 				"Counter increased by specified amount")
 
 class TestSubjectsNext:
@@ -240,8 +239,8 @@ class TestSubjectsNext:
 					],
 				},
 			}
-		yield(execute_with_target(card,target), "completed")
-		yield(yield_to(target._tween, "tween_all_completed", 0.5), YIELD)
-		assert_eq(board.counters.get_counter("research"),3,
+		await execute_with_target(card,target)
+		await yield_to(target._tween, "finished", 0.5) 
+		assert_eq(await board.counters.get_counter("research"),3,
 				"Counter set to the specified amount")
 

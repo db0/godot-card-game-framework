@@ -6,12 +6,12 @@ extends CenterContainer
 var display_card: Card
 var card_list_object
 
-onready var preview_popup := $PreviewPopup
+@onready var preview_popup := $PreviewPopup
 
 
 func _ready() -> void:
 # warning-ignore:return_value_discarded
-	get_viewport().connect("size_changed", self, '_on_viewport_resized')
+	get_viewport().connect("size_changed", Callable(self, '_on_viewport_resized'))
 
 func setup(card) -> Card:
 	if typeof(card) == TYPE_STRING:
@@ -28,8 +28,8 @@ func setup(card) -> Card:
 		display_card.resize_recursively(display_card._control, display_card.thumbnail_scale * cfc.curr_scale)
 		display_card.card_front.scale_to(display_card.thumbnail_scale * cfc.curr_scale)
 	display_card.state = Card.CardState.DECKBUILDER_GRID
-	rect_min_size = display_card.canonical_size * display_card.thumbnail_scale * cfc.curr_scale
-	rect_size = rect_min_size
+	custom_minimum_size = display_card.canonical_size * display_card.thumbnail_scale * cfc.curr_scale
+	size = custom_minimum_size
 	return(display_card)
 
 
@@ -42,10 +42,12 @@ func _on_GridCardObject_mouse_exited() -> void:
 
 
 func get_class() -> String:
+	# As far as I can tell this is never used, but it wouldn't work as expected
+	# Godot will not override the built-in get_class() and that won't show class_name
 	return("CVGridCardObject")
 
 
 # Resizes the grid container so that the preview cards fix snuggly.
 func _on_viewport_resized() -> void:
-	rect_min_size = display_card.canonical_size * display_card.thumbnail_scale * cfc.curr_scale
-	rect_size = rect_min_size
+	custom_minimum_size = display_card.canonical_size * display_card.thumbnail_scale * cfc.curr_scale
+	size = custom_minimum_size

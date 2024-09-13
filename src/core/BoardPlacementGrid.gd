@@ -17,27 +17,27 @@ const _SLOT_SCENE_FILE = CFConst.PATH_CORE + "BoardPlacementSlot.tscn"
 const _SLOT_SCENE = preload(_SLOT_SCENE_FILE)
 
 # Set the highlight colour for all contained BoardPlacementSlot slots
-export(Color) var highlight = CFConst.TARGET_HOVER_COLOUR
+@export var highlight: Color = CFConst.TARGET_HOVER_COLOUR
 # If set to true, the grid will automatically add more slots
 # when find_available_slot() is used and there's no more available slots
 # (only useful when using the ScriptingEngine)
-export var auto_extend := false
+@export var auto_extend := false
 # Used to adjust the grid according to the card size that will be put into it.
 # This size should match the
-export var card_size := CFConst.CARD_SIZE
-export var card_play_scale := CFConst.PLAY_AREA_SCALE
+@export var card_size := CFConst.CARD_SIZE
+@export var card_play_scale := CFConst.PLAY_AREA_SCALE
 
 # Sets a custom label for this grid
-onready var name_label = $Control/Label
+@onready var name_label = $Control/Label
 
 func _ready() -> void:
-	rect_size = (card_size * card_play_scale) + Vector2(4,4)
+	size = (card_size * card_play_scale) + Vector2(4,4)
 	# We ensure the separation of the grid slots is always 1 pixel larger
 	# Than the radius of the mouse pointer collision area.
 	# This ensures that we don't highlight 2 slots at the same time.
-	$GridContainer.set("custom_constants/vseparation",
+	$GridContainer.set("theme_override_constants/v_separation",
 			MousePointer.MOUSE_RADIUS * 2 + 1)
-	$GridContainer.set("custom_constants/hseparation",
+	$GridContainer.set("theme_override_constants/h_separation",
 			MousePointer.MOUSE_RADIUS * 2 + 1)
 	if not name_label.text:
 		name_label.text = name
@@ -62,7 +62,7 @@ func get_slot(idx: int) -> BoardPlacementSlot:
 # Adds new placement slot to the grid.
 # Returns the slot object
 func add_slot() -> BoardPlacementSlot:
-	var new_slot : BoardPlacementSlot = _SLOT_SCENE.instance()
+	var new_slot : BoardPlacementSlot = _SLOT_SCENE.instantiate()
 	$GridContainer.add_child(new_slot)
 	return(new_slot)
 
@@ -70,7 +70,7 @@ func add_slot() -> BoardPlacementSlot:
 # Returns a slot that is not currently occupied by a card
 func find_available_slot() -> BoardPlacementSlot:
 	var found_slot : BoardPlacementSlot
-	if not get_available_slots().empty():
+	if not get_available_slots().is_empty():
 		found_slot = get_available_slots().front()
 	elif auto_extend:
 		found_slot = add_slot()

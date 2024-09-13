@@ -1,206 +1,202 @@
 # ------------------------------------------------------------------------------
-# Contains all the results of a single test.  Allows for multiple asserts results
-# and pending calls.
+# Prints things, mostly.  Knows too much about gut.gd, but it's only supposed to
+# work with gut.gd, so I'm fine with that.
 # ------------------------------------------------------------------------------
-class Test:
-	var pass_texts = []
-	var fail_texts = []
-	var pending_texts = []
-	var orphans = 0
-
-	# NOTE:  The "failed" and "pending" text must match what is outputted by
-	# the logger in order for text highlighting to occur in summary.
-	func to_s():
-		var pad = '     '
-		var to_return = ''
-		for i in range(fail_texts.size()):
-			to_return += str(pad, '[Failed]:  ', fail_texts[i], "\n")
-		for i in range(pending_texts.size()):
-			to_return += str(pad, '[Pending]:  ', pending_texts[i], "\n")
-		return to_return
-
-	func get_status():
-		var to_return = 'no asserts'
-		if(pending_texts.size() > 0):
-			to_return = 'pending'
-		elif(fail_texts.size() > 0):
-			to_return = 'fail'
-		elif(pass_texts.size() > 0):
-			to_return = 'pass'
-
-		return to_return
-
-# ------------------------------------------------------------------------------
-# Contains all the results for a single test-script/inner class.  Persists the
-# names of the tests and results and the order in which  the tests were run.
-# ------------------------------------------------------------------------------
-class TestScript:
-	var name = 'NOT_SET'
-	var _tests = {}
-	var _test_order = []
-
-	func _init(script_name):
-		name = script_name
-
-	func get_pass_count():
-		var count = 0
-		for key in _tests:
-			count += _tests[key].pass_texts.size()
-		return count
-
-	func get_fail_count():
-		var count = 0
-		for key in _tests:
-			count += _tests[key].fail_texts.size()
-		return count
-
-	func get_pending_count():
-		var count = 0
-		for key in _tests:
-			count += _tests[key].pending_texts.size()
-		return count
-
-	func get_passing_test_count():
-		var count = 0
-		for key in _tests:
-			if(_tests[key].fail_texts.size() == 0 and
-				_tests[key].pending_texts.size() == 0):
-				count += 1
-		return count
-
-	func get_failing_test_count():
-		var count = 0
-		for key in _tests:
-			if(_tests[key].fail_texts.size() != 0):
-				count += 1
-		return count
+# a _test_collector to use when one is not provided.
+var _gut = null
 
 
-	func get_test_obj(obj_name):
-		if(!_tests.has(obj_name)):
-			_tests[obj_name] = Test.new()
-			_test_order.append(obj_name)
-		return _tests[obj_name]
+func _init(gut=null):
+	_gut = gut
 
-	func add_pass(test_name, reason):
-		var t = get_test_obj(test_name)
-		t.pass_texts.append(reason)
+# ---------------------
+# Private
+# ---------------------
+func _log_end_run_header(gut):
+	var lgr = gut.get_logger()
+	lgr.log("\n\n\n")
+	lgr.log('==============================================', lgr.fmts.yellow)
+	lgr.log("= Run Summary", lgr.fmts.yellow)
+	lgr.log('==============================================', lgr.fmts.yellow)
 
-	func add_fail(test_name, reason):
-		var t = get_test_obj(test_name)
-		t.fail_texts.append(reason)
 
-	func add_pending(test_name, reason):
-		var t = get_test_obj(test_name)
-		t.pending_texts.append(reason)
+func _log_what_was_run(gut):
+	if(!gut._utils.is_null_or_empty(gut._select_script)):
+		gut.p('Ran Scripts matching "' + gut._select_script + '"')
+	if(!gut._utils.is_null_or_empty(gut._unit_test_name)):
+		gut.p('Ran Tests matching "' + gut._unit_test_name + '"')
+	if(!gut._utils.is_null_or_empty(gut._inner_class_name)):
+		gut.p('Ran Inner Classes matching "' + gut._inner_class_name + '"')
 
-	func get_tests():
-		return _tests
 
-# ------------------------------------------------------------------------------
-# Summary Class
-#
-# This class holds the results of all the test scripts and Inner Classes that
-# were run.
-# ------------------------------------------------------------------------------
-var _scripts = []
+func _log_orphans_and_disclaimer(gut):
+	var orphan_count = gut.get_orphan_counter()
+	var lgr = gut.get_logger()
+	# Do not count any of the _test_script_objects since these will be released
+	# when GUT is released.
+	orphan_count._counters.total += gut._test_script_objects.size()
+	if(orphan_count.get_counter('total') > 0 and lgr.is_type_enabled('orphan')):
+		orphan_count.print_orphans('total', lgr)
+		gut.p("Note:  This count does not include GUT objects that will be freed upon exit.")
+		gut.p("       It also does not include any orphans created by global scripts")
+		gut.p("       loaded before tests were ran.")
+		gut.p(str("Total orphans = ", orphan_count.orphan_count()))
+		gut.p('')
 
-func add_script(name):
-	_scripts.append(TestScript.new(name))
 
-func get_scripts():
-	return _scripts
+func _total_fmt(text, value):
+	var space = 18
+	if(str(value) == '0'):
+		value = 'none'
+	return str(text.rpad(space), value)
 
-func get_current_script():
-	return _scripts[_scripts.size() - 1]
 
-func add_test(test_name):
-	return get_current_script().get_test_obj(test_name)
+func _log_non_zero_total(text, value, lgr):
+	if(str(value) != '0'):
+		lgr.log(_total_fmt(text, value))
+		return 1
+	else:
+		return 0
 
-func add_pass(test_name, reason = ''):
-	get_current_script().add_pass(test_name, reason)
+func _log_totals(gut, totals):
+	var lgr = gut.get_logger()
+	lgr.log()
 
-func add_fail(test_name, reason = ''):
-	get_current_script().add_fail(test_name, reason)
+	lgr.log("---- Totals ----")
+	var col1 = 18
+	var issue_count = 0
+	issue_count += _log_non_zero_total('Errors', totals.errors, lgr)
+	issue_count += _log_non_zero_total('Warnings', totals.warnings, lgr)
+	issue_count += _log_non_zero_total('Deprecated', totals.deprecated, lgr)
+	if(issue_count > 0):
+		lgr.log("")
 
-func add_pending(test_name, reason = ''):
-	get_current_script().add_pending(test_name, reason)
-
-func get_test_text(test_name):
-	return test_name + "\n" + get_current_script().get_test_obj(test_name).to_s()
-
-# Gets the count of unique script names minus the .<Inner Class Name> at the
-# end.  Used for displaying the number of scripts without including all the
-# Inner Classes.
-func get_non_inner_class_script_count():
-	var unique_scripts = {}
-	for i in range(_scripts.size()):
-		var ext_loc = _scripts[i].name.find_last('.gd.')
-		if(ext_loc == -1):
-			unique_scripts[_scripts[i].name] = 1
-		else:
-			unique_scripts[_scripts[i].name.substr(0, ext_loc + 3)] = 1
-	return unique_scripts.keys().size()
-
-func get_totals():
-	var totals = {
-		passing = 0,
-		pending = 0,
-		failing = 0,
-		tests = 0,
-		scripts = 0,
-		passing_tests = 0,
-		failing_tests = 0
-	}
-
-	for i in range(_scripts.size()):
-		totals.passing += _scripts[i].get_pass_count()
-		totals.pending += _scripts[i].get_pending_count()
-		totals.failing += _scripts[i].get_fail_count()
-		totals.tests += _scripts[i]._test_order.size()
-		totals.passing_tests += _scripts[i].get_passing_test_count()
-		totals.failing_tests += _scripts[i].get_failing_test_count()
-
-	totals.scripts = get_non_inner_class_script_count()
+	lgr.log(_total_fmt( 'Scripts', totals.scripts))
+	lgr.log(_total_fmt( 'Tests', gut.get_test_collector().get_ran_test_count()))
+	lgr.log(_total_fmt( '  Passing', totals.passing_tests))
+	_log_non_zero_total('  Failing', totals.failing_tests, lgr)
+	_log_non_zero_total('  Risky/Pending', totals.risky + totals.pending, lgr)
+	lgr.log(_total_fmt( 'Asserts', totals.passing + totals.failing))
+	lgr.log(_total_fmt( 'Time', str(gut.get_elapsed_time(), 's')))
 
 	return totals
 
-func log_summary_text(lgr):
-	var orig_indent = lgr.get_indent_level()
-	var found_failing_or_pending = false
 
-	for s in range(_scripts.size()):
+# ---------------------
+# Public
+# ---------------------
+func log_all_non_passing_tests(gut=_gut):
+	var test_collector = gut.get_test_collector()
+	var lgr = gut.get_logger()
+
+	var to_return = {
+		passing = 0,
+		non_passing = 0
+	}
+
+	for test_script in test_collector.scripts:
 		lgr.set_indent_level(0)
-		if(_scripts[s].get_fail_count() > 0 or _scripts[s].get_pending_count() > 0):
-			lgr.log(_scripts[s].name, lgr.fmts.underline)
+
+		if(test_script.was_skipped or test_script.get_fail_count() > 0 or test_script.get_pending_count() > 0):
+			lgr.log("\n" + test_script.get_full_name(), lgr.fmts.underline)
+
+		if(test_script.was_skipped):
+			lgr.inc_indent()
+			var skip_msg = str('[Risky] Script was skipped:  ', test_script.skip_reason)
+			lgr.log(skip_msg, lgr.fmts.yellow)
+			lgr.dec_indent()
+
+		for test in test_script.tests:
+			if(test.was_run):
+				if(test.is_passing()):
+					to_return.passing += 1
+				else:
+					to_return.non_passing += 1
+					lgr.log(str('- ', test.name))
+					lgr.inc_indent()
+
+					for i in range(test.fail_texts.size()):
+						lgr.failed(test.fail_texts[i])
+					for i in range(test.pending_texts.size()):
+						lgr.pending(test.pending_texts[i])
+					if(test.is_risky()):
+						lgr.risky('Did not assert')
+					lgr.dec_indent()
+
+	return to_return
 
 
-		for t in range(_scripts[s]._test_order.size()):
-			var tname = _scripts[s]._test_order[t]
-			var test = _scripts[s].get_test_obj(tname)
-			if(test.fail_texts.size() > 0 or test.pending_texts.size() > 0):
-				found_failing_or_pending = true
-				lgr.log(str('- ', tname))
-				lgr.inc_indent()
+func log_the_final_line(totals, gut):
+	var lgr = gut.get_logger()
+	var grand_total_text = ""
+	var grand_total_fmt = lgr.fmts.none
+	if(totals.failing_tests > 0):
+		grand_total_text = str(totals.failing_tests, " failing tests")
+		grand_total_fmt = lgr.fmts.red
+	elif(totals.risky > 0 or totals.pending > 0):
+		grand_total_text = str(totals.risky + totals.pending, " pending/risky tests.")
+		grand_total_fmt = lgr.fmts.yellow
+	else:
+		grand_total_text = "All tests passed!"
+		grand_total_fmt = lgr.fmts.green
 
-				for i in range(test.fail_texts.size()):
-					lgr.failed(test.fail_texts[i])
-				for i in range(test.pending_texts.size()):
-					lgr.pending(test.pending_texts[i])
-				lgr.dec_indent()
+	lgr.log(str("---- ", grand_total_text, " ----"), grand_total_fmt)
 
+
+func log_totals(gut, totals):
+	var lgr = gut.get_logger()
+	var orig_indent = lgr.get_indent_level()
 	lgr.set_indent_level(0)
-	if(!found_failing_or_pending):
-		lgr.log('All tests passed', lgr.fmts.green)
-
-	lgr.log()
-	var _totals = get_totals()
-	lgr.log("Totals", lgr.fmts.yellow)
-	lgr.log(str('Scripts:          ', get_non_inner_class_script_count()))
-	lgr.log(str('Passing tests     ', _totals.passing_tests))
-	lgr.log(str('Failing tests     ', _totals.failing_tests))
-	lgr.log(str('Pending:          ', _totals.pending))
-	lgr.log(str('Asserts:          ', _totals.passing, '/', _totals.failing))
-
+	_log_totals(gut, totals)
 	lgr.set_indent_level(orig_indent)
 
+
+func get_totals(gut=_gut):
+	var tc = gut.get_test_collector()
+	var lgr = gut.get_logger()
+
+	var totals = {
+		failing = 0,
+		failing_tests = 0,
+		passing = 0,
+		passing_tests = 0,
+		pending = 0,
+		risky = 0,
+		scripts = tc.get_ran_script_count(),
+		tests = 0,
+
+		deprecated = lgr.get_deprecated().size(),
+		errors = lgr.get_errors().size(),
+		warnings = lgr.get_warnings().size(),
+	}
+
+	for s in tc.scripts:
+		# assert totals
+		totals.passing += s.get_pass_count()
+		totals.pending += s.get_pending_count()
+		totals.failing += s.get_fail_count()
+
+		# test totals
+		totals.tests += s.get_ran_test_count()
+		totals.passing_tests += s.get_passing_test_count()
+		totals.failing_tests += s.get_failing_test_count()
+		totals.risky += s.get_risky_count()
+
+	return totals
+
+
+func log_end_run(gut=_gut):
+	_log_end_run_header(gut)
+
+	var totals = get_totals(gut)
+	var tc = gut.get_test_collector()
+	var lgr = gut.get_logger()
+
+	log_all_non_passing_tests(gut)
+	log_totals(gut, totals)
+	lgr.log("\n")
+
+	_log_orphans_and_disclaimer(gut)
+	_log_what_was_run(gut)
+	log_the_final_line(totals, gut)
+	lgr.log("")

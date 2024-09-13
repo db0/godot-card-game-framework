@@ -1,225 +1,184 @@
-[gd_scene load_steps=13 format=2]
+[gd_scene load_steps=13 format=3 uid="uid://d07cwd715li36"]
 
-[ext_resource path="res://src/custom/CGFDiscard.gd" type="Script" id=1]
-[ext_resource path="res://src/core/Pile.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/custom/CGFHand.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/custom/CGFDeck.gd" type="Script" id=4]
-[ext_resource path="res://src/custom/CGFBoard.gd" type="Script" id=5]
-[ext_resource path="res://src/custom/CGFCounters.tscn" type="PackedScene" id=6]
-[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=7]
-[ext_resource path="res://src/core/BoardPlacementSlot.tscn" type="PackedScene" id=8]
-[ext_resource path="res://src/core/BoardPlacementGrid.gd" type="Script" id=9]
+[ext_resource type="Script" path="res://src/custom/CGFDiscard.gd" id="1"]
+[ext_resource type="PackedScene" uid="uid://cm3g4vp4jtd2q" path="res://src/core/Pile.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://ns61wd4x7pmt" path="res://src/custom/CGFHand.tscn" id="3"]
+[ext_resource type="Script" path="res://src/custom/CGFDeck.gd" id="4"]
+[ext_resource type="Script" path="res://src/custom/CGFBoard.gd" id="5"]
+[ext_resource type="PackedScene" uid="uid://bhgbbxs86qxph" path="res://src/custom/CGFCounters.tscn" id="6"]
+[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="7"]
+[ext_resource type="PackedScene" uid="uid://dx8s5ofo0alvt" path="res://src/core/BoardPlacementSlot.tscn" id="8"]
+[ext_resource type="Script" path="res://src/core/BoardPlacementGrid.gd" id="9"]
 
-[sub_resource type="StyleBoxFlat" id=1]
-bg_color = Color( 0, 0, 0, 1 )
+[sub_resource type="StyleBoxFlat" id="1"]
+bg_color = Color(0, 0, 0, 1)
 corner_radius_top_left = 25
 corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
-[sub_resource type="StyleBoxFlat" id=2]
-bg_color = Color( 0, 0, 0, 1 )
+[sub_resource type="StyleBoxFlat" id="2"]
+bg_color = Color(0, 0, 0, 1)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color( 0.0431373, 0.294118, 0.823529, 1 )
+border_color = Color(0.0431373, 0.294118, 0.823529, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
 corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
-[sub_resource type="DynamicFont" id=3]
-outline_size = 2
-outline_color = Color( 0, 0, 0, 1 )
-font_data = ExtResource( 7 )
+[sub_resource type="FontFile" id="3"]
+fallbacks = Array[Font]([ExtResource("7")])
+cache/0/16/0/ascent = 0.0
+cache/0/16/0/descent = 0.0
+cache/0/16/0/underline_position = 0.0
+cache/0/16/0/underline_thickness = 0.0
+cache/0/16/0/scale = 1.0
+cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
 [node name="Board" type="Control"]
+layout_mode = 3
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 mouse_filter = 2
-script = ExtResource( 5 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+script = ExtResource("5")
 
-[node name="Deck" parent="." instance=ExtResource( 2 )]
-position = Vector2( 0, 475 )
-script = ExtResource( 4 )
-placement = 8
+[node name="Deck" parent="." instance=ExtResource("2")]
+position = Vector2(0, 475)
+script = ExtResource("4")
 pile_name = "Deck"
+placement = 8
 
-[node name="Discard" parent="." instance=ExtResource( 2 )]
-position = Vector2( 1124, 475 )
-script = ExtResource( 1 )
-placement = 6
+[node name="Discard" parent="." instance=ExtResource("2")]
+position = Vector2(1124, 475)
+script = ExtResource("1")
 pile_name = "Discard"
 faceup_cards = true
+placement = 6
 
 [node name="Control" parent="Discard" index="0"]
-self_modulate = Color( 1, 1, 1, 0.501961 )
-custom_styles/panel = SubResource( 1 )
+self_modulate = Color(1, 1, 1, 0.501961)
+theme_override_styles/panel = SubResource("1")
 
-[node name="Tween" parent="Discard/Control/ManipulationButtons" index="3" groups=["cgf_tween"]]
+[node name="Hand" parent="." instance=ExtResource("3")]
 
-[node name="Tween" parent="Discard/ViewPopup" index="1" groups=["cgf_tween"]]
-
-[node name="Tween" parent="Discard" index="3" groups=["cgf_tween"]]
-
-[node name="Hand" parent="." instance=ExtResource( 3 )]
-
-[node name="Counters" parent="." instance=ExtResource( 6 )]
-margin_top = 259.0
-margin_bottom = 273.0
+[node name="Counters" parent="." instance=ExtResource("6")]
+layout_mode = 0
+offset_top = 259.0
+offset_bottom = 273.0
 
 [node name="FancyMovementToggle" type="CheckButton" parent="."]
 visible = false
-margin_right = 12.0
-margin_bottom = 20.0
-pressed = true
+layout_mode = 0
+offset_right = 12.0
+offset_bottom = 20.0
 text = "Fancy Movement"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="EnableAttach" type="CheckButton" parent="."]
 visible = false
-margin_left = 194.978
-margin_top = 1.33486
-margin_right = 395.978
-margin_bottom = 41.3349
+layout_mode = 0
+offset_left = 194.978
+offset_top = 1.33486
+offset_right = 395.978
+offset_bottom = 41.3349
 text = "Enable Attachment"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="ScalingFocusOptions" type="OptionButton" parent="."]
 visible = false
-margin_left = -1.33484
-margin_top = 44.0497
-margin_right = 187.665
-margin_bottom = 84.0497
-pressed = true
-text = "Scaling + Viewport Focus"
-items = [ "Scaling Focus", null, false, 0, null, "Viewport Focus", null, false, 1, null, "Scaling + Viewport Focus", null, false, 2, null ]
-selected = 2
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 0
+offset_left = -1.33484
+offset_top = 44.0497
+offset_right = 187.665
+offset_bottom = 84.0497
 
 [node name="ReshuffleAllDeck" type="Button" parent="."]
 visible = false
-margin_left = 9.89948
-margin_top = 116.762
-margin_right = 200.899
-margin_bottom = 136.762
+layout_mode = 0
+offset_left = 9.89948
+offset_top = 116.762
+offset_right = 200.899
+offset_bottom = 136.762
 text = "Reshuffle all cards into deck"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="ReshuffleAllDiscard" type="Button" parent="."]
 visible = false
-margin_left = 9.89948
-margin_top = 140.334
-margin_right = 200.899
-margin_bottom = 160.334
+layout_mode = 0
+offset_left = 9.89948
+offset_top = 140.334
+offset_right = 200.899
+offset_bottom = 160.334
 text = "Reshuffle all cards into discard"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="OvalHandToggle" type="CheckButton" parent="."]
 visible = false
-margin_left = 405.31
-margin_top = 1.12245
-margin_right = 594.31
-margin_bottom = 41.1225
-pressed = true
-text = "Oval Hand Shape"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+layout_mode = 0
+offset_left = 405.31
+offset_top = 1.12245
+offset_right = 594.31
+offset_bottom = 41.1225
+text = "Oval Hand Shape3D"
 
 [node name="Debug" type="CheckButton" parent="."]
 visible = false
-margin_left = 789.192
-margin_top = 3.36737
-margin_right = 978.192
-margin_bottom = 43.3674
-pressed = true
+layout_mode = 0
+offset_left = 789.192
+offset_top = 3.36737
+offset_right = 978.192
+offset_bottom = 43.3674
 text = "Debug"
-__meta__ = {
-"_edit_use_anchors_": false
-}
 
 [node name="BoardPlacementGrid" type="PanelContainer" parent="." groups=["placement_grid"]]
 visible = false
-self_modulate = Color( 1, 1, 1, 0.121569 )
+self_modulate = Color(1, 1, 1, 0.121569)
+layout_mode = 0
 anchor_left = 1.0
 anchor_right = 1.0
-margin_left = -504.238
-margin_top = 14.8477
-margin_right = -5.23779
-margin_bottom = 210.848
-custom_styles/panel = SubResource( 2 )
-script = ExtResource( 9 )
-__meta__ = {
-"_edit_group_": true,
-"_edit_use_anchors_": false
-}
-highlight = Color( 1.3, 0, 0.457031, 1.3 )
+offset_left = -504.238
+offset_top = 14.8477
+offset_right = -5.23779
+offset_bottom = 210.848
+theme_override_styles/panel = SubResource("2")
+script = ExtResource("9")
+highlight = Color(1.3, 0, 0.457031, 1.3)
 
 [node name="GridContainer" type="GridContainer" parent="BoardPlacementGrid"]
-margin_left = 2.0
-margin_top = 2.0
-margin_right = 497.0
-margin_bottom = 194.0
-custom_constants/vseparation = 5
-custom_constants/hseparation = 5
+layout_mode = 2
+theme_override_constants/h_separation = 5
+theme_override_constants/v_separation = 5
 columns = 4
-__meta__ = {
-"_edit_group_": true,
-"_edit_use_anchors_": false
-}
 
-[node name="BoardPlacementSlot" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
+[node name="BoardPlacementSlot" parent="BoardPlacementGrid/GridContainer" instance=ExtResource("8")]
+layout_mode = 2
 
-[node name="BoardPlacementSlot2" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
-margin_left = 125.0
-margin_right = 245.0
+[node name="BoardPlacementSlot2" parent="BoardPlacementGrid/GridContainer" instance=ExtResource("8")]
+layout_mode = 2
 
-[node name="BoardPlacementSlot3" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
-margin_left = 250.0
-margin_right = 370.0
+[node name="BoardPlacementSlot3" parent="BoardPlacementGrid/GridContainer" instance=ExtResource("8")]
+layout_mode = 2
 
-[node name="BoardPlacementSlot4" parent="BoardPlacementGrid/GridContainer" instance=ExtResource( 8 )]
-margin_left = 375.0
-margin_right = 495.0
+[node name="BoardPlacementSlot4" parent="BoardPlacementGrid/GridContainer" instance=ExtResource("8")]
+layout_mode = 2
 
 [node name="Control" type="Control" parent="BoardPlacementGrid"]
-margin_left = 2.0
-margin_top = 2.0
-margin_right = 497.0
-margin_bottom = 194.0
+layout_mode = 2
 
 [node name="Label" type="Label" parent="BoardPlacementGrid/Control"]
-modulate = Color( 1, 1, 1, 0.627451 )
-margin_left = -20.0
-margin_top = -20.0
-margin_right = 475.0
-custom_fonts/font = SubResource( 3 )
-__meta__ = {
-"_edit_use_anchors_": false
-}
+modulate = Color(1, 1, 1, 0.627451)
+layout_mode = 0
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 475.0
+theme_override_fonts/font = SubResource("3")
 
 [node name="DeckBuilderPopup" type="Popup" parent="."]
-margin_right = 40.0
-margin_bottom = 40.0
 
 [node name="SeedLabel" type="Label" parent="."]
-margin_right = 40.0
-margin_bottom = 14.0
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 14.0
 
 [connection signal="toggled" from="FancyMovementToggle" to="." method="_on_FancyMovementToggle_toggled"]
 [connection signal="toggled" from="EnableAttach" to="." method="_on_EnableAttach_toggled"]
