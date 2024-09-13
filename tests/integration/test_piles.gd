@@ -91,7 +91,7 @@ class TestPopupView:
 				"Cards in popup should be returned with get_all_cards()")
 		assert_eq(12,discard.get_node("ViewPopup/CardView").get_child_count(),
 				"All cards all migrated to popup window")
-		#TODO: ViewPopup is now a Window, not a Control and cannot modulate
+		#94: ViewPopup is now a Window, not a Control and cannot modulate
 		#assert_eq(1.0,discard.get_node("ViewPopup").modulate[3],
 				#"ViewPopup should be visible")
 		cards[1].move_to(discard)

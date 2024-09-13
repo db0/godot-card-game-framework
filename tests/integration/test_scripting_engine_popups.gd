@@ -27,18 +27,18 @@ class TestFilteredMultipleChoice:
 		}
 		await table_move(card, Vector2(100,200))
 		target.is_faceup = false
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		var menu = board.get_node("CardChoices")
 		assert_true(menu.visible)
 		menu._on_CardChoices_id_pressed(3)
 		assert_eq("Rotate This Card",menu.selected_key)
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		menu.hide()
 		assert_eq(card.card_rotation, 90,
 				"Card should be rotated 90 degrees")
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		cards[3].is_faceup = false
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		menu = board.get_node("CardChoices")
 		assert_null(menu, "menu should not appear when filter does not match")
 	#
@@ -56,7 +56,7 @@ class TestFilteredMultipleChoice:
 			confirm._on_OptionalConfirmation_confirmed()
 			assert_true(confirm.is_accepted, "Confirmation dialog accepted")
 			confirm.hide()
-		await yield_to(card._flip_tween, "finished", 0.5).YIELD
+		await yield_to(card._flip_tween, "finished", 0.5)
 		assert_false(card.is_faceup,
 				"Card should be face-down after accepted dialog")
 
@@ -77,7 +77,8 @@ class TestFilteredMultipleChoice:
 			confirm._on_OptionalConfirmation_cancelled()
 			assert_false(confirm.is_accepted, "Confirmation dialog not accepted")
 			confirm.hide()
-		await yield_to(target._flip_tween, "finished", 0.5).YIELD
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5)
 		assert_false(target.is_faceup,
 				"Card should be face-down after even afer other optional task canceled")
 		assert_false(target.targeting_arrow.is_targeting,
@@ -103,7 +104,7 @@ class TestTaskConfimDialogueTarget:
 		if confirm:
 			confirm._on_OptionalConfirmation_cancelled()
 			confirm.hide()
-		await yield_to(card._flip_tween, "finished", 0.5).YIELD
+		await yield_to(card._flip_tween, "finished", 0.5)
 		assert_true(card.is_faceup,
 				"Card should not be face-down with a canceled cost dialog")
 		assert_false(card.targeting_arrow.is_targeting,
@@ -127,11 +128,11 @@ class TestTaskConfimDialogueTarget:
 		if confirm:
 			confirm._on_OptionalConfirmation_confirmed()
 			confirm.hide()
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_true(card.targeting_arrow.is_targeting,
 				"Card started targeting once dialogue accepted")
 		await target_card(card,target)
-		await yield_to(card._flip_tween, "finished", 0.5).YIELD
+		await yield_to(card._flip_tween, "finished", 0.5)
 		assert_false(card.is_faceup,
 				"Card should be face-down once the cost dialogue is accepted")
 
@@ -157,7 +158,7 @@ class TestScriptConfirmDialog:
 		if confirm:
 			confirm._on_OptionalConfirmation_cancelled()
 			confirm.hide()
-		await yield_to(card._flip_tween, "finished", 0.5).YIELD
+		await yield_to(card._flip_tween, "finished", 0.5)
 		assert_true(card.is_faceup,
 				"Card has not have executed any tasks with canceled script dialog")
 		assert_eq(0, card.card_rotation,
@@ -168,7 +169,7 @@ class TestScriptConfirmDialog:
 		if confirm:
 			confirm._on_OptionalConfirmation_confirmed()
 			confirm.hide()
-		await yield_to(card._flip_tween, "finished", 0.5).YIELD
+		await yield_to(card._flip_tween, "finished", 0.5)
 		assert_false(card.is_faceup,
 				"Card execute all tasks properly after script confirm")
 		assert_eq(180, card.card_rotation,
@@ -199,8 +200,8 @@ class TestAskIntegerWithCardMoves:
 		var ask_integer = board.get_node("AskInteger")
 		ask_integer.number = 2
 		ask_integer.hide()
-		await yield_to(target._tween, "finished", 0.5).YIELD
-		await yield_to(target._tween, "finished", 0.5).YIELD
+		await yield_to(target._tween, "finished", 0.5)
+		await yield_to(target._tween, "finished", 0.5)
 		assert_eq(2,discard.get_card_count(), "2 cards should have been discarded")
 
 class TestAskIntegerWithModTokens:
@@ -226,6 +227,6 @@ class TestAskIntegerWithModTokens:
 		var ask_integer = board.get_node("AskInteger")
 		ask_integer.number = 3
 		ask_integer.hide()
-		await yield_for(0.2).YIELD
+		await yield_for(0.2)
 		var bio_token: Token = card.tokens.get_token("bio")
 		assert_eq(3,bio_token.count,"Token increased by specified amount")

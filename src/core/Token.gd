@@ -4,7 +4,11 @@ class_name Token
 extends HBoxContainer
 
 
-@export var count := 0: get = get_count, set = set_count
+@export var count := 0: 
+	get: 	
+		var _ret = await get_count_and_alterants()
+		return _ret.count
+	set(value): set_count(value)
 var _count := 0
 var token_drawer
 
@@ -77,7 +81,7 @@ func get_count_and_alterants() -> Dictionary:
 			token_drawer.owner_card,
 			"get_token",
 			{SP.KEY_TOKEN_NAME: name,},
-			count)
+			_count)
 	var return_dict := {
 		"count": _count + alteration.value_alteration,
 		"alteration": alteration

@@ -9,13 +9,13 @@ class TestCustomScript:
 		# Custom scripts have to be predefined in code
 		# So not possible to specify them as runtime scripts
 		card.execute_scripts()
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		assert_freed(card, "Test Card 2")
 		card = cards[1]
 		target = cards[3]
 		card.execute_scripts()
 		await target_card(card,target)
-		await yield_for(0.3).YIELD
+		await yield_for(0.3)
 		assert_freed(target, "Test Card 1")
 
 class TestRotateCard:
@@ -28,7 +28,7 @@ class TestRotateCard:
 				"degrees": 90}]}}
 		await table_move(card, Vector2(100,200))
 		card.execute_scripts()
-		await yield_to(card._tween, "finished", 1).YIELD
+		await yield_to(card._tween, "finished", 1)
 		assert_eq(card.card_rotation, 90,
 				"Card should be rotated 90 degrees")
 
@@ -42,8 +42,8 @@ class TestFlipCard:
 					"set_faceup": false}]}}
 		card.execute_scripts()
 		await target_card(card,target)
-		await yield_to(target._flip_tween, "finished", 0.5).YIELD
-		await yield_to(target._flip_tween, "finished", 0.5).YIELD
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5)
 		assert_false(target.is_faceup,
 				"Target should be face-down")
 		card.scripts = {"manual": {"hand": [
@@ -52,8 +52,8 @@ class TestFlipCard:
 					"set_faceup": true}]}}
 		card.execute_scripts()
 		await target_card(card,target)
-		await yield_to(target._flip_tween, "finished", 0.5).YIELD
-		await yield_to(target._flip_tween, "finished", 0.5).YIELD
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5)
 		assert_true(target.is_faceup,
 				"Target should be face-up again")
 
@@ -88,7 +88,8 @@ class TestMoveCardToContainer:
 				"subject": "self",
 				"dest_container": "discard"}]}}
 		card.execute_scripts()
-		await yield_to(target._tween, "finished", 0.5).YIELD
+		if target._tween.get_ref():
+			await yield_to(target._tween, "finished", 0.5)
 		assert_eq(cfc.NMAP.discard,card.get_parent(),
 				"Card should have moved to discard pile")
 		card = cards[1]
@@ -98,7 +99,8 @@ class TestMoveCardToContainer:
 				"dest_index": 5,
 				"dest_container": "deck"}]}}
 		card.execute_scripts()
-		await yield_to(target._tween, "finished", 0.5).YIELD
+		if target._tween.get_ref():
+			await yield_to(target._tween, "finished", 0.5)
 		assert_eq(cfc.NMAP.deck,card.get_parent(),
 				"Card should have moved to deck")
 		assert_eq(5,card.get_my_card_index(),
@@ -114,7 +116,8 @@ class TestMoveCardHandToBoard:
 				"subject": "self",
 				"board_position":  Vector2(100,100)}]}}
 		card.execute_scripts()
-		await yield_to(card._tween, "finished", 0.5).YIELD
+		if card._tween.get_ref():
+			await yield_to(card._tween, "finished", 0.5)
 		assert_eq(cfc.NMAP.board,card.get_parent(),
 				"Card should have moved to board")
 		assert_eq(Vector2(100,100),card.global_position,
@@ -132,7 +135,8 @@ class TestMoveCard:
 				"src_container": "deck",
 				"dest_container": "discard"}]}}
 		card.execute_scripts()
-		await yield_to(target._tween, "finished", 0.5).YIELD
+		if target._tween.get_ref():
+			await yield_to(target._tween, "finished", 0.5)
 		assert_eq(cfc.NMAP.discard,target.get_parent(),
 				"Card should have moved to discard pile")
 		target = cfc.NMAP.deck.get_card(3)
@@ -144,14 +148,15 @@ class TestMoveCard:
 				"src_container": "deck",
 				"dest_container": "discard"}]}}
 		card.execute_scripts()
-		await yield_to(target._tween, "finished", 1).YIELD
+		if target._tween.get_ref():
+			await yield_to(target._tween, "finished", 1)
 		assert_eq(cfc.NMAP.discard,target.get_parent(),
 				"Card should have moved to discard")
 		assert_eq(1,target.get_my_card_index(),
 				"Card should have moved to index 1")
 
 	func test_move_card_cont_to_board():
-		await yield_for(0.2).YIELD
+		await yield_for(0.2)
 		target = cfc.NMAP.deck.get_card(5)
 		card.scripts = {"manual": {"hand": [
 				{"name": "move_card_to_board",
@@ -160,8 +165,9 @@ class TestMoveCard:
 				"src_container": "deck",
 				"board_position":  Vector2(1000,200)}]}}
 		card.execute_scripts()
-		await yield_to(card._tween, "finished", 0.5).YIELD
-		await yield_for(0.2).YIELD
+		if card._tween.get_ref():
+			await yield_to(card._tween, "finished", 0.5)
+		await yield_for(0.2)
 		assert_almost_eq(Vector2(1000,200),target.global_position, Vector2(5,5),
 				"Card should have moved to specified board position")
 		target = cfc.NMAP.deck.get_card(0)
@@ -206,7 +212,7 @@ class TestModToken:
 		card.execute_scripts()
 		await target_card(card,target)
 		# My scripts are slower now
-		await yield_for(0.2).YIELD
+		await yield_for(0.2)
 		assert_eq(2,industry_token.count,"Token set to specified amount")
 
 class TestShuffleContainer:
@@ -254,8 +260,8 @@ class TestAttachCard:
 				"subject": "target"}]}}
 		card.execute_scripts()
 		await target_card(card,target)
-		await yield_to(card._tween, "finished", 0.5).YIELD
-		await yield_to(card._tween, "finished", 0.5).YIELD
+		if target._tween.get_ref():
+			await yield_to(card._tween, "finished", 0.5)
 		assert_eq(card.current_host_card,target,
 				"Card has been hosted on the target")
 
@@ -269,8 +275,8 @@ class TestHostCard:
 				"subject": "target"}]}}
 		card.execute_scripts()
 		await target_card(card,target)
-		await yield_to(card._tween, "finished", 0.5).YIELD
-		await yield_to(card._tween, "finished", 0.5).YIELD
+		if target._tween.get_ref():
+			await yield_to(card._tween, "finished", 0.5)
 		assert_eq(target.current_host_card,card,
 				"target has been hosted on the card")
 
@@ -332,7 +338,8 @@ class TestModCounters:
 				"src_container": "deck",
 				"dest_container": "discard"}]}}
 		card.execute_scripts()
-		await yield_to(target._tween, "finished", 1).YIELD
+		if target._tween.get_ref():
+			await yield_to(target._tween, "finished", 1)
 		assert_eq(target.get_parent(),deck,
 				"Card is not moved because more than max requested as cost")
 		card.scripts = {"manual": {"hand": [
@@ -343,6 +350,7 @@ class TestModCounters:
 				"src_container": "deck",
 				"dest_container": "discard"}]}}
 		card.execute_scripts()
-		await yield_to(target._tween, "finished", 1).YIELD
+		if target._tween.get_ref():
+			await yield_to(target._tween, "finished", 1)
 		assert_eq(target.get_parent(),discard,
 				"Card is moved even though more than requested because it not cost")

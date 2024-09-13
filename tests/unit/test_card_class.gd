@@ -15,7 +15,7 @@ func before_each():
 	
 	
 func test_methods():
-	assert_eq('Card',card.get_class(), 'class name returns correct value')
+	assert_true(card is Card, 'class name returns correct value')
 
 func test_focus_setget():
 	card.set_focus(true)

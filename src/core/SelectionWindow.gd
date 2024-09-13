@@ -68,7 +68,8 @@ func initiate_selection(
 		print("DEBUG INFO:SelectionWindow: Initiated Selection")
 	# We don't allow the player to close the popup with the close button
 	# as that will not send the mandatory signal to unpause the game
-	self.close.visible = false
+	# In this case, by making the button an empty Texture2D
+	self.add_theme_icon_override("close", Texture2D.new())
 	selection_count = _selection_count
 	selection_type = _selection_type
 	is_selection_optional = _selection_optional

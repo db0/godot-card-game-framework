@@ -42,6 +42,8 @@ func _on_GridCardObject_mouse_exited() -> void:
 
 
 func get_class() -> String:
+	# As far as I can tell this is never used, but it wouldn't work as expected
+	# Godot will not override the built-in get_class() and that won't show class_name
 	return("CVGridCardObject")
 
 

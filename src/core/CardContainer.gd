@@ -130,7 +130,8 @@ func _on_Control_mouse_entered() -> void:
 # Ensures that buttons are not trying to disappear via previous animation
 func _on_button_mouse_entered() -> void:
 	# We stop ongoing animations to avoid conflicts.
-	_tween.kill()
+	if _tween:
+		_tween.kill()
 	for button in get_all_manipulation_buttons():
 		button.modulate[3] = 1
 
@@ -150,8 +151,8 @@ func _on_viewport_resized() -> void:
 
 func are_cards_still_animating() -> bool:
 	for c in get_all_cards():
-		var tt : Tween = c._tween
-		if tt: #is_running()
+		var tt := c._tween.get_ref() as Tween
+		if (tt and tt.is_running): #is_running()
 			return(true)
 	return(false)
 

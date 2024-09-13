@@ -12,12 +12,12 @@ func test_game_seed_consistency():
 	cards = draw_test_cards(10)
 	var all_index1 := []
 	hand.shuffle_cards()
-	await yield_for(0.2).YIELD
+	await yield_for(0.2)
 	for card in hand.get_all_cards():
 		all_index1.append([card.canonical_name,card.get_my_card_index()])
 
 	board.queue_free()
-	await yield_for(0.2).YIELD
+	await yield_for(0.2)
 	cfc.game_rng_seed = "GUT"
 	await setup_board()
 	cards = draw_test_cards(10)
@@ -28,7 +28,7 @@ func test_game_seed_consistency():
 	randf_range(1,2)
 	var all_index2 := []
 	hand.shuffle_cards()
-	await yield_for(0.2).YIELD
+	await yield_for(0.2)
 	for card in hand.get_all_cards():
 		all_index2.append([card.canonical_name,card.get_my_card_index()])
 	assert_eq(all_index1,all_index2,
@@ -41,18 +41,18 @@ func test_game_seed_randomization():
 	cards = draw_test_cards(10)
 	var all_index1 := []
 	hand.shuffle_cards()
-	await yield_for(0.2).YIELD
+	await yield_for(0.2)
 	for card in hand.get_all_cards():
 		all_index1.append([card.canonical_name,card.get_my_card_index()])
 
 	board.queue_free()
-	await yield_for(0.2).YIELD
+	await yield_for(0.2)
 	await setup_board()
 	cards = draw_test_cards(10)
 	cfc.game_rng.randomize()
 	var all_index2 := []
 	hand.shuffle_cards()
-	await yield_for(0.2).YIELD
+	await yield_for(0.2)
 	for card in hand.get_all_cards():
 		all_index2.append([card.canonical_name,card.get_my_card_index()])
 	assert_ne(all_index1,all_index2,

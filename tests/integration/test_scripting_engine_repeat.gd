@@ -35,6 +35,6 @@ class TestRepeatWithTarget:
 		card.execute_scripts()
 		await target_card(card,target)
 		# My scripts are slower now
-		await yield_for(0.2).YIELD
+		await yield_for(0.2)
 		var industry_token: Token = target.tokens.get_token("industry")
 		assert_eq(6,industry_token.count,"Token set to specified amount")

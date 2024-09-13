@@ -8,12 +8,13 @@ func before_each():
 
 func test_methods():
 	var container : Pile = cfc.NMAP.deck
-	assert_eq('CardContainer',container.get_class(),
+	assert_true(container is CardContainer,
 			'Class name returns correct value')
 
 
 func test_get_card_methods():
 	var container : Pile = cfc.NMAP.deck
+	#I think this is assuming a node structure that has changed
 	assert_eq(container.get_child(5),container.get_all_cards()[0],
 			"get_all_cards() works")
 	assert_eq(container.get_child(15),container.get_card(10),

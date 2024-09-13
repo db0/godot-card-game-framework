@@ -11,7 +11,7 @@ func after_all():
 func before_each():
 	await setup_board()
 	cards = draw_test_cards(5)
-	await yield_for(0.1).YIELD
+	await yield_for(0.1)
 
 
 func test_targetting():
@@ -41,7 +41,7 @@ func test_targetting():
 	await table_move(cards[2],Vector2(350,400))
 	card.targeting_arrow.initiate_targeting()
 	board._UT_interpolate_mouse_move(cards[2].global_position,card.global_position,3)
-	await yield_for(0.6).YIELD
+	await yield_for(0.6)
 	assert_true(cards[2].highlight.visible,
 			"test that hovering over multiple cards selects the top one")
 	assert_false(cards[3].highlight.visible,
@@ -53,19 +53,19 @@ func test_targetting():
 	card = cards[2]
 	card.targeting_arrow.initiate_targeting()
 	board._UT_interpolate_mouse_move(cards[3].global_position,card.global_position,3)
-	await yield_for(0.6).YIELD
+	await yield_for(0.6)
 	card.targeting_arrow.complete_targeting()
 	assert_eq(card.targeting_arrow.target_object,cards[3],
 			"Test that card on board can target card on board")
 	card.targeting_arrow.initiate_targeting()
 	board._UT_interpolate_mouse_move(cards[2].global_position,card.global_position,3)
-	await yield_for(0.6).YIELD
+	await yield_for(0.6)
 	card.targeting_arrow.complete_targeting()
 	assert_eq(card.targeting_arrow.target_object,cards[2],
 			"Test that card can target itself")
 	card.targeting_arrow.initiate_targeting()
 	board._UT_interpolate_mouse_move(cards[1].global_position,card.global_position,3)
-	await yield_for(0.6).YIELD
+	await yield_for(0.6)
 	card.targeting_arrow.complete_targeting()
 	assert_eq(card.targeting_arrow.target_object,cards[1],
 			"Test that card on board can target card in hand")

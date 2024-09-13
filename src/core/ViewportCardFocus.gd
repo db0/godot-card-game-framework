@@ -4,6 +4,7 @@
 class_name ViewportCardFocus
 extends Node2D
 
+@export var board_scene: PackedScene
 @export var info_panel_scene: PackedScene
 # This array holds all the previously focused cards.
 var _previously_focused_cards := {}
@@ -22,10 +23,9 @@ func _ready():
 	world_environemt.environment.glow_enabled = cfc.game_settings.get('glow_enabled', true)
 	# We use the below while to wait until all the nodes we need have been mapped
 	# "hand" should be one of them.
-	var board_scene: PackedScene = load("res://src/custom/CGFBoard.tscn")
-	var instance = board_scene.instantiate()
-	$SubViewportContainer/SubViewport.add_child(instance)
-	await cfc.all_nodes_mapped
+	$SubViewportContainer/SubViewport.add_child(board_scene.instantiate())
+	if not cfc.are_all_nodes_mapped:
+		await cfc.all_nodes_mapped
 	# warning-ignore:return_value_discarded
 	get_viewport().connect("size_changed", Callable(self, "_on_Viewport_size_changed"))
 	_on_Viewport_size_changed()

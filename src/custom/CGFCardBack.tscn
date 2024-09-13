@@ -1,10 +1,10 @@
 [gd_scene load_steps=8 format=3 uid="uid://btex348j5kfai"]
 
-[ext_resource type="Texture2D" uid="uid://deo83c43e0yoy" path="res://assets/icons/view.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://cryrr6o2vkbns" path="res://assets/icons/view.svg" id="1"]
 [ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="2"]
 [ext_resource type="Script" path="res://src/custom/CGFCardBack.gd" id="3"]
-[ext_resource type="Texture2D" uid="uid://0gxd5gimebf0" path="res://assets/card_backs/CGFBackLines.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://cn2r5nq08iphh" path="res://assets/card_backs/CGFBackDots.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://8g0ojvvr4h8y" path="res://assets/card_backs/CGFBackLines.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://p1jjwcyk4fhe" path="res://assets/card_backs/CGFBackDots.png" id="5"]
 
 [sub_resource type="StyleBoxFlat" id="1"]
 bg_color = Color(0.164706, 0.203922, 0.223529, 1)

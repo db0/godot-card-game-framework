@@ -134,6 +134,8 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 			# This is useful for example, when the targeting task would move
 			# The subject to another pile but we want to check (#SUBJECT_PARENT)
 			# against the parent it had before it was moved.
+			# FIXME: We get hung up here because prev_subjects isn't assigned sometimes
+			# priming scripts seems to not happen correctly - script isn't marked as valid
 			if script.get_property(SP.KEY_SUBJECT) == SP.KEY_SUBJECT_V_PREVIOUS\
 					and prev_subjects.size() == 0:
 				var current_index := scripts_queue.find(task)
@@ -167,7 +169,7 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 						"modifier": _retrieve_temp_modifiers(script, "properties")
 					}
 				var retcode = call(script.script_name, script)
-				retcode = await retcode.completed
+				retcode = await retcode #.completed
 				# We set the previous subjects only after the execution, because some tasks
 				# might change the previous subjects for the future tasks
 				if not script.get_property(SP.KEY_PROTECT_PREVIOUS):
@@ -181,7 +183,6 @@ func execute(_run_type := CFInt.RunType.NORMAL) -> void:
 						# because there's no point in asking the player
 						# about a task they cannot perform anyway.
 						var confirm_return = await script.check_confirm()
-						await confirm_return.completed
 						if not script.is_accepted:
 							can_all_costs_be_paid = false
 			# If a cost script is not valid
@@ -302,7 +303,12 @@ func move_card_to_container(script: ScriptTask) -> int:
 			# We don't allow to draw more cards than the hand size
 			# But we don't consider it a failed cost (as most games allow you
 			# to try and draw more cards when you're full but just won't draw any)
-			card.move_to(dest_container,dest_index, null, tags)
+			
+			# TODO: Attempt to call function 'move_to' in base 'previously freed' on a null instance
+			# when the card is null. This is related to several GODOT open issues
+			if not card == null:
+				card.move_to(dest_container,dest_index, null, tags)
+			# TODO: Sometimes script.owner is empty, which causes a similar error
 			await script.owner.get_tree().create_timer(0.05).timeout
 	if script.get_property(SP.KEY_STORE_INTEGER):
 		stored_integer = script.subjects.size()
@@ -402,7 +408,7 @@ func mod_tokens(script: ScriptTask) -> int:
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
 	if not set_to_mod:
 		alteration = await _check_for_alterants(script, modification)
-		await alteration.completed
+		#await alteration.completed
 	var token_diff := 0
 	for card in script.subjects:
 		var current_tokens: int
@@ -461,7 +467,6 @@ func spawn_card(script: ScriptTask) -> void:
 	else:
 		count = script.get_property(SP.KEY_OBJECT_COUNT)
 	alteration = await _check_for_alterants(script, count)
-	await alteration.completed
 	var spawned_cards := []
 	if grid_name:
 		var grid: BoardPlacementGrid
@@ -694,7 +699,6 @@ func modify_properties(script: ScriptTask) -> int:
 							new_value,
 							modification,
 							property)
-					alteration = await alteration.completed
 			# We set the value according to whatever was in the script
 			# which covers string and array values
 			# but integers will need some processing for alterants.
@@ -743,7 +747,8 @@ func ask_integer(script: ScriptTask) -> void:
 	var maximum = script.get_property(SP.KEY_ASK_INTEGER_MAX)
 	integer_dialog.prep(script.owner.canonical_name, minimum, maximum)
 	# We have to wait until the player has finished selecting an option
-	await integer_dialog.popup_hide
+	#TODO: AcceptDialog is no longer a popup so popup_hide isn't availailable
+	await integer_dialog.canceled
 	stored_integer = integer_dialog.number
 	# Garbage cleanup
 	integer_dialog.queue_free()
@@ -823,7 +828,6 @@ func mod_counter(script: ScriptTask) -> int:
 	var set_to_mod: bool = script.get_property(SP.KEY_SET_TO_MOD)
 	if not set_to_mod:
 		alteration = await _check_for_alterants(script, modification)
-		alteration = await alteration.completed
 	if script.get_property(SP.KEY_STORE_INTEGER):
 		var current_count = cfc.NMAP.board.counters.get_counter(
 				counter_name, script.owner)
@@ -862,13 +866,13 @@ func execute_scripts(script: ScriptTask) -> int:
 		# If not specific exec_state has been requested
 		# we execute whatever scripts of the state the card is currently in.
 		if not requested_exec_state or requested_exec_state == card.get_state_exec():
-			var sceng = card.execute_scripts(
+			var sceng = await card.execute_scripts(
 					script.owner,
 					script.get_property(SP.KEY_EXEC_TRIGGER),
 					{}, costs_dry_run())
 			# We make sure we wait until the execution is finished
 			# before cleaning out the temp properties/counters
-			await sceng.completed
+			# await sceng.completed
 			# Executing scripts on other cards need to noy only check their
 			# own costs are possible, but the target cards as well
 			# but only if the subject is explictly specified, such as
@@ -938,7 +942,6 @@ func _check_for_alterants(script: ScriptTask, value: int, subject = null) -> int
 		script.script_definition,
 		value,
 		subject)
-	alteration = await alteration.completed
 	return(alteration.value_alteration)
 
 
@@ -965,7 +968,6 @@ func _check_for_property_alterants(
 		script.script_name,
 		script_def,
 		value)
-	await alteration.completed
 	return(alteration.value_alteration)
 
 

@@ -12,11 +12,11 @@ jobs:
     name: Unit & Integration Tests
     steps:
     - name: "✔️ Checkout"
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: Check out personal godot-tester repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         repository: db0/godot-tester
         path: ./.github/actions/godot-tester
@@ -24,7 +24,7 @@ jobs:
     - name: ⚙ Run Tests
       uses: ./.github/actions/godot-tester
       with:
-        version: 3.4.4
+        version: "4.2.1"
         # should be long enough for asset import files to get generated
         import-time: 300
         assert-check: true
@@ -40,14 +40,14 @@ jobs:
     needs: ["GUT"]
     steps:
     - name: "✔️ Checkout"
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
     - name: "🤖 Export game"
-      uses: firebelley/godot-export@v3.0.0
+      uses: firebelley/godot-export@v5.2.1
       with:
-        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/3.4/Godot_v3.4-stable_linux_headless.64.zip
-        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/3.4/Godot_v3.4-stable_export_templates.tpz
+        godot_executable_download_url: https://downloads.tuxfamily.org/godotengine/4.2.1/Godot_v4.2.1-stable_linux.x86_64.zip
+        godot_export_templates_download_url: https://downloads.tuxfamily.org/godotengine/4.2.1/Godot_v4.2.1-stable_export_templates.tpz
         relative_project_path: ./
         base_version: Demo
         create_release: false

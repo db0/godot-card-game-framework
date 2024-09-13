@@ -32,7 +32,7 @@ class TestCostsWithAlterants:
 				"alteration": 4}]}}
 		cfc.flush_cache()
 		card.execute_scripts()
-		await yield_to(card._tween, "finished", 0.5).YIELD
+		await yield_to(card._tween, "finished", 0.5)
 		assert_eq(await board.counters.get_counter("research"),4,
 				"Counter modified to modification + alterant")
 		assert_eq(card.card_rotation,90,
@@ -160,7 +160,7 @@ class TestAlterantsRespectMultipleTags:
 				"tags": ["GUT", "CGF"],
 				"counter_name":  "research",
 				"modification": 3}]}}
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		card.execute_scripts()
 		assert_eq(await board.counters.get_counter("research"),15,
 				"Counter altered because tag matches one of the tags defined in task")

@@ -27,9 +27,9 @@ func _ready() -> void:
 	default_color = CFConst.TARGETTING_ARROW_COLOUR
 	$ArrowHead.color = CFConst.TARGETTING_ARROW_COLOUR
 	# warning-ignore:return_value_discarded
-	$ArrowHead/Area2D.connect("area_entered", Callable(self, "_on_ArrowHead_area_entered"))
+	$ArrowHead/Area2D.connect("area_entered", _on_ArrowHead_area_entered)
 	# warning-ignore:return_value_discarded
-	$ArrowHead/Area2D.connect("area_exited", Callable(self, "_on_ArrowHead_area_exited"))
+	$ArrowHead/Area2D.connect("area_exited", _on_ArrowHead_area_exited)
 
 
 func _process(_delta: float) -> void:
@@ -73,7 +73,7 @@ func complete_targeting() -> void:
 #
 # It takes care to highlight potential cards which can serve as targets.
 func _on_ArrowHead_area_entered(area: Area2D) -> void:
-	if area.get_class() == 'Card' and not area in _potential_targets:
+	if (area is Card) and (not area in _potential_targets):
 		_potential_targets.append(area)
 		if 'highlight' in owner_object:
 			owner_object.highlight.highlight_potential_card(
@@ -85,7 +85,7 @@ func _on_ArrowHead_area_entered(area: Area2D) -> void:
 #
 # It clears potential highlights and adjusts potential cards as targets
 func _on_ArrowHead_area_exited(area: Area2D) -> void:
-	if area.get_class() == 'Card' and area in _potential_targets:
+	if (area is Card) and (area in _potential_targets):
 		# We remove the card we stopped hovering from the _potential_targets
 		_potential_targets.erase(area)
 		# And we explicitly hide its cards focus since we don't care about it anymore

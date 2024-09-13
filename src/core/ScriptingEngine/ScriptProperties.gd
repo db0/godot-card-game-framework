@@ -1567,7 +1567,7 @@ static func check_properties(card, property_filters: Dictionary) -> bool:
 		else:
 			if not CFUtils.compare_strings(
 					property_filters[property],
-					card.get_property(property),
+					str(card.get_property(property)), #not ideal, but prevents problem of dictionary not being string
 					comparison_type):
 				card_matches = false
 	return(card_matches)

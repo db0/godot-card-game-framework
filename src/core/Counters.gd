@@ -166,7 +166,7 @@ func get_counter_and_alterants(
 			"get_counter",
 			{SP.KEY_COUNTER_NAME: counter_name,},
 			counters[counter_name])
-		await alteration.completed
+		#await alteration.completed
 	# The first element is always the total modifier from all alterants
 	count += alteration.value_alteration
 	var temp_modifiers = {

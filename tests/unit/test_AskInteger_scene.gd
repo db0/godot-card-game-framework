@@ -82,23 +82,25 @@ func test_submit():
 	ask_integer._on_AskInteger_confirmed()
 	await yield_for(0.1)
 	assert_eq(0,ask_integer.number)
-	assert_signal_not_emitted(ask_integer,"popup_hide")
+	assert_signal_not_emitted(ask_integer,"canceled")
 	line.text = "11"
 	line._on_IntegerLineEdit_text_changed("11")
 	ask_integer._on_AskInteger_confirmed()
 	await yield_for(0.1)
 	assert_eq(0,ask_integer.number)
-	assert_signal_not_emitted(ask_integer,"popup_hide")
+	assert_signal_not_emitted(ask_integer,"canceled")
 	line.text = "abd"
 	line._on_IntegerLineEdit_text_changed("abd")
 	ask_integer._on_AskInteger_confirmed()
 	await yield_for(0.1)
 	assert_eq(0,ask_integer.number)
-	assert_signal_not_emitted(ask_integer,"popup_hide")
+	assert_signal_not_emitted(ask_integer,"canceled")
 	line.text = "2"
 	line._on_IntegerLineEdit_text_changed("2")
 	ask_integer._on_AskInteger_confirmed()
 	await yield_for(0.1)
-	assert_signal_emitted(ask_integer,"popup_hide")
+	#This used to be "popup_hide", but AcceptDialog no longer has that signal
+	#I'm not sure what the test actually wants so it's failing currently
+	assert_signal_emitted(ask_integer,"canceled")
 	assert_eq(2,ask_integer.number)
 

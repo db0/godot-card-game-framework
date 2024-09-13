@@ -17,9 +17,9 @@ jobs:
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Check out personal godot-tester repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: db0/godot-tester
           path: ./.github/actions/godot-tester
@@ -27,7 +27,7 @@ jobs:
       - name: Godot Tester
         uses: ./.github/actions/godot-tester
         with:
-          version: 3.4.4
+          version: 4.2.1
           # should be long enough for asset import files to get generated
           import-time: 10
           assert-check: true

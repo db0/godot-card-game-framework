@@ -51,7 +51,7 @@ func test_board_facedown():
 
 	await move_mouse(card.global_position)
 	await yield_for(0.1) # Wait to allow dupe to be created
-	#TODO: for some reason _previously_focused_cards doesn't populate in this test
+	#pre: for some reason _previously_focused_cards doesn't populate in this test
 	var dupe: Card = main._previously_focused_cards[card]
 	var dupe_front = dupe.get_node("Control/Front")
 	var dupe_back = dupe.get_node("Control/Back")

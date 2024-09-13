@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://b6fj0ebclat8o" path="res://src/custom/CGFCardTemplate.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://btex348j5kfai" path="res://src/custom/CGFCardBack.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://src/custom/cards/BlueFront.tscn" id="3"]
+[ext_resource type="PackedScene" uid="uid://c2slaf5ty3b78" path="res://src/custom/cards/BlueFront.tscn" id="3"]
 
 [node name="Card" instance=ExtResource("1")]
 card_back_design = ExtResource("2")

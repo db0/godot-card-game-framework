@@ -29,10 +29,8 @@ var is_disabled := false: set = set_disabled
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	$CollisionShape2D.shape.radius = MOUSE_RADIUS
-	# warning-ignore:return_value_discarded
-	connect("area_entered", Callable(self, "_on_MousePointer_area_entered"))
-	# warning-ignore:return_value_discarded
-	connect("area_exited", Callable(self, "_on_MousePointer_area_exited"))
+	connect("area_entered", _on_MousePointer_area_entered)
+	connect("area_exited", _on_MousePointer_area_exited)
 	if cfc._debug:
 		$DebugShape.visible = true
 

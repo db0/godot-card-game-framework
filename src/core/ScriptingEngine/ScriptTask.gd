@@ -16,19 +16,15 @@ var is_cost := false
 var is_else := false
 var needs_subject := false
 
-var _owner
-var _script
-var _calling_trigger_object
-
 # prepares the script_definition needed by the task to function.
-#TODO: did this break anything? .(owner, script, _trigger_object)
+#TODO: did this break anything? .(owner, script, _trigger_object) This used to shadow script to
+#local script, which filled in the script_definition. 
 func _init(owner,
 		script: Dictionary,
 		_trigger_object,
 		_trigger_details) -> void:
-	self.owner = owner
-	self.script = script
-	self.trigger_object = _trigger_object
+	super._init(owner, script, _trigger_object)
+	trigger_details = _trigger_details
 	# The function name to be called gets its own var
 	script_name = get_property("name")
 	trigger_details = _trigger_details

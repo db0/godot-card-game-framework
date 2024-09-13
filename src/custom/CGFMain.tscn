@@ -1,7 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://beda6ia2ho0rr"]
+[gd_scene load_steps=4 format=3 uid="uid://beda6ia2ho0rr"]
 
 [ext_resource type="PackedScene" uid="uid://dm4pry2qodp81" path="res://src/core/Main.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://bt0dlngjkpx6e" path="res://src/custom/CGFBoard.tscn" id="2_m8qju"]
 [ext_resource type="PackedScene" uid="uid://tsh5bu1buul3" path="res://src/custom/CGFInfoPanel.tscn" id="3"]
 
 [node name="Main" instance=ExtResource("1")]
+board_scene = ExtResource("2_m8qju")
 info_panel_scene = ExtResource("3")

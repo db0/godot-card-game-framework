@@ -26,7 +26,7 @@ class TestStoreIntegetInverted:
 						"subject_index": "top"
 					}]}}
 		card.execute_scripts()
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(discard.get_card_count(),3, "3 cards should have been discarded")
 
 class TestStoreIntegerWithCounters:
@@ -53,7 +53,7 @@ class TestStoreIntegerWithCounters:
 						"modification": "retrieve_integer",
 					}]}}
 		card.execute_scripts()
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(await board.counters.get_counter("credits"),7,
 			"2 Credits added")
 
@@ -85,7 +85,7 @@ class TestStoreIntegerWithCounters:
 					"subject_index": "top"
 				}]}}
 		card.execute_scripts()
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(discard.get_card_count(),2, "2 cards should have been discarded")
 
 class TestRetrieveIntegerTempModProperties:
@@ -129,7 +129,7 @@ class TestRetrieveIntegerTempModProperties:
 		}
 		card.execute_scripts()
 		await target_card(card,target, "slow")
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(hand.get_card_count(), 8,
 			"Draw the temp modified amount of cards")
 
@@ -169,7 +169,7 @@ class TestRetrieveIntegerTempModCounter:
 		}
 		card.execute_scripts()
 		await target_card(card,target, "slow")
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(hand.get_card_count(), 8,
 			"Draw the temp modified amount of cards")
 
@@ -198,7 +198,7 @@ class TestAdjustRetrievedInteger:
 						"adjust_retrieved_integer": 2,
 					}]}}
 		card.execute_scripts()
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(await board.counters.get_counter("credits"),9,
 			"4 Credits added")
 
@@ -225,7 +225,7 @@ class TestAdjustRetrievedInteger:
 						"is_inverted": true
 					}]}}
 		card.execute_scripts()
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(await board.counters.get_counter("credits"),3,
 			"2 Credits Removed")
 

@@ -177,6 +177,9 @@ func set_pile_name(value: String) -> void:
 #
 # Also checks if the popup window is currently open, and puts the card
 # directly there in that case.
+#TODO: I haven't touched this, because it's unclear exactly which calls to
+# add_child are supposed to use this and which are supposed to use built-in
+# Theoretically, GODOT should have never been calling this, but now it definitely won't
 func add_child(node, _legible_unique_name=false, InternalMode=0) -> void:
 	if not $ViewPopup.visible:
 		super.add_child(node)

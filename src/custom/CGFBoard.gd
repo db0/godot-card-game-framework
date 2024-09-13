@@ -20,7 +20,8 @@ func _ready() -> void:
 	if not cfc.ut:
 		cfc.game_rng_seed = CFUtils.generate_random_seed()
 		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
-	await cfc.all_nodes_mapped
+	if not cfc.are_all_nodes_mapped:
+		await cfc.all_nodes_mapped
 	if not get_tree().get_root().has_node('Gut'):
 		load_test_cards(false)
 	# warning-ignore:return_value_discarded
@@ -51,14 +52,14 @@ func _on_ReshuffleAllDeck_pressed() -> void:
 func _on_ReshuffleAllDiscard_pressed() -> void:
 	reshuffle_all_in_pile(cfc.NMAP.discard)
 
-func reshuffle_all_in_pile(pile = cfc.NMAP.deck):
+func reshuffle_all_in_pile(pile: Pile = cfc.NMAP.deck):
 	for c in get_tree().get_nodes_in_group("cards"):
 		if c.get_parent() != pile and c.state != Card.CardState.DECKBUILDER_GRID:
 			c.move_to(pile)
 			await get_tree().create_timer(0.1).timeout
 	# Last card in, is the top card of the pile
 	var last_card : Card = pile.get_top_card()
-	if last_card._tween.is_running():
+	if last_card._tween and last_card._tween.is_running():
 		await last_card._tween.finished
 	await get_tree().create_timer(0.2).timeout
 	pile.shuffle_cards()

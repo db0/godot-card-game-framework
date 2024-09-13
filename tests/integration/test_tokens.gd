@@ -66,11 +66,11 @@ class TestBoardTokens:
 		var prev_y = card.get_node("Control/Tokens/Drawer").size.y
 	# warning-ignore:return_value_discarded
 		card.tokens.mod_token("blood")
-		await yield_for(0.1).YIELD # Wait to allow drawer to expand
+		await yield_for(0.1) # Wait to allow drawer to expand
 		assert_lt(prev_y, card.get_node("Control/Tokens/Drawer").size.y,
 				"When adding more tokens, visible drawer size expands")
 		await move_mouse(Vector2(1000,600))
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 				"Drawer does not appear without card hover when card has tokens")
 		assert_almost_eq(Vector2(card.get_node("Control").size.x - 35,20),
@@ -88,7 +88,7 @@ class TestBoardTokens:
 		prev_y = card.get_node("Control/Tokens/Drawer").size.y
 		assert_eq(CFConst.ReturnCode.CHANGED, card.tokens.mod_token("tech", -1),
 				"Removing token to 0 returns a CHANGED result")
-		await yield_for(0.1).YIELD # Wait to allow node to be free'd
+		await yield_for(0.1) # Wait to allow node to be free'd
 		assert_freed(tech_token, "tech token")
 		assert_gt(prev_y, card.get_node("Control/Tokens/Drawer").size.y,
 				"When less tokens drawer size decreases")
@@ -99,19 +99,19 @@ class TestBoardTokens:
 		drop_card(card,board._UT_mouse_position)
 		await move_mouse(Vector2(1000,300))
 		await move_mouse(card.global_position)
-		await yield_for(0.6).YIELD # Wait to allow drawer to expand
+		await yield_for(0.6) # Wait to allow drawer to expand
 		card.is_faceup = false
-		#await yield_to(card.get_node('Control/Tokens/Tween'), "finished", 0.5).YIELD
+		#await yield_to(card.get_node('Control/Tokens/Tween'), "finished", 0.5)
 		assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 				"Drawer closes while Flip is ongoing")
-		#await yield_to(card.get_node('Control/Tokens/Tween'), "finished", 0.5).YIELD
+		#await yield_to(card.get_node('Control/Tokens/Tween'), "finished", 0.5)
 		assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 				"Drawer reopens once Flip is completed")
 		card.move_to(cfc.NMAP.discard)
-		await yield_for(0.4).YIELD
+		await yield_for(0.4)
 		assert_eq(0.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 				"Drawer closes on moveTo")
-		await yield_for(0.8).YIELD
+		await yield_for(0.8)
 		assert_eq(0,card.tokens.get_all_tokens().size(),"Tokens removed when card leaves table")
 
 
@@ -126,7 +126,7 @@ class TestBoardTokens:
 		assert_eq(5,magic_token.count,"Token reduced by 5")
 		assert_eq(CFConst.ReturnCode.CHANGED, card.tokens.mod_token("magic", -50),
 				"Reducing to less than 0, returns a CHANGED result")
-		await yield_for(0.1).YIELD # Wait to allow node to be free'd
+		await yield_for(0.1) # Wait to allow node to be free'd
 		assert_freed(magic_token, "magic token")
 		assert_eq(CFConst.ReturnCode.CHANGED, card.tokens.mod_token("void", 4, true),
 				"Adding new token with a set amount returns a CHANGED result")
@@ -139,7 +139,7 @@ class TestBoardTokens:
 		assert_eq(18,void_token.count,"Token set to specified lower amount")
 		assert_eq(CFConst.ReturnCode.CHANGED, card.tokens.mod_token("void", -20, true),
 				"Changeing to set amount lower than 0, returns CHANGED result")
-		await yield_for(0.1).YIELD # Wait to allow node to be free'd
+		await yield_for(0.1) # Wait to allow node to be free'd
 		assert_freed(void_token, "void token")
 
 
@@ -153,7 +153,7 @@ class TestOffBoardTokens:
 		card = cards[3]
 		await table_move(card, Vector2(1000,100))
 		card._on_Card_mouse_entered()
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		# warning-ignore:return_value_discarded
 		card.tokens.mod_token("tech")
 		# warning-ignore:return_value_discarded
@@ -167,11 +167,11 @@ class TestOffBoardTokens:
 				"Two tokens can use the same texture but different names")
 		assert_false(tech_token.get_node("Buttons").visible,
 				"Tokens buttons not shown when cfc.show_token_buttons == false")
-		await yield_for(0.2).YIELD
+		await yield_for(0.2)
 		assert_eq(1.0, card.get_node("Control/Tokens/Drawer").self_modulate[3],
 				"Drawer appears when card gets tokens while card focused")
 		card.move_to(cfc.NMAP.discard)
-		await yield_for(0.8).YIELD
+		await yield_for(0.8)
 		assert_false(card.tokens.get_all_tokens().is_empty(),
 				"Tokens not removed when card leaves with tokens_only_on_board == false")
 		cfc._ut_tokens_only_on_board = true

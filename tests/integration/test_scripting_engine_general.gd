@@ -18,12 +18,12 @@ class TestBasics:
 		card.execute_scripts()
 		pending("Empty does not create a ScriptingEngine object")
 		card.is_faceup = false
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		card.scripts = {"hand": [{"name": "flip_card","set_faceup": true}]}
 		card.execute_scripts()
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		assert_false(card.is_faceup,
 				"Scripts should not fire while card is face-down")
 		card.scripts = {"hand": [{}]}
@@ -37,51 +37,52 @@ class TestStateExecutions:
 				"subject": "self",
 				"set_faceup": false}]}}
 		card.execute_scripts()
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		assert_false(card.is_faceup,
 			"Target should be face-down")
 		card.is_faceup = true
 		card.state = Card.CardState.PUSHED_ASIDE
 		card.execute_scripts()
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		assert_false(card.is_faceup,
 			"Target should be face-down")
 		card.is_faceup = true
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		card.state = Card.CardState.FOCUSED_IN_HAND
 		card.execute_scripts()
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		assert_false(card.is_faceup,
 			"Target should be face-down")
 		card.is_faceup = true
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		card.scripts = {"manual": {"board": [
 				{"name": "flip_card",
 				"subject": "self",
 				"set_faceup": false}]}}
 		await table_move(card, Vector2(500,100))
 		card.execute_scripts()
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		assert_false(card.is_faceup,
 			"Target should be face-down")
 		card.is_faceup = true
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		card.state = Card.CardState.FOCUSED_ON_BOARD
 		card.execute_scripts()
-		await yield_to(target._flip_tween, "finished", 0.5) 
-		await yield_to(target._flip_tween, "finished", 0.5) 
+		if target._flip_tween:
+			await yield_to(target._flip_tween, "finished", 0.5) 
 		assert_false(card.is_faceup,
 			"Target should be face-down")
 		card.move_to(cfc.NMAP.discard)
-		await yield_to(card._tween, "finished", 1) 
-		await yield_to(card._tween, "finished", 0.5) 
+		if card._tween.get_ref():
+			var tween = card._tween.get_ref()	
+			await yield_to(card.tween, "finished", 0.5) 
 		card.scripts = {"manual": {"pile": [
 				{"name": "move_card_to_board",
 				"subject": "self",
@@ -89,15 +90,20 @@ class TestStateExecutions:
 		discard._on_View_Button_pressed()
 		await yield_for(1) 
 		card.execute_scripts()
-		await yield_to(card._tween, "finished", 1) 
-		await yield_to(card._tween, "finished", 0.5) 
+		if card._tween.get_ref():
+			var tween = card._tween.get_ref()
+			await yield_to(tween, "finished", 0.5) 
 		assert_eq(Vector2(100,100),card.global_position,
 				"Card should have moved to specified position")
 		card.move_to(cfc.NMAP.discard)
-		await yield_to(card._tween, "finished", 1) 
+		if card._tween.get_ref():
+			var tween = card._tween.get_ref()
+			await yield_to(tween, "finished", 1) 
 		card.state = Card.CardState.FOCUSED_IN_POPUP
 		card.execute_scripts()
-		await yield_to(card._tween, "finished", 1) 
+		if card._tween.get_ref():
+			var tween = card._tween.get_ref()
+			await yield_to(card._tween, "finished", 1) 
 		assert_eq(Vector2(100,100),card.global_position,
 				"Card should have moved to specified position")
 

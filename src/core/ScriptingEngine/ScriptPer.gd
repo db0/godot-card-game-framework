@@ -11,13 +11,14 @@ extends ScriptObject
 		#per_msg.trigger_object) -> void:
 func _init(per_msg: perMessage) -> void:
 	# The name of the type of per we're seeking gets its own var
+	super._init(per_msg.script_owner, per_msg.per_definitions, per_msg.trigger_object)
 	script_name = per_msg.per_seek
 	if get_property(SP.KEY_ORIGINAL_PREVIOUS):
 		prev_subjects = per_msg.prev_subjects
 	else:
 		prev_subjects = per_msg.subjects
 	var ret = await _find_subjects()
-	ret = await ret.completed
+	#ret = await ret.completed
 	# We emit a signal when done so that our ScriptingEngine
 	# knows we're ready to continue
 	emit_signal("primed")

@@ -130,7 +130,7 @@ func target_card(source: Card,
 	if source == target:
 		# If the target is the same as the source, we need to wait a bit
 		# because otherwise the _is_targeted might not be set yet.
-		await yield_for(0.6).YIELD
+		await yield_for(0.6)
 	# We need to offset a bit towards the card rect, to ensure the arrow
 	# Area2D collides
 	var extra_offset = Vector2(10,10)
@@ -166,6 +166,5 @@ func execute_with_yield(card: Card) -> void:
 
 
 func execute_with_target(card: Card, target: Card) -> void:
-	var sceng = await card.execute_scripts()
+	var _sceng = await card.execute_scripts()
 	target_card(card,target,"slow")
-	sceng = await sceng.completed

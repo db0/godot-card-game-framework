@@ -15,7 +15,7 @@ class TestExecuteScripts:
 				"board_position":  Vector2(100,100)}]}}
 		card.execute_scripts()
 		await target_card(card,target)
-		await yield_to(card._tween, "finished", 1).YIELD
+		await yield_to(card._tween, "finished", 1)
 		assert_eq(target.get_parent(),cfc.NMAP.board,
 				"Card should have moved to board")
 		target.scripts = {"manual": {"board": [
@@ -34,7 +34,7 @@ class TestExecuteScripts:
 				"exec_trigger":  "manual",}]}}
 		card.execute_scripts()
 		await target_card(card,target)
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		industry_token = target.tokens.get_token("industry")
 		assert_not_null(industry_token,
 				"scripts executed because exec state not defined")
@@ -44,7 +44,7 @@ class TestExecuteScripts:
 				"exec_trigger":  "false",}]}}
 		card.execute_scripts()
 		await target_card(card,target)
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		industry_token = target.tokens.get_token("industry")
 		assert_not_null(industry_token)
 		if industry_token:
@@ -79,7 +79,7 @@ class TestExecuteScriptsWithTempModProp:
 		}
 		card.execute_scripts()
 		await target_card(card,target, "slow")
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(hand.get_card_count(), 7,
 			"Draw the temp modified amount of cards")
 		card.scripts = {"manual": {"hand": [
@@ -90,11 +90,11 @@ class TestExecuteScriptsWithTempModProp:
 				"require_exec_state": "hand"}]}}
 		card.execute_scripts()
 		await target_card(card,target, "slow")
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(hand.get_card_count(), 7,
 			"Ensure the property does not go negative")
 		target.execute_scripts()
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		assert_eq(hand.get_card_count(), 8,
 			"Ensure temp property modifiers don't remain")
 
@@ -124,7 +124,7 @@ class TestExecuteScriptsWithTempModCounter:
 		}
 		card.execute_scripts()
 		await target_card(card,target, "slow")
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(hand.get_card_count(), 7,
 			"Draw the temp modified amount of cards")
 		card.scripts = {"manual": {"hand": [
@@ -135,11 +135,11 @@ class TestExecuteScriptsWithTempModCounter:
 				"require_exec_state": "hand"}]}}
 		card.execute_scripts()
 		await target_card(card,target, "slow")
-		await yield_for(0.5).YIELD
+		await yield_for(0.5)
 		assert_eq(hand.get_card_count(), 7,
 			"Ensure the counter does not go negative")
 		target.execute_scripts()
-		await yield_for(0.1).YIELD
+		await yield_for(0.1)
 		assert_eq(hand.get_card_count(), 8,
 			"Ensure temp property modifiers don't remain")
 
