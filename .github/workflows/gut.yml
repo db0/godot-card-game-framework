@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
+    - run: touch /test_results.xml
     - uses: croconut/godot-tester@v5
       with:
         # required
@@ -35,4 +36,3 @@ jobs:
         # relative path to the xml file to read / write GUT's results from, recommended
         # for direct-scene users to check this file if you have issues
         result-output-file: "test_results.xml"
-
