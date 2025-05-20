@@ -163,3 +163,4 @@ This software is licensed undel AGPL3. However [an addendum](ADDENDUM1) has been
 
 * [Hypnagonia](https://github.com/db0/hypnagonia)
 * [Fragment Forge](https://github.com/db0/Fragment-Forge)
+* [Torah Timeline](https://github.com/benjamin-korobkin/torah-timeline)
