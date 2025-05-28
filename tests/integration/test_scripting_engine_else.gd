@@ -15,7 +15,7 @@ class TestElse:
 				{"name": "mod_counter",
 				"modification": -10,
 				"counter_name":  "credits"},]}}
-		yield(table_move(card, Vector2(100,200)), "completed")
+		await table_move(card, Vector2(100,200)).completed
 		card.execute_scripts()
 		assert_eq(1,board.counters.get_counter("research"),
 				"Counter increased because rotation cost could be paid")

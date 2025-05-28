@@ -6,20 +6,20 @@
 [node name="PlacementGridDemo" instance=ExtResource( 2 )]
 
 [node name="GridContainer" parent="." index="0"]
-margin_right = 497.0
+offset_right = 497.0
 columns = 4
 
 [node name="BoardPlacementSlot2" parent="GridContainer" index="1" instance=ExtResource( 1 )]
-margin_left = 125.0
-margin_right = 245.0
+offset_left = 125.0
+offset_right = 245.0
 
 [node name="BoardPlacementSlot3" parent="GridContainer" index="2" instance=ExtResource( 1 )]
-margin_left = 250.0
-margin_right = 370.0
+offset_left = 250.0
+offset_right = 370.0
 
 [node name="BoardPlacementSlot4" parent="GridContainer" index="3" instance=ExtResource( 1 )]
-margin_left = 375.0
-margin_right = 495.0
+offset_left = 375.0
+offset_right = 495.0
 
 [node name="Control" parent="." index="1"]
-margin_right = 497.0
+offset_right = 497.0

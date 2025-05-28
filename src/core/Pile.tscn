@@ -1,6 +1,6 @@
 [gd_scene load_steps=8 format=2]
 
-[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="DynamicFontData" id=1]
+[ext_resource path="res://fonts/Xolonium-Regular.ttf" type="FontFile" id=1]
 [ext_resource path="res://src/core/Pile.gd" type="Script" id=2]
 [ext_resource path="res://src/core/Highlight.tscn" type="PackedScene" id=3]
 
@@ -11,7 +11,7 @@ corner_radius_top_right = 25
 corner_radius_bottom_right = 25
 corner_radius_bottom_left = 25
 
-[sub_resource type="DynamicFont" id=2]
+[sub_resource type="FontFile" id=2]
 size = 23
 outline_size = 2
 outline_color = Color( 0, 0, 0, 1 )
@@ -26,7 +26,7 @@ corner_radius_bottom_right = 15
 corner_radius_bottom_left = 15
 
 [sub_resource type="RectangleShape2D" id=4]
-extents = Vector2( 78, 123 )
+size = Vector2( 78, 123 )
 
 [node name="Pile" type="Area2D" groups=["piles"]]
 script = ExtResource( 2 )
@@ -37,7 +37,7 @@ __meta__ = {
 [node name="Control" type="Panel" parent="."]
 self_modulate = Color( 1, 1, 1, 0.5 )
 mouse_filter = 1
-custom_styles/panel = SubResource( 1 )
+theme_override_styles/panel = SubResource( 1 )
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -46,70 +46,70 @@ __meta__ = {
 
 [node name="CenterContainer" type="CenterContainer" parent="Control"]
 anchor_right = 1.0
-margin_bottom = 158.0
+offset_bottom = 158.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Control/CenterContainer"]
-margin_top = 48.0
-margin_right = 62.0
-margin_bottom = 110.0
+offset_top = 48.0
+offset_right = 62.0
+offset_bottom = 110.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="Label" type="Label" parent="Control/CenterContainer/VBoxContainer"]
-margin_right = 62.0
-margin_bottom = 29.0
-custom_fonts/font = SubResource( 2 )
+offset_right = 62.0
+offset_bottom = 29.0
+theme_override_fonts/font = SubResource( 2 )
 text = "Deck"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="PanelContainer" type="PanelContainer" parent="Control/CenterContainer/VBoxContainer"]
-margin_top = 33.0
-margin_right = 62.0
-margin_bottom = 62.0
+offset_top = 33.0
+offset_right = 62.0
+offset_bottom = 62.0
 mouse_filter = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
-custom_styles/panel = SubResource( 3 )
+theme_override_styles/panel = SubResource( 3 )
 
 [node name="CenterContainer" type="CenterContainer" parent="Control/CenterContainer/VBoxContainer/PanelContainer"]
-margin_right = 62.0
-margin_bottom = 29.0
+offset_right = 62.0
+offset_bottom = 29.0
 mouse_filter = 2
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="CardCount" type="Label" parent="Control/CenterContainer/VBoxContainer/PanelContainer/CenterContainer"]
-margin_left = 23.0
-margin_right = 39.0
-margin_bottom = 29.0
-custom_fonts/font = SubResource( 2 )
+offset_left = 23.0
+offset_right = 39.0
+offset_bottom = 29.0
+theme_override_fonts/font = SubResource( 2 )
 text = "0"
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="ManipulationButtons" type="VBoxContainer" parent="Control"]
-margin_left = 2.0
-margin_top = 20.0
-margin_right = 20.0
-margin_bottom = 44.0
+offset_left = 2.0
+offset_top = 20.0
+offset_right = 20.0
+offset_bottom = 44.0
 mouse_filter = 0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="View" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
-margin_right = 27.0
-margin_bottom = 20.0
+offset_right = 27.0
+offset_bottom = 20.0
 mouse_filter = 1
 text = "V"
 __meta__ = {
@@ -117,9 +117,9 @@ __meta__ = {
 }
 
 [node name="ViewSorted" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
-margin_top = 24.0
-margin_right = 27.0
-margin_bottom = 44.0
+offset_top = 24.0
+offset_right = 27.0
+offset_bottom = 44.0
 mouse_filter = 1
 text = "VS"
 __meta__ = {
@@ -127,9 +127,9 @@ __meta__ = {
 }
 
 [node name="Shuffle" type="Button" parent="Control/ManipulationButtons" groups=["manipulation_button"]]
-margin_top = 48.0
-margin_right = 27.0
-margin_bottom = 68.0
+offset_top = 48.0
+offset_right = 27.0
+offset_bottom = 68.0
 mouse_filter = 1
 text = "S"
 expand_icon = true
@@ -144,17 +144,17 @@ position = Vector2( 78, 123 )
 shape = SubResource( 4 )
 
 [node name="ViewPopup" type="PopupPanel" parent="."]
-margin_right = 8.0
-margin_bottom = 8.0
+offset_right = 8.0
+offset_bottom = 8.0
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
 [node name="CardView" type="GridContainer" parent="ViewPopup"]
-margin_left = 4.0
-margin_top = 4.0
-margin_right = 4.0
-margin_bottom = 4.0
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 4.0
+offset_bottom = 4.0
 columns = 7
 __meta__ = {
 "_edit_use_anchors_": false
@@ -165,27 +165,27 @@ __meta__ = {
 [node name="Tween" type="Tween" parent="." groups=["cgf_tween"]]
 
 [node name="Debug" type="VBoxContainer" parent="."]
-margin_left = 15.977
-margin_top = -84.0894
-margin_right = 55.977
-margin_bottom = -34.0894
+offset_left = 15.977
+offset_top = -84.0894
+offset_right = 55.977
+offset_bottom = -34.0894
 __meta__ = {
 "_edit_group_": true,
 "_edit_use_anchors_": false
 }
 
 [node name="Position" type="Label" parent="Debug"]
-margin_right = 40.0
-margin_bottom = 14.0
+offset_right = 40.0
+offset_bottom = 14.0
 
 [node name="AreaPos" type="Label" parent="Debug"]
-margin_top = 18.0
-margin_right = 40.0
-margin_bottom = 32.0
+offset_top = 18.0
+offset_right = 40.0
+offset_bottom = 32.0
 
 [node name="Size" type="Label" parent="Debug"]
-margin_top = 36.0
-margin_right = 40.0
-margin_bottom = 50.0
+offset_top = 36.0
+offset_right = 40.0
+offset_bottom = 50.0
 
 [node name="OpacityTween" type="Tween" parent="." groups=["cgf_tween"]]

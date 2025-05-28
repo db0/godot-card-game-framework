@@ -19,7 +19,7 @@ var is_targeting := false
 # once it is used
 var target_object : Node = null
 # Stores a reference to the Card that is hosting this node
-onready var owner_object = get_parent()
+@onready var owner_object = get_parent()
 
 
 func _ready() -> void:
@@ -27,9 +27,9 @@ func _ready() -> void:
 	default_color = CFConst.TARGETTING_ARROW_COLOUR
 	$ArrowHead.color = CFConst.TARGETTING_ARROW_COLOUR
 	# warning-ignore:return_value_discarded
-	$ArrowHead/Area2D.connect("area_entered", self, "_on_ArrowHead_area_entered")
+	$ArrowHead/Area2D.connect("area_entered", Callable(self, "_on_ArrowHead_area_entered"))
 	# warning-ignore:return_value_discarded
-	$ArrowHead/Area2D.connect("area_exited", self, "_on_ArrowHead_area_exited")
+	$ArrowHead/Area2D.connect("area_exited", Callable(self, "_on_ArrowHead_area_exited"))
 
 
 func _process(_delta: float) -> void:
@@ -57,7 +57,7 @@ func complete_targeting() -> void:
 		# We don't want to emit a signal, if the card is a dummy viewport card
 		# or we already selected a target during dry-run
 		if owner_object.get_parent() != null \
-				and owner_object.get_parent().name != "Viewport":
+				and owner_object.get_parent().name != "SubViewport":
 			# We make the targeted card also emit a targeting signal for automation
 			tc.emit_signal("card_targeted", tc, "card_targeted",
 					{"targeting_source": owner_object})
@@ -92,7 +92,7 @@ func _on_ArrowHead_area_exited(area: Area2D) -> void:
 		if 'highlight' in area:
 			area.highlight.set_highlight(false)
 		# Finally, we make sure we highlight any other cards we're still hovering
-		if not _potential_targets.empty() and 'highlight' in owner_object:
+		if not _potential_targets.is_empty() and 'highlight' in owner_object:
 			owner_object.highlight.highlight_potential_card(
 				CFConst.TARGET_HOVER_COLOUR,
 				_potential_targets)
@@ -102,8 +102,8 @@ func _on_ArrowHead_area_exited(area: Area2D) -> void:
 func _draw_targeting_arrow() -> void:
 	# This variable calculates the card center's position on the whole board
 	var card_half_size
-	if "rect_size" in owner_object:
-		card_half_size = owner_object.rect_size/2
+	if "size" in owner_object:
+		card_half_size = owner_object.size/2
 	else: 
 		card_half_size = owner_object.card_size/2
 	var centerpos = global_position + card_half_size * scale

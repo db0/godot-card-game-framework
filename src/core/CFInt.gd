@@ -6,7 +6,7 @@
 # These constants are not expected to be tweaked by developers who need
 # to be able to upgrade the CGF.
 class_name CFInt
-extends Reference
+extends RefCounted
 
 # The types of ScriptingEngine executions we can have
 #

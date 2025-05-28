@@ -2,7 +2,7 @@
 #
 # The definition happens via object name
 class_name CustomScripts
-extends Reference
+extends RefCounted
 
 var costs_dry_run := false
 

@@ -3,7 +3,7 @@
 #
 # It also provides a few static functions for comparing filters
 class_name ScriptProperties
-extends Reference
+extends RefCounted
 
 
 #---------------------------------------------------------------------

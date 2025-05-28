@@ -3,9 +3,9 @@
 [ext_resource path="res://src/core/CardViewer/CVFilterButton.gd" type="Script" id=1]
 
 [node name="CVFilterButton" type="Button"]
-margin_left = 308.0
-margin_right = 320.0
-margin_bottom = 20.0
+offset_left = 308.0
+offset_right = 320.0
+offset_bottom = 20.0
 toggle_mode = true
 shortcut_in_tooltip = false
 pressed = true

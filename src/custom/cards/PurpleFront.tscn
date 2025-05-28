@@ -10,4 +10,4 @@ corner_radius_bottom_right = 10
 corner_radius_bottom_left = 10
 
 [node name="Front" instance=ExtResource( 1 )]
-custom_styles/panel = SubResource( 1 )
+theme_override_styles/panel = SubResource( 1 )
