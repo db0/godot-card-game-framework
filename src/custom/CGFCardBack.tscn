@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://btex348j5kfai"]
 
 [ext_resource type="Texture2D" uid="uid://cryrr6o2vkbns" path="res://assets/icons/view.svg" id="1"]
-[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="2"]
-[ext_resource type="Script" path="res://src/custom/CGFCardBack.gd" id="3"]
+[ext_resource type="FontFile" uid="uid://bxs3e5po2qm1c" path="res://fonts/Xolonium-Regular.ttf" id="2"]
+[ext_resource type="Script" uid="uid://by241rskyum5" path="res://src/custom/CGFCardBack.gd" id="3"]
 [ext_resource type="Texture2D" uid="uid://8g0ojvvr4h8y" path="res://assets/card_backs/CGFBackLines.png" id="4"]
 [ext_resource type="Texture2D" uid="uid://p1jjwcyk4fhe" path="res://assets/card_backs/CGFBackDots.png" id="5"]
 

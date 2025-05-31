@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://ch8qt87b5m8ga"]
 
-[ext_resource type="Script" path="res://src/core/CardViewer/CVFilterButton.gd" id="1"]
+[ext_resource type="Script" uid="uid://b23usuigt5hqs" path="res://src/core/CardViewer/CVFilterButton.gd" id="1"]
 
 [node name="CVFilterButton" type="Button"]
 offset_left = 308.0

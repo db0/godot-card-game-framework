@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://ccqepx5u7j5eu"]
 
-[ext_resource type="Script" path="res://src/core/CardViewer/DeckBuilder/DeckLoader.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://cs8oiklalqlc7" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="2"]
+[ext_resource type="Script" uid="uid://bgk7tqp6luho5" path="res://src/core/CardViewer/DeckBuilder/DeckLoader.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://2eed3u85cqds" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="2"]
 
 [sub_resource type="StyleBoxLine" id="1"]
 color = Color(1, 0.4, 0, 1)

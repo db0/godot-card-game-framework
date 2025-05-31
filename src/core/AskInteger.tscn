@@ -1,7 +1,7 @@
 [gd_scene load_steps=5 format=3 uid="uid://cxqq3ymrjacs5"]
 
-[ext_resource type="Script" path="res://src/core/AskInteger.gd" id="1"]
-[ext_resource type="Script" path="res://src/core/IntegerLineEdit.gd" id="2"]
+[ext_resource type="Script" uid="uid://dqj8affuv1fy6" path="res://src/core/AskInteger.gd" id="1"]
+[ext_resource type="Script" uid="uid://d1t8odlecmrab" path="res://src/core/IntegerLineEdit.gd" id="2"]
 
 [sub_resource type="StyleBoxFlat" id="1"]
 bg_color = Color(1, 1, 1, 1)

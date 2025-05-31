@@ -1,14 +1,17 @@
 [gd_scene load_steps=8 format=3 uid="uid://cdkmxw5o8cgrj"]
 
-[ext_resource type="PackedScene" path="res://src/core/CardViewer/CardLabel.tscn" id="1"]
-[ext_resource type="Script" path="res://src/core/CardViewer/DeckBuilder/QuantityNumberButton.gd" id="2"]
-[ext_resource type="Script" path="res://src/core/IntegerLineEdit.gd" id="3"]
-[ext_resource type="Script" path="res://src/core/CardViewer/DeckBuilder/DBListCardObject.gd" id="4"]
-[ext_resource type="FontFile" uid="uid://cs8oiklalqlc7" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="5"]
+[ext_resource type="PackedScene" uid="uid://buxphht5k7omf" path="res://src/core/CardViewer/CardLabel.tscn" id="1"]
+[ext_resource type="Script" uid="uid://bp2cpnmy0ra6s" path="res://src/core/CardViewer/DeckBuilder/QuantityNumberButton.gd" id="2"]
+[ext_resource type="Script" uid="uid://d1t8odlecmrab" path="res://src/core/IntegerLineEdit.gd" id="3"]
+[ext_resource type="Script" uid="uid://dpg7ryl4enui5" path="res://src/core/CardViewer/DeckBuilder/DBListCardObject.gd" id="4"]
+[ext_resource type="FontFile" uid="uid://2eed3u85cqds" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="5"]
 [ext_resource type="FontFile" path="res://src/core/CardViewer/CVCardObjectFont.tres" id="6"]
 
 [sub_resource type="FontFile" id="1"]
 fallbacks = Array[Font]([ExtResource("5")])
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
 cache/0/16/0/ascent = 0.0
 cache/0/16/0/descent = 0.0
 cache/0/16/0/underline_position = 0.0

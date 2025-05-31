@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dogw3g4p70p1n"]
 
-[ext_resource type="Script" path="res://src/core/SelectionWindow.gd" id="1"]
+[ext_resource type="Script" uid="uid://cw5nuic6h2sgj" path="res://src/core/SelectionWindow.gd" id="1"]
 
 [node name="SelectionWindow" type="AcceptDialog" groups=["selection_windows"]]
 script = ExtResource("1")

@@ -1,7 +1,7 @@
 [gd_scene load_steps=9 format=3 uid="uid://l4j3vem6tlok"]
 
-[ext_resource type="Script" path="res://src/core/Hand.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="2"]
+[ext_resource type="Script" uid="uid://cado4oye2pu67" path="res://src/core/Hand.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://bxs3e5po2qm1c" path="res://fonts/Xolonium-Regular.ttf" id="2"]
 [ext_resource type="PackedScene" uid="uid://d1rsjrmjo6acw" path="res://src/core/Highlight.tscn" id="3"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]

@@ -1,14 +1,14 @@
 [gd_scene load_steps=15 format=3 uid="uid://dficgqm7kvea1"]
 
-[ext_resource type="Script" path="res://src/custom/CGFDiscard.gd" id="1"]
+[ext_resource type="Script" uid="uid://cp4mewbnr8205" path="res://src/custom/CGFDiscard.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://cm3g4vp4jtd2q" path="res://src/core/Pile.tscn" id="2"]
 [ext_resource type="PackedScene" uid="uid://ns61wd4x7pmt" path="res://src/custom/CGFHand.tscn" id="3"]
-[ext_resource type="Script" path="res://src/custom/CGFDeck.gd" id="4"]
-[ext_resource type="Script" path="res://src/custom/CGFBoard.gd" id="5"]
+[ext_resource type="Script" uid="uid://d2fklpe588a48" path="res://src/custom/CGFDeck.gd" id="4"]
+[ext_resource type="Script" uid="uid://csgs6xlurie31" path="res://src/custom/CGFBoard.gd" id="5"]
 [ext_resource type="PackedScene" uid="uid://bhgbbxs86qxph" path="res://src/custom/CGFCounters.tscn" id="6"]
 [ext_resource type="PackedScene" uid="uid://didret4x8ebw3" path="res://src/custom/CGFPlacementGridDemo.tscn" id="7"]
 [ext_resource type="PackedScene" uid="uid://cmk1xpwlevglm" path="res://src/custom/CGFModifiedLabelGrid.tscn" id="8"]
-[ext_resource type="FontFile" uid="uid://cs8oiklalqlc7" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="9"]
+[ext_resource type="FontFile" uid="uid://2eed3u85cqds" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="9"]
 [ext_resource type="PackedScene" uid="uid://b11xuhluxj23k" path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" id="10"]
 [ext_resource type="Theme" uid="uid://b50sjum3qm447" path="res://themes/darktheme/darktheme.theme" id="12"]
 

@@ -1,10 +1,13 @@
 [gd_scene load_steps=6 format=3 uid="uid://bey0lyqflhe81"]
 
-[ext_resource type="Script" path="res://src/core/CardChoices.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="2"]
+[ext_resource type="Script" uid="uid://oueauq2xi2pc" path="res://src/core/CardChoices.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://bxs3e5po2qm1c" path="res://fonts/Xolonium-Regular.ttf" id="2"]
 
 [sub_resource type="FontFile" id="1"]
 fallbacks = Array[Font]([ExtResource("2")])
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
 cache/0/16/0/ascent = 0.0
 cache/0/16/0/descent = 0.0
 cache/0/16/0/underline_position = 0.0

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bweqvdfktdvmd"]
 
-[ext_resource type="Script" path="res://src/core/Card/TargetingArrow.gd" id="1"]
+[ext_resource type="Script" uid="uid://bbnywenk6ttls" path="res://src/core/Card/TargetingArrow.gd" id="1"]
 
 [sub_resource type="Curve" id="1"]
 _data = [Vector2(0, 0.463636), 0.0, 0.0, 0, 0, Vector2(1, 1), 1.4, 0.0, 0, 0]

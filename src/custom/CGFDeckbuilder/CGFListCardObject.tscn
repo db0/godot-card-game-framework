@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://iuhkagqb6smh"]
 
 [ext_resource type="PackedScene" uid="uid://6ugtnrkwf53h" path="res://src/core/CardViewer/CardLibrary/CLListCardObject.tscn" id="1"]
-[ext_resource type="Script" path="res://src/custom/CGFDeckbuilder/CGFListCardObject.gd" id="2"]
+[ext_resource type="Script" uid="uid://cu0pf25tkyjvi" path="res://src/custom/CGFDeckbuilder/CGFListCardObject.gd" id="2"]
 
 [node name="ListCardObject" instance=ExtResource("1")]
 script = ExtResource("2")

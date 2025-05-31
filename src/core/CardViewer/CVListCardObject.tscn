@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://c7ol2l4250d3b"]
 
 [ext_resource type="PackedScene" uid="uid://buxphht5k7omf" path="res://src/core/CardViewer/CardLabel.tscn" id="2"]
-[ext_resource type="Script" path="res://src/core/CardViewer/CVListCardObject.gd" id="3"]
+[ext_resource type="Script" uid="uid://cdlmfjv80bnto" path="res://src/core/CardViewer/CVListCardObject.gd" id="3"]
 
 [node name="ListCardObject" type="HBoxContainer"]
 offset_right = 628.0

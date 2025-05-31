@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://b6jxx28xql1lo"]
 
-[ext_resource type="Texture2D" uid="uid://deo83c43e0yoy" path="res://assets/icons/view.svg" id="1"]
-[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="2"]
+[ext_resource type="Texture2D" uid="uid://cryrr6o2vkbns" path="res://assets/icons/view.svg" id="1"]
+[ext_resource type="FontFile" uid="uid://bxs3e5po2qm1c" path="res://fonts/Xolonium-Regular.ttf" id="2"]
 
 [sub_resource type="FontFile" id="1"]
 fallbacks = Array[Font]([ExtResource("2")])

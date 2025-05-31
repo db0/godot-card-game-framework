@@ -1,13 +1,13 @@
 [gd_scene load_steps=9 format=3 uid="uid://irp5hud4poju"]
 
-[ext_resource type="PackedScene" path="res://src/core/CardViewer/CardViewer.tscn" id="1"]
+[ext_resource type="PackedScene" uid="uid://8qrwugb6apcx" path="res://src/core/CardViewer/CardViewer.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://ccqepx5u7j5eu" path="res://src/core/CardViewer/DeckBuilder/DBDeckScene.tscn" id="2"]
-[ext_resource type="Script" path="res://src/core/CardViewer/DeckBuilder/DeckBuilder.gd" id="3"]
+[ext_resource type="Script" uid="uid://bqrpr73li8xft" path="res://src/core/CardViewer/DeckBuilder/DeckBuilder.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://b2wln5olcatyd" path="res://src/core/CardViewer/DeckBuilder/DBGridCardObject.tscn" id="4"]
 [ext_resource type="PackedScene" uid="uid://btii472avyov8" path="res://src/core/CardViewer/DeckBuilder/DBDeckCardObject.tscn" id="4_c36hx"]
 [ext_resource type="PackedScene" uid="uid://cdkmxw5o8cgrj" path="res://src/core/CardViewer/DeckBuilder/DBListCardObject.tscn" id="5"]
 [ext_resource type="PackedScene" uid="uid://dfm4rponrut82" path="res://src/core/CardViewer/DeckBuilder/DBDeckSummaries.tscn" id="5_fx32b"]
-[ext_resource type="Script" path="res://src/core/CardViewer/DeckBuilder/DeckNameRandomizer.gd" id="6"]
+[ext_resource type="Script" uid="uid://6rkd44qre86l" path="res://src/core/CardViewer/DeckBuilder/DeckNameRandomizer.gd" id="6"]
 
 [node name="DeckBuilder" instance=ExtResource("1")]
 anchors_preset = 15

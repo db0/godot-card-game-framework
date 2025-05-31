@@ -1,6 +1,6 @@
 [gd_scene load_steps=5 format=3 uid="uid://dx8s5ofo0alvt"]
 
-[ext_resource type="Script" path="res://src/core/BoardPlacementSlot.gd" id="2"]
+[ext_resource type="Script" uid="uid://j5y2p57xq85v" path="res://src/core/BoardPlacementSlot.gd" id="2"]
 
 [sub_resource type="StyleBoxFlat" id="1"]
 content_margin_left = 6.0

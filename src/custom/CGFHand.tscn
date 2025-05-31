@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://ns61wd4x7pmt"]
 
 [ext_resource type="PackedScene" uid="uid://l4j3vem6tlok" path="res://src/core/Hand.tscn" id="1"]
-[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="2"]
-[ext_resource type="Script" path="res://src/custom/CGFHand.gd" id="3"]
+[ext_resource type="FontFile" uid="uid://bxs3e5po2qm1c" path="res://fonts/Xolonium-Regular.ttf" id="2"]
+[ext_resource type="Script" uid="uid://dn3oyvd5nkyf7" path="res://src/custom/CGFHand.gd" id="3"]
 
 [sub_resource type="FontFile" id="1"]
 fallbacks = Array[Font]([ExtResource("2")])

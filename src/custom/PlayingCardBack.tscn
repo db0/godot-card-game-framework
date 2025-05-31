@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://7k4gmqihsvyt"]
 
-[ext_resource type="Texture2D" uid="uid://deo83c43e0yoy" path="res://assets/icons/view.svg" id="1"]
-[ext_resource type="Texture2D" uid="uid://bkdr1ejbgv4qa" path="res://assets/card_backs/godot_back.png" id="2"]
-[ext_resource type="Script" path="res://src/core/Card/CardBackTexture.gd" id="3"]
+[ext_resource type="Texture2D" uid="uid://cryrr6o2vkbns" path="res://assets/icons/view.svg" id="1"]
+[ext_resource type="Texture2D" uid="uid://cp1g573ad3n1k" path="res://assets/card_backs/godot_back.png" id="2"]
+[ext_resource type="Script" uid="uid://b22vmkh3e6dcy" path="res://src/core/Card/CardBackTexture.gd" id="3"]
 
 [sub_resource type="StyleBoxEmpty" id="1"]
 

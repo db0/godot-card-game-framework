@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://irp5hud4poju" path="res://src/core/CardViewer/DeckBuilder/DeckBuilder.tscn" id="1"]
 [ext_resource type="PackedScene" uid="uid://tsh5bu1buul3" path="res://src/custom/CGFInfoPanel.tscn" id="2"]
-[ext_resource type="Script" path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.gd" id="4"]
+[ext_resource type="Script" uid="uid://kaof5dcxty0x" path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.gd" id="4"]
 
 [node name="DeckBuilder" instance=ExtResource("1")]
 script = ExtResource("4")

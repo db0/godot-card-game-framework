@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://dm4pry2qodp81"]
 
-[ext_resource type="Script" path="res://src/core/ViewportCardFocus.gd" id="1"]
-[ext_resource type="Script" path="res://src/core/DetailPanels.gd" id="2"]
+[ext_resource type="Script" uid="uid://v4w0osttvtq5" path="res://src/core/ViewportCardFocus.gd" id="1"]
+[ext_resource type="Script" uid="uid://bfj2agvou4pau" path="res://src/core/DetailPanels.gd" id="2"]
 [ext_resource type="Environment" path="res://src/core/MainWorld.tres" id="3"]
 
 [node name="Main" type="Node2D"]

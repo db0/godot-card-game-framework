@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://q7t83hc6iuav"]
 
-[ext_resource type="Script" path="res://src/core/CardViewer/CVGridCardObject.gd" id="1"]
+[ext_resource type="Script" uid="uid://yvh21ulltwmy" path="res://src/core/CardViewer/CVGridCardObject.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://dwr0fc7df6o4b" path="res://src/core/CardViewer/CVPreviewPopup.tscn" id="2"]
 
 [node name="GridCardObject" type="CenterContainer"]

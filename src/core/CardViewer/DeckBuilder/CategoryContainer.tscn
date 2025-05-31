@@ -1,7 +1,7 @@
 [gd_scene load_steps=4 format=3 uid="uid://c82q4wvepei58"]
 
-[ext_resource type="Script" path="res://src/core/CardViewer/DeckBuilder/CategoryContainer.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://cs8oiklalqlc7" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="2"]
+[ext_resource type="Script" uid="uid://dkaf2806ln6d2" path="res://src/core/CardViewer/DeckBuilder/CategoryContainer.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://2eed3u85cqds" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="2"]
 
 [sub_resource type="FontFile" id="1"]
 fallbacks = Array[Font]([ExtResource("2")])

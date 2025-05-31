@@ -1,9 +1,9 @@
 [gd_scene load_steps=5 format=3 uid="uid://caaf25j8jf2kd"]
 
 [ext_resource type="PackedScene" uid="uid://bgk25ncoc46an" path="res://src/core/CardViewer/CardLibrary/CardLibrary.tscn" id="1"]
-[ext_resource type="Script" path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.gd" id="2"]
+[ext_resource type="Script" uid="uid://crowm37ar0i4o" path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.gd" id="2"]
 [ext_resource type="PackedScene" uid="uid://tsh5bu1buul3" path="res://src/custom/CGFInfoPanel.tscn" id="3"]
-[ext_resource type="PackedScene" path="res://src/custom/CGFDeckbuilder/CGFListCardObject.tscn" id="4"]
+[ext_resource type="PackedScene" uid="uid://iuhkagqb6smh" path="res://src/custom/CGFDeckbuilder/CGFListCardObject.tscn" id="4"]
 
 [node name="CardLibrary" instance=ExtResource("1")]
 script = ExtResource("2")

@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=3 uid="uid://bhgbbxs86qxph"]
 
-[ext_resource type="Script" path="res://src/custom/CGFCounters.gd" id="1"]
+[ext_resource type="Script" uid="uid://baqcu5gmdys0t" path="res://src/custom/CGFCounters.gd" id="1"]
 [ext_resource type="PackedScene" uid="uid://bimlrm1saxf6a" path="res://src/custom/CGFCounter.tscn" id="2"]
 
 [node name="Counters" type="PanelContainer"]

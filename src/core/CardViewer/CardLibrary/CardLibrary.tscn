@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://bgk25ncoc46an"]
 
-[ext_resource type="PackedScene" path="res://src/core/CardViewer/CardViewer.tscn" id="1"]
-[ext_resource type="Script" path="res://src/core/CardViewer/CardLibrary/CardLibrary.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://8qrwugb6apcx" path="res://src/core/CardViewer/CardViewer.tscn" id="1"]
+[ext_resource type="Script" uid="uid://cextxhkdj2ya8" path="res://src/core/CardViewer/CardLibrary/CardLibrary.gd" id="3"]
 
 [node name="CardLibrary" instance=ExtResource("1")]
 anchors_preset = 15

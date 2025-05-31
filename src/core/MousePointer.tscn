@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://lvve1i2mayjs"]
 
-[ext_resource type="Script" path="res://src/core/MousePointer.gd" id="1"]
-[ext_resource type="FontFile" uid="uid://cs8oiklalqlc7" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="2"]
+[ext_resource type="Script" uid="uid://bv8njxhu344gh" path="res://src/core/MousePointer.gd" id="1"]
+[ext_resource type="FontFile" uid="uid://2eed3u85cqds" path="res://fonts/comfortaa/Comfortaa-Bold.ttf" id="2"]
 
 [sub_resource type="CircleShape2D" id="1"]
 radius = 2.0

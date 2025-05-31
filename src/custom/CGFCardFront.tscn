@@ -1,10 +1,10 @@
 [gd_scene load_steps=9 format=3 uid="uid://dhe8l7gromjia"]
 
-[ext_resource type="FontFile" uid="uid://cosmhtqyogr6w" path="res://fonts/Xolonium-Regular.ttf" id="1"]
-[ext_resource type="Script" path="res://src/custom/CGFCardFront.gd" id="2"]
+[ext_resource type="FontFile" uid="uid://bxs3e5po2qm1c" path="res://fonts/Xolonium-Regular.ttf" id="1"]
+[ext_resource type="Script" uid="uid://c6ccefk6gyc6m" path="res://src/custom/CGFCardFront.gd" id="2"]
 [ext_resource type="Theme" uid="uid://b50sjum3qm447" path="res://themes/darktheme/darktheme.theme" id="3"]
-[ext_resource type="Texture2D" uid="uid://cxuhr04milfuc" path="res://assets/icons/fist.png" id="4"]
-[ext_resource type="Texture2D" uid="uid://fcojquxuolrp" path="res://assets/icons/rupee.png" id="5"]
+[ext_resource type="Texture2D" uid="uid://dfhhbl7ngw7lk" path="res://assets/icons/fist.png" id="4"]
+[ext_resource type="Texture2D" uid="uid://d1wdlw2fmg237" path="res://assets/icons/rupee.png" id="5"]
 
 [sub_resource type="StyleBoxFlat" id="1"]
 bg_color = Color(0.145098, 0.145098, 0.145098, 1)
@@ -20,6 +20,9 @@ corner_radius_top_right = 10
 
 [sub_resource type="FontFile" id="3"]
 fallbacks = Array[Font]([ExtResource("1")])
+subpixel_positioning = 0
+msdf_pixel_range = 14
+msdf_size = 128
 cache/0/16/0/ascent = 0.0
 cache/0/16/0/descent = 0.0
 cache/0/16/0/underline_position = 0.0
@@ -60,12 +63,14 @@ size_flags_vertical = 1
 theme_override_colors/font_color = Color(1, 0.4, 0, 1)
 theme_override_styles/normal = SubResource("2")
 text = "Card Name"
+horizontal_alignment = 1
 
 [node name="Type" type="Label" parent="Margin/CardText"]
 custom_minimum_size = Vector2(146, 13)
 layout_mode = 2
 size_flags_vertical = 1
 text = "Type"
+horizontal_alignment = 1
 uppercase = true
 
 [node name="Tags" type="Label" parent="Margin/CardText"]
@@ -73,6 +78,7 @@ custom_minimum_size = Vector2(146, 17)
 layout_mode = 2
 size_flags_vertical = 1
 text = "Tag1 - Tag2"
+horizontal_alignment = 1
 uppercase = true
 
 [node name="Requirements" type="Label" parent="Margin/CardText"]
@@ -80,6 +86,7 @@ custom_minimum_size = Vector2(146, 14)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.290196, 0.752941, 0, 1)
 text = "Requirements"
+horizontal_alignment = 1
 
 [node name="Abilities" type="RichTextLabel" parent="Margin/CardText"]
 layout_mode = 2

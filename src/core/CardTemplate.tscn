@@ -1,8 +1,8 @@
 [gd_scene load_steps=8 format=3 uid="uid://dlx3tb6rnlovk"]
 
-[ext_resource type="Script" path="res://src/core/Card/ManipulationButtons.gd" id="1"]
-[ext_resource type="Script" path="res://src/core/CardTemplate.gd" id="2"]
-[ext_resource type="Script" path="res://src/core/Card/TokenDrawer.gd" id="5"]
+[ext_resource type="Script" uid="uid://e48ipxu0i02b" path="res://src/core/Card/ManipulationButtons.gd" id="1"]
+[ext_resource type="Script" uid="uid://b46f0umhxejbs" path="res://src/core/CardTemplate.gd" id="2"]
+[ext_resource type="Script" uid="uid://vxbnek05m7j8" path="res://src/core/Card/TokenDrawer.gd" id="5"]
 [ext_resource type="PackedScene" uid="uid://d1rsjrmjo6acw" path="res://src/core/Highlight.tscn" id="6"]
 
 [sub_resource type="RectangleShape2D" id="1"]
