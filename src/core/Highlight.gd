@@ -67,4 +67,3 @@ static func highlight_potential_container(colour : Color,
 	for slot in potential_slots:
 		slot.set_highlight(false)
 	return(potential_containers.back())
-

@@ -73,6 +73,8 @@ static func array_join(arr: Array, separator = "") -> String:
 #
 # **NOTE:** This will not work for images when exported.
 # use list_imported_in_directory() instead
+#
+# Skips uid files
 static func list_files_in_directory(path: String, prepend_needed := "", full_path := false) -> Array:
 	var files := []
 	# warning-ignore:return_value_discarded
@@ -87,7 +89,8 @@ static func list_files_in_directory(path: String, prepend_needed := "", full_pat
 				and file.begins_with(prepend_needed)\
 				and not file.ends_with(".remap")\
 				and not file.ends_with(".import")\
-				and not file.ends_with(".md"):
+				and not file.ends_with(".md")\
+				and not file.ends_with(".uid"):
 			if full_path:
 				files.append(path + file)
 			else:

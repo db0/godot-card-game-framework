@@ -83,7 +83,7 @@ func set_quantity(value) -> void:
 		grid_card_object.modulate = Color(1,1,1)
 
 
-# Sets the max amount of this card allowe in a deck
+# Sets the max amount of this card allowed in a deck
 # This can be adjusted from the card properties, or from the deckbuilder
 # exported variables.
 #
@@ -130,4 +130,3 @@ func _on_Plus_pressed() -> void:
 # Decreases the quantity by 1
 func _on_Minus_pressed() -> void:
 	set_quantity(quantity - 1)
-

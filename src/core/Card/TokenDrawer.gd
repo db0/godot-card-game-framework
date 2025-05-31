@@ -211,4 +211,3 @@ func _on_VBoxContainer_sort_children() -> void:
 	# We need to resize it's parent too
 	$Drawer.size = \
 			$Drawer.custom_minimum_size
-

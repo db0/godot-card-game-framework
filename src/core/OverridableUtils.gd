@@ -15,7 +15,7 @@ func populate_info_panels(card: Card, focus_info: DetailPanels) -> void:
 	focus_info.hide_all_info()
 	var card_illustration = await card.get_property("_illustration")
 	if card_illustration:
-		focus_info.show_illustration("Illustration by: " + card_illustration.value)
+		focus_info.show_illustration("Illustration by: " + card_illustration)
 	else:
 		focus_info.hide_illustration()
 	for tag in await card.get_property("Tags"):
