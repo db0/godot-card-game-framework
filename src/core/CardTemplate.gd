@@ -194,17 +194,17 @@ var _card_rotation = 0
 @export var on_board_tween_duration := 0.3 # (float, 0.0, 1.0, 0.05)
 # The duration of the tweening animation when cards are scaled when being dragged
 @export var dragged_tween_duration := 0.2 # (float, 0.0, 1.0, 0.05)
-# Stores the normal size of the card as it should appear on the hand.
-# It should typically should be the same as card_size,
-# but unlike card_size, it should not be adjusted in runtime
+## Stores the normal size of the card as it should appear on the hand.
+## It should typically should be the same as card_size,
+## but unlike card_size, it should not be adjusted in runtime
 @export var canonical_size := CFConst.CARD_SIZE
-# the size of the card when seen smaller (usually in a card-grid of selection window)
+## The size of the card when seen smaller (usually in a card-grid of selection window)
 @export var play_area_scale := CFConst.PLAY_AREA_SCALE
-# the size of the card when seen smaller (usually in a card-grid of selection window)
+## The size of the card when seen smaller (usually in a card-grid of selection window)
 @export var thumbnail_scale := CFConst.THUMBNAIL_SCALE
-# The size of the card when seen a thumbnail is moused-over
+## The size of the card when seen a thumbnail is moused-over
 @export var preview_scale := CFConst.PREVIEW_SCALE
-# The size of the card when seen larger in the viewport focus window
+## The size of the card when seen larger in the viewport focus window
 @export var focused_scale := CFConst.FOCUSED_SCALE
 
 # This is **the** authorative name for this node
@@ -218,10 +218,9 @@ var canonical_name : String:
 #To avoid Godot not allowing optional parameters in setters
 var _canonical_name: String
 # Ensures all nodes fit inside this rect.
-var card_size := canonical_size:
-	set(value): set_card_size(value)
+var card_size := canonical_size: set = set_card_size
 #This private value is to overcome a current Godot get/set limitation of default values
-var _card_size
+#var _card_size
 # Starting state for each card get_card_name()
 var state : int = CardState.PREVIEW: set = set_state
 var state_finalized := false
@@ -835,37 +834,42 @@ func get_property_and_alterants(property: String,
 # This allows the card layout to scale without using the .scale property
 # Which prevents the font from getting blurry
 func resize_recursively(control_node: Node, requested_scale: float) -> void:
-	if card_size != canonical_size * requested_scale:
-		card_size = canonical_size * requested_scale
-	if _original_layouts.has(control_node)\
-			and CFUtils.compare_floats(requested_scale, _original_layouts[control_node].get('scale')):
-		return
-	if control_node as Control and not _original_layouts.has(control_node):
-		_original_layouts[control_node] = {}
-		_original_layouts[control_node]["size"] = control_node.custom_minimum_size
-		_original_layouts[control_node]["position"] = control_node.position
-		if control_node as MarginContainer:
-			for margin in ["top","bottom", "left", "right"]:
-				_original_layouts[control_node]["margin_" + margin]\
-						= control_node.get("theme_override_constants/margin_" + margin)
-	for child in control_node.get_children():
-		resize_recursively(child, requested_scale)
-	if control_node as Control:
-		control_node.custom_minimum_size = _original_layouts[control_node]["size"] * requested_scale
-		control_node.call_deferred('set_size', control_node.custom_minimum_size)
-		control_node.position = _original_layouts[control_node]["position"] * requested_scale
-		if control_node as MarginContainer:
-			for margin in ["top","bottom", "left", "right"]:
-				var current_margin = control_node.get("theme_override_constants/margin_" + margin)
-				if not current_margin:
-					current_margin = 0.0
-				control_node.set("theme_override_constants/margin_" + margin,current_margin * requested_scale)
-		_original_layouts[control_node]["scale"] = requested_scale
+	# Actually, for now, just mess with the root scale.
+	# Will result in blurry text, however
+	card_size = canonical_size * requested_scale
+	#scale = Vector2(requested_scale, requested_scale)
+	#if control_node as Control and not _original_layouts.has(control_node):
+		#_original_layouts[control_node] = {}
+		#_original_layouts[control_node]["size"] = control_node.custom_minimum_size
+		#_original_layouts[control_node]["position"] = control_node.position
+		#if control_node as MarginContainer:
+			#for margin in ["top","bottom", "left", "right"]:
+				#_original_layouts[control_node]["margin_" + margin]\
+						#= control_node.get("theme_override_constants/margin_" + margin)
+	#if card_size != canonical_size * requested_scale:
+		#card_size = canonical_size * requested_scale
+	#if _original_layouts.has(control_node) and _original_layouts[control_node].has("scale")\
+			#and CFUtils.compare_floats(requested_scale, _original_layouts[control_node].get('scale')):
+		#return
+	#for child in control_node.get_children():
+		#resize_recursively(child, requested_scale)
+	#if control_node as Control:
+		#control_node.custom_minimum_size = _original_layouts[control_node]["size"] * requested_scale
+		#control_node.call_deferred('set_size', control_node.custom_minimum_size)
+		#control_node.position = _original_layouts[control_node]["position"] * requested_scale
+		#if control_node as MarginContainer:
+			#for margin in ["top","bottom", "left", "right"]:
+				#var current_margin = control_node.get("theme_override_constants/margin_" + margin)
+				#if not current_margin:
+					#current_margin = 0.0
+				#control_node.set("theme_override_constants/margin_" + margin,current_margin * requested_scale)
+		#_original_layouts[control_node]["scale"] = requested_scale
 
 
 # Sets the card size and adjusts all nodes depending on it.
-func set_card_size(value: Vector2, ignore_area = false) -> void:
-	_card_size = value
+#func set_card_size(value: Vector2, ignore_area = false) -> void:
+func set_card_size(value: Vector2) -> void:
+	card_size = value
 	_control.custom_minimum_size = value
 	# We set the card to always pivot from its center.
 	_control.pivot_offset = value/2
@@ -879,10 +883,10 @@ func set_card_size(value: Vector2, ignore_area = false) -> void:
 		# We cannot set the rect_size immediately after setting the min_size
 		# As the engine won't allow it, as the min_size change has not happened yet
 		node.call_deferred('set_size', node.custom_minimum_size)
-	highlight.position = Vector2(-3, -3)
-	if not ignore_area:
-		$CollisionShape2D.shape.extents = value / 2
-		$CollisionShape2D.position = value / 2
+	#highlight.position = Vector2(-3, -3)
+	#if not ignore_area:
+		#$CollisionShape2D.shape.extents = value / 2
+		#$CollisionShape2D.position = value / 2
 
 
 # Setter for is_faceup
@@ -2669,7 +2673,7 @@ func _process_card_state() -> void:
 				# in case it was already scaled due to being on the table etc.
 				scale = Vector2(1,1)
 				resize_recursively(_control, focused_scale * cfc.curr_scale)
-#				set_card_size(CFConst.CARD_SIZE * CFConst.FOCUSED_SCALE, true)
+				# set_card_size(CFConst.CARD_SIZE * CFConst.FOCUSED_SCALE, true)
 				card_front.scale_to(focused_scale * cfc.curr_scale)
 				card_back.scale_to(focused_scale * cfc.curr_scale)
 			# If the card has already been been viewed while down,
@@ -2695,7 +2699,7 @@ func _process_card_state() -> void:
 			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
 				scale = Vector2(1,1) * preview_scale * cfc.curr_scale
 			else:
-#				set_card_size(CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE)
+				# set_card_size(CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE)
 				resize_recursively(_control, preview_scale * cfc.curr_scale)
 				card_front.scale_to(preview_scale * cfc.curr_scale)
 			state_finalized = true
@@ -2716,7 +2720,7 @@ func _process_card_state() -> void:
 			# Commenting this out because it is messing with RichTextLabel
 			# Font resizing
 			else:
-#				set_card_size(CFConst.CARD_SIZE * thumbnail_scale)
+				# set_card_size(CFConst.CARD_SIZE * thumbnail_scale)
 				resize_recursively(_control, thumbnail_scale * cfc.curr_scale)
 				card_front.scale_to(thumbnail_scale * cfc.curr_scale)
 			await tween.finished

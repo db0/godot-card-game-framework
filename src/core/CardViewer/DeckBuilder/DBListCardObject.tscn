@@ -96,6 +96,7 @@ text = "-"
 
 [node name="CardLabel" parent="." instance=ExtResource("1")]
 layout_mode = 2
+text = "Test Card 1"
 
 [node name="Type" type="Label" parent="."]
 custom_minimum_size = Vector2(100, 0)

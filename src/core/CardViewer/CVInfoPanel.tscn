@@ -8,4 +8,4 @@ mouse_filter = 2
 [node name="Details" type="Label" parent="."]
 custom_minimum_size = Vector2(250, 13)
 layout_mode = 2
-text = "Illustration by: "
+text = "Lorem Ipsum"

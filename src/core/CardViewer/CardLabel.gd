@@ -4,16 +4,19 @@ extends RichTextLabel
 
 @onready var preview_popup := $PreviewPopup
 
-func _ready() -> void:
-	text = "Test Card 1" # debug
-
+#func _ready() -> void:
+	#text = "Test Card 1" # debug
+	
 func setup(card_name) -> void:
 	text = card_name
 
 
 func _on_CardLabel_mouse_entered() -> void:
 	preview_popup.show_preview_card(text)
+	preview_popup.visible = true
 
 
 func _on_CardLabel_mouse_exited() -> void:
 	preview_popup.hide_preview_card()
+	#preview_popup.remove_preview_card()
+	preview_popup.visible = false

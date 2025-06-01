@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://cngkim6ex04j1"]
+[gd_scene load_steps=3 format=3 uid="uid://cngkim6ex04j1"]
 
-[ext_resource type="Script" path="res://src/core/DetailPanels.gd" id="2"]
+[ext_resource type="Script" uid="uid://bfj2agvou4pau" path="res://src/core/DetailPanels.gd" id="2"]
+[ext_resource type="PackedScene" uid="uid://dohk6isueuqd2" path="res://src/core/CardViewer/CVInfoPanel.tscn" id="2_la6kg"]
 
 [node name="DetailPanels" type="GridContainer"]
 offset_left = 7.0
@@ -10,3 +11,4 @@ offset_bottom = 21.0
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 script = ExtResource("2")
+info_panel_scene = ExtResource("2_la6kg")
