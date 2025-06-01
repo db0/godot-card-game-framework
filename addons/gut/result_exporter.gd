@@ -4,7 +4,6 @@
 # of a run and exporting it in a specific format.  This can also serve as a
 # unofficial GUT export format.
 # ------------------------------------------------------------------------------
-var _utils = load('res://addons/gut/utils.gd').get_instance()
 var json = JSON.new()
 
 func _export_tests(collected_script):
@@ -17,7 +16,8 @@ func _export_tests(collected_script):
 				"passing":test.pass_texts,
 				"failing":test.fail_texts,
 				"pending":test.pending_texts,
-				"orphans":test.orphans
+				"orphans":test.orphans,
+				"time_taken": test.time_taken
 			}
 
 	return to_return
@@ -61,9 +61,6 @@ func _make_results_dict():
 	return result
 
 
-# TODO
-#	time
-#	errors
 func get_results_dictionary(gut, include_scripts=true):
 	var scripts = []
 
@@ -82,7 +79,7 @@ func get_results_dictionary(gut, include_scripts=true):
 	props.errors = gut.logger.get_errors().size()
 	props.warnings = gut.logger.get_warnings().size()
 	props.time =  gut.get_elapsed_time()
-	props.orphans = gut.get_orphan_counter().get_counter('total')
+	props.orphans = gut.get_orphan_counter().get_orphans_since('pre_run')
 	result.test_scripts.scripts = scripts
 
 	return result
@@ -90,12 +87,12 @@ func get_results_dictionary(gut, include_scripts=true):
 
 func write_json_file(gut, path):
 	var dict = get_results_dictionary(gut)
-	var json_text = json.stringify(dict, ' ')
+	var json_text = JSON.stringify(dict, ' ')
 
-	var f_result = _utils.write_file(path, json_text)
+	var f_result = GutUtils.write_file(path, json_text)
 	if(f_result != OK):
 		var msg = str("Error:  ", f_result, ".  Could not create export file ", path)
-		_utils.get_logger().error(msg)
+		GutUtils.get_logger().error(msg)
 
 	return f_result
 
@@ -103,11 +100,11 @@ func write_json_file(gut, path):
 
 func write_summary_file(gut, path):
 	var dict = get_results_dictionary(gut, false)
-	var json_text = json.stringify(dict, ' ')
+	var json_text = JSON.stringify(dict, ' ')
 
-	var f_result = _utils.write_file(path, json_text)
+	var f_result = GutUtils.write_file(path, json_text)
 	if(f_result != OK):
 		var msg = str("Error:  ", f_result, ".  Could not create export file ", path)
-		_utils.get_logger().error(msg)
+		GutUtils.get_logger().error(msg)
 
 	return f_result

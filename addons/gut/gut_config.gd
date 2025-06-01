@@ -4,10 +4,8 @@
 # to a json file.  It is also responsible for applying these settings to GUT.
 #
 # ##############################################################################
-var Gut = load('res://addons/gut/gut.gd')
-
-
 var valid_fonts = ['AnonymousPro', 'CourierPro', 'LobsterTwo', 'Default']
+
 var default_options = {
 	background_color = Color(.15, .15, .15, 1).to_html(),
 	config_file = 'res://.gutconfig.json',
@@ -53,7 +51,6 @@ var default_options = {
 
 
 var options = default_options.duplicate()
-var json = JSON.new()
 
 
 func _null_copy(h):
@@ -87,8 +84,6 @@ func _load_options_from_config_file(file_path, into):
 	# SHORTCIRCUIT
 	if(results == null):
 		print("\n\n",'!! ERROR parsing file:  ', file_path)
-		print('    at line ', results.error_line, ':')
-		print('    ', results.error_string)
 		return -1
 
 	# Get all the options out of the config file using the option name.  The
@@ -146,7 +141,7 @@ func _apply_options(opts, gut):
 # Public
 # --------------------------
 func write_options(path):
-	var content = json.stringify(options, ' ')
+	var content = JSON.stringify(options, ' ')
 
 	var f = FileAccess.open(path, FileAccess.WRITE)
 	var result = FileAccess.get_open_error()
@@ -187,7 +182,7 @@ func apply_options(gut):
 # The MIT License (MIT)
 # =====================
 #
-# Copyright (c) 2023 Tom "Butch" Wesley
+# Copyright (c) 2025 Tom "Butch" Wesley
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal

@@ -26,8 +26,7 @@ class CallParameters:
 # }]
 # default_args []
 
-var _utils = load('res://addons/gut/utils.gd').get_instance()
-var _lgr = _utils.get_logger()
+var _lgr = GutUtils.get_logger()
 var default_vararg_arg_count = 10
 const PARAM_PREFIX = 'p_'
 
@@ -107,8 +106,8 @@ func _init():
 # ###############
 # Private
 # ###############
-var _func_text = _utils.get_file_as_text('res://addons/gut/double_templates/function_template.txt')
-var _init_text = _utils.get_file_as_text('res://addons/gut/double_templates/init_template.txt')
+var _func_text = GutUtils.get_file_as_text('res://addons/gut/double_templates/function_template.txt')
+var _init_text = GutUtils.get_file_as_text('res://addons/gut/double_templates/init_template.txt')
 
 func _is_supported_default(type_flag):
 	return type_flag >= 0 and type_flag < _supported_defaults.size() and _supported_defaults[type_flag] != null
@@ -117,11 +116,11 @@ func _is_supported_default(type_flag):
 func _make_stub_default(method, index):
 	return str('__gutdbl.default_val("', method, '",', index, ')')
 
+
 func _make_arg_array(method_meta, override_size):
 	var to_return = []
 
 	var has_unsupported_defaults = false
-	var dflt_start = method_meta.args.size() - method_meta.default_args.size()
 
 	for i in range(method_meta.args.size()):
 		var pname = method_meta.args[i].name
@@ -253,10 +252,9 @@ func get_function_text(meta, override_size=null):
 	return text
 
 
-
-
 func get_logger():
 	return _lgr
+
 
 func set_logger(logger):
 	_lgr = logger

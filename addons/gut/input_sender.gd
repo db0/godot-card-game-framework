@@ -1,40 +1,7 @@
-# ##############################################################################
-#(G)odot (U)nit (T)est class
-#
-# ##############################################################################
-# The MIT License (MIT)
-# =====================
-#
-# Copyright (c) 2023 Tom "Butch" Wesley
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-#
-# ##############################################################################
-# Description
-# -----------
-# This class sends input to one or more recievers.  The receivers' _input,
-# _unhandled_input, and _gui_input are called sending InputEvent* events.
-# InputEvents can be sent via the helper methods or a custom made InputEvent
-# can be sent via send_event(...)
-#
-# ##############################################################################
-#extends "res://addons/gut/input_factory.gd"
+class_name GutInputSender
+## The InputSender class.  It sends input to places.
+##
+## This is the full description that has not yet been filled in.
 
 # Implemented InputEvent* convenience methods
 # 	InputEventAction
@@ -73,7 +40,7 @@ class InputQueueItem:
 		if(frame_delay > 0 and _delay_started):
 			_waited_frames += 1
 			if(_waited_frames >= frame_delay):
-				emit_signal("event_ready")
+				event_ready.emit()
 
 	func _init(t_delay,f_delay):
 		time_delay = t_delay
@@ -82,7 +49,7 @@ class InputQueueItem:
 
 	func _on_time_timeout():
 		_is_ready = true
-		emit_signal("event_ready")
+		event_ready.emit()
 
 	func _delay_timer(t):
 		return Engine.get_main_loop().root.get_tree().create_timer(t)
@@ -182,12 +149,11 @@ class MouseDraw:
 # ##############################################################################
 #
 # ##############################################################################
-var _utils = load('res://addons/gut/utils.gd').get_instance()
 var InputFactory = load("res://addons/gut/input_factory.gd")
 
 const INPUT_WARN = 'If using Input as a reciever it will not respond to *_down events until a *_up event is recieved.  Call the appropriate *_up event or use hold_for(...) to automatically release after some duration.'
 
-var _lgr = _utils.get_logger()
+var _lgr = GutUtils.get_logger()
 var _receivers = []
 var _input_queue = []
 var _next_queue_item = null
@@ -212,13 +178,14 @@ var _default_mouse_position = {
 var _last_mouse_position = {
 }
 
-
+## Warp mouse when sending INputEventMouse* events
 var mouse_warp = false
 var draw_mouse = true
 
 signal idle
 
 
+## You can pass in a receiver if you want to.
 func _init(r=null):
 	if(r != null):
 		add_receiver(r)
@@ -277,6 +244,11 @@ func _send_event(event):
 	for r in _receivers:
 		if(r == Input):
 			Input.parse_input_event(event)
+			if(event is InputEventAction):
+				if(event.pressed):
+					Input.action_press(event.action)
+				else:
+					Input.action_release(event.action)
 			if(_auto_flush_input):
 				Input.flush_buffered_events()
 		else:
@@ -322,6 +294,9 @@ func _new_defaulted_mouse_button_event(position, global_position):
 func _new_defaulted_mouse_motion_event(position, global_position):
 	var event = InputEventMouseMotion.new()
 	_apply_last_position_and_set_last_position(event, position, global_position)
+	for key in _pressed_mouse_buttons:
+		if(_pressed_mouse_buttons[key].pressed):
+			event.button_mask += key
 	return event
 
 
@@ -337,7 +312,7 @@ func _on_queue_item_ready(item):
 
 	if(_input_queue.size() == 0):
 		_next_queue_item = null
-		emit_signal("idle")
+		idle.emit()
 	else:
 		_input_queue[0].start()
 
@@ -547,3 +522,41 @@ func hold_for(duration):
 		wait(duration)
 		send_event(next_event)
 	return self
+
+
+# ##############################################################################
+#(G)odot (U)nit (T)est class
+#
+# ##############################################################################
+# The MIT License (MIT)
+# =====================
+#
+# Copyright (c) 2025 Tom "Butch" Wesley
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+# ##############################################################################
+# Description
+# -----------
+# This class sends input to one or more recievers.  The receivers' _input,
+# _unhandled_input, and _gui_input are called sending InputEvent* events.
+# InputEvents can be sent via the helper methods or a custom made InputEvent
+# can be sent via send_event(...)
+#
+# ##############################################################################

@@ -5,7 +5,7 @@
 # The MIT License (MIT)
 # =====================
 #
-# Copyright (c) 2020 Tom "Butch" Wesley
+# Copyright (c) 2025 Tom "Butch" Wesley
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -55,7 +55,7 @@ var fmts = {
 }
 
 var _type_data = {
-	types.debug:		{disp='DEBUG', 		enabled=true, fmt=fmts.none},
+	types.debug:		{disp='DEBUG', 		enabled=true, fmt=fmts.bold},
 	types.deprecated:	{disp='DEPRECATED', enabled=true, fmt=fmts.none},
 	types.error:		{disp='ERROR', 		enabled=true, fmt=fmts.red},
 	types.failed:		{disp='Failed', 	enabled=true, fmt=fmts.red},
@@ -83,20 +83,16 @@ var _printers = {
 }
 
 var _gut = null
-var _utils = null
 var _indent_level = 0
 var _min_indent_level = 0
 var _indent_string = '    '
-var _skip_test_name_for_testing = false
 var _less_test_names = false
 var _yield_calls = 0
 var _last_yield_text = ''
 
-
 func _init():
-	_utils = load('res://addons/gut/utils.gd').get_instance()
-	_printers.terminal = _utils.Printers.TerminalPrinter.new()
-	_printers.console = _utils.Printers.ConsolePrinter.new()
+	_printers.terminal = GutUtils.Printers.TerminalPrinter.new()
+	_printers.console = GutUtils.Printers.ConsolePrinter.new()
 	# There were some problems in the timing of disabling this at the right
 	# time in gut_cmdln so it is disabled by default.  This is enabled
 	# by plugin_control.gd based on settings.
@@ -146,8 +142,7 @@ func _print_test_name():
 func _output(text, fmt=null):
 	for key in _printers:
 		if(_should_print_to_printer(key)):
-			var info = ''#str(self, ':', key, ':', _printers[key], '|  ')
-			_printers[key].send(info + text, fmt)
+			_printers[key].send(text, fmt)
 
 func _log(text, fmt=fmts.none):
 	_print_test_name()
@@ -190,6 +185,8 @@ func get_log_entries(log_type):
 func _output_type(type, text):
 	var td = _type_data[type]
 	if(!td.enabled):
+		# if(_logs.has(type)):
+		# 	_logs[type].append(text)
 		return
 
 	_print_test_name()
@@ -276,7 +273,7 @@ func set_gut(gut):
 		_printers.gui = null
 	else:
 		if(_printers.gui == null):
-			_printers.gui = _utils.Printers.GutGuiPrinter.new()
+			_printers.gui = GutUtils.Printers.GutGuiPrinter.new()
 
 
 func get_indent_level():
@@ -314,7 +311,8 @@ func set_less_test_names(less_test_names):
 	_less_test_names = less_test_names
 
 func disable_printer(name, is_disabled):
-	_printers[name].set_disabled(is_disabled)
+	if(_printers[name] != null):
+		_printers[name].set_disabled(is_disabled)
 
 func is_printer_disabled(name):
 	return _printers[name].get_disabled()
