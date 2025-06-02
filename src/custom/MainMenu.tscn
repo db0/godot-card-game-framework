@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://cbsklevordoo0"]
 
 [ext_resource type="Theme" uid="uid://b50sjum3qm447" path="res://themes/darktheme/darktheme.theme" id="1"]
-[ext_resource type="FontFile" uid="uid://bg07iqwlkxwna" path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" id="2"]
+[ext_resource type="FontFile" uid="uid://kqgxsr0dp74l" path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" id="2"]
 [ext_resource type="Script" uid="uid://dnveh4pivn43c" path="res://src/custom/MainMenu.gd" id="3"]
 [ext_resource type="PackedScene" uid="uid://b11xuhluxj23k" path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" id="5"]
 

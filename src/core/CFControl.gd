@@ -281,7 +281,7 @@ func load_script_definitions() -> void:
 			if combined_scripts.get(card_name):
 				break
 			var card_script = scripts_obj.get_scripts(card_name)
-			var unmodified_card_script = scripts_obj.get_scripts(card_name, false)
+			var unmodified_card_script = scripts_obj.get_scripts(card_name)
 #			print(unmodified_card_script)
 			if not card_script.is_empty():
 				combined_scripts[card_name] = card_script

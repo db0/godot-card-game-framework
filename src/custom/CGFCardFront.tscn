@@ -1,6 +1,5 @@
-[gd_scene load_steps=9 format=3 uid="uid://dhe8l7gromjia"]
+[gd_scene load_steps=7 format=3 uid="uid://dhe8l7gromjia"]
 
-[ext_resource type="FontFile" uid="uid://bxs3e5po2qm1c" path="res://fonts/Xolonium-Regular.ttf" id="1"]
 [ext_resource type="Script" uid="uid://c6ccefk6gyc6m" path="res://src/custom/CGFCardFront.gd" id="2"]
 [ext_resource type="Theme" uid="uid://b50sjum3qm447" path="res://themes/darktheme/darktheme.theme" id="3"]
 [ext_resource type="Texture2D" uid="uid://dfhhbl7ngw7lk" path="res://assets/icons/fist.png" id="4"]
@@ -17,18 +16,6 @@ corner_radius_bottom_left = 10
 border_color = Color(0, 0, 0, 1)
 corner_radius_top_left = 10
 corner_radius_top_right = 10
-
-[sub_resource type="FontFile" id="3"]
-fallbacks = Array[Font]([ExtResource("1")])
-subpixel_positioning = 0
-msdf_pixel_range = 14
-msdf_size = 128
-cache/0/16/0/ascent = 0.0
-cache/0/16/0/descent = 0.0
-cache/0/16/0/underline_position = 0.0
-cache/0/16/0/underline_thickness = 0.0
-cache/0/16/0/scale = 1.0
-cache/0/16/0/kerning_overrides/16/0 = Vector2(0, 0)
 
 [node name="Front" type="Panel"]
 custom_minimum_size = Vector2(150, 240)
@@ -90,7 +77,7 @@ horizontal_alignment = 1
 
 [node name="Abilities" type="RichTextLabel" parent="Margin/CardText"]
 layout_mode = 2
-size_flags_vertical = 6
+size_flags_vertical = 3
 mouse_filter = 2
 text = "This is the card ability text.
 "
@@ -114,7 +101,6 @@ stretch_mode = 6
 custom_minimum_size = Vector2(15, 15)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.658824, 0.541176, 0, 1)
-theme_override_fonts/font = SubResource("3")
 text = "0"
 
 [node name="Push" type="Control" parent="Margin/CardText/HB"]
@@ -134,5 +120,4 @@ stretch_mode = 6
 custom_minimum_size = Vector2(15, 15)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.658824, 0.541176, 0, 1)
-theme_override_fonts/font = SubResource("3")
 text = "0"

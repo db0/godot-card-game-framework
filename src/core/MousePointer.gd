@@ -316,4 +316,3 @@ func _is_placement_slot_valid(slot: BoardPlacementSlot, potential_cards := []) -
 		if cfc.card_drag_ongoing.board_placement in [Card.BoardPlacement.NONE]:
 				is_valid = false
 	return(is_valid)
-

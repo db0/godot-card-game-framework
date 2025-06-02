@@ -12,7 +12,7 @@ func _ready() -> void:
 	card_labels["Cost"] = find_child("Cost")
 	card_labels["Power"] = find_child("Power")
 
-	# These set te max size of each label. This is used to calculate how much
+	# These set to the max size of each label. This is used to calculate how much
 	# To shrink the font when it doesn't fit in the rect.
 	card_label_min_sizes["Name"] = Vector2(CFConst.CARD_SIZE.x - 4, 19)
 	card_label_min_sizes["Type"] = Vector2(CFConst.CARD_SIZE.x - 4, 13)

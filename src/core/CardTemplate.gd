@@ -195,8 +195,8 @@ var _card_rotation = 0
 # The duration of the tweening animation when cards are scaled when being dragged
 @export var dragged_tween_duration := 0.2 # (float, 0.0, 1.0, 0.05)
 ## Stores the normal size of the card as it should appear on the hand.
-## It should typically should be the same as card_size,
-## but unlike card_size, it should not be adjusted in runtime
+## It should typically should be the same as canonical_size,
+## but unlike canonical_size, it should not be adjusted in runtime
 @export var canonical_size := CFConst.CARD_SIZE
 ## The size of the card when seen smaller (usually in a card-grid of selection window)
 @export var play_area_scale := CFConst.PLAY_AREA_SCALE
@@ -218,7 +218,7 @@ var canonical_name : String:
 #To avoid Godot not allowing optional parameters in setters
 var _canonical_name: String
 # Ensures all nodes fit inside this rect.
-var card_size := canonical_size: set = set_card_size
+#var canonical_size := canonical_size: set = set_card_size
 #This private value is to overcome a current Godot get/set limitation of default values
 #var _card_size
 # Starting state for each card get_card_name()
@@ -331,7 +331,7 @@ var _tween := WeakRef.new()
 func _ready() -> void:
 	targeting_arrow = targeting_arrow_scene.instantiate()
 	add_child(targeting_arrow)
-	set_card_size(card_size)
+	#set_card_size(canonical_size)
 	_init_card_layout()
 	# The below call ensures out canonical_name variable is set.
 	# Normally the setup() function should be used to set it,
@@ -595,7 +595,7 @@ func setup() -> void:
 	# warning-ignore:return_value_discarded
 	read_properties.erase('Name')
 	# canonical_name needs to be setup before we call this function
-	set_card_name(canonical_name)
+	#set_card_name(canonical_name)
 	if state != CardState.VIEWPORT_FOCUS:
 		if read_properties.is_empty():
 			read_properties = cfc.card_definitions.get(canonical_name, {})
@@ -833,10 +833,10 @@ func get_property_and_alterants(property: String,
 # scaled according to the requested scale, and then adjusted in position likewise
 # This allows the card layout to scale without using the .scale property
 # Which prevents the font from getting blurry
-func resize_recursively(control_node: Node, requested_scale: float) -> void:
+#func resize_recursively(control_node: Node, requested_scale: float) -> void:
 	# Actually, for now, just mess with the root scale.
 	# Will result in blurry text, however
-	card_size = canonical_size * requested_scale
+	#canonical_size = canonical_size * requested_scale
 	#scale = Vector2(requested_scale, requested_scale)
 	#if control_node as Control and not _original_layouts.has(control_node):
 		#_original_layouts[control_node] = {}
@@ -846,8 +846,8 @@ func resize_recursively(control_node: Node, requested_scale: float) -> void:
 			#for margin in ["top","bottom", "left", "right"]:
 				#_original_layouts[control_node]["margin_" + margin]\
 						#= control_node.get("theme_override_constants/margin_" + margin)
-	#if card_size != canonical_size * requested_scale:
-		#card_size = canonical_size * requested_scale
+	#if canonical_size != canonical_size * requested_scale:
+		#canonical_size = canonical_size * requested_scale
 	#if _original_layouts.has(control_node) and _original_layouts[control_node].has("scale")\
 			#and CFUtils.compare_floats(requested_scale, _original_layouts[control_node].get('scale')):
 		#return
@@ -866,27 +866,27 @@ func resize_recursively(control_node: Node, requested_scale: float) -> void:
 		#_original_layouts[control_node]["scale"] = requested_scale
 
 
-# Sets the card size and adjusts all nodes depending on it.
-#func set_card_size(value: Vector2, ignore_area = false) -> void:
-func set_card_size(value: Vector2) -> void:
-	card_size = value
-	_control.custom_minimum_size = value
-	# We set the card to always pivot from its center.
-	_control.pivot_offset = value/2
-	_card_back_container.custom_minimum_size = value
-	_card_front_container.custom_minimum_size = value
-	# We set the card's Highlight to always extend 3 pixels over
-	# Either side of the card. This way its border will appear
-	# correctly when hovering over the card.
-	for node in [highlight._left_right, highlight._top_bottom, highlight]:
-		node.custom_minimum_size = value + Vector2(6, 6)
-		# We cannot set the rect_size immediately after setting the min_size
-		# As the engine won't allow it, as the min_size change has not happened yet
-		node.call_deferred('set_size', node.custom_minimum_size)
-	#highlight.position = Vector2(-3, -3)
-	#if not ignore_area:
-		#$CollisionShape2D.shape.extents = value / 2
-		#$CollisionShape2D.position = value / 2
+## Sets the card size and adjusts all nodes depending on it.
+##func set_card_size(value: Vector2, ignore_area = false) -> void:
+#func set_card_size(value: Vector2) -> void:
+	#canonical_size = value
+	#_control.custom_minimum_size = value
+	## We set the card to always pivot from its center.
+	#_control.pivot_offset = value/2
+	#_card_back_container.custom_minimum_size = value
+	#_card_front_container.custom_minimum_size = value
+	## We set the card's Highlight to always extend 3 pixels over
+	## Either side of the card. This way its border will appear
+	## correctly when hovering over the card.
+	#for node in [highlight._left_right, highlight._top_bottom, highlight]:
+		#node.custom_minimum_size = value + Vector2(6, 6)
+		## We cannot set the rect_size immediately after setting the min_size
+		## As the engine won't allow it, as the min_size change has not happened yet
+		#node.call_deferred('set_size', node.custom_minimum_size)
+	##highlight.position = Vector2(-3, -3)
+	##if not ignore_area:
+		##$CollisionShape2D.shape.extents = value / 2
+		##$CollisionShape2D.position = value / 2
 
 
 # Setter for is_faceup
@@ -1407,9 +1407,9 @@ func move_to(targetHost: Node,
 				var attach_index = current_host_card.attachments.find(self)
 				_target_position = (current_host_card.global_position
 						+ Vector2(
-						(attach_index + 1) * card_size.x
+						(attach_index + 1) * canonical_size.x
 						* CFConst.ATTACHMENT_OFFSET[attachment_offset].x,
-						(attach_index + 1)* card_size.y
+						(attach_index + 1)* canonical_size.y
 						* CFConst.ATTACHMENT_OFFSET[attachment_offset].y))
 				set_state(CardState.ON_PLAY_BOARD)
 			else:
@@ -1658,9 +1658,9 @@ func attach_to_host(
 		var attach_index = current_host_card.attachments.find(self)
 		_target_position = (current_host_card.global_position
 				+ Vector2(
-				(attach_index + 1) * card_size.x
+				(attach_index + 1) * canonical_size.x
 				* CFConst.ATTACHMENT_OFFSET[attachment_offset].x,
-				(attach_index + 1)* card_size.y
+				(attach_index + 1)* canonical_size.y
 				* CFConst.ATTACHMENT_OFFSET[attachment_offset].y))
 		emit_signal("card_attached",
 				self,
@@ -1828,7 +1828,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 	var rng = RandomNumberGenerator.new()
 	rng.randomize()
 	if style == CFConst.ShuffleStyle.CORGI:
-		csize = card_size * 0.65
+		csize = canonical_size * 0.65
 		random_x = rng.randf_range(- csize.x, csize.x)
 		random_y = rng.randf_range(- csize.y, csize.y)
 		random_rot = rng.randf_range(-20, 20)
@@ -1839,7 +1839,7 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		rot_anim = Tween.TRANS_CIRC
 	# 2 is splash
 	elif style == CFConst.ShuffleStyle.SPLASH:
-		csize = card_size * 0.85
+		csize = canonical_size * 0.85
 		random_x = rng.randf_range(- csize.x, csize.x)
 		random_y = rng.randf_range(- csize.y, csize.y)
 		random_rot = rng.randf_range(-180, 180)
@@ -1850,15 +1850,15 @@ func animate_shuffle(anim_speed : float, style : int) -> void:
 		rot_anim = Tween.TRANS_CIRC
 		pos_speed = pos_speed
 	elif style == CFConst.ShuffleStyle.SNAP:
-		csize = card_size
+		csize = canonical_size
 		center_card_pop_position.y = starting_card_position.y \
-				+ card_size.y
+				+ canonical_size.y
 		start_pos_anim = Tween.TRANS_ELASTIC
 		end_pos_anim = Tween.TRANS_ELASTIC
 		rot_anim = null
 		pos_speed = pos_speed
 	elif style == CFConst.ShuffleStyle.OVERHAND:
-		csize = card_size * 1.1
+		csize = canonical_size * 1.1
 		random_x = rng.randf_range(- csize.x/10, csize.x/10)
 		random_y = rng.randf_range(- csize.y, - csize.y/2)
 		random_rot = rng.randf_range(-10, 10)
@@ -2007,9 +2007,9 @@ func _organize_attachments() -> void:
 					[CardState.ON_PLAY_BOARD,CardState.FOCUSED_ON_BOARD]:
 				card.global_position = global_position + \
 						Vector2(
-						(attach_index + 1) * card_size.x
+						(attach_index + 1) * canonical_size.x
 						* CFConst.ATTACHMENT_OFFSET[attachment_offset].x,
-						(attach_index + 1) * card_size.y \
+						(attach_index + 1) * canonical_size.y \
 						* CFConst.ATTACHMENT_OFFSET[attachment_offset].y)
 
 # Returns the global mouse position but ensures it does not exit the
@@ -2018,12 +2018,12 @@ func _organize_attachments() -> void:
 # Returns the adjusted global_mouse_position
 func _determine_board_position_from_mouse() -> Vector2:
 	var targetpos: Vector2 = cfc.NMAP.board.mouse_pointer.determine_global_mouse_pos() - (_drag_offset * scale)
-	if targetpos.x + card_size.x * scale.x >= get_viewport().size.x:
-		targetpos.x = get_viewport().size.x - card_size.x * scale.x
+	if targetpos.x + canonical_size.x * scale.x >= get_viewport().size.x:
+		targetpos.x = get_viewport().size.x - canonical_size.x * scale.x
 	if targetpos.x < 0:
 		targetpos.x = 0
-	if targetpos.y + card_size.y * scale.y >= get_viewport().size.y:
-		targetpos.y = get_viewport().size.y - card_size.y * scale.y
+	if targetpos.y + canonical_size.y * scale.y >= get_viewport().size.y:
+		targetpos.y = get_viewport().size.y - canonical_size.y * scale.y
 	if targetpos.y < 0:
 		targetpos.y = 0
 	return targetpos
@@ -2036,15 +2036,15 @@ func _determine_target_position_from_mouse() -> void:
 	_target_position = _determine_board_position_from_mouse()
 
 	# The below ensures the card doesn't leave the viewport dimentions
-	if _target_position.x + card_size.x * play_area_scale \
+	if _target_position.x + canonical_size.x * play_area_scale \
 			> get_viewport().size.x:
 		_target_position.x = get_viewport().size.x \
-				- card_size.x \
+				- canonical_size.x \
 				* play_area_scale
-	if _target_position.y + card_size.y * play_area_scale \
+	if _target_position.y + canonical_size.y * play_area_scale \
 			> get_viewport().size.y:
 		_target_position.y = get_viewport().size.y \
-				- card_size.y \
+				- canonical_size.y \
 				* play_area_scale
 
 
@@ -2328,7 +2328,7 @@ func _process_card_state() -> void:
 						c.interruptTweening()
 						c.reorganize_self()
 				_target_position = expected_position \
-						- Vector2(card_size.x \
+						- Vector2(canonical_size.x \
 						* 0.25,0)
 				# Enough with the fancy calculations. I'm just brute-forcing
 				# The card to stay at the fully within the viewport.
@@ -2336,13 +2336,13 @@ func _process_card_state() -> void:
 					while  get_parent().get_parent().global_position.y\
 							+ get_parent().bottom_margin \
 							+ _target_position.y \
-							+ card_size.y * 1.5 > get_viewport().size.y:
+							+ canonical_size.y * 1.5 > get_viewport().size.y:
 						_target_position.y -= 1
 				else:
 					while get_parent().position.y \
 						+ get_parent().bottom_margin \
 						+ _target_position.y \
-						+ card_size.y > get_viewport().size.y:
+						+ canonical_size.y > get_viewport().size.y:
 						_target_position.y -= 1
 				# We need to bump up the y postion a bit based on the rotation
 				# We subtract 13 if there is no rotation
@@ -2394,7 +2394,7 @@ func _process_card_state() -> void:
 					if get_parent() != cfc.NMAP.board:
 						# We determine its center position on the viewport
 						var controlNode_center_position := \
-								Vector2(global_position + card_size/2)
+								Vector2(global_position + canonical_size/2)
 						# We then direct this position towards the viewport center
 						# If we are to the left/top of viewport center,
 						# we offset towards the right/bottom (+offset)
@@ -2412,9 +2412,9 @@ func _process_card_state() -> void:
 						# We always offset by percentages of the card size to
 						# be consistent in case the card size changes
 						var offset_x = (abs(controlNode_center_position.x
-								- get_viewport().size.x/2)) / 250 * card_size.x
+								- get_viewport().size.x/2)) / 250 * canonical_size.x
 						var offset_y = (abs(controlNode_center_position.y
-								- get_viewport().size.y/2)) / 250 * card_size.y
+								- get_viewport().size.y/2)) / 250 * canonical_size.y
 						var inter_x = controlNode_center_position.x \
 								+ direction_x * offset_x
 						var inter_y = controlNode_center_position.y \
@@ -2560,10 +2560,10 @@ func _process_card_state() -> void:
 				# The below ensures the card doesn't leave the viewport dimentions
 				#NOTE: this used to include a call to play_area_scale.x or .y, it didn't work so it was removed
 				var viewport = get_viewport().size
-				if (_target_position.x + card_size.x * play_area_scale) > get_viewport().size.x:
-					_target_position.x = get_viewport().size.x - card_size.x * play_area_scale
-				if _target_position.y + card_size.y * play_area_scale > get_viewport().size.y:
-					_target_position.y = get_viewport().size.y - card_size.y * play_area_scale
+				if (_target_position.x + canonical_size.x * play_area_scale) > get_viewport().size.x:
+					_target_position.x = get_viewport().size.x - canonical_size.x * play_area_scale
+				if _target_position.y + canonical_size.y * play_area_scale > get_viewport().size.y:
+					_target_position.y = get_viewport().size.y - canonical_size.y * play_area_scale
 				tween = create_tween()
 				tween.stop()
 				_tween = weakref(tween)
@@ -2666,16 +2666,16 @@ func _process_card_state() -> void:
 			targeting_arrow.complete_targeting()
 			$Control/Tokens.visible = false
 			# We scale the card dupe to allow the player a better viewing experience
-			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * focused_scale * cfc.curr_scale
-			else:
-				# We need to reset its scale,
-				# in case it was already scaled due to being on the table etc.
-				scale = Vector2(1,1)
-				resize_recursively(_control, focused_scale * cfc.curr_scale)
-				# set_card_size(CFConst.CARD_SIZE * CFConst.FOCUSED_SCALE, true)
-				card_front.scale_to(focused_scale * cfc.curr_scale)
-				card_back.scale_to(focused_scale * cfc.curr_scale)
+			#if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
+			scale = Vector2(1,1) * focused_scale * cfc.curr_scale
+			#else:
+				## We need to reset its scale,
+				## in case it was already scaled due to being on the table etc.
+				#scale = Vector2(1,1)
+				##resize_recursively(_control, focused_scale * cfc.curr_scale)
+				## set_card_size(CFConst.CARD_SIZE * CFConst.FOCUSED_SCALE, true)
+				#card_front.scale_to(focused_scale * cfc.curr_scale)
+				#card_back.scale_to(focused_scale * cfc.curr_scale)
 			# If the card has already been been viewed while down,
 			# we allow the player hovering over it to see it
 			if not is_faceup:
@@ -2696,12 +2696,12 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			$Control.rotation = 0
 			# We scale the card to allow the player a better viewing experience
-			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * preview_scale * cfc.curr_scale
-			else:
-				# set_card_size(CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE)
-				resize_recursively(_control, preview_scale * cfc.curr_scale)
-				card_front.scale_to(preview_scale * cfc.curr_scale)
+			#if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
+			scale = Vector2(1,1) * preview_scale * cfc.curr_scale
+			#else:
+				## set_card_size(CFConst.CARD_SIZE * CFConst.PREVIEW_SCALE)
+				#resize_recursively(_control, preview_scale * cfc.curr_scale)
+				#card_front.scale_to(preview_scale * cfc.curr_scale)
 			state_finalized = true
 
 		CardState.DECKBUILDER_GRID:
@@ -2715,15 +2715,15 @@ func _process_card_state() -> void:
 			set_card_rotation(0)
 			$Control.rotation = 0
 			# We scale the card to allow the player a better viewing experience
-			if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
-				scale = Vector2(1,1) * thumbnail_scale * cfc.curr_scale
+			#if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "scale":
+			scale = Vector2(1,1) * thumbnail_scale * cfc.curr_scale
 			# Commenting this out because it is messing with RichTextLabel
 			# Font resizing
-			else:
-				# set_card_size(CFConst.CARD_SIZE * thumbnail_scale)
-				resize_recursively(_control, thumbnail_scale * cfc.curr_scale)
-				card_front.scale_to(thumbnail_scale * cfc.curr_scale)
-			await tween.finished
+			#else:
+				## set_card_size(CFConst.CARD_SIZE * thumbnail_scale)
+				#resize_recursively(_control, thumbnail_scale * cfc.curr_scale)
+				#card_front.scale_to(thumbnail_scale * cfc.curr_scale)
+			#await tween.finished
 			state_finalized = true
 
 		CardState.MOVING_TO_SPAWN_DESTINATION:
@@ -2819,9 +2819,9 @@ func _recalculate_position_use_oval(index_diff = null)-> Vector2:
 			- ver_rad * sin(rad_angle))
 	# Take the center point of the card as the starting point, the coordinates
 	# of the top left corner of the card
-	var left_top = Vector2(- card_size.x/2, - card_size.y/2)
+	var left_top = Vector2(- canonical_size.x/2, - canonical_size.y/2)
 	# Place the top center of the card on the oval point
-	var center_top = Vector2(0, - card_size.y/2)
+	var center_top = Vector2(0, - canonical_size.y/2)
 	# Get the angle of the card, which is different from the oval angle,
 	# the card angle is the normal angle of a certain point
 	var card_angle = _get_oval_angle_by_index(angle, null, hor_rad,ver_rad)
@@ -2852,17 +2852,17 @@ func _recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 	var max_hand_size_width: float = parent_control.size.x
 	# The maximum distance between cards
 	# We base it on the card width to allow it to work with any card-size.
-	var card_gap_max: float = card_size.x * 1.1
+	var card_gap_max: float = canonical_size.x * 1.1
 	# The minimum distance between cards
 	# (less than card width means they start overlapping)
-	var card_gap_min: float = card_size.x/2
+	var card_gap_min: float = canonical_size.x/2
 	# The current distance between cards.
 	# It is inversely proportional to the amount of cards in hand
 	var cards_gap: float = max(min((max_hand_size_width
-			- card_size.x/2)
+			- canonical_size.x/2)
 			/ hand_size, card_gap_max), card_gap_min)
 	# The current width of all cards in hand together
-	var hand_width: float = (cards_gap * (hand_size-1)) + card_size.x
+	var hand_width: float = (cards_gap * (hand_size-1)) + canonical_size.x
 	# The following just create the vector position to place this specific card
 	# in the playspace.
 	card_position_x = (max_hand_size_width/2
@@ -2874,7 +2874,7 @@ func _recalculate_position_use_rectangle(index_diff = null)-> Vector2:
 	card_position_y = 0
 	if index_diff!=null:
 		return(Vector2(card_position_x, card_position_y)
-				+ Vector2(card_size.x / index_diff * CFConst.NEIGHBOUR_PUSH, 0))
+				+ Vector2(canonical_size.x / index_diff * CFConst.NEIGHBOUR_PUSH, 0))
 	else:
 		return(Vector2(card_position_x,card_position_y))
 

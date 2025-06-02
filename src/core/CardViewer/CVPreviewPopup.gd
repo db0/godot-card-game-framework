@@ -116,19 +116,21 @@ func show_preview_card(card) -> void:
 		#preview_card.state = Card.CardState.PREVIEW
 		# It's necessary we do this here because if we only we it during
 		# the process, the card will appear to teleport
-		if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "resize":
-			var new_scale := preview_card.preview_scale * cfc.curr_scale
+		#if CFConst.VIEWPORT_FOCUS_ZOOM_TYPE == "resize":
+		var current_scale = preview_card.preview_scale * cfc.curr_scale
+		preview_card.scale = Vector2(current_scale, current_scale)
+			#var new_scale := preview_card.preview_scale * cfc.curr_scale
 			#preview_card.set_scale(Vector2(new_scale, new_scale))
-			preview_card.resize_recursively(preview_card._control, preview_card.preview_scale * cfc.curr_scale)
+			#preview_card.resize_recursively(preview_card._control, preview_card.preview_scale * cfc.curr_scale)
 			#preview_card.card_front.scale_to(preview_card.preview_scale * cfc.curr_scale)
 		cfc.ov_utils.populate_info_panels(preview_card,focus_info)
-		call_deferred("_set_placement")
-		#_set_placement()
+		#call_deferred("_set_placement")
+		_set_placement()
 		#self.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	visible = true
 	focus_info.visible = true
 	# Fit the popup window to the card's preview size
-	size.y = preview_card.canonical_size.y * preview_card.preview_scale * cfc.curr_scale
+	size.y = int(preview_card.canonical_size.y * preview_card.preview_scale * cfc.curr_scale)
 
 	#_visible = true
 	#if _placement_initialized:

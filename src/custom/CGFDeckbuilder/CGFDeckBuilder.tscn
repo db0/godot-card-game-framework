@@ -8,6 +8,9 @@
 script = ExtResource("4")
 info_panel_scene = ExtResource("2")
 
+[node name="Title" parent="VBC" index="0"]
+horizontal_alignment = 0
+
 [node name="Back" type="Button" parent="VBC/HBC/DeckMC/CurrentDeck/Buttons" index="4"]
 layout_mode = 2
 text = "Back"

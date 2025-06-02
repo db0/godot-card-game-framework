@@ -18,5 +18,4 @@ func _on_CardLabel_mouse_entered() -> void:
 
 func _on_CardLabel_mouse_exited() -> void:
 	preview_popup.hide_preview_card()
-	#preview_popup.remove_preview_card()
 	preview_popup.visible = false

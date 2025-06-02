@@ -24,6 +24,7 @@ layout_mode = 2
 [node name="Title" type="Label" parent="VBC"]
 layout_mode = 2
 text = "Card Viewer"
+horizontal_alignment = 1
 
 [node name="HBC" type="HBoxContainer" parent="VBC"]
 layout_mode = 2
