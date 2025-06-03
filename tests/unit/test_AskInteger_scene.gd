@@ -103,4 +103,3 @@ func test_submit():
 	#I'm not sure what the test actually wants so it's failing currently
 	assert_signal_emitted(ask_integer,"canceled")
 	assert_eq(2,ask_integer.number)
-

@@ -213,10 +213,10 @@ var _card_rotation = 0
 # if that is also not set, will be set.
 # to the human-readable value of the "name" node property.
 var canonical_name : String: 
-	get: return get_card_name()
-	set(value): set_card_name(value)
+	get = get_card_name,
+	set = set_card_name
 #To avoid Godot not allowing optional parameters in setters
-var _canonical_name: String
+#var _canonical_name: String
 # Ensures all nodes fit inside this rect.
 #var canonical_size := canonical_size: set = set_card_size
 #This private value is to overcome a current Godot get/set limitation of default values
@@ -383,11 +383,11 @@ func _init_card_name() -> void:
 		regex.compile("@{0,1}([\\w ]+)@{0,1}")
 		var result = regex.search(name)
 		var node_human_name = result.get_string(1)
-		set_card_name(node_human_name, false)
+		set_card_name(node_human_name)
 	else:
 		# If the variable has been set, we ensure label and node name
 		# are matching
-		set_card_name(canonical_name, false)
+		set_card_name(canonical_name)
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -1006,26 +1006,27 @@ func set_is_viewed(value: bool) -> int:
 
 # Setter for canonical_name
 # Also changes the card label and the node name
-func set_card_name(value : String, set_label := true) -> void:
+func set_card_name(value : String) -> void:
+	#canonical_name = value
 	# if the card_front.card_labels variable is not set it means ready() has not
 	# run yet, so we just store the card name for later.
 	if not card_front:
-		_canonical_name = value
+		canonical_name = value
 	else:
 		# We set all areas of the card to match the canonical name.
 		var name_label = card_front.card_labels["Name"]
-		if set_label and (name_label as RichTextLabel):
+		if name_label as RichTextLabel:
 			card_front.set_rich_label_text(name_label,value)
-		elif set_label:
+		else:
 			card_front.set_label_text(name_label,value)
 		name = value
-		_canonical_name = value
+		canonical_name = value
 		properties["Name"] = value
 
 
 # Getter for canonical_name
 func get_card_name() -> String:
-	return _canonical_name
+	return canonical_name
 
 
 # Overwrites the built-in set name, so that it also sets canonical_name

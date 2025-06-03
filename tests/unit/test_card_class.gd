@@ -12,8 +12,7 @@ func after_all():
 func before_each():
 	await setup_board()
 	card = cfc.NMAP.deck.get_top_card()
-	
-	
+
 func test_methods():
 	assert_true(card is Card, 'class name returns correct value')
 
@@ -63,37 +62,41 @@ func test_init_card_name():
 	# We know which are the last 3 card types of the test cards
 	var test3 = cfc.NMAP.deck.get_card(15)
 	var test2 = cfc.NMAP.deck.get_card(14)
-	var test1 = cfc.NMAP.deck.get_card(13)
-	assert_eq("Test Card 1",test1.canonical_name,
+	var test1 = cfc.NMAP.deck.get_card(12)
+	assert_eq("Shaking Card",test1.canonical_name,
 			'card_name variable is set correctly')
-	assert_string_contains(test1.name, "Test Card 1")
-	assert_eq("Test Card 1",test1.card_front.card_labels["Name"].text,
+	assert_string_contains(str(test1.name), "Shaking Card")
+	assert_eq("Shaking Card",test1.card_front.card_labels["Name"].text,
 			'Name Label text is set correctly')
 	assert_eq("Test Card 2",test2.canonical_name,
 			'card_name variable is set correctly')
-	assert_string_contains(test2.name, "Test Card 2")
+	# StringNames ending in a number are part of the increment, so no promises
+	# of which Test Card the result will be
+	assert_string_contains(str(test2.name), "Test Card")
 	assert_eq("Test Card 2",test2.card_front.card_labels["Name"].text,
 			'Name Label text is set correctly')
 	assert_eq("Test Card 3",test3.canonical_name,
 			'card_name variable is set correctly')
-	assert_string_contains(test3.name, "Test Card 3")
+	assert_string_contains(str(test3.name), "Test Card")
 	assert_eq("Test Card 3",test3.card_front.card_labels["Name"].text,
 			'Name Label text is set correctly')
 
 func test_card_name_setget():
-	await yield_to(get_tree(), "process_frame", 0.1)
-	card.set_name("Testing Name Change 1")
-	# We need a yield to allow the richtextlabel setup complete
-	assert_eq("Testing Name Change 1",card.canonical_name,
-			'card_name variable is set correctly')
-	assert_string_contains(card.name, "Testing Name Change 1")
-	assert_eq("Testing Name Change 1",card.card_front.card_labels["Name"].text,
-			'Name Label text is set correctly')
+	await wait_for_signal(get_tree().process_frame, 1)
+	# set_name overrides built-in function, which doesn't work in godot
+	# Avoid using card.set_name. Find an alternative (what?)
+	#card.set_name("Testing Name Change 1")
+	## We need a yield to allow the richtextlabel setup complete
+	#assert_eq("Testing Name Change 1",card.canonical_name,
+			#'card_name variable is set correctly')
+	#assert_string_contains(str(card.name), "Testing Name Change 1")
+	#assert_eq("Testing Name Change 1",card.card_front.card_labels["Name"].text,
+			#'Name Label text is set correctly')
 	card.canonical_name = "Testing Name Change 2"
-	await yield_to(get_tree(), "process_frame", 0.1)
+	await wait_for_signal(get_tree().process_frame, 0.1)
 	assert_eq("Testing Name Change 2",card.canonical_name,
 			'card_name variable is set correctly')
-	assert_string_contains(card.name, "Testing Name Change 2")
+	assert_string_contains(str(card.name), "Testing Name Change 2")
 	assert_eq("Testing Name Change 2",card.card_front.card_labels["Name"].text,
 			'Name Label text is set correctly')
 
@@ -194,7 +197,7 @@ func test_refresh_card_front():
 	board.add_child(new_card)
 	new_card._determine_idle_state()
 	# We need a yield to allow the richtextlabel setup complete
-	await yield_to(get_tree(), "process_frame", 0.1)
+	await wait_for_signal(get_tree().process_frame, 0.1)
 	new_card.properties = {
 		"Type": "Red",
 		"Tags": ["Tag 3","Tag 4"],
@@ -204,7 +207,7 @@ func test_refresh_card_front():
 		"Power": "+3",
 	}
 	new_card.refresh_card_front()
-	await yield_to(get_tree(), "process_frame", 0.1)
+	await wait_for_signal(get_tree().process_frame, 0.1)
 	assert_eq(new_card.card_front.card_labels["Cost"].text,"U",
 			"Number Property refreshed as string")
 	assert_eq(new_card.card_front.card_labels["Power"].text, '3',

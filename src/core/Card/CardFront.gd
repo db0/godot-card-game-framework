@@ -46,6 +46,8 @@ var font_thread: Thread
 #func _exit_tree():
 #	font_thread.wait_to_finish()
 
+# Note: Probably bad practice to have unexpected font sizes turn up. Better to
+# have control and knowledge over the font sizes
 # Set a label node's text.
 # As the string becomes longer, the font size becomes smaller
 func set_label_text(node: Label, value, scale: float = 1):
@@ -297,7 +299,7 @@ func _capture_original_font_size(label) -> void:
 
 func _assign_bbcode_text(rtlabel: RichTextLabel, text : String, font_size: int) -> void:
 	var format = _get_bbcode_format()
-	rtlabel.clear()
+	#rtlabel.text = ""
 	var bbcode_format := {}
 	var icon_size = font_size - 2
 	bbcode_format["icon_size"] = '{icon_size}x{icon_size}'.format({"icon_size":icon_size})
@@ -308,7 +310,8 @@ func _assign_bbcode_text(rtlabel: RichTextLabel, text : String, font_size: int) 
 	rtlabel.bbcode_enabled = true
 	#rtlabel.push_align(RichTextLabel.ALIGNMENT_CENTER)
 	# warning-ignore:return_value_discarded
-	rtlabel.append_text(text.format(format))
+	#rtlabel.append_text(text.format(format))
+	rtlabel.text = text.format(format)
 	#rtlabel.append_text("[center]%s[/center]" % [rtlabel])
 	#	print_debug(bbcode_text.format(format))
 	#rtlabel.pop()

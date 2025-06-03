@@ -22,7 +22,7 @@ func _ready() -> void:
 		$SeedLabel.text = "Game Seed is: " + cfc.game_rng_seed
 	if not cfc.are_all_nodes_mapped:
 		await cfc.all_nodes_mapped
-	if not get_tree().get_root().has_node('Gut'):
+	if not get_tree().get_root().has_node('RunFromEditor'):
 		load_test_cards(false)
 	# warning-ignore:return_value_discarded
 	$DeckBuilderPopup.connect('popup_hide', Callable(self, '_on_DeckBuilder_hide'))
@@ -100,10 +100,10 @@ func load_test_cards(gut := true) -> void:
 		"Multiple Choices Test Card",
 		"Multiple Choices Test Card",
 		"Rich Text Card",
-		"Shaking Card",
-		"Test Card 1",
-		"Test Card 2",
-		"Test Card 3",
+		"Shaking Card", #12
+		"Test Card 1", # 13
+		"Test Card 2", # 14
+		"Test Card 3", # 15
 		"Multiple Choices Test Card",
 	]
 	var test_card_array := []
@@ -125,6 +125,7 @@ func load_test_cards(gut := true) -> void:
 		# I ensure there's of each test card, for use in GUT
 			for card_name in test_cards:
 				test_card_array.append(cfc.instance_card(card_name))
+	var d = cfc.NMAP.deck
 	for card in test_card_array:
 		cfc.NMAP.deck.add_child(card)
 		#card.set_is_faceup(false,true)
