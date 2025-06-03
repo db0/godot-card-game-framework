@@ -100,7 +100,9 @@ func prepate_filter_buttons() -> void:
 				if value in CardConfig.TYPES_TO_HIDE_IN_CARDVIEWER:
 					continue
 				var filter_button = _FILTER_BUTTON_SCENE.instantiate()
+				filter_button.button_pressed = true
 				filter_button.setup(button_property, value)
+				#filter_button.pressed.connect(_on_filter_button_pressed)
 				filter_button.connect("pressed", Callable(self, "_on_filter_button_pressed"))
 				filter_button.connect("right_pressed", Callable(self, "_on_filter_button_right_pressed").bind(filter_button))
 				_filter_buttons.add_child(filter_button)
@@ -165,7 +167,7 @@ func _apply_filters(active_filters: Array) -> void:
 			var active_button_values = []
 			for button in _filter_buttons.get_children():
 				if button as CVFilterButton\
-						and button.pressed\
+						and button.button_pressed\
 						and button.property == property:
 					active_button_values.append(button.value)
 			if not card_object.card_properties.get(property):
@@ -194,7 +196,7 @@ func _check_custom_filters(_card_object: CVListCardObject) -> bool:
 func _on_ShowAll_button_pressed() -> void:
 	for button in _filter_buttons.get_children():
 		if button as CVFilterButton\
-				and not button.pressed:
+				and not button.button_pressed:
 			button.button_pressed = true
 	_apply_filters(_filter_line.get_active_filters())
 

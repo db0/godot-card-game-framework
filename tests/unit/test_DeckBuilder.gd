@@ -203,4 +203,3 @@ func test_name_randomize():
 	deckbuilder._on_RandomizeName_pressed()
 	assert_ne(deckbuilder._deck_name.text, deck_name,
 			"Reset Deck Name  randomized")
-

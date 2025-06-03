@@ -6,7 +6,7 @@ extends Popup
 signal placement_initialized
 # The card currently being shown in a popup.
 var preview_card: Card
-var _tween_wait := 0
+#var _tween_wait := 0
 var _placement_initialized := false
 #var _visible = true
 # The popup panel which contains the card.
