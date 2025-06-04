@@ -4,6 +4,8 @@
 extends AcceptDialog
 
 var number: int
+@export var min_req := 1
+@export var max_req := 10
 
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
@@ -17,13 +19,14 @@ func _ready() -> void:
 
 # Prepares the window to request the integer from the player
 # in the correct range and bring the popup to the front.
-func prep(title_reference: String, min_req: int, max_req : int) -> void:
+func prep(title_reference: String, min_req: int = min_req, max_req : int = max_req) -> void:
 		self.title = "Please enter number for the effect of " + title_reference
 		$IntegerLineEdit.placeholder_text = \
 				"Enter number between " + str(min_req) + " and " + str(max_req)
 		$IntegerLineEdit.minimum = min_req
 		$IntegerLineEdit.maximum = max_req
 		#$LineEdit.text = str(minimum)
+		# TODO: Try to separate out external logic where possible
 		cfc.NMAP.board.add_child(self)
 		popup_centered()
 		# One again we need two different Panels due to

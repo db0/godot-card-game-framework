@@ -1,5 +1,5 @@
 class_name UTCommon
-extends "res://addons/gut/test.gd"
+extends GutTest
 
 # TODO: I should make 2 scenes just for UT so I don't rely on these which
 # might get deleted

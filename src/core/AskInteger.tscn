@@ -22,30 +22,31 @@ corner_radius_top_left = 3
 corner_radius_bottom_right = 3
 
 [node name="AskInteger" type="AcceptDialog"]
+visible = true
 dialog_hide_on_ok = false
 script = ExtResource("1")
 
 [node name="VecticalHighlights" type="Panel" parent="."]
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 174.0
-offset_bottom = 32.0
+offset_right = 92.0
+offset_bottom = 51.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("1")
 
 [node name="HorizontalHighlights" type="Panel" parent="."]
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 174.0
-offset_bottom = 32.0
+offset_right = 92.0
+offset_bottom = 51.0
 mouse_filter = 2
 theme_override_styles/panel = SubResource("2")
 
 [node name="IntegerLineEdit" type="LineEdit" parent="."]
 offset_left = 8.0
 offset_top = 8.0
-offset_right = 174.0
-offset_bottom = 32.0
+offset_right = 92.0
+offset_bottom = 51.0
 caret_blink = true
 caret_blink_interval = 0.5
 script = ExtResource("2")

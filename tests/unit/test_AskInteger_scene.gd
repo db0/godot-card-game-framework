@@ -78,28 +78,34 @@ func test_on_LineEdit_text_changed():
 
 func test_submit():
 	watch_signals(ask_integer)
+	watch_signals(line)
 	ask_integer.prep("UT Card",1,5)
 	ask_integer._on_AskInteger_confirmed()
-	await yield_for(0.1)
-	assert_eq(0,ask_integer.number)
+	#await wait_seconds(0.1)
+	assert_eq(0,ask_integer.number, "No input provided")
 	assert_signal_not_emitted(ask_integer,"canceled")
+	
 	line.text = "11"
 	line._on_IntegerLineEdit_text_changed("11")
 	ask_integer._on_AskInteger_confirmed()
-	await yield_for(0.1)
+	#await wait_seconds(0.1)
 	assert_eq(0,ask_integer.number)
+	assert_signal_emitted(line, "int_changed_nok", "correctly disallows out of bounds numbers")
 	assert_signal_not_emitted(ask_integer,"canceled")
+	
 	line.text = "abd"
 	line._on_IntegerLineEdit_text_changed("abd")
 	ask_integer._on_AskInteger_confirmed()
-	await yield_for(0.1)
-	assert_eq(0,ask_integer.number)
+	#await wait_seconds(0.1)
+	assert_eq(0,ask_integer.number, "Invalid input provided (letters)")
 	assert_signal_not_emitted(ask_integer,"canceled")
+	
 	line.text = "2"
 	line._on_IntegerLineEdit_text_changed("2")
 	ask_integer._on_AskInteger_confirmed()
-	await yield_for(0.1)
+	#await wait_seconds(0.1)
 	#This used to be "popup_hide", but AcceptDialog no longer has that signal
 	#I'm not sure what the test actually wants so it's failing currently
-	assert_signal_emitted(ask_integer,"canceled")
-	assert_eq(2,ask_integer.number)
+	assert_signal_emitted(line, "int_changed_ok", "Valid text input provided")
+	assert_signal_not_emitted(ask_integer,"canceled")
+	assert_eq(2,ask_integer.number, "Correctly reads in valid number")
