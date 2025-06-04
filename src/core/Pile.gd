@@ -18,8 +18,8 @@ var _has_cards := false
 # If this is set to true, cards on this stack will be placed face-up.
 # Otherwise they will be placed face-down.
 @export var faceup_cards := false
-# When true, when the cards are displayed in a popup, they will be sorted by name
-# and not in their actual order
+## When true, when the cards are displayed in a popup, they will be sorted by name
+## and not in their actual order
 @export var sorted_popup := false
 
 
@@ -49,6 +49,7 @@ func _ready():
 	# warning-ignore:return_value_discarded
 	view_sorted_button.connect("pressed", Callable(self, '_on_ViewSorted_Button_pressed'))
 	# warning-ignore:return_value_discarded
+	# TODO: the following isn't a valid signal?
 	$ViewPopup.connect("popup_hide", Callable(self, '_on_ViewPopup_popup_hide'))
 	# warning-ignore:return_value_discarded
 	$ViewPopup.connect("about_to_popup", Callable(self, '_on_ViewPopup_about_to_show'))
@@ -103,13 +104,14 @@ func _on_ViewPopup_about_to_show() -> void:
 
 # Puts all [Card] objects to the root node once the popup view window closes
 func _on_ViewPopup_popup_hide() -> void:
-	if _tween:
-		await _tween.finished
-	_tween = create_tween().set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
-	#.from(Color(1,1,1,1))
-	_tween.tween_property($ViewPopup,'modulate:a', Color(1,1,1,0), 0.5)
-	_tween.play()
-	await _tween.finished
+	# TODO: tween doesn't seem to function. Tween never finishes
+	#if _tween:
+		#await _tween.finished
+	#_tween = create_tween().set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	##.from(Color(1,1,1,1))
+	#_tween.tween_property($ViewPopup,'modulate:a', Color(1,1,1,0), 0.5)
+	#_tween.play()
+	#await _tween.finished
 	for card in pre_sorted_order:
 		# For each card we have hosted, we check if it's hosted in the popup.
 		# If it is, we move it to the root.
@@ -134,7 +136,7 @@ func _on_ViewPopup_popup_hide() -> void:
 	is_popup_open = false
 
 
-# Populated the popup card viewer with the cards and displays them
+## Populated the popup card viewer with the cards and displays them
 func populate_popup(sorted:= sorted_popup) -> void:
 	# We prevent the button from being pressed twice while the popup is open
 	# as it will bug-out
@@ -317,11 +319,11 @@ func _slot_card_into_popup(card: Card) -> void:
 	# Therefore we instantatiate a new Control container
 	# in which to put the card objects.
 	var card_slot := Control.new()
-	card_slot.set_name("CardPopUpSlot")
+	card_slot.set_name("CardPopUpSlot " + str(card.name))
 	# We set the control container size to be equal
 	# to the card size to which the card will scale.
 	card_slot.custom_minimum_size = card.get_node("Control").custom_minimum_size * card.scale
-	$ViewPopup/CardView.add_child(card_slot)
+	_popup_grid.add_child(card_slot)
 	# Finally, the card is added to the temporary control node parent.
 	card_slot.add_child(card)
 	# warning-ignore:return_value_discarded

@@ -554,17 +554,15 @@ theme = ExtResource("1")
 script = ExtResource("3")
 
 [node name="DeckBuilder" parent="." instance=ExtResource("5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
+layout_mode = 1
+size_flags_horizontal = 1
+size_flags_vertical = 1
 theme_override_styles/panel = SubResource("1")
 
 [node name="CardLibrary" parent="." instance=ExtResource("5")]
-layout_mode = 0
-anchors_preset = 0
-anchor_right = 0.0
-anchor_bottom = 0.0
+layout_mode = 1
+size_flags_horizontal = 1
+size_flags_vertical = 1
 theme_override_styles/panel = SubResource("1")
 
 [node name="MainMenu" type="MarginContainer" parent="."]

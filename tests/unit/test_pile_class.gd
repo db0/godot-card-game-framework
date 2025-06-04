@@ -14,8 +14,7 @@ func before_each():
 func test_get_card_methods():
 	var pile : Pile = cfc.NMAP.deck
 	# The Panel is always put to the bottom with code. Therefore the third child node is always a card
-	#TODO: The problem seems to be that the cards aren't sorted the same in Godot 4 for some reason
-	assert_eq(pile.get_child(5),pile.get_bottom_card(),
+	assert_eq(pile.get_child(3),pile.get_bottom_card(),
 			'get_top_card() returns top card')
 	# Likewise, the first card from the bottom is the previous to last.
 	assert_eq(pile.get_child(pile.get_child_count() - 2),pile.get_top_card(),
@@ -40,7 +39,7 @@ func test_faceup_cards():
 
 func test_popup_view():
 	var pile : Pile = cfc.NMAP.deck
-	await yield_for(0.1)
+	await wait_seconds(0.1)
 	var card_order := pile.get_all_cards()
 	var ordered_cards := pile.get_all_cards()
 	ordered_cards.sort_custom(Callable(CFUtils, "sort_scriptables_by_name"))
@@ -49,15 +48,16 @@ func test_popup_view():
 	for o in ordered_cards:
 		ordered_card_names.append(o.canonical_name)
 	pile.populate_popup()
-	await yield_for(0.7)
+	#await wait_seconds(0.7)
 	assert_eq(pile.get_all_cards(), card_order,\
 			"Retrieved card order remains when viewed in pile")
 	assert_eq(pile.get_all_cards(), retieve_popup_order(pile),\
 			"Viewed card order from topleft, to botright")
 	pile.pile_popup.hide()
-	await yield_for(0.7)
+	# TODO: this wait is needed for the finall assertion to work. WHY?!!
+	await wait_seconds(0.7)
 	pile.populate_popup(true)
-	await yield_for(0.7)
+	#await wait_seconds(0.7)
 	assert_ne(retieve_popup_order(pile), card_order,\
 			"Card order changed when viewed in order")
 	var popup_card_names := []
@@ -66,7 +66,7 @@ func test_popup_view():
 	assert_eq(popup_card_names, ordered_card_names,\
 			"Cards are ordered in view popup")
 	pile.pile_popup.hide()
-	await yield_for(0.7)
+	#await wait_seconds(0.7)
 	assert_eq(pile.get_all_cards(), card_order,\
 			"Pile order resumed after being viewed ordered")
 

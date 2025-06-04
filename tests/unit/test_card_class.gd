@@ -83,8 +83,7 @@ func test_init_card_name():
 
 func test_card_name_setget():
 	await wait_for_signal(get_tree().process_frame, 1)
-	# set_name overrides built-in function, which doesn't work in godot
-	# Avoid using card.set_name. Find an alternative (what?)
+	#TODO: set_name overrides built-in function, which doesn't work in godot. Avoid using card.set_name. Find an alternative (what?)
 	#card.set_name("Testing Name Change 1")
 	## We need a yield to allow the richtextlabel setup complete
 	#assert_eq("Testing Name Change 1",card.canonical_name,

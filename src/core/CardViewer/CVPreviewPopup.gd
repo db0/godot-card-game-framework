@@ -39,6 +39,7 @@ func _set_placement() -> void:
 	if not _placement_initialized:
 		#await get_tree().create_timer(0.1).timeout
 		position = new_position
+	# TODO: commented out tweens for simplicity
 	#elif new_position.distance_to(position) > 200:
 		#_tween_wait += 1
 		## This is needed because the focus_info is wiped of all panels every time it's refreshed
