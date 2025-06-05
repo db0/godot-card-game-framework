@@ -62,7 +62,7 @@ func test_plus_minus_freeform_add_remove():
 	var card_object: DBListCardObject = deckbuilder._available_cards.get_child(1)
 	card_object.setup_max_quantity(10)
 	card_object._on_Plus_pressed()
-	await yield_for(0.1)
+	await wait_seconds(0.1)
 	var deck_card_obj := card_object.deck_card_object
 	assert_not_null(deck_card_obj)
 	if deck_card_obj:
@@ -72,13 +72,13 @@ func test_plus_minus_freeform_add_remove():
 		card_object._on_Minus_pressed()
 		assert_eq(deck_card_obj.quantity, 1)
 		card_object._on_Minus_pressed()
-		await yield_for(0.1)
+		await wait_seconds(0.1)
 		assert_null(card_object.deck_card_object)
 	var iedit : IntegerLineEdit = card_object._quantity_edit
 	watch_signals(iedit)
 	iedit.text = "9"
 	iedit._on_IntegerLineEdit_text_entered("9")
-	await yield_for(0.1)
+	await wait_seconds(0.1)
 	assert_signal_emitted_with_parameters(iedit, "int_entered", [9])
 	deck_card_obj = card_object.deck_card_object
 	assert_not_null(deck_card_obj)
@@ -92,7 +92,7 @@ func test_plus_minus_freeform_add_remove():
 		deck_card_obj._on_Minus_pressed()
 		assert_eq(deck_card_obj.quantity, 1)
 		deck_card_obj._on_Minus_pressed()
-		await yield_for(0.1)
+		await wait_seconds(0.1)
 		assert_null(card_object.deck_card_object)
 
 func test_save_load_reset():
@@ -124,7 +124,7 @@ func test_save_load_reset():
 		assert_eq(data.total, 3.0,
 				"Deck card total stored correctly")
 	deckbuilder._on_Reset_pressed()
-	await yield_for(0.5)
+	await wait_seconds(0.5)
 	assert_eq(deckbuilder._deck_name.text, deck_name,
 			"Reset Deck Name not randomized")
 	assert_eq(deckbuilder._deck_cards.get_child_count(), 0,
@@ -133,11 +133,11 @@ func test_save_load_reset():
 	assert_gt(deckbuilder._load_button.get_popup().get_item_count(), 0,
 			"Deck list populated correctly")
 	deckbuilder._load_button._on_deck_load(0)
-	await yield_for(0.1)
+	await wait_seconds(0.1)
 	assert_ne(deckbuilder._deck_cards.get_child_count(), 0,
 			"Deck List has contents after deck load")
 	deckbuilder._on_deck_loaded(data)
-	await yield_for(0.1)
+	await wait_seconds(0.1)
 	assert_eq(deckbuilder._notice.text,
 			"Deck loaded")
 	var deck_card_obj := card_object.deck_card_object

@@ -59,6 +59,7 @@ func teardown_board() -> void:
 	cfc.are_all_nodes_mapped = false
 	cfc.card_drag_ongoing = null
 	cfc.NMAP.clear()
+	board.queue_free()
 
 
 func draw_test_cards(count: int, fast := true) -> Array:

@@ -30,6 +30,8 @@ var quantity: int: set = set_quantity
 	5: $'Quantity/5',
 }
 
+signal requested_new_card(this: DBListCardObject, card_name: String, card_property: String, value, info_panel_scene)
+
 func _ready() -> void:
 	for quantity_button in _qbuttons:
 		_qbuttons[quantity_button].connect("quantity_set", Callable(self, "_on_quantity_set"))
@@ -62,15 +64,18 @@ func set_quantity(value) -> void:
 		# then connect it to ourselves.  This way when the user modifies the
 		# values from it, it goes through the functions here always.
 		if not deck_card_object:
-			deck_card_object = card_viewer.add_new_card(
-					card_name,
+			requested_new_card.emit(self, card_name,
 					card_properties[CardConfig.SCENE_PROPERTY],
-					value)
+					value, info_panel_scene)
+			#deck_card_object = card_viewer.add_new_card(
+					#card_name,
+					#card_properties[CardConfig.SCENE_PROPERTY],
+					#value)
 			# warning-ignore:return_value_discarded
-			deck_card_object._card_label.preview_popup.focus_info.info_panel_scene\
-					= card_viewer.info_panel_scene
-			deck_card_object._card_label.preview_popup.focus_info.setup()
-			deck_card_object.connect("quantity_changed", Callable(self, "_on_quantity_set"))
+			#deck_card_object._card_label.preview_popup.focus_info.info_panel_scene\
+					#= info_panel_scene
+			#deck_card_object._card_label.preview_popup.focus_info.setup()
+			#deck_card_object.connect("quantity_changed", Callable(self, "_on_quantity_set"))
 		else:
 			deck_card_object.set_quantity(value)
 	elif value == 0:

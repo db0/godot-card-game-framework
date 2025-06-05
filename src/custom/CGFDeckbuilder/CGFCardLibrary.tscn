@@ -25,6 +25,9 @@ custom_minimum_size = Vector2(0, 0)
 [node name="Type" parent="VBC/HBC/MC/AvailableCards/CardListHeaders" index="1"]
 custom_minimum_size = Vector2(100, 0)
 
+[node name="CardList" parent="VBC/HBC/MC/AvailableCards/ScrollContainer" index="0"]
+visible = true
+
 [node name="Back" type="Button" parent="VBC/HBC/MC/AvailableCards/Settings" index="0"]
 layout_mode = 2
 text = "Back"

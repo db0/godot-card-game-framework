@@ -18,8 +18,8 @@ func _ready() -> void:
 
 # Returns an Array of Dictionaries, where each dictionary is the details
 # of a deck loaded from disk.
-static func load_all_decks() -> Array:
-	var available_decks = CFUtils.list_files_in_directory(CFConst.DECKS_PATH)
+static func load_all_decks() -> Array[Variant]:
+	var available_decks := CFUtils.list_files_in_directory(CFConst.DECKS_PATH)
 	var file: FileAccess
 	var loaded_decks_list := []
 	for deck in available_decks:
@@ -46,7 +46,7 @@ func _on_about_to_show() -> void:
 	# We format each choice label, to show some relevant info about each deck
 	for deck in _load_decks_list:
 		get_popup().add_item(
-				deck.name + ' (' + str(deck.total) + ' cards)')
+				deck.name + ' (' + str(int(deck.total)) + ' cards)')
 	if get_popup().get_item_count() == 0:
 		get_popup().add_item("No decks found. Please create a deck and try again")
 

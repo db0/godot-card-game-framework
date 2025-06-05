@@ -101,7 +101,8 @@ func populate_available_cards() -> void:
 	for list_card_object in _available_cards.get_children():
 		list_card_object.max_allowed = max_quantity
 		list_card_object.setup_max_quantity()
-		list_card_object.set_quantity(0)		
+		list_card_object.set_quantity(0)
+		list_card_object.requested_new_card.connect(on_list_card_object_requested_new_card)
 
 
 # Adds a card to the deck.
@@ -234,3 +235,14 @@ func _set_notice(text: String, colour := Color(0,1,0)) -> void:
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	# warning-ignore:return_value_discarded
 	tween.play()
+
+
+func on_list_card_object_requested_new_card(emitter: DBListCardObject, card_name: String, card_property: String, value, info_panel_scene):
+	var created := add_new_card(card_name,
+				card_property,
+				value)
+	created._card_label.preview_popup.focus_info.info_panel_scene\
+		= info_panel_scene
+	created._card_label.preview_popup.focus_info.setup()
+	created.connect("quantity_changed", Callable(emitter, "_on_quantity_set"))
+	emitter.deck_card_object = created

@@ -5,7 +5,8 @@ var abilities_label : RichTextLabel
 func _ready() -> void:
 	# warning-ignore:return_value_discarded
 	get_viewport().connect("size_changed", Callable(self, "_on_viewport_resized"))
-
+	#setup("Test Card 1")
+	
 func setup(_card_name: String) -> void:
 	super.setup(_card_name)
 	abilities_label = get_node("Abilities")

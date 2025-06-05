@@ -116,7 +116,7 @@ func _process(_delta: float) -> void:
 			$"VBC/HBC/MC/AvailableCards/ScrollContainer".size.x
 			/ (CFConst.CARD_SIZE.x * CFConst.THUMBNAIL_SCALE * cfc.curr_scale))
 
-# Populates the list of available cards, with all defined cards in the game
+## Populates the list of available cards, with all defined cards in the game
 func populate_available_cards() -> void:
 	var counter := 0
 	for card_def in cfc.card_definitions:
@@ -126,13 +126,19 @@ func populate_available_cards() -> void:
 				or cfc.card_definitions[card_def].get(CardConfig.SCENE_PROPERTY)\
 				in CardConfig.TYPES_TO_HIDE_IN_CARDVIEWER:
 			continue
-		var list_card_object = list_card_object_scene.instantiate()
-		list_card_object.card_viewer = self
+		var list_card_object: CVListCardObject = list_card_object_scene.instantiate()
+		#list_card_object.card_viewer = self
+		list_card_object.grid_card_object_scene = grid_card_object_scene
+		list_card_object.info_panel_scene = info_panel_scene
+		list_card_object.instanciated_grid_card_object.connect(on_list_card_object_instanciated_grid_card_object)
+		list_card_object.generation_keys = generation_keys
 		_available_cards.add_child(list_card_object)
 		list_card_object.setup(card_def)
 		counter += 1
 	_card_count.text = "Total: " + str(counter)
 
+func on_list_card_object_instanciated_grid_card_object(grid_card_obj: CVGridCardObject):
+	_card_grid.add_child(grid_card_obj)
 
 
 # Slowly loads all cards in to the grid

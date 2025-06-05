@@ -4,8 +4,8 @@ extends RichTextLabel
 
 @onready var preview_popup := $PreviewPopup
 
-#func _ready() -> void:
-	#text = "Test Card 1" # debug
+func _ready() -> void:
+	text = "Test Card 1" # debug
 	
 func setup(card_name) -> void:
 	text = card_name

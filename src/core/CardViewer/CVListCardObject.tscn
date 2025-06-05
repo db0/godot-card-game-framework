@@ -3,9 +3,10 @@
 [ext_resource type="PackedScene" uid="uid://buxphht5k7omf" path="res://src/core/CardViewer/CardLabel.tscn" id="2"]
 [ext_resource type="Script" uid="uid://cdlmfjv80bnto" path="res://src/core/CardViewer/CVListCardObject.gd" id="3"]
 
-[node name="ListCardObject" type="HBoxContainer"]
+[node name="CVListCardObject" type="HBoxContainer"]
 offset_right = 628.0
 offset_bottom = 20.0
+size_flags_horizontal = 3
 script = ExtResource("3")
 
 [node name="CardLabel" parent="." instance=ExtResource("2")]

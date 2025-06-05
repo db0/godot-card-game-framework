@@ -4,8 +4,11 @@ extends HBoxContainer
 
 var grid_card_object: CVGridCardObject
 # A pointer back to the cardlibrary scene
-var card_viewer
-
+# TODO: Remove dependency on specific parent. Try to use signals
+#var card_viewer
+var grid_card_object_scene: PackedScene
+var info_panel_scene
+var generation_keys: Array
 # The properties of the card, used for filtering
 var card_properties: Dictionary
 # The canonical card name of this card
@@ -14,10 +17,16 @@ var card_name: String
 @onready var _card_label:= $CardLabel
 @onready var _card_type:= $Type
 
+## When a grid card object has been instanced. Attach this to your card grid
+signal instanciated_grid_card_object(grid_card_object: CVGridCardObject)
+
 func _ready() -> void:
-	_card_label.preview_popup.focus_info.info_panel_scene = card_viewer.info_panel_scene
+	#_card_label.preview_popup.focus_info.info_panel_scene = card_viewer.info_panel_scene
 	_card_label.preview_popup.focus_info.setup()
-	_card_label.custom_effects = card_viewer.custom_rich_text_effects
+	#_card_label.custom_effects = card_viewer.custom_rich_text_effects
+	
+	#var card_name = "Test Card 1"
+	#setup(card_name)
 
 
 # This is used to prepare the values of this object
@@ -29,22 +38,27 @@ func setup(_card_name: String) -> void:
 	# the value
 	# The autogeneration function is in the deckbuilder, as it's easily
 	# extendable by games
-	for prop in card_properties:
-		if card_properties[prop] in card_viewer.generation_keys:
-			card_properties[prop] = card_viewer.generate_value(prop,card_properties)
+	# TODO: implement this without reliance on the card_viewer parameter. More signals up and references down
+	#for prop in card_properties:
+		##if card_properties[prop] in card_viewer.generation_keys:
+		#if card_properties[prop] in generation_keys:
+			#card_properties[prop] = card_viewer.generate_value(prop,card_properties)
 	card_name = _card_name
 	$Type.text = card_properties[CardConfig.SCENE_PROPERTY]
 	_card_label.text = card_name
 
-
+## The equivalent grid/full-body associated card
 func setup_grid_card_object() -> void:
 	if not grid_card_object:
-		grid_card_object = card_viewer.grid_card_object_scene.instantiate()
-		card_viewer._card_grid.add_child(grid_card_object)
+		#grid_card_object = card_viewer.grid_card_object_scene.instantiate()
+		grid_card_object = grid_card_object_scene.instantiate()
+		#card_viewer._card_grid.add_child(grid_card_object)
+		instanciated_grid_card_object.emit(grid_card_object)
 		# warning-ignore:return_value_discarded
 		grid_card_object.setup(card_name)
 		grid_card_object.card_list_object = self
-		grid_card_object.preview_popup.focus_info.info_panel_scene = card_viewer.info_panel_scene
+		#grid_card_object.preview_popup.focus_info.info_panel_scene = card_viewer.info_panel_scene
+		grid_card_object.preview_popup.focus_info.info_panel_scene = info_panel_scene
 		grid_card_object.preview_popup.focus_info.setup()
 
 

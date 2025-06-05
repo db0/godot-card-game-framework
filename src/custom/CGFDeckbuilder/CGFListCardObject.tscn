@@ -4,6 +4,8 @@
 [ext_resource type="Script" uid="uid://cu0pf25tkyjvi" path="res://src/custom/CGFDeckbuilder/CGFListCardObject.gd" id="2"]
 
 [node name="ListCardObject" instance=ExtResource("1")]
+custom_minimum_size = Vector2(0, 30)
+size_flags_horizontal = 1
 script = ExtResource("2")
 
 [node name="Type" parent="." index="1"]

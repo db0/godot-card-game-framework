@@ -67,16 +67,16 @@ static func array_join(arr: Array, separator = "") -> String:
 	return(output)
 
 
-# Returns a an array of all files in a specific directory.
-# If a prepend_needed String is passed, only returns files
-# which start with that string.
-#
-# **NOTE:** This will not work for images when exported.
-# use list_imported_in_directory() instead
-#
-# Skips uid files
-static func list_files_in_directory(path: String, prepend_needed := "", full_path := false) -> Array:
-	var files := []
+## Returns a an array of all files in a specific directory.
+## If a prepend_needed String is passed, only returns files
+## which start with that string.
+##
+## **NOTE:** This will not work for images when exported.
+## use list_imported_in_directory() instead
+##
+## Skips uid files
+static func list_files_in_directory(path: String, prepend_needed := "", full_path := false) -> Array[String]:
+	var files : Array[String] = []
 	# warning-ignore:return_value_discarded
 	var dir := DirAccess.open(path)
 	# warning-ignore:return_value_discarded

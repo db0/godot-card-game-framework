@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://cbsklevordoo0"]
+[gd_scene load_steps=8 format=3 uid="uid://cbsklevordoo0"]
 
 [ext_resource type="Theme" uid="uid://b50sjum3qm447" path="res://themes/darktheme/darktheme.theme" id="1"]
 [ext_resource type="FontFile" uid="uid://kqgxsr0dp74l" path="res://themes/darktheme/fonts/Bangers/Bangers-Regular.ttf" id="2"]
 [ext_resource type="Script" uid="uid://dnveh4pivn43c" path="res://src/custom/MainMenu.gd" id="3"]
+[ext_resource type="PackedScene" uid="uid://caaf25j8jf2kd" path="res://src/custom/CGFDeckbuilder/CGFCardLibrary.tscn" id="4_6xxet"]
 [ext_resource type="PackedScene" uid="uid://b11xuhluxj23k" path="res://src/custom/CGFDeckbuilder/CGFDeckBuilder.tscn" id="5"]
 
 [sub_resource type="StyleBoxFlat" id="1"]
@@ -559,11 +560,13 @@ size_flags_horizontal = 1
 size_flags_vertical = 1
 theme_override_styles/panel = SubResource("1")
 
-[node name="CardLibrary" parent="." instance=ExtResource("5")]
-layout_mode = 1
-size_flags_horizontal = 1
-size_flags_vertical = 1
-theme_override_styles/panel = SubResource("1")
+[node name="CardLibrary" parent="." instance=ExtResource("4_6xxet")]
+layout_mode = 2
+anchors_preset = 0
+anchor_right = 0.0
+anchor_bottom = 0.0
+offset_right = 1280.0
+offset_bottom = 720.0
 
 [node name="MainMenu" type="MarginContainer" parent="."]
 layout_mode = 0
@@ -617,6 +620,7 @@ layout_mode = 2
 text = "Card Library"
 
 [node name="GUT" type="Button" parent="MainMenu/VBox/Center/VButtons"]
+visible = false
 layout_mode = 2
 text = "Tests"
 
