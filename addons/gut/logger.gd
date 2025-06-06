@@ -5,7 +5,7 @@
 # The MIT License (MIT)
 # =====================
 #
-# Copyright (c) 2020 Tom "Butch" Wesley
+# Copyright (c) 2025 Tom "Butch" Wesley
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -39,7 +39,8 @@ var types = {
 	orphan = 'orphan',
 	passed = 'passed',
 	pending = 'pending',
-	warn ='warn',
+	risky = 'risky',
+	warn = 'warn',
 }
 
 var fmts = {
@@ -54,7 +55,7 @@ var fmts = {
 }
 
 var _type_data = {
-	types.debug:		{disp='DEBUG', 		enabled=true, fmt=fmts.none},
+	types.debug:		{disp='DEBUG', 		enabled=true, fmt=fmts.bold},
 	types.deprecated:	{disp='DEPRECATED', enabled=true, fmt=fmts.none},
 	types.error:		{disp='ERROR', 		enabled=true, fmt=fmts.red},
 	types.failed:		{disp='Failed', 	enabled=true, fmt=fmts.red},
@@ -63,6 +64,7 @@ var _type_data = {
 	types.orphan:		{disp='Orphans',	enabled=true, fmt=fmts.yellow},
 	types.passed:		{disp='Passed', 	enabled=true, fmt=fmts.green},
 	types.pending:		{disp='Pending',	enabled=true, fmt=fmts.yellow},
+	types.risky:		{disp='Risky',		enabled=true, fmt=fmts.yellow},
 	types.warn:			{disp='WARNING', 	enabled=true, fmt=fmts.yellow},
 }
 
@@ -81,19 +83,16 @@ var _printers = {
 }
 
 var _gut = null
-var _utils = null
 var _indent_level = 0
+var _min_indent_level = 0
 var _indent_string = '    '
-var _skip_test_name_for_testing = false
 var _less_test_names = false
 var _yield_calls = 0
 var _last_yield_text = ''
 
-
 func _init():
-	_utils = load('res://addons/gut/utils.gd').get_instance()
-	_printers.terminal = _utils.Printers.TerminalPrinter.new()
-	_printers.console = _utils.Printers.ConsolePrinter.new()
+	_printers.terminal = GutUtils.Printers.TerminalPrinter.new()
+	_printers.console = GutUtils.Printers.ConsolePrinter.new()
 	# There were some problems in the timing of disabling this at the right
 	# time in gut_cmdln so it is disabled by default.  This is enabled
 	# by plugin_control.gd based on settings.
@@ -126,19 +125,24 @@ func _should_print_to_printer(key_name):
 func _print_test_name():
 	if(_gut == null):
 		return
+
 	var cur_test = _gut.get_current_test_object()
 	if(cur_test == null):
 		return false
 
 	if(!cur_test.has_printed_name):
-		_output('* ' + cur_test.name + "\n")
+		var param_text = ''
+		if(cur_test.arg_count > 0):
+			# Just an FYI, parameter_handler in gut might not be set yet so can't
+			# use it here for cooler output.
+			param_text = '<parameterized>'
+		_output(str('* ', cur_test.name, param_text, "\n"))
 		cur_test.has_printed_name = true
 
 func _output(text, fmt=null):
 	for key in _printers:
 		if(_should_print_to_printer(key)):
-			var info = ''#str(self, ':', key, ':', _printers[key], '|  ')
-			_printers[key].send(info + text, fmt)
+			_printers[key].send(text, fmt)
 
 func _log(text, fmt=fmts.none):
 	_print_test_name()
@@ -181,6 +185,8 @@ func get_log_entries(log_type):
 func _output_type(type, text):
 	var td = _type_data[type]
 	if(!td.enabled):
+		# if(_logs.has(type)):
+		# 	_logs[type].append(text)
 		return
 
 	_print_test_name()
@@ -199,6 +205,7 @@ func _output_type(type, text):
 		_output(indented_start, td.fmt)
 		_output(indented_end + "\n")
 
+
 func debug(text):
 	_output_type(types.debug, text)
 
@@ -211,6 +218,8 @@ func deprecated(text, alt_method=null):
 
 func error(text):
 	_output_type(types.error, text)
+	if(_gut != null):
+		_gut._fail_for_error(text)
 
 func failed(text):
 	_output_type(types.failed, text)
@@ -226,6 +235,9 @@ func passed(text):
 
 func pending(text):
 	_output_type(types.pending, text)
+
+func risky(text):
+	_output_type(types.risky, text)
 
 func warn(text):
 	_output_type(types.warn, text)
@@ -261,14 +273,14 @@ func set_gut(gut):
 		_printers.gui = null
 	else:
 		if(_printers.gui == null):
-			_printers.gui = _utils.Printers.GutGuiPrinter.new()
-		_printers.gui.set_gut(gut)
+			_printers.gui = GutUtils.Printers.GutGuiPrinter.new()
+
 
 func get_indent_level():
 	return _indent_level
 
 func set_indent_level(indent_level):
-	_indent_level = indent_level
+	_indent_level = max(_min_indent_level, indent_level)
 
 func get_indent_string():
 	return _indent_string
@@ -284,7 +296,7 @@ func inc_indent():
 	_indent_level += 1
 
 func dec_indent():
-	_indent_level = max(0, _indent_level -1)
+	_indent_level = max(_min_indent_level, _indent_level -1)
 
 func is_type_enabled(type):
 	return _type_data[type].enabled
@@ -299,7 +311,8 @@ func set_less_test_names(less_test_names):
 	_less_test_names = less_test_names
 
 func disable_printer(name, is_disabled):
-	_printers[name].set_disabled(is_disabled)
+	if(_printers[name] != null):
+		_printers[name].set_disabled(is_disabled)
 
 func is_printer_disabled(name):
 	return _printers[name].get_disabled()
@@ -307,6 +320,10 @@ func is_printer_disabled(name):
 func disable_formatting(is_disabled):
 	for key in _printers:
 		_printers[key].set_format_enabled(!is_disabled)
+
+func disable_all_printers(is_disabled):
+	for p in _printers:
+		disable_printer(p, is_disabled)
 
 func get_printer(printer_key):
 	return _printers[printer_key]
@@ -324,21 +341,30 @@ func _end_yield_terminal():
 	printer.back(_last_yield_text.length())
 
 func _yield_text_gui(text):
-	var lbl = _gut.get_gui().get_waiting_label()
-	lbl.visible = true
-	lbl.set_bbcode('[color=yellow]' + text + '[/color]')
+	pass
+	# var lbl = _gut.get_gui().get_waiting_label()
+	# lbl.visible = true
+	# lbl.set_bbcode('[color=yellow]' + text + '[/color]')
 
 func _end_yield_gui():
-	var lbl = _gut.get_gui().get_waiting_label()
-	lbl.visible = false
-	lbl.set_text('')
+	pass
+	# var lbl = _gut.get_gui().get_waiting_label()
+	# lbl.visible = false
+	# lbl.set_text('')
 
+# This is used for displaying the "yield detected" and "yielding to" messages.
+func yield_msg(text):
+	if(_type_data.warn.enabled):
+		self.log(text, fmts.yellow)
+
+# This is used for the animated "waiting" message
 func yield_text(text):
 	_yield_text_terminal(text)
 	_yield_text_gui(text)
 	_last_yield_text = text
 	_yield_calls += 1
 
+# This is used for the animated "waiting" message
 func end_yield():
 	if(_yield_calls == 0):
 		return
@@ -346,3 +372,6 @@ func end_yield():
 	_end_yield_gui()
 	_yield_calls = 0
 	_last_yield_text = ''
+
+func get_gui_bbcode():
+	return _printers.gui.get_bbcode()

@@ -9,15 +9,15 @@ extends Control
 var occupying_card = null
 
 # Stores a reference to the owning BoardPlacementGrid object
-onready var owner_grid = get_parent().get_parent()
+@onready var owner_grid = get_parent().get_parent()
 
 func _ready() -> void:
 	# We set the initial size of our highlight and area, to 
 	# fit the size of the cards on the board.
-	rect_min_size = owner_grid.card_size * owner_grid.card_play_scale
-	$Highlight.rect_min_size = rect_min_size
-	$Area2D/CollisionShape2D.shape.extents = rect_min_size / 2
-	$Area2D/CollisionShape2D.position = rect_min_size / 2
+	custom_minimum_size = owner_grid.card_size * owner_grid.card_play_scale
+	$Highlight.custom_minimum_size = custom_minimum_size
+	$Area2D/CollisionShape2D.shape.extents = custom_minimum_size / 2
+	$Area2D/CollisionShape2D.position = custom_minimum_size / 2
 
 
 # Returns true if this slot is highlighted, else false

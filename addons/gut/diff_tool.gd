@@ -2,13 +2,11 @@ extends 'res://addons/gut/compare_result.gd'
 const INDENT = '    '
 enum {
 	DEEP,
-	SHALLOW,
 	SIMPLE
 }
 
-var _utils = load('res://addons/gut/utils.gd').get_instance()
-var _strutils = _utils.Strutils.new()
-var _compare = _utils.Comparator.new()
+var _strutils = GutUtils.Strutils.new()
+var _compare = GutUtils.Comparator.new()
 var DiffTool = load('res://addons/gut/diff_tool.gd')
 
 var _value_1 = null
@@ -24,7 +22,11 @@ func set_are_equal(val):
 	_block_set('are_equal', val)
 
 func get_are_equal():
-	return are_equal()
+	if(!_valid):
+		return null
+	else:
+		return differences.size() == 0
+
 
 func set_summary(val):
 	_block_set('summary', val)
@@ -40,9 +42,9 @@ func  get_total_count():
 
 func get_short_summary():
 	var text = str(_strutils.truncate_string(str(_value_1), 50),
-		' ', _compare.get_compare_symbol(are_equal()), ' ',
+		' ', _compare.get_compare_symbol(are_equal), ' ',
 		_strutils.truncate_string(str(_value_2), 50))
-	if(!are_equal()):
+	if(!are_equal):
 		text += str('  ', get_different_count(), ' of ', get_total_count(),
 			' ', _desc_things, ' do not match.')
 	return text
@@ -57,7 +59,7 @@ func _invalidate():
 	differences = null
 
 
-func _init(v1, v2, diff_type=DEEP):
+func _init(v1,v2,diff_type=DEEP):
 	_value_1 = v1
 	_value_2 = v2
 	_diff_type = diff_type
@@ -66,7 +68,7 @@ func _init(v1, v2, diff_type=DEEP):
 
 
 func _find_differences(v1, v2):
-	if(_utils.are_datatypes_same(v1, v2)):
+	if(GutUtils.are_datatypes_same(v1, v2)):
 		if(typeof(v1) == TYPE_ARRAY):
 			_brackets = {'open':'[', 'close':']'}
 			_desc_things = 'indexes'
@@ -77,10 +79,10 @@ func _find_differences(v1, v2):
 			_diff_dictionary(v1, v2)
 		else:
 			_invalidate()
-			_utils.get_logger().error('Only Arrays and Dictionaries are supported.')
+			GutUtils.get_logger().error('Only Arrays and Dictionaries are supported.')
 	else:
 		_invalidate()
-		_utils.get_logger().error('Only Arrays and Dictionaries are supported.')
+		GutUtils.get_logger().error('Only Arrays and Dictionaries are supported.')
 
 
 func _diff_array(a1, a2):
@@ -113,7 +115,7 @@ func _diff_dictionary(d1, d2):
 		if(!d2.has(key)):
 			differences[key] = _compare.simple(d1[key], _compare.MISSING, 'key')
 		else:
-			d2_keys.remove(d2_keys.find(key))
+			d2_keys.remove_at(d2_keys.find(key))
 
 			var result = null
 			if(_diff_type == DEEP):
@@ -133,7 +135,7 @@ func _diff_dictionary(d1, d2):
 func summarize():
 	var summary = ''
 
-	if(are_equal()):
+	if(are_equal):
 		summary = get_short_summary()
 	else:
 		var formatter = load('res://addons/gut/diff_formatter.gd').new()
@@ -141,13 +143,6 @@ func summarize():
 		summary = formatter.make_it(self)
 
 	return summary
-
-
-func are_equal():
-	if(!_valid):
-		return null
-	else:
-		return differences.size() == 0
 
 
 func get_diff_type():

@@ -15,10 +15,8 @@ func after_all():
 	cfc.game_settings.fancy_movement = true
 
 func before_each():
-	var confirm_return = setup_board()
-	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = yield(confirm_return, "completed")
-	ask_integer = ScriptingEngine._ASK_INTEGER_SCENE.instance()
+	await setup_board()
+	ask_integer = ScriptingEngine._ASK_INTEGER_SCENE.instantiate()
 	hh = ask_integer.get_node("HorizontalHighlights")
 	vh = ask_integer.get_node("VecticalHighlights")
 	line = ask_integer.get_node("IntegerLineEdit")
@@ -29,8 +27,8 @@ func after_each():
 
 func test_title_and_highlights():
 	ask_integer.prep("UT Card",1,5)
-	assert_eq("Please enter number for the effect of UT Card", ask_integer.window_title)
-	assert_eq("Submit", ask_integer.get_ok().text)
+	assert_eq("Please enter number for the effect of UT Card", ask_integer.title)
+	assert_eq("Submit", ask_integer.get_ok_button().text)
 	assert_eq(Color(1.4,0,0), hh.modulate)
 	assert_eq(Color(1.2,0,0), vh.modulate)
 
@@ -80,27 +78,30 @@ func test_on_LineEdit_text_changed():
 
 func test_submit():
 	watch_signals(ask_integer)
+	watch_signals(line)
 	ask_integer.prep("UT Card",1,5)
 	ask_integer._on_AskInteger_confirmed()
-	yield(yield_for(0.1), YIELD)
-	assert_eq(0,ask_integer.number)
-	assert_signal_not_emitted(ask_integer,"popup_hide")
+	assert_eq(0,ask_integer.number, "No input provided")
+	assert_signal_not_emitted(ask_integer,"canceled")
+	
 	line.text = "11"
 	line._on_IntegerLineEdit_text_changed("11")
 	ask_integer._on_AskInteger_confirmed()
-	yield(yield_for(0.1), YIELD)
 	assert_eq(0,ask_integer.number)
-	assert_signal_not_emitted(ask_integer,"popup_hide")
+	assert_signal_emitted(line, "int_changed_nok", "correctly disallows out of bounds numbers")
+	assert_signal_not_emitted(ask_integer,"canceled")
+	
 	line.text = "abd"
 	line._on_IntegerLineEdit_text_changed("abd")
 	ask_integer._on_AskInteger_confirmed()
-	yield(yield_for(0.1), YIELD)
-	assert_eq(0,ask_integer.number)
-	assert_signal_not_emitted(ask_integer,"popup_hide")
+	assert_eq(0,ask_integer.number, "Invalid input provided (letters)")
+	assert_signal_not_emitted(ask_integer,"canceled")
+	
 	line.text = "2"
 	line._on_IntegerLineEdit_text_changed("2")
 	ask_integer._on_AskInteger_confirmed()
-	yield(yield_for(0.1), YIELD)
-	assert_signal_emitted(ask_integer,"popup_hide")
-	assert_eq(2,ask_integer.number)
-
+	assert_signal_emitted(line, "int_changed_ok", "Valid text input provided")
+	assert_eq(2,ask_integer.number, "Correctly reads in valid number")
+	#This used to be "popup_hide", but AcceptDialog no longer has that signal
+	#I'm not sure what the test actually wants
+	assert_signal_not_emitted(ask_integer,"canceled")

@@ -1,17 +1,18 @@
-var _utils = load('res://addons/gut/utils.gd').get_instance()
-var _strutils = _utils.Strutils.new()
+var _strutils = GutUtils.Strutils.new()
 var _max_length = 100
 var _should_compare_int_to_float = true
 
 const MISSING = '|__missing__gut__compare__value__|'
-const DICTIONARY_DISCLAIMER = 'Dictionaries are compared-by-ref.  See assert_eq in wiki.'
 
-func _cannot_comapre_text(v1, v2):
+
+func _cannot_compare_text(v1, v2):
 	return str('Cannot compare ', _strutils.types[typeof(v1)], ' with ',
 		_strutils.types[typeof(v2)], '.')
 
+
 func _make_missing_string(text):
 	return '<missing ' + text + '>'
+
 
 func _create_missing_result(v1, v2, text):
 	var to_return = null
@@ -20,10 +21,10 @@ func _create_missing_result(v1, v2, text):
 
 	if(typeof(v1) == TYPE_STRING and v1 == MISSING):
 		v1_str = _make_missing_string(text)
-		to_return = _utils.CompareResult.new()
+		to_return = GutUtils.CompareResult.new()
 	elif(typeof(v2) == TYPE_STRING and v2 == MISSING):
 		v2_str = _make_missing_string(text)
-		to_return = _utils.CompareResult.new()
+		to_return = GutUtils.CompareResult.new()
 
 	if(to_return != null):
 		to_return.summary = str(v1_str, ' != ', v2_str)
@@ -37,46 +38,42 @@ func simple(v1, v2, missing_string=''):
 	if(missing_result != null):
 		return missing_result
 
-	var result = _utils.CompareResult.new()
+	var result = GutUtils.CompareResult.new()
 	var cmp_str = null
 	var extra = ''
 
-	if(_should_compare_int_to_float and [2, 3].has(typeof(v1)) and [2, 3].has(typeof(v2))):
+	var tv1 = typeof(v1)
+	var tv2 = typeof(v2)
+
+	# print(tv1, '::', tv2, '   ', _strutils.types[tv1], '::', _strutils.types[tv2])
+	if(_should_compare_int_to_float and [TYPE_INT, TYPE_FLOAT].has(tv1) and [TYPE_INT, TYPE_FLOAT].has(tv2)):
+		result.are_equal = v1 == v2
+	elif([TYPE_STRING, TYPE_STRING_NAME].has(tv1) and [TYPE_STRING, TYPE_STRING_NAME].has(tv2)):
+		result.are_equal = v1 == v2
+	elif(GutUtils.are_datatypes_same(v1, v2)):
 		result.are_equal = v1 == v2
 
-	elif(_utils.are_datatypes_same(v1, v2)):
-		result.are_equal = v1 == v2
-		if(typeof(v1) == TYPE_DICTIONARY):
-			if(result.are_equal):
-				extra = '.  Same dictionary ref.  '
-			else:
-				extra = '.  Different dictionary refs.  '
-			extra += DICTIONARY_DISCLAIMER
-
-		if(typeof(v1) == TYPE_ARRAY):
-			var array_result = _utils.DiffTool.new(v1, v2, _utils.DIFF.SHALLOW)
-			result.summary = array_result.get_short_summary()
-			if(!array_result.are_equal()):
-				extra = ".\n" + array_result.get_short_summary()
-
+		if(typeof(v1) == TYPE_DICTIONARY or typeof(v1) == TYPE_ARRAY):
+			var sub_result = GutUtils.DiffTool.new(v1, v2, GutUtils.DIFF.DEEP)
+			result.summary = sub_result.get_short_summary()
+			if(!sub_result.are_equal):
+				extra = ".\n" + sub_result.get_short_summary()
 	else:
 		cmp_str = '!='
 		result.are_equal = false
-		extra = str('.  ', _cannot_comapre_text(v1, v2))
+		extra = str('.  ', _cannot_compare_text(v1, v2))
 
 	cmp_str = get_compare_symbol(result.are_equal)
-	if(typeof(v1) != TYPE_ARRAY):
-		result.summary = str(format_value(v1), ' ', cmp_str, ' ', format_value(v2), extra)
+	result.summary = str(format_value(v1), ' ', cmp_str, ' ', format_value(v2), extra)
 
 	return result
 
 
 func shallow(v1, v2):
 	var result =  null
-
-	if(_utils.are_datatypes_same(v1, v2)):
+	if(GutUtils.are_datatypes_same(v1, v2)):
 		if(typeof(v1) in [TYPE_ARRAY, TYPE_DICTIONARY]):
-			result = _utils.DiffTool.new(v1, v2, _utils.DIFF.SHALLOW)
+			result = GutUtils.DiffTool.new(v1, v2, GutUtils.DIFF.DEEP)
 		else:
 			result = simple(v1, v2)
 	else:
@@ -88,9 +85,9 @@ func shallow(v1, v2):
 func deep(v1, v2):
 	var result =  null
 
-	if(_utils.are_datatypes_same(v1, v2)):
+	if(GutUtils.are_datatypes_same(v1, v2)):
 		if(typeof(v1) in [TYPE_ARRAY, TYPE_DICTIONARY]):
-			result = _utils.DiffTool.new(v1, v2, _utils.DIFF.DEEP)
+			result = GutUtils.DiffTool.new(v1, v2, GutUtils.DIFF.DEEP)
 		else:
 			result = simple(v1, v2)
 	else:
@@ -103,13 +100,11 @@ func format_value(val, max_val_length=_max_length):
 	return _strutils.truncate_string(_strutils.type2str(val), max_val_length)
 
 
-func compare(v1, v2, diff_type=_utils.DIFF.SIMPLE):
+func compare(v1, v2, diff_type=GutUtils.DIFF.SIMPLE):
 	var result = null
-	if(diff_type == _utils.DIFF.SIMPLE):
+	if(diff_type == GutUtils.DIFF.SIMPLE):
 		result = simple(v1, v2)
-	elif(diff_type == _utils.DIFF.SHALLOW):
-		result = shallow(v1, v2)
-	elif(diff_type ==  _utils.DIFF.DEEP):
+	elif(diff_type ==  GutUtils.DIFF.DEEP):
 		result = deep(v1, v2)
 
 	return result

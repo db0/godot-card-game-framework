@@ -9,7 +9,7 @@
 # Meta properties and the game will not attempt to display them on the card
 # front.
 class_name CardConfig
-extends Reference
+extends RefCounted
 
 # Properties which are placed as they are in appropriate labels
 const PROPERTIES_STRINGS := ["Type", "Requirements", "Abilities"]

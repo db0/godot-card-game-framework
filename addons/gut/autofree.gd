@@ -5,7 +5,7 @@
 # The MIT License (MIT)
 # =====================
 #
-# Copyright (c) 2020 Tom "Butch" Wesley
+# Copyright (c) 2025 Tom "Butch" Wesley
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -33,7 +33,7 @@ var _to_queue_free = []
 
 func add_free(thing):
 	if(typeof(thing) == TYPE_OBJECT):
-		if(!thing is Reference):
+		if(!thing is RefCounted):
 			_to_free.append(thing)
 
 func add_queue_free(thing):
@@ -55,5 +55,3 @@ func free_all():
 		if(is_instance_valid(_to_queue_free[i])):
 			_to_queue_free[i].queue_free()
 	_to_queue_free.clear()
-
-

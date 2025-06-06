@@ -6,16 +6,16 @@
 class_name DetailPanels
 extends GridContainer
 
-export(PackedScene) var info_panel_scene
+@export var info_panel_scene: PackedScene
 # How many panels need to be added before adding an extra column to the grid
-export(int) var panel_column_threshold := 6
+@export var panel_column_threshold := 6
 
 # This dictionary holds all detail scenes added to the list
 # Each entry is an id for the detail (typically its tag or keyword)
 # and the values are a pointer to the node.
 var existing_details := {}
 # Returns how many details are currently visible for this card
-var visible_details setget ,get_visible_details
+var visible_details : get = get_visible_details
 
 
 func _ready() -> void:
@@ -49,7 +49,7 @@ func show_illustration(text: String) -> void:
 func hide_all_info() -> void:
 	for known_info in existing_details:
 		existing_details[known_info].visible = false
-	rect_size = Vector2(0,0)
+	size = Vector2(0,0)
 
 
 # Adds a new info node. It requires an id for that node
@@ -71,14 +71,14 @@ func add_info(
 			new_info_panel.visible = true
 		else:
 			if info_scene != null:
-				new_info_panel = info_scene.instance()
+				new_info_panel = info_scene.instantiate()
 			else:
-				new_info_panel = info_panel_scene.instance()
+				new_info_panel = info_panel_scene.instantiate()
 			add_child(new_info_panel)
 			existing_details[id] = new_info_panel
 		var label = new_info_panel.get_node("Details")
 		if label as RichTextLabel:
-			label.bbcode_text = text
+			label.text = text
 		else:
 			label.text = text
 	var child_count := 0
@@ -86,7 +86,7 @@ func add_info(
 		if info_panel.visible: 
 			child_count += 1
 	if existing_details.has("illustration"):
-		existing_details["illustration"].raise()
+		existing_details["illustration"].move_to_front()
 	columns = 1 + int(float(child_count) / float(panel_column_threshold))
 
 

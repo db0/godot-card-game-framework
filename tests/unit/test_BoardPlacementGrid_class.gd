@@ -4,9 +4,7 @@ var cards := []
 var grid: BoardPlacementGrid
 
 func before_each():
-	var confirm_return = setup_board()
-	if confirm_return is GDScriptFunctionState: # Still working.
-		confirm_return = yield(confirm_return, "completed")
+	await setup_board()
 	grid = board.get_node("BoardPlacementGrid")
 
 func test_get_all_slots():
